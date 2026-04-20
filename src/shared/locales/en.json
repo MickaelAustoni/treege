@@ -158,6 +158,7 @@
       "noParentFieldsAvailable": "No parent fields available",
       "objectMapping": "Object Mapping",
       "objectMappingDesc": "Map properties from the source object to a new structure",
+      "optional": "Optional",
       "optionDescription": "Description",
       "optionImageAdd": "Add image",
       "optionImageError": "Unable to process image.",

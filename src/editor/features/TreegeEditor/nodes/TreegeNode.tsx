@@ -4,6 +4,7 @@ import BottomHandleDropdown from "@/editor/features/TreegeEditor/nodes/component
 import InputPreview from "@/editor/features/TreegeEditor/nodes/components/InputPreview";
 import NodeLabelInput from "@/editor/features/TreegeEditor/nodes/components/NodeLabelInput";
 import NodeMoreMenu from "@/editor/features/TreegeEditor/nodes/components/NodeMoreMenu";
+import RequiredBadge from "@/editor/features/TreegeEditor/nodes/components/RequiredBadge";
 import SubTypeBadge from "@/editor/features/TreegeEditor/nodes/components/SubTypeBadge";
 import NodeWrapper from "@/editor/features/TreegeEditor/nodes/layout/NodeWrapper";
 import { cn } from "@/shared/lib/utils";
@@ -31,6 +32,7 @@ const TreegeNode = ({ data, isConnectable, parentId, type, id }: TreegeNodeProps
       {/* Badges */}
       <div className="mb-1 flex gap-1">
         {(type === "input" || type === "ui") && <SubTypeBadge nodeId={id} type={type} subType={subType} />}
+        {type === "input" && !isSubmit && <RequiredBadge nodeId={id} required={(data as InputNodeData)?.required} />}
       </div>
 
       {/* Preview */}

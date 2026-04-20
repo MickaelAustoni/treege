@@ -158,6 +158,7 @@
       "noParentFieldsAvailable": "Keine übergeordneten Felder verfügbar",
       "objectMapping": "Objektzuordnung",
       "objectMappingDesc": "Eigenschaften des Quellobjekts auf eine neue Struktur abbilden",
+      "optional": "Optional",
       "optionDescription": "Beschreibung",
       "optionImageAdd": "Bild hinzufügen",
       "optionImageError": "Bild konnte nicht verarbeitet werden.",

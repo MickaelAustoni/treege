@@ -158,6 +158,7 @@
       "noParentFieldsAvailable": "Nessun campo genitore disponibile",
       "objectMapping": "Mappatura oggetto",
       "objectMappingDesc": "Mappa le proprietà dell'oggetto sorgente su una nuova struttura",
+      "optional": "Opzionale",
       "optionDescription": "Descrizione",
       "optionImageAdd": "Aggiungi immagine",
       "optionImageError": "Impossibile elaborare l'immagine.",

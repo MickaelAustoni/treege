@@ -158,6 +158,7 @@
       "noParentFieldsAvailable": "No hay campos principales disponibles",
       "objectMapping": "Mapeo de objetos",
       "objectMappingDesc": "Mapear las propiedades del objeto de origen a una nueva estructura",
+      "optional": "Opcional",
       "optionDescription": "Descripción",
       "optionImageAdd": "Agregar imagen",
       "optionImageError": "No se pudo procesar la imagen.",

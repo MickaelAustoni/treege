@@ -158,6 +158,7 @@
       "noParentFieldsAvailable": "لا توجد حقول أصلية متاحة",
       "objectMapping": "تعيين الكائن",
       "objectMappingDesc": "تعيين خصائص الكائن المصدر إلى بنية جديدة",
+      "optional": "اختياري",
       "optionDescription": "الوصف",
       "optionImageAdd": "إضافة صورة",
       "optionImageError": "تعذر معالجة الصورة.",
