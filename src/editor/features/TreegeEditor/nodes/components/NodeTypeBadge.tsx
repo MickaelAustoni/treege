@@ -1,4 +1,4 @@
-import { Boxes, LucidePencilRuler, MessageCircleQuestion, Network } from "lucide-react";
+import { Boxes, ChevronDown, LucidePencilRuler, MessageCircleQuestion, Network } from "lucide-react";
 import { ComponentType, MouseEvent } from "react";
 import { NODE_TYPES } from "@/editor/constants/nodeTypes";
 import useFlowActions from "@/editor/hooks/useFlowActions";
@@ -44,6 +44,7 @@ const NodeTypeBadge = ({ nodeId, type }: NodeTypeBadgeProps) => {
         >
           <Icon />
           {t(`editor.selectNodeType.options.${type}`)}
+          <ChevronDown />
         </Badge>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" onClick={stopPropagation}>

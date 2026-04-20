@@ -1,4 +1,4 @@
-import { RectangleEllipsis } from "lucide-react";
+import { ChevronDown, RectangleEllipsis } from "lucide-react";
 import { MouseEvent } from "react";
 import useFlowActions from "@/editor/hooks/useFlowActions";
 import useTranslate from "@/editor/hooks/useTranslate";
@@ -31,8 +31,9 @@ const SubTypeBadge = ({ nodeId, type, subType }: SubTypeBadgeProps) => {
     <DropdownMenu>
       <DropdownMenuTrigger asChild onClick={stopPropagation}>
         <Badge variant="default" className="nodrag nopan cursor-pointer px-1.5 py-0 text-[10px] capitalize [&>svg]:size-2.5">
-          <RectangleEllipsis />
+          <RectangleEllipsis className="mt-0.5" />
           {subType || t("editor.selectInputType.type")}
+          <ChevronDown />
         </Badge>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="treege-scrollbar max-h-60" onClick={stopPropagation}>
