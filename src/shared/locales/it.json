@@ -246,6 +246,9 @@
       "successMessageDesc": "Messaggio visualizzato quando l'invio ha successo",
       "successMessagePlaceholder": "Modulo inviato con successo!"
     },
+    "treegeNode": {
+      "labelPlaceholder": "Etichetta..."
+    },
     "uiNodeForm": {
       "label": "Etichetta",
       "type": "Tipo",

@@ -246,6 +246,9 @@
       "successMessageDesc": "Mensagem exibida quando o envio é bem-sucedido",
       "successMessagePlaceholder": "Formulário enviado com sucesso!"
     },
+    "treegeNode": {
+      "labelPlaceholder": "Rótulo..."
+    },
     "uiNodeForm": {
       "label": "Rótulo",
       "type": "Tipo",

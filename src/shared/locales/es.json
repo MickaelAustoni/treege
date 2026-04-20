@@ -246,6 +246,9 @@
       "successMessageDesc": "Mensaje mostrado cuando el envío es exitoso",
       "successMessagePlaceholder": "¡Formulario enviado exitosamente!"
     },
+    "treegeNode": {
+      "labelPlaceholder": "Etiqueta..."
+    },
     "uiNodeForm": {
       "label": "Etiqueta",
       "type": "Tipo",

@@ -246,6 +246,9 @@
       "successMessageDesc": "Nachricht, die bei erfolgreicher Übermittlung angezeigt wird",
       "successMessagePlaceholder": "Formular erfolgreich übermittelt!"
     },
+    "treegeNode": {
+      "labelPlaceholder": "Bezeichnung..."
+    },
     "uiNodeForm": {
       "label": "Bezeichnung",
       "type": "Typ",

@@ -246,6 +246,9 @@
       "successMessageDesc": "Message displayed when submission succeeds",
       "successMessagePlaceholder": "Form submitted successfully!"
     },
+    "treegeNode": {
+      "labelPlaceholder": "Label..."
+    },
     "uiNodeForm": {
       "label": "Label",
       "type": "Type",

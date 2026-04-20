@@ -1,5 +1,11 @@
 import { useReactFlow } from "@xyflow/react";
 import { useCallback } from "react";
+import { INPUT_TYPE } from "@/shared/constants/inputType";
+import { NODE_TYPE } from "@/shared/constants/node";
+
+const DEFAULT_NODE_DATA: Record<string, Record<string, unknown>> = {
+  [NODE_TYPE.input]: { type: INPUT_TYPE.text },
+};
 
 /**
  * Custom hook providing various actions to manipulate nodes and edges
@@ -65,7 +71,7 @@ const useFlowActions = () => {
           if (node.id === id) {
             return {
               ...node,
-              data: {},
+              data: DEFAULT_NODE_DATA[type] ?? {},
               type,
             };
           }

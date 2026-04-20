@@ -246,6 +246,9 @@
       "successMessageDesc": "الرسالة المعروضة عند نجاح الإرسال",
       "successMessagePlaceholder": "تم إرسال النموذج بنجاح!"
     },
+    "treegeNode": {
+      "labelPlaceholder": "تسمية..."
+    },
     "uiNodeForm": {
       "label": "التسمية",
       "type": "النوع",
