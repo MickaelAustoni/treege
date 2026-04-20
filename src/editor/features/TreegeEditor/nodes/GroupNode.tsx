@@ -2,7 +2,7 @@ import { Node, NodeProps, NodeResizer } from "@xyflow/react";
 import { Boxes } from "lucide-react";
 import { memo } from "react";
 import NodeLabelInput from "@/editor/features/TreegeEditor/nodes/components/NodeLabelInput";
-import OpenSheetButton from "@/editor/features/TreegeEditor/nodes/components/OpenSheetButton";
+import NodeMoreMenu from "@/editor/features/TreegeEditor/nodes/components/NodeMoreMenu";
 import { Badge } from "@/shared/components/ui/badge";
 import { GroupNodeData } from "@/shared/types/node";
 
@@ -18,7 +18,7 @@ const GroupNode = ({ data, id }: GroupNodeProps) => (
         <NodeLabelInput nodeId={id} label={data?.label} className="min-w-0 flex-1 text-xs text-white placeholder:text-white/60" />
       </Badge>
     </div>
-    <OpenSheetButton nodeId={id} />
+    <NodeMoreMenu nodeId={id} />
   </>
 );
 

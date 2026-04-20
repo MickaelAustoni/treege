@@ -2,8 +2,8 @@ import { Handle, Node, NodeProps, Position } from "@xyflow/react";
 import { memo } from "react";
 import BottomHandleDropdown from "@/editor/features/TreegeEditor/nodes/components/BottomHandleDropdown";
 import NodeLabelInput from "@/editor/features/TreegeEditor/nodes/components/NodeLabelInput";
+import NodeMoreMenu from "@/editor/features/TreegeEditor/nodes/components/NodeMoreMenu";
 import NodeTypeBadge from "@/editor/features/TreegeEditor/nodes/components/NodeTypeBadge";
-import OpenSheetButton from "@/editor/features/TreegeEditor/nodes/components/OpenSheetButton";
 import SubTypeBadge from "@/editor/features/TreegeEditor/nodes/components/SubTypeBadge";
 import NodeWrapper from "@/editor/features/TreegeEditor/nodes/layout/NodeWrapper";
 import { cn } from "@/shared/lib/utils";
@@ -19,8 +19,8 @@ const TreegeNode = ({ data, isConnectable, parentId, type, id }: TreegeNodeProps
 
   return (
     <NodeWrapper inGroup={!!parentId} isSubmit={isSubmit}>
-      {/* Edit button */}
-      <OpenSheetButton nodeId={id} />
+      {/* More menu */}
+      <NodeMoreMenu nodeId={id} />
 
       {/* Top handle */}
       <Handle type="target" position={Position.Top} isConnectable={isConnectable} isConnectableStart={type === "ui"} />

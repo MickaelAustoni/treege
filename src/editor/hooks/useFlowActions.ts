@@ -117,6 +117,18 @@ const useFlowActions = () => {
   );
 
   /**
+   * Deletes a node by ID along with its connected edges.
+   * @param id - The ID of the node to delete.
+   */
+  const deleteNode = useCallback(
+    (id: string) => {
+      setNodes((nds) => nds.filter((node) => node.id !== id));
+      setEdges((eds) => eds.filter((edge) => edge.source !== id && edge.target !== id));
+    },
+    [setNodes, setEdges],
+  );
+
+  /**
    * Deletes the currently selected node and its connected edges.
    * If no node is selected, the function does nothing.
    */
@@ -126,12 +138,12 @@ const useFlowActions = () => {
       return;
     }
 
-    setNodes((nds) => nds.filter((node) => node.id !== currentSelectedNode.id));
-    setEdges((eds) => eds.filter((edge) => edge.source !== currentSelectedNode.id && edge.target !== currentSelectedNode.id));
-  }, [getNodes, setNodes, setEdges]);
+    deleteNode(currentSelectedNode.id);
+  }, [getNodes, deleteNode]);
 
   return {
     clearSelection,
+    deleteNode,
     deleteSelectedNode,
     selectNode,
     updateNodeData,
