@@ -17,7 +17,12 @@ const useFlowConnections = () => {
    * Used by both onConnectEnd (drag) and onAddFromHandle (click "+")
    */
   const createNodeAndConnect = useCallback(
-    (sourceNode: Node, position: { x: number; y: number }, shouldSelectNode = false) => {
+    (
+      sourceNode: Node,
+      position: { x: number; y: number },
+      shouldSelectNode = false,
+      nodeInit?: { type: string; data?: Record<string, unknown> },
+    ) => {
       const sourceId = sourceNode.id;
       const edges = getEdges();
       const existingEdgesFromSource = edges.filter((edge) => edge.source === sourceId);
@@ -32,6 +37,7 @@ const useFlowConnections = () => {
 
       const newNode: Node = {
         ...DEFAULT_NODE,
+        ...(nodeInit && { data: nodeInit.data ?? {}, type: nodeInit.type }),
         id: nodeId,
         position,
         selected: shouldSelectNode,
@@ -135,7 +141,7 @@ const useFlowConnections = () => {
    * This is used when clicking the "+" handle button
    */
   const onAddFromHandle = useCallback(
-    (sourceNodeId: string) => {
+    (sourceNodeId: string, nodeInit?: { type: string; data?: Record<string, unknown> }) => {
       const sourceNode = getNode(sourceNodeId);
       if (!sourceNode) {
         return;
@@ -164,7 +170,7 @@ const useFlowConnections = () => {
           : sourceNode.position.x;
 
       // Use the shared function to create node and connect, with selection enabled
-      createNodeAndConnect(sourceNode, { x: newX, y: newY }, true);
+      createNodeAndConnect(sourceNode, { x: newX, y: newY }, true, nodeInit);
     },
     [getNode, getNodes, getEdges, createNodeAndConnect],
   );
