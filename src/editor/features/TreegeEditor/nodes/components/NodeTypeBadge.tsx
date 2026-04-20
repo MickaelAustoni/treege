@@ -32,15 +32,16 @@ const NodeTypeBadge = ({ nodeId, type }: NodeTypeBadgeProps) => {
   const { updateNodeType } = useFlowActions();
   const t = useTranslate();
   const Icon = NODE_TYPE_ICONS[type];
-
   const availableTypes = (Object.keys(NODE_TYPES) as NodeTypeKey[]).filter((nodeType) => nodeType !== NODE_TYPE.group);
-
   const stopPropagation = (event: MouseEvent) => event.stopPropagation();
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild onClick={stopPropagation}>
-        <Badge variant={NODE_TYPE_BADGE_VARIANTS[type]} className="nodrag nopan cursor-pointer capitalize">
+        <Badge
+          variant={NODE_TYPE_BADGE_VARIANTS[type]}
+          className="nodrag nopan cursor-pointer px-1.5 py-0 text-[10px] capitalize [&>svg]:size-2.5"
+        >
           <Icon />
           {t(`editor.selectNodeType.options.${type}`)}
         </Badge>

@@ -32,7 +32,7 @@ const TreegeNode = ({ data, isConnectable, parentId, type, id }: TreegeNodeProps
       <div className="mb-1 flex gap-1">
         <NodeTypeBadge nodeId={id} type={type} />
         {subType && (
-          <Badge variant="outline" className="capitalize">
+          <Badge variant="outline" className="px-1.5 py-0 text-[10px] capitalize [&>svg]:size-2.5">
             <Type />
             {subType}
           </Badge>
@@ -44,7 +44,7 @@ const TreegeNode = ({ data, isConnectable, parentId, type, id }: TreegeNodeProps
         nodeId={id}
         label={data?.label}
         placeholder={placeholder}
-        className={cn("treege-node-input rounded-md px-2 py-1 text-2xl", type === "ui" && "capitalize")}
+        className={cn("treege-node-input rounded-md px-2 py-1 text-lg", type === "ui" && "capitalize")}
       />
 
       {/* Bottom handle */}

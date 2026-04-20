@@ -27,11 +27,11 @@ const OpenSheetButton = ({ nodeId, className }: OpenSheetButtonProps) => {
       onClick={handleClick}
       aria-label={t("editor.nodeActionsSheet.editNode")}
       className={cn(
-        "nodrag nopan absolute top-3 right-3 flex h-6 w-6 cursor-pointer items-center justify-center rounded-md opacity-60 transition-all hover:text-[--treege-color-primary] hover:opacity-100",
+        "nodrag nopan absolute top-2 right-2 flex h-6 w-6 cursor-pointer items-center justify-center rounded-md opacity-60 transition-all hover:text-[--treege-color-primary] hover:opacity-100",
         className,
       )}
     >
-      <Cog className="h-4 w-4" />
+      <Cog className="h-3.5 w-3.5" />
     </button>
   );
 };
