@@ -137,7 +137,7 @@
     "inputNodeForm": {
       "addInputFieldsBeforeReference": "Ajoutez des champs de saisie avant ce nœud pour les référencer",
       "addMapping": "Ajouter un mappage",
-      "addOption": "+ Ajouter une option",
+      "addOption": "Ajouter une option",
       "advancedConfiguration": "Configuration avancée",
       "defaultChecked": "Coché par défaut",
       "defaultValuesCommaSeparated": "Valeurs par défaut (séparées par des virgules)",

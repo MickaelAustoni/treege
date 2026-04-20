@@ -299,24 +299,26 @@ const InputNodeForm = () => {
                             </Button>
                           </div>
 
-                          <Field name={`options[${index}].description`}>
-                            {(subField) => (
-                              <Input
-                                placeholder={t("editor.inputNodeForm.optionDescription")}
-                                value={
-                                  (subField.state.value as { [key: string]: string | undefined } | undefined)?.[selectedLanguage] || ""
-                                }
-                                onChange={({ target }) => {
-                                  subField.handleChange({
-                                    ...(typeof subField.state.value === "object" && subField.state.value !== null
-                                      ? subField.state.value
-                                      : {}),
-                                    [selectedLanguage]: target.value,
-                                  } as never);
-                                }}
-                              />
-                            )}
-                          </Field>
+                          {(selectedNode?.data?.type === "radio" || selectedNode?.data?.type === "checkbox") && (
+                            <Field name={`options[${index}].description`}>
+                              {(subField) => (
+                                <Input
+                                  placeholder={t("editor.inputNodeForm.optionDescription")}
+                                  value={
+                                    (subField.state.value as { [key: string]: string | undefined } | undefined)?.[selectedLanguage] || ""
+                                  }
+                                  onChange={({ target }) => {
+                                    subField.handleChange({
+                                      ...(typeof subField.state.value === "object" && subField.state.value !== null
+                                        ? subField.state.value
+                                        : {}),
+                                      [selectedLanguage]: target.value,
+                                    } as never);
+                                  }}
+                                />
+                              )}
+                            </Field>
+                          )}
                         </div>
                       );
                     })}

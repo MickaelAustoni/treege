@@ -31,8 +31,8 @@ const NodeActionsSheet = () => {
   const { selectedNode } = useNodesSelection<TreegeNodeData>();
   const { clearSelection, deleteSelectedNode } = useFlowActions();
   const { isNodeSheetOpen, setIsNodeSheetOpen } = useTreegeEditorContext();
-  const translate = useTranslate();
-  const label = translate(selectedNode?.data?.label);
+  const t = useTranslate();
+  const label = t(selectedNode?.data?.label);
 
   const handleClose = () => {
     setIsNodeSheetOpen(false);
@@ -55,8 +55,7 @@ const NodeActionsSheet = () => {
       <SheetContent className="flex flex-col gap-0">
         <SheetHeader>
           <SheetTitle>
-            {translate("editor.nodeActionsSheet.editNode")}{" "}
-            <span className="font-light text-muted-foreground text-xs">{selectedNode?.id}</span>
+            {t("editor.nodeActionsSheet.editNode")} <span className="font-light text-muted-foreground text-xs">{selectedNode?.id}</span>
           </SheetTitle>
           <SheetDescription>{label || "\u00A0"}</SheetDescription>
         </SheetHeader>
@@ -84,12 +83,12 @@ const NodeActionsSheet = () => {
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
-                <AlertDialogTitle>{translate("editor.nodeActionsSheet.deleteNode")}</AlertDialogTitle>
-                <AlertDialogDescription>{translate("editor.nodeActionsSheet.deleteNodeConfirm")}</AlertDialogDescription>
+                <AlertDialogTitle>{t("editor.nodeActionsSheet.deleteNode")}</AlertDialogTitle>
+                <AlertDialogDescription>{t("editor.nodeActionsSheet.deleteNodeConfirm")}</AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
-                <AlertDialogCancel>{translate("common.cancel")}</AlertDialogCancel>
-                <AlertDialogAction onClick={handleDelete}>{translate("common.delete")}</AlertDialogAction>
+                <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
+                <AlertDialogAction onClick={handleDelete}>{t("common.delete")}</AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>

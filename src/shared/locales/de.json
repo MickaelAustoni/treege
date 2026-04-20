@@ -137,7 +137,7 @@
     "inputNodeForm": {
       "addInputFieldsBeforeReference": "Fügen Sie Eingabefelder vor diesem Knoten hinzu, um sie zu referenzieren",
       "addMapping": "Zuordnung hinzufügen",
-      "addOption": "+ Option hinzufügen",
+      "addOption": "Option hinzufügen",
       "advancedConfiguration": "Erweiterte Konfiguration",
       "defaultChecked": "Standardmäßig aktiviert",
       "defaultValuesCommaSeparated": "Standardwerte (durch Kommas getrennt)",

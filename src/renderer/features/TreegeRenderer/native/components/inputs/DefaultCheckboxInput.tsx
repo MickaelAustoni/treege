@@ -36,32 +36,38 @@ const DefaultCheckboxInput = ({ node, value, setValue, error, label, helperText 
       </Text>
 
       {options.length > 0 ? (
-        options.map((option) => (
-          <TouchableOpacity
-            key={option.value}
-            style={styles.option}
-            onPress={() => handleToggle(option.value)}
-            disabled={option.disabled}
-            activeOpacity={0.7}
-            accessible={true}
-            accessibilityRole="checkbox"
-            accessibilityState={{ checked: isChecked(option.value), disabled: option.disabled }}
-            accessibilityLabel={t(option.label) || option.value}
-          >
-            <View
-              style={[
-                styles.checkbox,
-                { backgroundColor: colors.input, borderColor: colors.border },
-                isChecked(option.value) && { backgroundColor: colors.primary, borderColor: colors.primary },
-              ]}
+        options.map((option) => {
+          const optionDescription = t(option.description);
+          return (
+            <TouchableOpacity
+              key={option.value}
+              style={styles.option}
+              onPress={() => handleToggle(option.value)}
+              disabled={option.disabled}
+              activeOpacity={0.7}
+              accessible={true}
+              accessibilityRole="checkbox"
+              accessibilityState={{ checked: isChecked(option.value), disabled: option.disabled }}
+              accessibilityLabel={t(option.label) || option.value}
             >
-              {isChecked(option.value) && <Text style={styles.checkmark}>✓</Text>}
-            </View>
-            <Text style={[styles.optionLabel, { color: colors.textSecondary }, option.disabled && { color: colors.textMuted }]}>
-              {t(option.label) || option.value}
-            </Text>
-          </TouchableOpacity>
-        ))
+              <View
+                style={[
+                  styles.checkbox,
+                  { backgroundColor: colors.input, borderColor: colors.border },
+                  isChecked(option.value) && { backgroundColor: colors.primary, borderColor: colors.primary },
+                ]}
+              >
+                {isChecked(option.value) && <Text style={styles.checkmark}>✓</Text>}
+              </View>
+              <View style={styles.optionTextContainer}>
+                <Text style={[styles.optionLabel, { color: colors.textSecondary }, option.disabled && { color: colors.textMuted }]}>
+                  {t(option.label) || option.value}
+                </Text>
+                {optionDescription && <Text style={[styles.optionDescription, { color: colors.textMuted }]}>{optionDescription}</Text>}
+              </View>
+            </TouchableOpacity>
+          );
+        })
       ) : (
         // Single checkbox without options
         <TouchableOpacity
@@ -124,13 +130,19 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   option: {
-    alignItems: "center",
+    alignItems: "flex-start",
     flexDirection: "row",
     marginBottom: 8,
   },
+  optionDescription: {
+    fontSize: 12,
+    marginTop: 2,
+  },
   optionLabel: {
-    flex: 1,
     fontSize: 14,
+  },
+  optionTextContainer: {
+    flex: 1,
   },
 });
 
