@@ -1,11 +1,11 @@
 import { Handle, Node, NodeProps, Position } from "@xyflow/react";
 import { memo } from "react";
 import BottomHandleDropdown from "@/editor/features/TreegeEditor/nodes/components/BottomHandleDropdown";
-import InputPreview from "@/editor/features/TreegeEditor/nodes/components/InputPreview";
+import InputTypeBadge from "@/editor/features/TreegeEditor/nodes/components/InputTypeBadge";
 import NodeLabelInput from "@/editor/features/TreegeEditor/nodes/components/NodeLabelInput";
 import NodeMoreMenu from "@/editor/features/TreegeEditor/nodes/components/NodeMoreMenu";
+import OptionsEditor from "@/editor/features/TreegeEditor/nodes/components/OptionsEditor";
 import RequiredBadge from "@/editor/features/TreegeEditor/nodes/components/RequiredBadge";
-import SubTypeBadge from "@/editor/features/TreegeEditor/nodes/components/SubTypeBadge";
 import NodeWrapper from "@/editor/features/TreegeEditor/nodes/layout/NodeWrapper";
 import { cn } from "@/shared/lib/utils";
 import { FlowNodeData, InputNodeData, UINodeData } from "@/shared/types/node";
@@ -31,12 +31,12 @@ const TreegeNode = ({ data, isConnectable, parentId, type, id }: TreegeNodeProps
 
       {/* Badges */}
       <div className="mb-1 flex gap-1">
-        {(type === "input" || type === "ui") && <SubTypeBadge nodeId={id} type={type} subType={subType} />}
+        {(type === "input" || type === "ui") && <InputTypeBadge nodeId={id} type={type} inputType={subType} />}
         {type === "input" && !isSubmit && <RequiredBadge nodeId={id} required={(data as InputNodeData)?.required} />}
       </div>
 
-      {/* Preview */}
-      {type === "input" && <InputPreview nodeId={id} data={data} />}
+      {/* Options editor */}
+      {type === "input" && <OptionsEditor nodeId={id} data={data} />}
 
       {/* Bottom handle */}
       <BottomHandleDropdown nodeId={id} isConnectable={isConnectable} />

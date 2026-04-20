@@ -32,7 +32,7 @@ div.react-flow__node.react-flow__node-input {
 div.react-flow__node__wrapper {
   @apply flex justify-center flex-col p-7;
   width: 270px;
-  height: 150px;
+  min-height: 150px;
   border-radius: 30px;
   border: 3px solid transparent;
   box-shadow:

@@ -1,5 +1,6 @@
 import { useId } from "react";
 import useTranslate from "@/editor/hooks/useTranslate";
+import { getInputTypeIcon } from "@/editor/utils/inputTypeIcon";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/shared/components/ui/select";
 import { INPUT_TYPE } from "@/shared/constants/inputType";
 import { InputType } from "@/shared/types/node";
@@ -22,11 +23,16 @@ const SelectInputType = ({ value, onValueChange }: SelectInputTypeProps) => {
         </SelectTrigger>
         <SelectContent>
           <SelectGroup>
-            {Object.values(INPUT_TYPE).map((type) => (
-              <SelectItem key={type} value={type} className="capitalize">
-                {type}
-              </SelectItem>
-            ))}
+            {Object.values(INPUT_TYPE).map((type) => {
+              const Icon = getInputTypeIcon(type);
+
+              return (
+                <SelectItem key={type} value={type} className="capitalize">
+                  <Icon />
+                  {type}
+                </SelectItem>
+              );
+            })}
           </SelectGroup>
         </SelectContent>
       </Select>

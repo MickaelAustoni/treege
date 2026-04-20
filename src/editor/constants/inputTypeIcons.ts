@@ -1,0 +1,50 @@
+import {
+  AlignLeft,
+  Calendar,
+  CalendarRange,
+  CaseSensitive,
+  CheckSquare,
+  CircleDot,
+  Clock,
+  Cloud,
+  EyeOff,
+  Hash,
+  Heading,
+  KeyRound,
+  ListFilter,
+  type LucideIcon,
+  MapPin,
+  Minus,
+  Paperclip,
+  RectangleEllipsis,
+  Search,
+  Send,
+  ToggleLeft,
+} from "lucide-react";
+import { INPUT_TYPE } from "@/shared/constants/inputType";
+import { UI_TYPE } from "@/shared/constants/uiType";
+
+export const INPUT_TYPE_ICONS: Record<string, LucideIcon> = {
+  [INPUT_TYPE.address]: MapPin,
+  [INPUT_TYPE.autocomplete]: Search,
+  [INPUT_TYPE.checkbox]: CheckSquare,
+  [INPUT_TYPE.date]: Calendar,
+  [INPUT_TYPE.daterange]: CalendarRange,
+  [INPUT_TYPE.file]: Paperclip,
+  [INPUT_TYPE.hidden]: EyeOff,
+  [INPUT_TYPE.http]: Cloud,
+  [INPUT_TYPE.number]: Hash,
+  [INPUT_TYPE.password]: KeyRound,
+  [INPUT_TYPE.radio]: CircleDot,
+  [INPUT_TYPE.select]: ListFilter,
+  [INPUT_TYPE.submit]: Send,
+  [INPUT_TYPE.switch]: ToggleLeft,
+  [INPUT_TYPE.text]: CaseSensitive,
+  [INPUT_TYPE.textarea]: AlignLeft,
+  [INPUT_TYPE.time]: Clock,
+  [INPUT_TYPE.timerange]: Clock,
+  [UI_TYPE.divider]: Minus,
+  [UI_TYPE.title]: Heading,
+};
+
+export const DEFAULT_INPUT_TYPE_ICON = RectangleEllipsis;

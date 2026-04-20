@@ -10,15 +10,14 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/shared/components/ui/
 import { Language } from "@/shared/types/languages";
 import { FlowNodeData, InputNodeData, InputOption, UINodeData } from "@/shared/types/node";
 
-interface InputPreviewProps {
+interface OptionsEditorProps {
   nodeId: string;
   data?: FlowNodeData | InputNodeData | UINodeData;
 }
 
 const OPTIONS_TYPES = ["radio", "select", "checkbox", "autocomplete"] as const;
-const MAX_VISIBLE_OPTIONS = 3;
 
-const InputPreview = ({ nodeId, data }: InputPreviewProps) => {
+const OptionsEditor = ({ nodeId, data }: OptionsEditorProps) => {
   const [open, setOpen] = useState(false);
   const [labelDraft, setLabelDraft] = useState("");
   const [valueDraft, setValueDraft] = useState("");
@@ -33,8 +32,6 @@ const InputPreview = ({ nodeId, data }: InputPreviewProps) => {
   }
 
   const options = (data as InputNodeData).options ?? [];
-  const visibleOptions = options.slice(0, MAX_VISIBLE_OPTIONS);
-  const hiddenCount = Math.max(0, options.length - MAX_VISIBLE_OPTIONS);
 
   const resetDraft = () => {
     setLabelDraft("");
@@ -76,7 +73,7 @@ const InputPreview = ({ nodeId, data }: InputPreviewProps) => {
 
   return (
     <div className="nodrag nopan my-1 flex flex-col gap-0.5">
-      {visibleOptions.map((option, index) => {
+      {options.map((option, index) => {
         const optionLabel = t(option.label) || option.value || "—";
         const key = `${option.value || "opt"}-${index}`;
 
@@ -86,8 +83,6 @@ const InputPreview = ({ nodeId, data }: InputPreviewProps) => {
           </div>
         );
       })}
-
-      {hiddenCount > 0 && <div className="text-[10px] text-muted-foreground/70">+{hiddenCount}</div>}
 
       <Popover open={open} onOpenChange={handleOpenChange}>
         <PopoverTrigger asChild onClick={stopPropagation}>
@@ -131,4 +126,4 @@ const InputPreview = ({ nodeId, data }: InputPreviewProps) => {
   );
 };
 
-export default InputPreview;
+export default OptionsEditor;
