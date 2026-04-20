@@ -1,4 +1,4 @@
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useTranslate } from "@/renderer/hooks/useTranslate";
 import { InputRenderProps } from "@/renderer/types/renderer";
 import { useTheme } from "@/shared/context/ThemeContext";
@@ -40,6 +40,7 @@ const DefaultRadioInput = ({ node, value, setValue, error, label, helperText }: 
             >
               {isSelected && <View style={[styles.radioInner, { backgroundColor: colors.primary }]} />}
             </View>
+            {option.image && <Image source={{ uri: option.image }} style={styles.image} />}
             <Text style={[styles.optionLabel, { color: colors.textSecondary }, option.disabled && { color: colors.textMuted }]}>
               {t(option.label) || option.value}
             </Text>
@@ -64,6 +65,12 @@ const styles = StyleSheet.create({
   helperText: {
     fontSize: 12,
     marginTop: 4,
+  },
+  image: {
+    borderRadius: 4,
+    height: 32,
+    marginRight: 8,
+    width: 32,
   },
   label: {
     fontSize: 14,

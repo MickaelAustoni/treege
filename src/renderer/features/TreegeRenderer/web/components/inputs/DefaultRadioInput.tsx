@@ -18,6 +18,7 @@ const DefaultRadioInput = ({ node, value, setValue, error, label, helperText, id
         {node.data.options?.map((option, index) => (
           <div key={option.value + index} className="flex items-center space-x-2">
             <RadioGroupItem value={String(option.value)} id={`${id}-${option.value}`} disabled={option.disabled} />
+            {option.image && <img src={option.image} alt="" className="h-8 w-8 rounded object-cover" />}
             <Label htmlFor={`${id}-${option.value}`} className="cursor-pointer font-normal text-sm">
               {t(option.label) ? t(option.label) : option.value}
             </Label>

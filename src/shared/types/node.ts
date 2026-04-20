@@ -25,6 +25,11 @@ export type InputOption = {
    * Whether the option is disabled and cannot be selected
    */
   disabled?: boolean;
+  /**
+   * Optional image for the option, stored as base64 data URL.
+   * Currently displayed by radio inputs; automatically resized and compressed on upload.
+   */
+  image?: string;
 };
 
 export type BaseNodeData = {

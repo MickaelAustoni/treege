@@ -4,6 +4,7 @@ import { useState } from "react";
 import HttpConfigForm from "@/editor/features/TreegeEditor/forms/HttpConfigForm";
 import SubmitConfigForm from "@/editor/features/TreegeEditor/forms/SubmitConfigForm";
 import ComboboxPattern from "@/editor/features/TreegeEditor/inputs/ComboboxPattern";
+import OptionImageField from "@/editor/features/TreegeEditor/inputs/OptionImageField";
 import SelectInputType from "@/editor/features/TreegeEditor/inputs/SelectInputType";
 import SelectLanguage from "@/editor/features/TreegeEditor/inputs/SelectLanguage";
 import useAvailableParentFields from "@/editor/hooks/useAvailableParentFields";
@@ -248,6 +249,14 @@ const InputNodeForm = () => {
 
                       return (
                         <div key={key} className="flex items-start gap-2">
+                          {selectedNode?.data?.type === "radio" && (
+                            <Field name={`options[${index}].image`}>
+                              {(subField) => (
+                                <OptionImageField value={subField.state.value} onChange={(newValue) => subField.handleChange(newValue)} />
+                              )}
+                            </Field>
+                          )}
+
                           <Field name={`options[${index}].label`}>
                             {(subField) => (
                               <Input
