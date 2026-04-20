@@ -17,6 +17,18 @@ const useFlowActions = () => {
   }, [setEdges, setNodes]);
 
   /**
+   * Selects a single node by ID and clears any previously selected nodes and edges.
+   * @param id - The ID of the node to select.
+   */
+  const selectNode = useCallback(
+    (id: string) => {
+      setNodes((nds) => nds.map((node) => ({ ...node, selected: node.id === id })));
+      setEdges((eds) => eds.map(({ selected, ...edge }) => edge));
+    },
+    [setEdges, setNodes],
+  );
+
+  /**
    * Updates a node's data by its ID.
    * @param id - The ID of the node to update.
    * @param data - Partial data to merge into the node's existing data.
@@ -115,6 +127,7 @@ const useFlowActions = () => {
   return {
     clearSelection,
     deleteSelectedNode,
+    selectNode,
     updateNodeData,
     updateNodeType,
     updateSelectedNodeData,

@@ -1,4 +1,5 @@
 import { Trash2 } from "lucide-react";
+import { useTreegeEditorContext } from "@/editor/context/TreegeEditorContext";
 import FlowNodeForm from "@/editor/features/TreegeEditor/forms/FlowNodeForm";
 import GroupNodeForm from "@/editor/features/TreegeEditor/forms/GroupNodeForm";
 import InputNodeForm from "@/editor/features/TreegeEditor/forms/InputNodeForm";
@@ -27,18 +28,30 @@ import { TreegeNodeData } from "@/shared/types/node";
 import { isFlowNode, isGroupNode, isInputNode, isUINode } from "@/shared/utils/nodeTypeGuards";
 
 const NodeActionsSheet = () => {
-  const { selectedNode, hasSelectedNodes } = useNodesSelection<TreegeNodeData>();
+  const { selectedNode } = useNodesSelection<TreegeNodeData>();
   const { clearSelection, deleteSelectedNode } = useFlowActions();
+  const { isNodeSheetOpen, setIsNodeSheetOpen } = useTreegeEditorContext();
   const translate = useTranslate();
   const label = translate(selectedNode?.data?.label);
 
-  const handleDelete = () => {
-    deleteSelectedNode();
+  const handleClose = () => {
+    setIsNodeSheetOpen(false);
     clearSelection();
   };
 
+  const handleOpenChange = (open: boolean) => {
+    if (!open) {
+      handleClose();
+    }
+  };
+
+  const handleDelete = () => {
+    deleteSelectedNode();
+    handleClose();
+  };
+
   return (
-    <Sheet open={hasSelectedNodes} onOpenChange={clearSelection}>
+    <Sheet open={isNodeSheetOpen && !!selectedNode} onOpenChange={handleOpenChange}>
       <SheetContent className="flex flex-col gap-0">
         <SheetHeader>
           <SheetTitle>

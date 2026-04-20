@@ -1,6 +1,7 @@
 import { Node, NodeProps, NodeResizer } from "@xyflow/react";
 import { Boxes } from "lucide-react";
 import { memo } from "react";
+import OpenSheetButton from "@/editor/features/TreegeEditor/nodes/components/OpenSheetButton";
 import useTranslate from "@/editor/hooks/useTranslate";
 import { Badge } from "@/shared/components/ui/badge";
 import { GroupNodeData } from "@/shared/types/node";
@@ -8,7 +9,7 @@ import { GroupNodeData } from "@/shared/types/node";
 export type GroupNodeType = Node<GroupNodeData, "group">;
 export type GroupNodeProps = NodeProps<GroupNodeType>;
 
-const GroupNode = ({ data }: GroupNodeProps) => {
+const GroupNode = ({ data, id }: GroupNodeProps) => {
   const translate = useTranslate();
   const label = translate(data?.label);
 
@@ -21,6 +22,7 @@ const GroupNode = ({ data }: GroupNodeProps) => {
           {label}
         </Badge>
       </div>
+      <OpenSheetButton nodeId={id} />
     </>
   );
 };

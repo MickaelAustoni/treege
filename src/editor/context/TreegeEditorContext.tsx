@@ -19,16 +19,25 @@ export interface TreegeEditorContextValue {
    * AI configuration for tree generation
    */
   aiConfig?: AIConfig;
+  /**
+   * Whether the node actions sheet is open
+   */
+  isNodeSheetOpen: boolean;
+  /**
+   * Function to open or close the node actions sheet
+   */
+  setIsNodeSheetOpen: (open: boolean) => void;
 }
 
 export interface TreegeEditorProviderProps extends PropsWithChildren {
-  value: TreegeEditorContextValue;
+  value: Omit<TreegeEditorContextValue, "isNodeSheetOpen" | "setIsNodeSheetOpen">;
 }
 
 export const TreegeEditorContext = createContext<TreegeEditorContextValue | null>(null);
 
 export const TreegeEditorProvider = ({ children, value }: TreegeEditorProviderProps) => {
   const [flowId, setFlowId] = useState(value?.flowId);
+  const [isNodeSheetOpen, setIsNodeSheetOpen] = useState(false);
 
   const valueMemo = useMemo(
     () => ({
@@ -40,9 +49,11 @@ export const TreegeEditorProvider = ({ children, value }: TreegeEditorProviderPr
         },
       }),
       flowId,
+      isNodeSheetOpen,
       setFlowId,
+      setIsNodeSheetOpen,
     }),
-    [flowId, value],
+    [flowId, value, isNodeSheetOpen],
   );
 
   return <TreegeEditorContext.Provider value={valueMemo}>{children}</TreegeEditorContext.Provider>;
@@ -54,8 +65,10 @@ export const useTreegeEditorContext = () => {
   return (
     context ?? {
       flowId: undefined,
+      isNodeSheetOpen: false,
       language: "en",
       setFlowId: () => {},
+      setIsNodeSheetOpen: () => {},
     }
   );
 };

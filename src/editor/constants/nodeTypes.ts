@@ -1,12 +1,10 @@
-import FlowNode from "@/editor/features/TreegeEditor/nodes/FlowNode";
 import GroupNode from "@/editor/features/TreegeEditor/nodes/GroupNode";
-import InputNode from "@/editor/features/TreegeEditor/nodes/InputNode";
-import UINode from "@/editor/features/TreegeEditor/nodes/UINode";
+import TreegeNode from "@/editor/features/TreegeEditor/nodes/TreegeNode";
 import { NODE_TYPE } from "@/shared/constants/node";
 
 export const NODE_TYPES = {
-  [NODE_TYPE.flow]: FlowNode,
+  [NODE_TYPE.flow]: TreegeNode,
   [NODE_TYPE.group]: GroupNode,
-  [NODE_TYPE.input]: InputNode,
-  [NODE_TYPE.ui]: UINode,
+  [NODE_TYPE.input]: TreegeNode,
+  [NODE_TYPE.ui]: TreegeNode,
 };
