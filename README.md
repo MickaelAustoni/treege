@@ -648,12 +648,10 @@ yarn preview
 
 ## Tech Stack
 
-- **React** 18/19 - UI library
+- **React** - UI library
 - **TypeScript** - Type safety
 - **TailwindCSS** 4 - Styling
 - **ReactFlow** - Node-based UI
-- **Radix UI** - Accessible components
-- **Zustand** - State management
 - **Vite** - Build tool
 
 ## Contributing
