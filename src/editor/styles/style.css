@@ -33,7 +33,7 @@ div.react-flow__node__wrapper {
   @apply flex justify-center flex-col p-7;
   width: 270px;
   height: 150px;
-  border-radius: 40px;
+  border-radius: 30px;
   border: 3px solid transparent;
   box-shadow:
     0 0 20px 6px oklch(from var(--treege-color-primary) l c h / 10%),
@@ -148,4 +148,22 @@ path.react-flow__edge-path {
 /* Json editor */
 .w-tc-editor {
   @apply bg-input/30 dark:bg-input/30 rounded-md border border-input;
+}
+
+/* Inline neon input (node labels) */
+.treege-node-input {
+  background-color: oklch(from var(--color-card) l c h / 20%);
+  box-shadow: inset 0 0 0 1px oklch(from var(--treege-color-primary) l c h / 15%);
+  transition:
+    background-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+.treege-node-input:hover {
+  box-shadow: inset 0 0 0 1px oklch(from var(--treege-color-primary) l c h / 40%);
+}
+.treege-node-input:focus {
+  background-color: oklch(from var(--color-card) l c h / 50%);
+  box-shadow:
+    inset 0 0 0 1px var(--treege-color-primary),
+    0 0 10px oklch(from var(--treege-color-primary) l c h / 40%);
 }
