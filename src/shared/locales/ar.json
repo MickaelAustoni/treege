@@ -157,6 +157,7 @@
       "noParentFieldsAvailable": "لا توجد حقول أصلية متاحة",
       "objectMapping": "تعيين الكائن",
       "objectMappingDesc": "تعيين خصائص الكائن المصدر إلى بنية جديدة",
+      "optionDescription": "الوصف",
       "optionImageAdd": "إضافة صورة",
       "optionImageError": "تعذر معالجة الصورة.",
       "optionImageInvalid": "تنسيق صورة غير مدعوم.",
@@ -188,7 +189,10 @@
       "transformNumber": "تحويل إلى رقم",
       "transformString": "تحويل إلى نص",
       "transformType": "نوع التحويل",
-      "validation": "التحقق"
+      "validation": "التحقق",
+      "variant": "متغير",
+      "variantCard": "بطاقة",
+      "variantDefault": "افتراضي"
     },
     "nodeActionsSheet": {
       "deleteNode": "حذف العقدة",

@@ -157,6 +157,7 @@
       "noParentFieldsAvailable": "Nessun campo genitore disponibile",
       "objectMapping": "Mappatura oggetto",
       "objectMappingDesc": "Mappa le proprietà dell'oggetto sorgente su una nuova struttura",
+      "optionDescription": "Descrizione",
       "optionImageAdd": "Aggiungi immagine",
       "optionImageError": "Impossibile elaborare l'immagine.",
       "optionImageInvalid": "Formato immagine non supportato.",
@@ -188,7 +189,10 @@
       "transformNumber": "Converti in numero",
       "transformString": "Converti in stringa",
       "transformType": "Tipo di trasformazione",
-      "validation": "Validazione"
+      "validation": "Validazione",
+      "variant": "Variante",
+      "variantCard": "Scheda",
+      "variantDefault": "Predefinito"
     },
     "nodeActionsSheet": {
       "deleteNode": "Elimina nodo",

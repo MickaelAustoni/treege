@@ -157,6 +157,7 @@
       "noParentFieldsAvailable": "Keine übergeordneten Felder verfügbar",
       "objectMapping": "Objektzuordnung",
       "objectMappingDesc": "Eigenschaften des Quellobjekts auf eine neue Struktur abbilden",
+      "optionDescription": "Beschreibung",
       "optionImageAdd": "Bild hinzufügen",
       "optionImageError": "Bild konnte nicht verarbeitet werden.",
       "optionImageInvalid": "Nicht unterstütztes Bildformat.",
@@ -188,7 +189,10 @@
       "transformNumber": "In Zahl konvertieren",
       "transformString": "In String konvertieren",
       "transformType": "Transformationstyp",
-      "validation": "Validierung"
+      "validation": "Validierung",
+      "variant": "Variante",
+      "variantCard": "Karte",
+      "variantDefault": "Standard"
     },
     "nodeActionsSheet": {
       "deleteNode": "Knoten löschen",

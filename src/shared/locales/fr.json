@@ -157,6 +157,7 @@
       "noParentFieldsAvailable": "Aucun champ parent disponible",
       "objectMapping": "Mappage d'objet",
       "objectMappingDesc": "Mapper les propriétés de l'objet source vers une nouvelle structure",
+      "optionDescription": "Description",
       "optionImageAdd": "Ajouter une image",
       "optionImageError": "Impossible de traiter l'image.",
       "optionImageInvalid": "Format d'image non pris en charge.",
@@ -188,7 +189,10 @@
       "transformNumber": "Convertir en nombre",
       "transformString": "Convertir en chaîne",
       "transformType": "Type de transformation",
-      "validation": "Validation"
+      "validation": "Validation",
+      "variant": "Variante",
+      "variantCard": "Carte",
+      "variantDefault": "Par défaut"
     },
     "nodeActionsSheet": {
       "deleteNode": "Supprimer le nœud",

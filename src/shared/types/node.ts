@@ -22,12 +22,16 @@ export type InputOption = {
    */
   label: Translatable;
   /**
+   * Optional secondary description, shown under the label (translatable)
+   */
+  description?: Translatable;
+  /**
    * Whether the option is disabled and cannot be selected
    */
   disabled?: boolean;
   /**
-   * Optional image for the option, stored as base64 data URL.
-   * Currently displayed by radio inputs; automatically resized and compressed on upload.
+   * Optional image for the option, stored as base64 data URL or remote URL.
+   * Currently displayed by radio inputs; uploads are automatically resized and compressed.
    */
   image?: string;
 };
@@ -195,6 +199,10 @@ export type InputNodeData = BaseNodeData & {
    * Whether multiple selections are allowed (for select and checkbox types)
    */
   multiple?: boolean;
+  /**
+   * Visual variant (currently used by radio inputs)
+   */
+  variant?: "default" | "card";
   /**
    * Whether past dates should be disabled (for date and daterange types)
    */

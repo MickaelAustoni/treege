@@ -157,6 +157,7 @@
       "noParentFieldsAvailable": "No parent fields available",
       "objectMapping": "Object Mapping",
       "objectMappingDesc": "Map properties from the source object to a new structure",
+      "optionDescription": "Description",
       "optionImageAdd": "Add image",
       "optionImageError": "Unable to process image.",
       "optionImageInvalid": "Unsupported image format.",
@@ -188,7 +189,10 @@
       "transformNumber": "Convert to Number",
       "transformString": "Convert to String",
       "transformType": "Transform Type",
-      "validation": "Validation"
+      "validation": "Validation",
+      "variant": "Variant",
+      "variantCard": "Card",
+      "variantDefault": "Default"
     },
     "nodeActionsSheet": {
       "deleteNode": "Delete node",

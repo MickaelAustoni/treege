@@ -8,6 +8,7 @@ const DefaultRadioInput = ({ node, value, setValue, error, label, helperText }: 
   const { colors } = useTheme();
   const options = node.data.options || [];
   const selectedValue = value || "";
+  const isCard = node.data.variant === "card";
 
   const handleSelect = (optionValue: string) => {
     setValue(optionValue);
@@ -22,6 +23,40 @@ const DefaultRadioInput = ({ node, value, setValue, error, label, helperText }: 
 
       {options.map((option) => {
         const isSelected = selectedValue === option.value;
+        const optionLabel = t(option.label) || option.value;
+        const optionDescription = t(option.description);
+
+        if (isCard) {
+          return (
+            <TouchableOpacity
+              key={option.value}
+              style={[
+                styles.card,
+                { backgroundColor: colors.input, borderColor: colors.border },
+                isSelected && { backgroundColor: `${colors.primary}10`, borderColor: colors.primary },
+                option.disabled && { opacity: 0.5 },
+              ]}
+              onPress={() => handleSelect(option.value)}
+              disabled={option.disabled}
+              activeOpacity={0.7}
+            >
+              <View
+                style={[
+                  styles.radio,
+                  { backgroundColor: colors.input, borderColor: colors.border },
+                  isSelected && { borderColor: colors.primary },
+                ]}
+              >
+                {isSelected && <View style={[styles.radioInner, { backgroundColor: colors.primary }]} />}
+              </View>
+              {option.image && <Image source={{ uri: option.image }} style={styles.cardImage} />}
+              <View style={styles.cardTextContainer}>
+                <Text style={[styles.cardLabel, { color: colors.textSecondary }]}>{optionLabel}</Text>
+                {optionDescription && <Text style={[styles.cardDescription, { color: colors.textMuted }]}>{optionDescription}</Text>}
+              </View>
+            </TouchableOpacity>
+          );
+        }
 
         return (
           <TouchableOpacity
@@ -41,9 +76,12 @@ const DefaultRadioInput = ({ node, value, setValue, error, label, helperText }: 
               {isSelected && <View style={[styles.radioInner, { backgroundColor: colors.primary }]} />}
             </View>
             {option.image && <Image source={{ uri: option.image }} style={styles.image} />}
-            <Text style={[styles.optionLabel, { color: colors.textSecondary }, option.disabled && { color: colors.textMuted }]}>
-              {t(option.label) || option.value}
-            </Text>
+            <View style={styles.optionTextContainer}>
+              <Text style={[styles.optionLabel, { color: colors.textSecondary }, option.disabled && { color: colors.textMuted }]}>
+                {optionLabel}
+              </Text>
+              {optionDescription && <Text style={[styles.optionDescription, { color: colors.textMuted }]}>{optionDescription}</Text>}
+            </View>
           </TouchableOpacity>
         );
       })}
@@ -55,6 +93,31 @@ const DefaultRadioInput = ({ node, value, setValue, error, label, helperText }: 
 };
 
 const styles = StyleSheet.create({
+  card: {
+    alignItems: "flex-start",
+    borderRadius: 8,
+    borderWidth: 1,
+    flexDirection: "row",
+    marginBottom: 8,
+    padding: 12,
+  },
+  cardDescription: {
+    fontSize: 12,
+    marginTop: 2,
+  },
+  cardImage: {
+    borderRadius: 4,
+    height: 40,
+    marginRight: 12,
+    width: 40,
+  },
+  cardLabel: {
+    fontSize: 14,
+    fontWeight: "500",
+  },
+  cardTextContainer: {
+    flex: 1,
+  },
   container: {
     marginBottom: 16,
   },
@@ -82,8 +145,15 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     marginBottom: 8,
   },
+  optionDescription: {
+    fontSize: 12,
+    marginTop: 2,
+  },
   optionLabel: {
     fontSize: 14,
+  },
+  optionTextContainer: {
+    flex: 1,
   },
   radio: {
     alignItems: "center",

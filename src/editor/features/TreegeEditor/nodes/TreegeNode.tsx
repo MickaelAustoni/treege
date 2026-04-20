@@ -25,14 +25,14 @@ const TreegeNode = ({ data, isConnectable, parentId, type, id }: TreegeNodeProps
       {/* Top handle */}
       <Handle type="target" position={Position.Top} isConnectable={isConnectable} isConnectableStart={type === "ui"} />
 
+      {/* Label */}
+      <NodeLabelInput nodeId={id} label={data?.label} placeholder={placeholder} className={cn("py-1", type === "ui" && "capitalize")} />
+
       {/* Types */}
       <div className="mb-1 flex gap-1">
         <NodeTypeBadge nodeId={id} type={type} />
         {(type === "input" || type === "ui") && <SubTypeBadge nodeId={id} type={type} subType={subType} />}
       </div>
-
-      {/* Label */}
-      <NodeLabelInput nodeId={id} label={data?.label} placeholder={placeholder} className={cn("py-1", type === "ui" && "capitalize")} />
 
       {/* Bottom handle */}
       <BottomHandleDropdown nodeId={id} isConnectable={isConnectable} />

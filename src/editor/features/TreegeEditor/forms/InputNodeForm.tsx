@@ -46,6 +46,7 @@ const InputNodeForm = () => {
       required: selectedNode?.data?.required,
       submitConfig: selectedNode?.data?.submitConfig,
       type: selectedNode?.data?.type || "",
+      variant: selectedNode?.data?.variant || "default",
     } as InputNodeData,
     listeners: {
       onChange: ({ formApi }) => {
@@ -248,53 +249,74 @@ const InputNodeForm = () => {
                       const key = `options[${index}]`;
 
                       return (
-                        <div key={key} className="flex items-start gap-2">
-                          {selectedNode?.data?.type === "radio" && (
-                            <Field name={`options[${index}].image`}>
+                        <div key={key} className="flex flex-col gap-2">
+                          <div className="flex items-start gap-2">
+                            {selectedNode?.data?.type === "radio" && (
+                              <Field name={`options[${index}].image`}>
+                                {(subField) => (
+                                  <OptionImageField value={subField.state.value} onChange={(newValue) => subField.handleChange(newValue)} />
+                                )}
+                              </Field>
+                            )}
+
+                            <Field name={`options[${index}].label`}>
                               {(subField) => (
-                                <OptionImageField value={subField.state.value} onChange={(newValue) => subField.handleChange(newValue)} />
+                                <Input
+                                  placeholder={t("editor.inputNodeForm.optionLabel")}
+                                  value={subField.state.value?.[selectedLanguage] || ""}
+                                  onChange={({ target }) => {
+                                    subField.handleChange({
+                                      ...(typeof subField.state.value === "object" && subField.state.value !== null
+                                        ? subField.state.value
+                                        : {}),
+                                      [selectedLanguage]: target.value,
+                                    });
+                                  }}
+                                />
                               )}
                             </Field>
-                          )}
 
-                          <Field name={`options[${index}].label`}>
+                            <Field name={`options[${index}].value`}>
+                              {(subField) => (
+                                <Input
+                                  placeholder={t("editor.inputNodeForm.optionValue")}
+                                  value={subField.state.value || ""}
+                                  onChange={({ target }) => subField.handleChange(target.value)}
+                                />
+                              )}
+                            </Field>
+
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => {
+                                field.removeValue(index);
+                                handleSubmit().then();
+                              }}
+                            >
+                              <X className="h-4 w-4" />
+                            </Button>
+                          </div>
+
+                          <Field name={`options[${index}].description`}>
                             {(subField) => (
                               <Input
-                                placeholder={t("editor.inputNodeForm.optionLabel")}
-                                value={subField.state.value?.[selectedLanguage] || ""}
+                                placeholder={t("editor.inputNodeForm.optionDescription")}
+                                value={
+                                  (subField.state.value as { [key: string]: string | undefined } | undefined)?.[selectedLanguage] || ""
+                                }
                                 onChange={({ target }) => {
                                   subField.handleChange({
                                     ...(typeof subField.state.value === "object" && subField.state.value !== null
                                       ? subField.state.value
                                       : {}),
                                     [selectedLanguage]: target.value,
-                                  });
+                                  } as never);
                                 }}
                               />
                             )}
                           </Field>
-
-                          <Field name={`options[${index}].value`}>
-                            {(subField) => (
-                              <Input
-                                placeholder={t("editor.inputNodeForm.optionValue")}
-                                value={subField.state.value || ""}
-                                onChange={({ target }) => subField.handleChange(target.value)}
-                              />
-                            )}
-                          </Field>
-
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => {
-                              field.removeValue(index);
-                              handleSubmit().then();
-                            }}
-                          >
-                            <X className="h-4 w-4" />
-                          </Button>
                         </div>
                       );
                     })}
@@ -322,6 +344,29 @@ const InputNodeForm = () => {
                       <Switch id={field.name} checked={field.state.value} onCheckedChange={(newValue) => field.handleChange(newValue)} />
                       <Label htmlFor={field.name}>{t("editor.inputNodeForm.multipleSelection")}</Label>
                     </div>
+                  )}
+                />
+              )}
+
+              {selectedNode?.data?.type === "radio" && (
+                <Field
+                  name="variant"
+                  children={(field) => (
+                    <FormItem>
+                      <Label htmlFor={field.name}>{t("editor.inputNodeForm.variant")}</Label>
+                      <Select
+                        value={(field.state.value as string) || "default"}
+                        onValueChange={(newValue) => field.handleChange(newValue as never)}
+                      >
+                        <SelectTrigger id={field.name} className="w-full">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="default">{t("editor.inputNodeForm.variantDefault")}</SelectItem>
+                          <SelectItem value="card">{t("editor.inputNodeForm.variantCard")}</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </FormItem>
                   )}
                 />
               )}
