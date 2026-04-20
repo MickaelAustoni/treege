@@ -30,7 +30,7 @@ const styles = StyleSheet.create({
 });
 
 // Export individual components
-export { DefaultTitleUI, DefaultDividerUI };
+export { DefaultDividerUI, DefaultTitleUI };
 
 // Default UI renderers mapping
 export const defaultUI = {

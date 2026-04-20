@@ -1,9 +1,162 @@
 {
+  "$schema": "https://biomejs.dev/schemas/2.3.6/schema.json",
+  "assist": {
+    "actions": {
+      "source": {
+        "organizeImports": "on",
+        "useSortedKeys": "on"
+      }
+    }
+  },
   "css": {
     "parser": {
       "cssModules": false,
       "tailwindDirectives": true
     }
   },
-  "extends": ["@tracktor/biome-config-react"]
+  "files": {
+    "includes": ["src/**", "!node_modules", "!dist", "!build", "!coverage"]
+  },
+  "formatter": {
+    "enabled": true,
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "lineEnding": "lf",
+    "lineWidth": 140
+  },
+  "javascript": {
+    "formatter": {
+      "arrowParentheses": "always",
+      "bracketSameLine": false,
+      "bracketSpacing": true,
+      "jsxQuoteStyle": "double",
+      "quoteProperties": "asNeeded",
+      "quoteStyle": "double",
+      "semicolons": "always",
+      "trailingCommas": "all"
+    }
+  },
+  "json": {
+    "formatter": {
+      "enabled": true,
+      "indentStyle": "space",
+      "indentWidth": 2
+    },
+    "linter": {
+      "enabled": true
+    }
+  },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "a11y": {
+        "noSvgWithoutTitle": "warn",
+        "useAnchorContent": "error",
+        "useButtonType": "error",
+        "useKeyWithClickEvents": "error",
+        "useKeyWithMouseEvents": "warn",
+        "useValidAnchor": "error"
+      },
+      "complexity": {
+        "noExcessiveCognitiveComplexity": "off",
+        "noForEach": "off",
+        "useLiteralKeys": "error",
+        "useOptionalChain": "warn",
+        "useSimplifiedLogicExpression": {
+          "fix": "safe",
+          "level": "warn",
+          "options": {}
+        }
+      },
+      "correctness": {
+        "noChildrenProp": "off",
+        "noNestedComponentDefinitions": "warn",
+        "noUnusedImports": "error",
+        "noUnusedVariables": "warn",
+        "useExhaustiveDependencies": "warn",
+        "useHookAtTopLevel": "error",
+        "useJsxKeyInIterable": "warn",
+        "useUniqueElementIds": "warn"
+      },
+      "nursery": {
+        "useSortedClasses": "warn"
+      },
+      "performance": {
+        "noAccumulatingSpread": "off"
+      },
+      "recommended": true,
+      "style": {
+        "noNegationElse": "error",
+        "noParameterAssign": "error",
+        "useBlockStatements": "warn",
+        "useCollapsedElseIf": "error",
+        "useConsistentArrayType": {
+          "level": "warn",
+          "options": {
+            "syntax": "shorthand"
+          }
+        },
+        "useConsistentCurlyBraces": "warn",
+        "useConst": "error",
+        "useDefaultParameterLast": "error",
+        "useExportType": "error",
+        "useForOf": "error",
+        "useImportType": "off",
+        "useNodejsImportProtocol": "off",
+        "useShorthandFunctionType": "error",
+        "useSingleVarDeclarator": "error",
+        "useTemplate": "error"
+      },
+      "suspicious": {
+        "noArrayIndexKey": "off",
+        "noConsole": {
+          "level": "off",
+          "options": {
+            "allow": ["warn", "error", "info", "log"]
+          }
+        },
+        "noDebugger": "error",
+        "noDoubleEquals": "error",
+        "noExplicitAny": "warn",
+        "noShadowRestrictedNames": "error",
+        "noTsIgnore": "warn",
+        "noUnknownAtRules": "off",
+        "useAwait": "warn"
+      }
+    }
+  },
+  "overrides": [
+    {
+      "includes": ["*.test.ts", "*.test.tsx", "*.test.js", "*.test.jsx", "*.spec.ts", "*.spec.tsx", "*.spec.js", "*.spec.jsx"],
+      "linter": {
+        "rules": {
+          "correctness": {
+            "noUnusedVariables": "warn"
+          },
+          "suspicious": {
+            "noExplicitAny": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["vite.config.ts", "*.config.ts", "*.config.js"],
+      "linter": {
+        "rules": {
+          "style": {
+            "useNodejsImportProtocol": "off"
+          },
+          "suspicious": {
+            "noExplicitAny": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["vite-env.d.ts"],
+      "linter": {
+        "enabled": false
+      }
+    }
+  ]
 }

@@ -20,12 +20,25 @@ import { InputRenderers, InputRenderProps } from "@/renderer/types/renderer";
 
 const PlaceholderInput = ({ node }: InputRenderProps<"submit">) => <Text>TODO: Implement {node.data.type} input for React Native</Text>;
 
-export { DefaultTextInput, DefaultNumberInput, DefaultPasswordInput, DefaultTextareaInput };
-export { DefaultCheckboxInput, DefaultSwitchInput, DefaultRadioInput, DefaultSelectInput };
-export { DefaultHiddenInput };
-export { DefaultAddressInput, DefaultAutocompleteInput, DefaultHttpInput };
-export { DefaultDateInput, DefaultDateRangeInput, DefaultTimeInput, DefaultTimeRangeInput };
-export { DefaultFileInput };
+export {
+  DefaultAddressInput,
+  DefaultAutocompleteInput,
+  DefaultCheckboxInput,
+  DefaultDateInput,
+  DefaultDateRangeInput,
+  DefaultFileInput,
+  DefaultHiddenInput,
+  DefaultHttpInput,
+  DefaultNumberInput,
+  DefaultPasswordInput,
+  DefaultRadioInput,
+  DefaultSelectInput,
+  DefaultSwitchInput,
+  DefaultTextareaInput,
+  DefaultTextInput,
+  DefaultTimeInput,
+  DefaultTimeRangeInput,
+};
 
 export const DefaultSubmitInput = PlaceholderInput;
 

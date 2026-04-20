@@ -13,4 +13,4 @@ function FormError({ className, ...props }: React.ComponentProps<"p">) {
   return <p data-slot="form-error" className={cn("text-destructive text-xs", className)} {...props} />;
 }
 
-export { FormError, FormItem, FormDescription };
+export { FormDescription, FormError, FormItem };

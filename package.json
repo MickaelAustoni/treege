@@ -31,12 +31,12 @@
       "react-native": "./dist/renderer-native.js"
     }
   },
-  "repository": "git@github.com:Tracktor/treege.git",
+  "repository": "git@github.com:MickaelAustoni/treege.git",
   "author": "Mickaël Austoni",
   "bugs": {
-    "url": "https://github.com/Tracktor/treege/issues"
+    "url": "https://github.com/MickaelAustoni/treege/issues"
   },
-  "homepage": "https://github.com/Tracktor/treege#readme",
+  "homepage": "https://github.com/MickaelAustoni/treege",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -82,12 +82,12 @@
   },
   "devDependencies": {
     "@babel/runtime": "^7.28.4",
+    "@biomejs/biome": "^2.3.6",
     "@tailwindcss/vite": "^4.1.13",
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.0",
     "@testing-library/react-hooks": "^8.0.1",
-    "@tracktor/biome-config-react": "^1.4.0",
     "@types/dompurify": "^3.2.0",
     "@types/google.maps": "^3.58.1",
     "@types/node": "^24.5.2",
