@@ -29,13 +29,12 @@ const NodeMoreMenu = ({ nodeId, className }: NodeMoreMenuProps) => {
     setIsNodeSheetOpen(true);
   };
 
-  const handleDelete = (event: Event) => {
-    event.preventDefault();
+  const handleDelete = () => {
     openDeleteNodeConfirmation(nodeId);
   };
 
   return (
-    <DropdownMenu>
+    <DropdownMenu modal={false}>
       <DropdownMenuTrigger asChild onClick={stopPropagation}>
         <button
           type="button"
@@ -49,7 +48,7 @@ const NodeMoreMenu = ({ nodeId, className }: NodeMoreMenuProps) => {
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" onClick={stopPropagation}>
-        <DropdownMenuItem onClick={handleOpenSheet}>
+        <DropdownMenuItem onSelect={handleOpenSheet}>
           <Settings />
           {t("common.settings")}
         </DropdownMenuItem>

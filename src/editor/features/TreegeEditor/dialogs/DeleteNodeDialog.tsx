@@ -23,12 +23,8 @@ const DeleteNodeDialog = () => {
   };
 
   return (
-    <Dialog open={pendingDeleteNodeId !== null} onOpenChange={handleOpenChange} modal={false}>
-      <DialogContent
-        showCloseButton={false}
-        onInteractOutside={(event) => event.preventDefault()}
-        onPointerDownOutside={(event) => event.preventDefault()}
-      >
+    <Dialog open={pendingDeleteNodeId !== null} onOpenChange={handleOpenChange}>
+      <DialogContent showCloseButton={false}>
         <DialogHeader>
           <DialogTitle>{t("editor.nodeActionsSheet.deleteNode")}</DialogTitle>
           <DialogDescription>{t("editor.nodeActionsSheet.deleteNodeConfirm")}</DialogDescription>
