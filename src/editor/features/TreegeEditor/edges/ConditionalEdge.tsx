@@ -166,13 +166,14 @@ const ConditionalEdge = ({
             <PopoverTrigger asChild>
               <Button
                 variant={isConfigured ? "default" : "secondary"}
+                size="xs"
                 className={cn(
-                  "h-8 px-2 text-xs transition-[filter]",
+                  "transition-[filter]",
                   isConfigured ? "hover:bg-primary hover:brightness-125" : "hover:bg-secondary hover:brightness-90",
                 )}
                 onClick={onEdgeClick}
               >
-                <Waypoints className="mr-1 h-3 w-3" />
+                <Waypoints className="h-3 w-3" />
                 {isConfigured ? getConditionSummary() : t("editor.conditionalEdge.defineCondition")}
               </Button>
             </PopoverTrigger>
