@@ -4,6 +4,7 @@ import Logo from "@/editor/components/data-display/logo";
 import { EDGE_TYPES } from "@/editor/constants/edgeTypes";
 import { NODE_TYPES } from "@/editor/constants/nodeTypes";
 import { TreegeEditorProvider } from "@/editor/context/TreegeEditorContext";
+import DeleteNodeDialog from "@/editor/features/TreegeEditor/dialogs/DeleteNodeDialog";
 import ActionsPanel from "@/editor/features/TreegeEditor/panel/ActionsPanel";
 import NodeActionsSheet from "@/editor/features/TreegeEditor/sheets/NodeActionsSheet";
 import useFlowConnections from "@/editor/hooks/useFlowConnections";
@@ -36,6 +37,7 @@ const Flow = ({ flow, onExportJson, onSave, theme, className }: TreegeEditorProp
       <MiniMap />
       <Controls />
       <NodeActionsSheet />
+      <DeleteNodeDialog />
     </ReactFlow>
   );
 };

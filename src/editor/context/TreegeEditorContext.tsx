@@ -27,10 +27,25 @@ export interface TreegeEditorContextValue {
    * Function to open or close the node actions sheet
    */
   setIsNodeSheetOpen: (open: boolean) => void;
+  /**
+   * ID of the node pending deletion confirmation, or null if no deletion is pending
+   */
+  pendingDeleteNodeId: string | null;
+  /**
+   * Open the deletion confirmation dialog for a given node
+   */
+  openDeleteNodeConfirmation: (id: string) => void;
+  /**
+   * Close the deletion confirmation dialog (cancels any pending deletion)
+   */
+  closeDeleteNodeConfirmation: () => void;
 }
 
 export interface TreegeEditorProviderProps extends PropsWithChildren {
-  value: Omit<TreegeEditorContextValue, "isNodeSheetOpen" | "setIsNodeSheetOpen">;
+  value: Omit<
+    TreegeEditorContextValue,
+    "isNodeSheetOpen" | "setIsNodeSheetOpen" | "pendingDeleteNodeId" | "openDeleteNodeConfirmation" | "closeDeleteNodeConfirmation"
+  >;
 }
 
 export const TreegeEditorContext = createContext<TreegeEditorContextValue | null>(null);
@@ -38,6 +53,7 @@ export const TreegeEditorContext = createContext<TreegeEditorContextValue | null
 export const TreegeEditorProvider = ({ children, value }: TreegeEditorProviderProps) => {
   const [flowId, setFlowId] = useState(value?.flowId);
   const [isNodeSheetOpen, setIsNodeSheetOpen] = useState(false);
+  const [pendingDeleteNodeId, setPendingDeleteNodeId] = useState<string | null>(null);
 
   const valueMemo = useMemo(
     () => ({
@@ -48,12 +64,15 @@ export const TreegeEditorProvider = ({ children, value }: TreegeEditorProviderPr
           provider: value?.aiConfig.provider ?? "gemini",
         },
       }),
+      closeDeleteNodeConfirmation: () => setPendingDeleteNodeId(null),
       flowId,
       isNodeSheetOpen,
+      openDeleteNodeConfirmation: (id: string) => setPendingDeleteNodeId(id),
+      pendingDeleteNodeId,
       setFlowId,
       setIsNodeSheetOpen,
     }),
-    [flowId, value, isNodeSheetOpen],
+    [flowId, value, isNodeSheetOpen, pendingDeleteNodeId],
   );
 
   return <TreegeEditorContext.Provider value={valueMemo}>{children}</TreegeEditorContext.Provider>;
@@ -64,9 +83,12 @@ export const useTreegeEditorContext = () => {
 
   return (
     context ?? {
+      closeDeleteNodeConfirmation: () => {},
       flowId: undefined,
       isNodeSheetOpen: false,
       language: "en",
+      openDeleteNodeConfirmation: () => {},
+      pendingDeleteNodeId: null,
       setFlowId: () => {},
       setIsNodeSheetOpen: () => {},
     }

@@ -9,17 +9,6 @@ import SelectNodeType from "@/editor/features/TreegeEditor/inputs/SelectNodeType
 import useFlowActions from "@/editor/hooks/useFlowActions";
 import useNodesSelection from "@/editor/hooks/useNodesSelection";
 import useTranslate from "@/editor/hooks/useTranslate";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/shared/components/ui/alert-dialog";
 import { Button } from "@/shared/components/ui/button";
 import { ScrollArea } from "@/shared/components/ui/scroll-area";
 import { Separator } from "@/shared/components/ui/separator";
@@ -29,8 +18,8 @@ import { isFlowNode, isGroupNode, isInputNode, isUINode } from "@/shared/utils/n
 
 const NodeActionsSheet = () => {
   const { selectedNode } = useNodesSelection<TreegeNodeData>();
-  const { clearSelection, deleteSelectedNode } = useFlowActions();
-  const { isNodeSheetOpen, setIsNodeSheetOpen } = useTreegeEditorContext();
+  const { clearSelection } = useFlowActions();
+  const { isNodeSheetOpen, setIsNodeSheetOpen, openDeleteNodeConfirmation } = useTreegeEditorContext();
   const t = useTranslate();
   const label = t(selectedNode?.data?.label);
 
@@ -46,8 +35,9 @@ const NodeActionsSheet = () => {
   };
 
   const handleDelete = () => {
-    deleteSelectedNode();
-    handleClose();
+    if (selectedNode) {
+      openDeleteNodeConfirmation(selectedNode.id);
+    }
   };
 
   return (
@@ -75,23 +65,9 @@ const NodeActionsSheet = () => {
         </ScrollArea>
 
         <SheetFooter className="flex items-end border-t">
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button variant="ghost" size="icon">
-                <Trash2 />
-              </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>{t("editor.nodeActionsSheet.deleteNode")}</AlertDialogTitle>
-                <AlertDialogDescription>{t("editor.nodeActionsSheet.deleteNodeConfirm")}</AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
-                <AlertDialogAction onClick={handleDelete}>{t("common.delete")}</AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
+          <Button variant="ghost" size="icon" onClick={handleDelete} aria-label={t("editor.nodeActionsSheet.deleteNode")}>
+            <Trash2 />
+          </Button>
         </SheetFooter>
       </SheetContent>
     </Sheet>
