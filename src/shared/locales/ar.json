@@ -69,6 +69,7 @@
       "conditionsAnd": "شروط (و)",
       "conditionsMixed": "شروط (مختلطة)",
       "conditionsOr": "شروط (أو)",
+      "defineCondition": "تعريف شرط",
       "displayConditions": "عرض الشروط",
       "displayConditionsDesc": "سيتم عرض هذا الحقل إذا تم استيفاء الشروط التالية.",
       "fallback": "افتراضي",

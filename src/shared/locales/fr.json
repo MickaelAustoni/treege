@@ -69,6 +69,7 @@
       "conditionsAnd": "conditions (ET)",
       "conditionsMixed": "conditions (mixtes)",
       "conditionsOr": "conditions (OU)",
+      "defineCondition": "Définir une condition",
       "displayConditions": "Afficher les conditions",
       "displayConditionsDesc": "Ce champ sera affiché si les conditions suivantes sont remplies.",
       "fallback": "Par défaut",

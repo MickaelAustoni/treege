@@ -69,6 +69,7 @@
       "conditionsAnd": "conditions (AND)",
       "conditionsMixed": "conditions (mixed)",
       "conditionsOr": "conditions (OR)",
+      "defineCondition": "Define a condition",
       "displayConditions": "Display conditions",
       "displayConditionsDesc": "This field will be shown if the following conditions are met.",
       "fallback": "Fallback",

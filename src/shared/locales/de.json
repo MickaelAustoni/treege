@@ -69,6 +69,7 @@
       "conditionsAnd": "Bedingungen (UND)",
       "conditionsMixed": "Bedingungen (gemischt)",
       "conditionsOr": "Bedingungen (ODER)",
+      "defineCondition": "Bedingung definieren",
       "displayConditions": "Bedingungen anzeigen",
       "displayConditionsDesc": "Dieses Feld wird angezeigt, wenn die folgenden Bedingungen erfüllt sind.",
       "fallback": "Standard",

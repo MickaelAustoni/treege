@@ -13,11 +13,19 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/shared/components/ui/
 import { ScrollArea } from "@/shared/components/ui/scroll-area";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/components/ui/select";
 import { LOGICAL_OPERATOR } from "@/shared/constants/operator";
-import { ConditionalEdgeData } from "@/shared/types/edge";
+import { ConditionalEdgeData, EdgeCondition } from "@/shared/types/edge";
 import { LogicalOperator, Operator } from "@/shared/types/operator";
 
 export type ConditionalEdgeType = Edge<ConditionalEdgeData, "conditional">;
 export type ConditionalEdgeProps = EdgeProps<ConditionalEdgeType>;
+
+/**
+ * Kept as a backward-compatibility fallback for edges saved before the
+ * explicit `configured` flag existed: an edge with at least one condition
+ * carrying both a field and a non-empty value is considered configured.
+ */
+const isConditionDefined = (condition: EdgeCondition) =>
+  Boolean(condition.field) && condition.value !== undefined && condition.value !== "";
 
 const ConditionalEdge = ({
   id,
@@ -44,8 +52,10 @@ const ConditionalEdge = ({
   const [isOpen, setIsOpen] = useState(false);
   const { updateEdgeData } = useReactFlow();
   const availableParentFields = useAvailableParentFields(target);
-  const hasConditions = data?.conditions && data.conditions.length > 0;
   const t = useTranslate();
+
+  const isConfigured =
+    Boolean(data?.configured) || Boolean(data?.isFallback) || Boolean(data?.label) || (data?.conditions?.some(isConditionDefined) ?? false);
 
   const { handleSubmit, reset, Field } = useForm({
     defaultValues: {
@@ -60,7 +70,7 @@ const ConditionalEdge = ({
       onChangeDebounceMs: 150,
     },
     onSubmit: ({ value }) => {
-      updateEdgeData(id, value);
+      updateEdgeData(id, { ...value, configured: true });
     },
   });
 
@@ -70,28 +80,41 @@ const ConditionalEdge = ({
 
   const handleClear = () => {
     reset({ conditions: [], isFallback: false, label: "" });
-    updateEdgeData(id, { conditions: undefined, isFallback: undefined, label: undefined });
+    updateEdgeData(id, { conditions: undefined, configured: undefined, isFallback: undefined, label: undefined });
+  };
+
+  const handleOpenChange = (nextOpen: boolean) => {
+    setIsOpen(nextOpen);
+    if (nextOpen || data?.configured) {
+      return;
+    }
+    const hasContent = Boolean(data?.isFallback) || Boolean(data?.label) || Boolean(data?.conditions?.length);
+    if (hasContent) {
+      updateEdgeData(id, { configured: true });
+    }
   };
 
   const getConditionSummary = () => {
-    // If fallback edge, show "Fallback" label
     if (data?.isFallback) {
       return data.label || t("editor.conditionalEdge.fallback");
     }
 
-    if (!hasConditions) {
-      return null;
-    }
-
-    if (data.label) {
+    if (data?.label) {
       return data.label;
     }
 
-    const conditions = data.conditions!;
+    const conditions = data?.conditions ?? [];
+
+    if (conditions.length === 0) {
+      return null;
+    }
 
     if (conditions.length === 1) {
-      const field = availableParentFields.find((f) => f.nodeId === conditions[0].field)?.label || conditions[0].field;
-      return `${field} ${conditions[0].operator} ${conditions[0].value}`;
+      const [condition] = conditions;
+      const resolvedLabel = availableParentFields.find((f) => f.nodeId === condition.field)?.label ?? condition.field ?? "";
+      const isIdDisplay = resolvedLabel === condition.field;
+      const field = isIdDisplay && resolvedLabel.length > 5 ? `${resolvedLabel.slice(0, 5)}…` : resolvedLabel;
+      return `${field} ${condition.operator} ${condition.value ?? ""}`;
     }
 
     const andCount = conditions.filter((c) => c.logicalOperator === LOGICAL_OPERATOR.AND).length;
@@ -111,7 +134,7 @@ const ConditionalEdge = ({
     if (data?.isFallback) {
       return "var(--color-chart-4)";
     }
-    if (hasConditions) {
+    if (isConfigured) {
       return "var(--color-chart-2)";
     }
     return "var(--color-chart-3)";
@@ -126,7 +149,7 @@ const ConditionalEdge = ({
           ...style,
           stroke: getEdgeStrokeColor(),
           strokeDasharray: data?.isFallback ? "5,5" : undefined,
-          strokeWidth: hasConditions || data?.isFallback ? 2 : style?.strokeWidth,
+          strokeWidth: isConfigured ? 2 : style?.strokeWidth,
         }}
       />
 
@@ -138,15 +161,11 @@ const ConditionalEdge = ({
             transform: `translate(-50%, -50%) translate(${labelX}px,${labelY}px)`,
           }}
         >
-          <Popover open={isOpen} onOpenChange={setIsOpen}>
+          <Popover open={isOpen} onOpenChange={handleOpenChange}>
             <PopoverTrigger asChild>
-              <Button
-                variant={hasConditions || data?.isFallback ? "default" : "secondary"}
-                className="h-8 px-2 text-xs"
-                onClick={onEdgeClick}
-              >
+              <Button variant={isConfigured ? "default" : "secondary"} className="h-8 px-2 text-xs" onClick={onEdgeClick}>
                 <Waypoints className="mr-1 h-3 w-3" />
-                {hasConditions || data?.isFallback ? getConditionSummary() : t("editor.conditionalEdge.condition")}
+                {isConfigured ? getConditionSummary() : t("editor.conditionalEdge.defineCondition")}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-96 p-1" align="center" onClick={(e) => e.stopPropagation()}>
@@ -356,7 +375,7 @@ const ConditionalEdge = ({
                         <X className="mr-1 h-4 w-4" />
                         {t("common.clear")}
                       </Button>
-                      <Button type="button" size="sm" onClick={() => setIsOpen(false)}>
+                      <Button type="button" size="sm" onClick={() => handleOpenChange(false)}>
                         {t("common.close")}
                       </Button>
                     </div>

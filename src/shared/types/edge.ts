@@ -33,4 +33,10 @@ export type ConditionalEdgeData = {
    * Fallback edges are followed when no other conditional edges match
    */
   isFallback?: boolean;
+  /**
+   * Set to `true` the first time the user commits a change through the
+   * condition editor. Used only by the editor for visual state — the
+   * renderer ignores it.
+   */
+  configured?: boolean;
 };
