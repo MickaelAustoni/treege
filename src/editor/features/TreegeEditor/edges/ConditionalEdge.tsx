@@ -13,6 +13,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/shared/components/ui/
 import { ScrollArea } from "@/shared/components/ui/scroll-area";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/components/ui/select";
 import { LOGICAL_OPERATOR } from "@/shared/constants/operator";
+import { cn } from "@/shared/lib/utils";
 import { ConditionalEdgeData, EdgeCondition } from "@/shared/types/edge";
 import { LogicalOperator, Operator } from "@/shared/types/operator";
 
@@ -163,7 +164,14 @@ const ConditionalEdge = ({
         >
           <Popover open={isOpen} onOpenChange={handleOpenChange}>
             <PopoverTrigger asChild>
-              <Button variant={isConfigured ? "default" : "secondary"} className="h-8 px-2 text-xs" onClick={onEdgeClick}>
+              <Button
+                variant={isConfigured ? "default" : "secondary"}
+                className={cn(
+                  "h-8 px-2 text-xs transition-[filter]",
+                  isConfigured ? "hover:bg-primary hover:brightness-125" : "hover:bg-secondary hover:brightness-90",
+                )}
+                onClick={onEdgeClick}
+              >
                 <Waypoints className="mr-1 h-3 w-3" />
                 {isConfigured ? getConditionSummary() : t("editor.conditionalEdge.defineCondition")}
               </Button>
