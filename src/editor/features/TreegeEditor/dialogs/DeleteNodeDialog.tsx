@@ -24,10 +24,13 @@ const DeleteNodeDialog = () => {
   };
 
   const handleConfirm = () => {
-    if (pendingDeleteNodeId) {
-      deleteNode(pendingDeleteNodeId);
-    }
+    const id = pendingDeleteNodeId;
     closeDeleteNodeConfirmation();
+    if (id) {
+      requestAnimationFrame(() => {
+        deleteNode(id);
+      });
+    }
   };
 
   return (

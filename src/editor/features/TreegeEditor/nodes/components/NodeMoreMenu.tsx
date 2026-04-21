@@ -29,7 +29,8 @@ const NodeMoreMenu = ({ nodeId, className }: NodeMoreMenuProps) => {
     setIsNodeSheetOpen(true);
   };
 
-  const handleDelete = () => {
+  const handleDelete = (event: Event) => {
+    event.preventDefault();
     openDeleteNodeConfirmation(nodeId);
   };
 
@@ -53,7 +54,7 @@ const NodeMoreMenu = ({ nodeId, className }: NodeMoreMenuProps) => {
           {t("common.settings")}
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem variant="destructive" onClick={handleDelete}>
+        <DropdownMenuItem variant="destructive" onSelect={handleDelete}>
           <Trash2 />
           {t("common.delete")}
         </DropdownMenuItem>
