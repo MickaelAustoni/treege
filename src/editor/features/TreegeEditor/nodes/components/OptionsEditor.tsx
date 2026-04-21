@@ -86,7 +86,7 @@ const OptionsEditor = ({ nodeId, data }: OptionsEditorProps) => {
 
       <Popover open={open} onOpenChange={handleOpenChange}>
         <PopoverTrigger asChild onClick={stopPropagation}>
-          <Button type="button" variant="link" size="xs" className="w-fit p-0! outline-none!">
+          <Button type="button" variant="link" size="xs" className="w-fit p-0! focus-visible:border-transparent! focus-visible:ring-0!">
             <Plus className="size-3" />
             {t("editor.inputNodeForm.addOption")}
           </Button>

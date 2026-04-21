@@ -22,3 +22,19 @@ export const AI_HORIZONTAL_SPACING = 350;
  * Position tolerance for detecting nodes at the same Y position (in pixels)
  */
 export const POSITION_TOLERANCE = 20;
+
+/**
+ * Default direction for the auto-layout algorithm.
+ * "TB" = top to bottom, "LR" = left to right.
+ */
+export const LAYOUT_DIRECTION = "TB";
+
+/**
+ * Vertical gap between ranks (parent → child) used by the auto-layout (in pixels).
+ */
+export const LAYOUT_VERTICAL_SPACING = 80;
+
+/**
+ * Horizontal gap between siblings used by the auto-layout (in pixels).
+ */
+export const LAYOUT_HORIZONTAL_SPACING = 60;

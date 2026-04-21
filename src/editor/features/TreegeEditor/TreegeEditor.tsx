@@ -7,6 +7,7 @@ import { TreegeEditorProvider } from "@/editor/context/TreegeEditorContext";
 import DeleteNodeDialog from "@/editor/features/TreegeEditor/dialogs/DeleteNodeDialog";
 import ActionsPanel from "@/editor/features/TreegeEditor/panel/ActionsPanel";
 import NodeActionsSheet from "@/editor/features/TreegeEditor/sheets/NodeActionsSheet";
+import useAutoLayout from "@/editor/hooks/useAutoLayout";
 import useFlowConnections from "@/editor/hooks/useFlowConnections";
 import { TreegeEditorProps } from "@/editor/types/editor";
 import { Toaster } from "@/shared/components/ui/sonner";
@@ -15,6 +16,7 @@ import { cn } from "@/shared/lib/utils";
 
 const Flow = ({ flow, onExportJson, onSave, theme, className }: TreegeEditorProps) => {
   const { onConnect, onConnectEnd, onEdgesDelete, isValidConnection } = useFlowConnections();
+  useAutoLayout();
 
   return (
     <ReactFlow
