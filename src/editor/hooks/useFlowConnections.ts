@@ -161,13 +161,15 @@ const useFlowConnections = () => {
       const allEdges = getEdges();
       const existingSiblings = allNodes.filter((node) => allEdges.some((edge) => edge.source === sourceNodeId && edge.target === node.id));
 
-      // Calculate X position: if siblings exist, place to the right of the rightmost one
+      // Calculate X position: alternate right/left to balance siblings around the source
+      // 0 siblings: centered on source; odd count: to the right of rightmost; even count: to the left of leftmost
+      const siblingXs = existingSiblings.map((node) => node.position.x);
       const newX =
-        existingSiblings.length > 0
-          ? existingSiblings.reduce((max, node) => (node.position.x > max.position.x ? node : max), existingSiblings[0]).position.x +
-            nodeWidth +
-            HORIZONTAL_NODE_OFFSET
-          : sourceNode.position.x;
+        siblingXs.length === 0
+          ? sourceNode.position.x
+          : siblingXs.length % 2 === 1
+            ? Math.max(...siblingXs) + nodeWidth + HORIZONTAL_NODE_OFFSET
+            : Math.min(...siblingXs) - nodeWidth - HORIZONTAL_NODE_OFFSET;
 
       // Use the shared function to create node and connect, with selection enabled
       createNodeAndConnect(sourceNode, { x: newX, y: newY }, true, nodeInit);
