@@ -94,7 +94,7 @@ export const AIGeneratorDialog = ({ aiConfig, onGenerate }: AIGeneratorDialogPro
           <WandSparkles className="h-4 w-4 text-[#13d3b4]" /> {t("editor.aiGenerator.buttonLabel")}
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[550px]">
+      <DialogContent className="sm:max-w-[550px]!">
         <DialogHeader>
           <DialogTitle>{t("editor.aiGenerator.title")}</DialogTitle>
           <DialogDescription>{t("editor.aiGenerator.titleDescription")}</DialogDescription>

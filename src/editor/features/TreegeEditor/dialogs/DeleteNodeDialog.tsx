@@ -1,16 +1,8 @@
 import { useTreegeEditorContext } from "@/editor/context/TreegeEditorContext";
 import useFlowActions from "@/editor/hooks/useFlowActions";
 import useTranslate from "@/editor/hooks/useTranslate";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/shared/components/ui/alert-dialog";
+import { Button } from "@/shared/components/ui/button";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/shared/components/ui/dialog";
 
 const DeleteNodeDialog = () => {
   const { pendingDeleteNodeId, closeDeleteNodeConfirmation } = useTreegeEditorContext();
@@ -24,28 +16,31 @@ const DeleteNodeDialog = () => {
   };
 
   const handleConfirm = () => {
-    const id = pendingDeleteNodeId;
-    closeDeleteNodeConfirmation();
-    if (id) {
-      requestAnimationFrame(() => {
-        deleteNode(id);
-      });
+    if (pendingDeleteNodeId) {
+      deleteNode(pendingDeleteNodeId);
     }
+    closeDeleteNodeConfirmation();
   };
 
   return (
-    <AlertDialog open={pendingDeleteNodeId !== null} onOpenChange={handleOpenChange}>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>{t("editor.nodeActionsSheet.deleteNode")}</AlertDialogTitle>
-          <AlertDialogDescription>{t("editor.nodeActionsSheet.deleteNodeConfirm")}</AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
-          <AlertDialogAction onClick={handleConfirm}>{t("common.delete")}</AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
+    <Dialog open={pendingDeleteNodeId !== null} onOpenChange={handleOpenChange} modal={false}>
+      <DialogContent
+        showCloseButton={false}
+        onInteractOutside={(event) => event.preventDefault()}
+        onPointerDownOutside={(event) => event.preventDefault()}
+      >
+        <DialogHeader>
+          <DialogTitle>{t("editor.nodeActionsSheet.deleteNode")}</DialogTitle>
+          <DialogDescription>{t("editor.nodeActionsSheet.deleteNodeConfirm")}</DialogDescription>
+        </DialogHeader>
+        <DialogFooter>
+          <Button variant="outline" onClick={closeDeleteNodeConfirmation}>
+            {t("common.cancel")}
+          </Button>
+          <Button onClick={handleConfirm}>{t("common.delete")}</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 };
 
