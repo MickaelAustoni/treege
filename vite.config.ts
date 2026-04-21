@@ -53,15 +53,15 @@ const config = () =>
           return outputChunk.fileName.includes("ThemeContext");
         },
         injectCodeFunction: (cssCode: string) => {
-          // Inject CSS at the beginning of <head> for lower specificity
-          // This allows users to easily override Treege styles
+          // Wrap Treege styles in a cascade layer so unlayered styles from the
+          // consumer app always win, regardless of <head> insertion order.
           const doc = (globalThis as any).document;
 
           try {
             if (typeof doc !== "undefined") {
               const style = doc.createElement("style");
               style.id = "treege-styles";
-              style.appendChild(doc.createTextNode(cssCode));
+              style.appendChild(doc.createTextNode(`@layer treege {\n${cssCode}\n}`));
               doc.head.insertBefore(style, doc.head.firstChild);
             }
           } catch (e) {
