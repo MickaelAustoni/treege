@@ -6,6 +6,13 @@ import { defineConfig } from "vite";
 import cssInjectedByJsPlugin from "vite-plugin-css-injected-by-js";
 import { dependencies, name, peerDependencies } from "./package.json";
 
+const external = [
+  ...Object.keys(dependencies ?? {}).filter((dep) => dep !== "nanoid"),
+  ...Object.keys(peerDependencies ?? {}),
+  "react/jsx-runtime",
+  "react/jsx-dev-runtime",
+];
+
 // https://vitejs.dev/config/
 const config = () =>
   defineConfig({
@@ -23,7 +30,7 @@ const config = () =>
         name,
       },
       rolldownOptions: {
-        external: [...Object.keys(dependencies ?? {}).filter((dep) => dep !== "nanoid"), ...Object.keys(peerDependencies ?? {})],
+        external,
       },
     },
     plugins: [
