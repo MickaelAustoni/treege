@@ -1,6 +1,7 @@
 import { Node } from "@xyflow/react";
 import { ReactNode } from "react";
 import { useTreegeEditorContext } from "@/editor/context/TreegeEditorContext";
+import { getInputTypeIcon } from "@/editor/utils/inputTypeIcon";
 import { defaultInputRenderers } from "@/renderer/features/TreegeRenderer/web/components/DefaultInputs";
 import type { InputRenderProps } from "@/renderer/types/renderer";
 import { resolveInputPlaceholder, resolveNodeKey } from "@/renderer/utils/node";
@@ -46,6 +47,13 @@ const NodeInputPreview = ({ nodeId, data }: NodeInputPreviewProps) => {
 
   const label = getTranslatedText(data.label, language);
   const name = resolveNodeKey(node);
+  const SubTypeIcon = getInputTypeIcon(inputType);
+  const subTypeHint = (
+    <div className="flex items-center gap-1 text-[10px] text-muted-foreground capitalize [&>svg]:size-3">
+      <SubTypeIcon />
+      {inputType}
+    </div>
+  );
 
   // Hidden inputs render nothing at runtime — show a readable summary instead so the node is not blank in the editor
   if (inputType === "hidden") {
@@ -60,6 +68,7 @@ const NodeInputPreview = ({ nodeId, data }: NodeInputPreviewProps) => {
 
     return (
       <div className="pointer-events-none flex select-none flex-col gap-1 text-sm">
+        {subTypeHint}
         <span className="truncate font-medium">{displayKey}</span>
         <span className="truncate text-muted-foreground text-xs">{displayValue || "—"}</span>
       </div>
@@ -76,7 +85,8 @@ const NodeInputPreview = ({ nodeId, data }: NodeInputPreviewProps) => {
   const placeholder = resolveInputPlaceholder(data, language);
 
   return (
-    <div className={cn("pointer-events-none select-none", inputType === "submit" && "flex justify-center")}>
+    <div className={cn("pointer-events-none flex select-none flex-col gap-1", inputType === "submit" && "items-center")}>
+      {subTypeHint}
       <Renderer
         node={node}
         value={defaultValueForType(inputType) as never}
