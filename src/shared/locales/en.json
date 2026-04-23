@@ -308,6 +308,7 @@
       "endTime": "End time",
       "filePickerError": "Failed to select file",
       "filePickerUnavailable": "File selection unavailable. Please install react-native-document-picker.",
+      "newAnswer": "New answer...",
       "replaceFile": "Replace file",
       "required": "*",
       "selectDate": "Select date",

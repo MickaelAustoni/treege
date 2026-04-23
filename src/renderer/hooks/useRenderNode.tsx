@@ -6,7 +6,9 @@ import { sanitize } from "@/renderer/utils/sanitize";
 import { NODE_TYPE } from "@/shared/constants/node";
 import { TreegeNodeData, UINodeData } from "@/shared/types/node";
 import { isGroupNode, isInputNode, isUINode } from "@/shared/utils/nodeTypeGuards";
-import { getTranslatedText } from "@/shared/utils/translations";
+import { getStaticTranslations, getTranslatedText } from "@/shared/utils/translations";
+
+const TEXTFIELD_INPUT_TYPES: ReadonlySet<string> = new Set(["text", "number", "password", "textarea", "time"]);
 
 type AnyComponent = ComponentType<any>;
 
@@ -83,7 +85,11 @@ export const useRenderNode = ({
           const value = formValues[fieldId];
           const error = formErrors[fieldId];
           const label = getTranslatedText(inputData.label, config.language);
-          const placeholder = getTranslatedText(inputData.placeholder, config.language);
+          const hasPlaceholderForLanguage = !!inputData.placeholder?.[config.language];
+          const placeholder =
+            !hasPlaceholderForLanguage && TEXTFIELD_INPUT_TYPES.has(inputType)
+              ? getStaticTranslations(config.language)["renderer.defaultInputs.newAnswer"]
+              : getTranslatedText(inputData.placeholder, config.language);
           const helperText = getTranslatedText(inputData.helperText, config.language);
           const name = resolveNodeKey(node);
           // Sanitize all user-controlled text to prevent XSS attacks (plainTextOnly: true by default)
