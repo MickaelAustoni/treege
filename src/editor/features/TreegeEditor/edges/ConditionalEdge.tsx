@@ -20,6 +20,15 @@ import { LogicalOperator, Operator } from "@/shared/types/operator";
 export type ConditionalEdgeType = Edge<ConditionalEdgeData, "conditional">;
 export type ConditionalEdgeProps = EdgeProps<ConditionalEdgeType>;
 
+const OPERATOR_DISPLAY: Record<Operator, string> = {
+  "!==": "≠",
+  "<": "<",
+  "<=": "≤",
+  "===": "=",
+  ">": ">",
+  ">=": "≥",
+};
+
 /**
  * Kept as a backward-compatibility fallback for edges saved before the
  * explicit `configured` flag existed: an edge with at least one condition
@@ -115,7 +124,8 @@ const ConditionalEdge = ({
       const resolvedLabel = availableParentFields.find((f) => f.nodeId === condition.field)?.label ?? condition.field ?? "";
       const isIdDisplay = resolvedLabel === condition.field;
       const field = isIdDisplay && resolvedLabel.length > 5 ? `${resolvedLabel.slice(0, 5)}…` : resolvedLabel;
-      return `${field} ${condition.operator} ${condition.value ?? ""}`;
+      const operator = OPERATOR_DISPLAY[condition.operator as Operator] ?? condition.operator;
+      return `${field} ${operator} ${condition.value ?? ""}`;
     }
 
     const andCount = conditions.filter((c) => c.logicalOperator === LOGICAL_OPERATOR.AND).length;
