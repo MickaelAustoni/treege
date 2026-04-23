@@ -94,9 +94,13 @@ const useFlowConnections = () => {
       });
 
       // Deselect all nodes and edges, then select the new node (only if requested)
+      // Defer to the next frame to run after ReactFlow's internal selection handlers
+      // (e.g. Handle click selecting the source, dropdown close firing pane click)
       if (shouldSelectNode) {
-        setNodes((nodes) => nodes.map((n) => ({ ...n, selected: n.id === nodeId })));
-        setEdges((edges) => edges.map((edge) => ({ ...edge, selected: false })));
+        requestAnimationFrame(() => {
+          setNodes((nodes) => nodes.map((n) => ({ ...n, selected: n.id === nodeId })));
+          setEdges((edges) => edges.map((edge) => ({ ...edge, selected: false })));
+        });
       }
     },
     [getEdges, setNodes, setEdges],
@@ -200,7 +204,7 @@ const useFlowConnections = () => {
         const position = parentNode ? { x: flowPosition.x - parentPosition.x, y: flowPosition.y - parentPosition.y } : flowPosition;
 
         // Use the shared function to create node and connect
-        createNodeAndConnect(sourceNode, position);
+        createNodeAndConnect(sourceNode, position, true);
       }
     },
     [createNodeAndConnect, getNode, screenToFlowPosition],

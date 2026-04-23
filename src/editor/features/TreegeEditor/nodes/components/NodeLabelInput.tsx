@@ -1,4 +1,4 @@
-import { ChangeEvent, MouseEvent, PointerEvent } from "react";
+import { ChangeEvent, MouseEvent, PointerEvent, useEffect, useRef } from "react";
 import { useTreegeEditorContext } from "@/editor/context/TreegeEditorContext";
 import useFlowActions from "@/editor/hooks/useFlowActions";
 import useTranslate from "@/editor/hooks/useTranslate";
@@ -16,8 +16,21 @@ const NodeLabelInput = ({ nodeId, label, placeholder, className }: NodeLabelInpu
   const { language } = useTreegeEditorContext();
   const { updateNodeData } = useFlowActions();
   const t = useTranslate();
+  const inputRef = useRef<HTMLInputElement>(null);
   const value = label?.[language] ?? "";
   const resolvedPlaceholder = placeholder || t("editor.treegeNode.labelPlaceholder");
+
+  const stopPropagation = (event: MouseEvent | PointerEvent) => event.stopPropagation();
+
+  /**
+   * Autofocus input
+   */
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      inputRef.current?.focus();
+    }, 300);
+    return () => clearTimeout(timeout);
+  }, []);
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     updateNodeData(nodeId, {
@@ -25,10 +38,9 @@ const NodeLabelInput = ({ nodeId, label, placeholder, className }: NodeLabelInpu
     });
   };
 
-  const stopPropagation = (event: MouseEvent | PointerEvent) => event.stopPropagation();
-
   return (
     <input
+      ref={inputRef}
       type="text"
       value={value}
       placeholder={resolvedPlaceholder}
