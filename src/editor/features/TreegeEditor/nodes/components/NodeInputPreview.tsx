@@ -4,6 +4,7 @@ import { useTreegeEditorContext } from "@/editor/context/TreegeEditorContext";
 import { defaultInputRenderers } from "@/renderer/features/TreegeRenderer/web/components/DefaultInputs";
 import type { InputRenderProps } from "@/renderer/types/renderer";
 import { resolveInputPlaceholder, resolveNodeKey } from "@/renderer/utils/node";
+import { cn } from "@/shared/lib/utils";
 import { InputNodeData, InputType } from "@/shared/types/node";
 import { getTranslatedText } from "@/shared/utils/translations";
 
@@ -55,7 +56,7 @@ const NodeInputPreview = ({ nodeId, data }: NodeInputPreviewProps) => {
   const name = resolveNodeKey(node);
 
   return (
-    <div className="pointer-events-none select-none">
+    <div className={cn("pointer-events-none select-none", inputType === "submit" && "flex justify-center")}>
       <Renderer
         node={node}
         value={defaultValueForType(inputType) as never}
