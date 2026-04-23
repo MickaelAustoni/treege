@@ -3,6 +3,7 @@ import { nanoid } from "nanoid";
 import { useCallback } from "react";
 import { DEFAULT_NODE } from "@/editor/constants/defaultNode";
 import { HORIZONTAL_NODE_OFFSET, VERTICAL_NODE_SPACING } from "@/editor/constants/nodeSpacing";
+import { normalizeConditionalEdges } from "@/editor/utils/edge";
 import { isInputNode } from "@/shared/utils/nodeTypeGuards";
 
 /**
@@ -212,30 +213,8 @@ const useFlowConnections = () => {
     (deletedEdges) => {
       setEdges((edges) => {
         const remainingEdges = edges.filter((edge) => !deletedEdges.find((deleted) => deleted.id === edge.id));
-
-        // For each parent of the deleted edges, check if they have only one child left
         const affectedParents = new Set(deletedEdges.map((edge) => edge.source));
-
-        // Precompute remaining child counts per parent (avoids E² complexity)
-        const childCount = new Map<string, number>();
-        remainingEdges.forEach((e) => {
-          childCount.set(e.source, (childCount.get(e.source) ?? 0) + 1);
-        });
-
-        return remainingEdges.map((edge) => {
-          if (affectedParents.has(edge.source)) {
-            const siblingCount = childCount.get(edge.source) ?? 0;
-
-            // If only one child left, set the edge to be "default"
-            if (siblingCount === 1) {
-              // Remove conditions and isFallback, preserve other custom data
-              const { conditions: _dropConditions, isFallback: _dropFallback, ...rest } = edge.data ?? {};
-              const cleaned = rest && Object.keys(rest).length > 0 ? rest : undefined;
-              return { ...edge, data: cleaned, type: "default" };
-            }
-          }
-          return edge;
-        });
+        return normalizeConditionalEdges(remainingEdges, affectedParents);
       });
     },
     [setEdges],

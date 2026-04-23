@@ -1,5 +1,6 @@
 import { useReactFlow } from "@xyflow/react";
 import { useCallback } from "react";
+import { normalizeConditionalEdges } from "@/editor/utils/edge";
 
 /**
  * Custom hook providing various actions to manipulate nodes and edges
@@ -123,7 +124,11 @@ const useFlowActions = () => {
   const deleteNode = useCallback(
     (id: string) => {
       setNodes((nds) => nds.filter((node) => node.id !== id));
-      setEdges((eds) => eds.filter((edge) => edge.source !== id && edge.target !== id));
+      setEdges((eds) => {
+        const affectedParents = new Set(eds.filter((edge) => edge.target === id).map((edge) => edge.source));
+        const remainingEdges = eds.filter((edge) => edge.source !== id && edge.target !== id);
+        return normalizeConditionalEdges(remainingEdges, affectedParents);
+      });
     },
     [setNodes, setEdges],
   );
