@@ -1,4 +1,4 @@
-import { ChangeEvent, MouseEvent, PointerEvent, useEffect, useRef } from "react";
+import { ChangeEvent, KeyboardEvent, MouseEvent, PointerEvent, useEffect, useRef } from "react";
 import { useTreegeEditorContext } from "@/editor/context/TreegeEditorContext";
 import useFlowActions from "@/editor/hooks/useFlowActions";
 import useTranslate from "@/editor/hooks/useTranslate";
@@ -14,7 +14,7 @@ interface NodeLabelInputProps {
 
 const NodeLabelInput = ({ nodeId, label, placeholder, className }: NodeLabelInputProps) => {
   const { language } = useTreegeEditorContext();
-  const { updateNodeData } = useFlowActions();
+  const { updateNodeData, clearSelection } = useFlowActions();
   const t = useTranslate();
   const inputRef = useRef<HTMLInputElement>(null);
   const value = label?.[language] ?? "";
@@ -38,6 +38,14 @@ const NodeLabelInput = ({ nodeId, label, placeholder, className }: NodeLabelInpu
     });
   };
 
+  const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      inputRef.current?.blur();
+      clearSelection();
+    }
+  };
+
   return (
     <input
       ref={inputRef}
@@ -45,6 +53,7 @@ const NodeLabelInput = ({ nodeId, label, placeholder, className }: NodeLabelInpu
       value={value}
       placeholder={resolvedPlaceholder}
       onChange={handleChange}
+      onKeyDown={handleKeyDown}
       onClick={stopPropagation}
       onMouseDown={stopPropagation}
       onPointerDown={stopPropagation}
