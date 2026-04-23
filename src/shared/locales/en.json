@@ -51,6 +51,12 @@
       "titleDescription": "Describe the form or decision tree you want to create, and AI will generate it for you.",
       "unknownError": "Unknown error occurred"
     },
+    "changeNodeTypeDialog": {
+      "description": "This node has several outgoing branches. The new type only supports one. Choose which branch to keep; the others will be removed.",
+      "keepBranch": "Keep this branch",
+      "noConditions": "No conditions",
+      "title": "Change node type"
+    },
     "comboboxPattern": {
       "custom": "Custom: {value}",
       "search": "Search patterns...",

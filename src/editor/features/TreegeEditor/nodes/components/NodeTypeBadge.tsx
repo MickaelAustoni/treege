@@ -1,5 +1,7 @@
+import { useReactFlow } from "@xyflow/react";
 import { ChevronDown } from "lucide-react";
 import { MouseEvent } from "react";
+import { useTreegeEditorContext } from "@/editor/context/TreegeEditorContext";
 import useFlowActions from "@/editor/hooks/useFlowActions";
 import useTranslate from "@/editor/hooks/useTranslate";
 import { getInputTypeIcon } from "@/editor/utils/inputTypeIcon";
@@ -29,12 +31,26 @@ const UI_TYPES = Object.values(UI_TYPE) as string[];
 
 const NodeTypeBadge = ({ nodeId, nodeType, subType }: NodeTypeBadgeProps) => {
   const { updateNodeType } = useFlowActions();
+  const { getEdges } = useReactFlow();
+  const { openNodeTypeChangeConfirmation } = useTreegeEditorContext();
   const t = useTranslate();
   const stopPropagation = (event: MouseEvent) => event.stopPropagation();
   const currentValue = subType || nodeType;
   const label = nodeType === NODE_TYPE.flow ? t("editor.selectNodeType.options.flow") : currentValue;
   const Icon = getInputTypeIcon(currentValue);
   const FlowIcon = getInputTypeIcon(NODE_TYPE.flow);
+
+  const handleTypeChange = (type: string, nextSubType?: string) => {
+    const outgoingCount = getEdges().filter((edge) => edge.source === nodeId).length;
+    const needsConfirmation = (type === NODE_TYPE.ui || type === NODE_TYPE.flow) && outgoingCount > 1;
+
+    if (needsConfirmation) {
+      openNodeTypeChangeConfirmation({ nodeId, subType: nextSubType, type });
+      return;
+    }
+
+    updateNodeType(nodeId, type, nextSubType);
+  };
 
   return (
     <DropdownMenu>
@@ -54,7 +70,7 @@ const NodeTypeBadge = ({ nodeId, nodeType, subType }: NodeTypeBadgeProps) => {
             return (
               <DropdownMenuItem
                 key={type}
-                onClick={() => updateNodeType(nodeId, NODE_TYPE.input, type)}
+                onClick={() => handleTypeChange(NODE_TYPE.input, type)}
                 className={cn("capitalize", nodeType === NODE_TYPE.input && type === subType && "bg-accent")}
               >
                 <OptionIcon />
@@ -72,7 +88,7 @@ const NodeTypeBadge = ({ nodeId, nodeType, subType }: NodeTypeBadgeProps) => {
             return (
               <DropdownMenuItem
                 key={type}
-                onClick={() => updateNodeType(nodeId, NODE_TYPE.ui, type)}
+                onClick={() => handleTypeChange(NODE_TYPE.ui, type)}
                 className={cn("capitalize", nodeType === NODE_TYPE.ui && type === subType && "bg-accent")}
               >
                 <OptionIcon />
@@ -84,10 +100,7 @@ const NodeTypeBadge = ({ nodeId, nodeType, subType }: NodeTypeBadgeProps) => {
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <DropdownMenuLabel>{t("common.other")}</DropdownMenuLabel>
-          <DropdownMenuItem
-            onClick={() => updateNodeType(nodeId, NODE_TYPE.flow)}
-            className={cn(nodeType === NODE_TYPE.flow && "bg-accent")}
-          >
+          <DropdownMenuItem onClick={() => handleTypeChange(NODE_TYPE.flow)} className={cn(nodeType === NODE_TYPE.flow && "bg-accent")}>
             <FlowIcon />
             {t("editor.selectNodeType.options.flow")}
           </DropdownMenuItem>

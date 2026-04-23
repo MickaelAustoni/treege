@@ -51,6 +51,12 @@
       "titleDescription": "Descrivi il modulo o l'albero decisionale che vuoi creare, e l'IA lo genererà per te.",
       "unknownError": "Errore sconosciuto"
     },
+    "changeNodeTypeDialog": {
+      "description": "Questo nodo ha più rami in uscita. Il nuovo tipo ne supporta solo uno. Scegli quale ramo mantenere; gli altri verranno rimossi.",
+      "keepBranch": "Mantieni questo ramo",
+      "noConditions": "Nessuna condizione",
+      "title": "Cambia tipo di nodo"
+    },
     "comboboxPattern": {
       "custom": "Personalizzato: {value}",
       "search": "Cerca schemi...",

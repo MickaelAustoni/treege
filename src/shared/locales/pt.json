@@ -51,6 +51,12 @@
       "titleDescription": "Descreva o formulário ou árvore de decisão que deseja criar, e a IA irá gerá-lo para você.",
       "unknownError": "Erro desconhecido"
     },
+    "changeNodeTypeDialog": {
+      "description": "Este nó possui várias ramificações de saída. O novo tipo suporta apenas uma. Escolha qual ramificação manter; as outras serão removidas.",
+      "keepBranch": "Manter esta ramificação",
+      "noConditions": "Sem condições",
+      "title": "Alterar tipo de nó"
+    },
     "comboboxPattern": {
       "custom": "Personalizado: {value}",
       "search": "Pesquisar padrões...",

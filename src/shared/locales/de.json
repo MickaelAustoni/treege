@@ -51,6 +51,12 @@
       "titleDescription": "Beschreiben Sie das Formular oder den Entscheidungsbaum, den Sie erstellen möchten, und die KI wird ihn für Sie generieren.",
       "unknownError": "Unbekannter Fehler aufgetreten"
     },
+    "changeNodeTypeDialog": {
+      "description": "Dieser Knoten hat mehrere ausgehende Verzweigungen. Der neue Typ unterstützt nur eine. Wählen Sie, welche Verzweigung beibehalten werden soll; die anderen werden entfernt.",
+      "keepBranch": "Diese Verzweigung behalten",
+      "noConditions": "Keine Bedingungen",
+      "title": "Knotentyp ändern"
+    },
     "comboboxPattern": {
       "custom": "Benutzerdefiniert: {value}",
       "search": "Muster suchen...",

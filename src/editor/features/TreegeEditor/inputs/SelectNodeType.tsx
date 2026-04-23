@@ -1,4 +1,6 @@
+import { useReactFlow } from "@xyflow/react";
 import { useId } from "react";
+import { useTreegeEditorContext } from "@/editor/context/TreegeEditorContext";
 import useFlowActions from "@/editor/hooks/useFlowActions";
 import useNodesSelection from "@/editor/hooks/useNodesSelection";
 import useTranslate from "@/editor/hooks/useTranslate";
@@ -24,6 +26,8 @@ const UI_TYPES = Object.values(UI_TYPE) as string[];
 const SelectNodeType = () => {
   const { selectedNode } = useNodesSelection();
   const { updateSelectedNodeType } = useFlowActions();
+  const { getEdges } = useReactFlow();
+  const { openNodeTypeChangeConfirmation } = useTreegeEditorContext();
   const isGroup = isGroupNode(selectedNode);
   const t = useTranslate();
   const id = useId();
@@ -41,18 +45,34 @@ const SelectNodeType = () => {
     return selectedNode.type || "";
   };
 
+  const applyTypeChange = (type: string, subType?: string) => {
+    if (!selectedNode) {
+      return;
+    }
+
+    const outgoingCount = getEdges().filter((edge) => edge.source === selectedNode.id).length;
+    const needsConfirmation = (type === NODE_TYPE.ui || type === NODE_TYPE.flow) && outgoingCount > 1;
+
+    if (needsConfirmation) {
+      openNodeTypeChangeConfirmation({ nodeId: selectedNode.id, subType, type });
+      return;
+    }
+
+    updateSelectedNodeType(type, subType);
+  };
+
   const handleChange = (newValue: string) => {
     if (INPUT_TYPES.includes(newValue)) {
-      updateSelectedNodeType(NODE_TYPE.input, newValue);
+      applyTypeChange(NODE_TYPE.input, newValue);
       return;
     }
 
     if (UI_TYPES.includes(newValue)) {
-      updateSelectedNodeType(NODE_TYPE.ui, newValue);
+      applyTypeChange(NODE_TYPE.ui, newValue);
       return;
     }
 
-    updateSelectedNodeType(newValue);
+    applyTypeChange(newValue);
   };
 
   return (

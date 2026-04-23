@@ -51,6 +51,12 @@
       "titleDescription": "Describa el formulario o árbol de decisión que desea crear, y la IA lo generará por usted.",
       "unknownError": "Error desconocido"
     },
+    "changeNodeTypeDialog": {
+      "description": "Este nodo tiene varias ramas salientes. El nuevo tipo solo admite una. Elige qué rama conservar; las demás serán eliminadas.",
+      "keepBranch": "Conservar esta rama",
+      "noConditions": "Sin condiciones",
+      "title": "Cambiar tipo de nodo"
+    },
     "comboboxPattern": {
       "custom": "Personalizado: {value}",
       "search": "Buscar patrones...",

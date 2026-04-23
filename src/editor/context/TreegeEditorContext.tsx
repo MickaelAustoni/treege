@@ -39,12 +39,37 @@ export interface TreegeEditorContextValue {
    * Close the deletion confirmation dialog (cancels any pending deletion)
    */
   closeDeleteNodeConfirmation: () => void;
+  /**
+   * Pending node type change that requires user confirmation (when the target type only supports a single outgoing edge).
+   */
+  pendingNodeTypeChange: PendingNodeTypeChange | null;
+  /**
+   * Open the node type change confirmation dialog.
+   */
+  openNodeTypeChangeConfirmation: (payload: PendingNodeTypeChange) => void;
+  /**
+   * Close the node type change confirmation dialog (cancels the pending change).
+   */
+  closeNodeTypeChangeConfirmation: () => void;
+}
+
+export interface PendingNodeTypeChange {
+  nodeId: string;
+  type: string;
+  subType?: string;
 }
 
 export interface TreegeEditorProviderProps extends PropsWithChildren {
   value: Omit<
     TreegeEditorContextValue,
-    "isNodeSheetOpen" | "setIsNodeSheetOpen" | "pendingDeleteNodeId" | "openDeleteNodeConfirmation" | "closeDeleteNodeConfirmation"
+    | "isNodeSheetOpen"
+    | "setIsNodeSheetOpen"
+    | "pendingDeleteNodeId"
+    | "openDeleteNodeConfirmation"
+    | "closeDeleteNodeConfirmation"
+    | "pendingNodeTypeChange"
+    | "openNodeTypeChangeConfirmation"
+    | "closeNodeTypeChangeConfirmation"
   >;
 }
 
@@ -54,6 +79,7 @@ export const TreegeEditorProvider = ({ children, value }: TreegeEditorProviderPr
   const [flowId, setFlowId] = useState(value?.flowId);
   const [isNodeSheetOpen, setIsNodeSheetOpen] = useState(false);
   const [pendingDeleteNodeId, setPendingDeleteNodeId] = useState<string | null>(null);
+  const [pendingNodeTypeChange, setPendingNodeTypeChange] = useState<PendingNodeTypeChange | null>(null);
 
   const valueMemo = useMemo(
     () => ({
@@ -65,14 +91,17 @@ export const TreegeEditorProvider = ({ children, value }: TreegeEditorProviderPr
         },
       }),
       closeDeleteNodeConfirmation: () => setPendingDeleteNodeId(null),
+      closeNodeTypeChangeConfirmation: () => setPendingNodeTypeChange(null),
       flowId,
       isNodeSheetOpen,
       openDeleteNodeConfirmation: (id: string) => setPendingDeleteNodeId(id),
+      openNodeTypeChangeConfirmation: (payload: PendingNodeTypeChange) => setPendingNodeTypeChange(payload),
       pendingDeleteNodeId,
+      pendingNodeTypeChange,
       setFlowId,
       setIsNodeSheetOpen,
     }),
-    [flowId, value, isNodeSheetOpen, pendingDeleteNodeId],
+    [flowId, value, isNodeSheetOpen, pendingDeleteNodeId, pendingNodeTypeChange],
   );
 
   return <TreegeEditorContext.Provider value={valueMemo}>{children}</TreegeEditorContext.Provider>;
@@ -84,11 +113,14 @@ export const useTreegeEditorContext = () => {
   return (
     context ?? {
       closeDeleteNodeConfirmation: () => {},
+      closeNodeTypeChangeConfirmation: () => {},
       flowId: undefined,
       isNodeSheetOpen: false,
       language: "en",
       openDeleteNodeConfirmation: () => {},
+      openNodeTypeChangeConfirmation: () => {},
       pendingDeleteNodeId: null,
+      pendingNodeTypeChange: null,
       setFlowId: () => {},
       setIsNodeSheetOpen: () => {},
     }

@@ -51,6 +51,12 @@
       "titleDescription": "Décrivez le formulaire ou l'arbre de décision que vous souhaitez créer, et l'IA le générera pour vous.",
       "unknownError": "Erreur inconnue"
     },
+    "changeNodeTypeDialog": {
+      "description": "Ce nœud possède plusieurs branches sortantes. Le nouveau type n'en supporte qu'une seule. Choisissez la branche à conserver ; les autres seront supprimées.",
+      "keepBranch": "Conserver cette branche",
+      "noConditions": "Aucune condition",
+      "title": "Changer le type de nœud"
+    },
     "comboboxPattern": {
       "custom": "Personnalisé : {value}",
       "search": "Rechercher des motifs...",
