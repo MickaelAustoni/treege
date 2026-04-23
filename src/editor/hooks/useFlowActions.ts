@@ -1,4 +1,5 @@
 import { useReactFlow } from "@xyflow/react";
+import { nanoid } from "nanoid";
 import { useCallback } from "react";
 import { normalizeConditionalEdges } from "@/editor/utils/edge";
 
@@ -119,14 +120,35 @@ const useFlowActions = () => {
 
   /**
    * Deletes a node by ID along with its connected edges.
+   * If the deleted node has exactly one parent and one child, a bridge edge is
+   * created between them so the chain stays connected.
    * @param id - The ID of the node to delete.
    */
   const deleteNode = useCallback(
     (id: string) => {
       setNodes((nds) => nds.filter((node) => node.id !== id));
       setEdges((eds) => {
-        const affectedParents = new Set(eds.filter((edge) => edge.target === id).map((edge) => edge.source));
+        const incomingEdges = eds.filter((edge) => edge.target === id);
+        const outgoingEdges = eds.filter((edge) => edge.source === id);
+        const affectedParents = new Set(incomingEdges.map((edge) => edge.source));
         const remainingEdges = eds.filter((edge) => edge.source !== id && edge.target !== id);
+
+        // Bridge the parent to the child only in the unambiguous 1-to-1 case.
+        // Other shapes (multi-parent, multi-child) would require arbitrary choices or could violate the
+        // "only input nodes can have multiple outgoing edges" rule enforced by isValidConnection.
+        if (incomingEdges.length === 1 && outgoingEdges.length === 1) {
+          const [parentEdge] = incomingEdges;
+          const [childEdge] = outgoingEdges;
+          const bridgeEdge = {
+            data: parentEdge.data,
+            id: nanoid(),
+            source: parentEdge.source,
+            target: childEdge.target,
+            type: parentEdge.type,
+          };
+          return normalizeConditionalEdges([...remainingEdges, bridgeEdge], affectedParents);
+        }
+
         return normalizeConditionalEdges(remainingEdges, affectedParents);
       });
     },
