@@ -3,14 +3,11 @@ import { useState } from "react";
 import SelectLanguage from "@/editor/features/TreegeEditor/inputs/SelectLanguage";
 import useFlowActions from "@/editor/hooks/useFlowActions";
 import useNodesSelection from "@/editor/hooks/useNodesSelection";
-import { getInputTypeIcon } from "@/editor/utils/inputTypeIcon";
 import { FormItem } from "@/shared/components/ui/form";
 import { Input } from "@/shared/components/ui/input";
 import { Label } from "@/shared/components/ui/label";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/shared/components/ui/select";
-import { UI_TYPE } from "@/shared/constants/uiType";
 import { Language } from "@/shared/types/languages";
-import { UINodeData, UIType } from "@/shared/types/node";
+import { UINodeData } from "@/shared/types/node";
 
 const UINodeForm = () => {
   const [selectedLanguage, setSelectedLanguage] = useState<Language>("en");
@@ -20,7 +17,6 @@ const UINodeForm = () => {
   const { Field } = useForm({
     defaultValues: {
       label: selectedNode?.data?.label || { en: "" },
-      type: selectedNode?.data?.type || "",
     } as UINodeData,
     listeners: {
       onChange: ({ formApi }) => {
@@ -64,34 +60,6 @@ const UINodeForm = () => {
           />
           <SelectLanguage value={selectedLanguage} onValueChange={setSelectedLanguage} />
         </div>
-
-        <Field
-          name="type"
-          children={(field) => (
-            <SelectGroup>
-              <SelectLabel htmlFor={field.name}>Type</SelectLabel>
-              <Select value={field.state.value} onValueChange={(newValue: UIType) => field.handleChange(newValue)}>
-                <SelectTrigger id={field.name} className="w-full capitalize">
-                  <SelectValue placeholder="" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    {Object.values(UI_TYPE).map((type) => {
-                      const Icon = getInputTypeIcon(type);
-
-                      return (
-                        <SelectItem key={type} value={type} className="capitalize">
-                          <Icon />
-                          {type}
-                        </SelectItem>
-                      );
-                    })}
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-            </SelectGroup>
-          )}
-        />
       </div>
     </form>
   );

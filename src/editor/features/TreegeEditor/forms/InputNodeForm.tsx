@@ -5,7 +5,6 @@ import HttpConfigForm from "@/editor/features/TreegeEditor/forms/HttpConfigForm"
 import SubmitConfigForm from "@/editor/features/TreegeEditor/forms/SubmitConfigForm";
 import ComboboxPattern from "@/editor/features/TreegeEditor/inputs/ComboboxPattern";
 import OptionImageField from "@/editor/features/TreegeEditor/inputs/OptionImageField";
-import SelectInputType from "@/editor/features/TreegeEditor/inputs/SelectInputType";
 import SelectLanguage from "@/editor/features/TreegeEditor/inputs/SelectLanguage";
 import useAvailableParentFields from "@/editor/hooks/useAvailableParentFields";
 import useFlowActions from "@/editor/hooks/useFlowActions";
@@ -45,7 +44,6 @@ const InputNodeForm = () => {
       placeholder: selectedNode?.data?.placeholder || { en: "" },
       required: selectedNode?.data?.required,
       submitConfig: selectedNode?.data?.submitConfig,
-      type: selectedNode?.data?.type || "",
       variant: selectedNode?.data?.variant || "default",
     } as InputNodeData,
     listeners: {
@@ -66,17 +64,7 @@ const InputNodeForm = () => {
         e.stopPropagation();
       }}
     >
-      {/* Type */}
       <div className="grid gap-6">
-        <Field
-          name="type"
-          children={(field) => (
-            <FormItem>
-              <SelectInputType value={field.state.value} onValueChange={(newValue) => field.handleChange(newValue)} />
-            </FormItem>
-          )}
-        />
-
         {/* Label */}
         <div className="flex items-end gap-2">
           <Field

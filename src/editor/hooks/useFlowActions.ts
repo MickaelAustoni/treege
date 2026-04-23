@@ -1,11 +1,5 @@
 import { useReactFlow } from "@xyflow/react";
 import { useCallback } from "react";
-import { INPUT_TYPE } from "@/shared/constants/inputType";
-import { NODE_TYPE } from "@/shared/constants/node";
-
-const DEFAULT_NODE_DATA: Record<string, Record<string, unknown>> = {
-  [NODE_TYPE.input]: { type: INPUT_TYPE.text },
-};
 
 /**
  * Custom hook providing various actions to manipulate nodes and edges
@@ -60,22 +54,28 @@ const useFlowActions = () => {
   );
 
   /**
-   * Updates a node's type by its ID.
+   * Updates a node's type by ID, optionally setting a variant in `data.type`.
+   * When the node type changes, the previous data is discarded; otherwise it is preserved.
    * @param id - The ID of the node to update.
-   * @param type - The new type to set for the node.
+   * @param type - The new node type (e.g. "input", "ui", "flow").
+   * @param subType - Optional variant stored in `data.type` (e.g. "text", "title").
    */
   const updateNodeType = useCallback(
-    (id: string, type: string) => {
+    (id: string, type: string, subType?: string) => {
       setNodes((nds) =>
         nds.map((node) => {
-          if (node.id === id) {
-            return {
-              ...node,
-              data: DEFAULT_NODE_DATA[type] ?? {},
-              type,
-            };
+          if (node.id !== id) {
+            return node;
           }
-          return node;
+
+          const isSameType = node.type === type;
+          const baseData = isSameType ? node.data : {};
+
+          return {
+            ...node,
+            data: subType !== undefined ? { ...baseData, type: subType } : baseData,
+            type,
+          };
         }),
       );
     },
@@ -83,18 +83,18 @@ const useFlowActions = () => {
   );
 
   /**
-   * Updates the type of the currently selected node.
-   * If no node is selected, the function does nothing.
-   * @param type - The new type to set for the selected node.
+   * Updates the type of the currently selected node, optionally setting a variant in `data.type`.
+   * @param type - The new node type (e.g. "input", "ui", "flow").
+   * @param subType - Optional variant stored in `data.type` (e.g. "text", "title").
    */
   const updateSelectedNodeType = useCallback(
-    (type: string) => {
+    (type: string, subType?: string) => {
       const currentSelectedNode = getNodes().find((node) => node.selected);
       if (!currentSelectedNode) {
         return;
       }
 
-      updateNodeType(currentSelectedNode.id, type);
+      updateNodeType(currentSelectedNode.id, type, subType);
     },
     [getNodes, updateNodeType],
   );

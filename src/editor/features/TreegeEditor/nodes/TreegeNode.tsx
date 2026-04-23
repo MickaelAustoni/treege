@@ -1,9 +1,9 @@
 import { Handle, Node, NodeProps, Position } from "@xyflow/react";
 import { memo } from "react";
 import BottomHandleDropdown from "@/editor/features/TreegeEditor/nodes/components/BottomHandleDropdown";
-import InputTypeBadge from "@/editor/features/TreegeEditor/nodes/components/InputTypeBadge";
 import NodeLabelInput from "@/editor/features/TreegeEditor/nodes/components/NodeLabelInput";
 import NodeMoreMenu from "@/editor/features/TreegeEditor/nodes/components/NodeMoreMenu";
+import NodeTypeBadge from "@/editor/features/TreegeEditor/nodes/components/NodeTypeBadge";
 import OptionsEditor from "@/editor/features/TreegeEditor/nodes/components/OptionsEditor";
 import RequiredBadge from "@/editor/features/TreegeEditor/nodes/components/RequiredBadge";
 import NodeWrapper from "@/editor/features/TreegeEditor/nodes/layout/NodeWrapper";
@@ -31,7 +31,7 @@ const TreegeNode = ({ data, isConnectable, parentId, type, id }: TreegeNodeProps
 
       {/* Badges */}
       <div className="mb-1 flex gap-1">
-        {(type === "input" || type === "ui") && <InputTypeBadge nodeId={id} type={type} inputType={subType} />}
+        <NodeTypeBadge nodeId={id} nodeType={type} subType={subType} />
         {type === "input" && !isSubmit && <RequiredBadge nodeId={id} required={(data as InputNodeData)?.required} />}
       </div>
 
