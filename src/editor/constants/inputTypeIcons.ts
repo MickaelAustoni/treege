@@ -15,6 +15,7 @@ import {
   type LucideIcon,
   MapPin,
   Minus,
+  Network,
   Paperclip,
   RectangleEllipsis,
   Search,
@@ -22,6 +23,7 @@ import {
   ToggleLeft,
 } from "lucide-react";
 import { INPUT_TYPE } from "@/shared/constants/inputType";
+import { NODE_TYPE } from "@/shared/constants/node";
 import { UI_TYPE } from "@/shared/constants/uiType";
 
 export const INPUT_TYPE_ICONS: Record<string, LucideIcon> = {
@@ -45,6 +47,7 @@ export const INPUT_TYPE_ICONS: Record<string, LucideIcon> = {
   [INPUT_TYPE.timerange]: Clock,
   [UI_TYPE.divider]: Minus,
   [UI_TYPE.title]: Heading,
+  [NODE_TYPE.flow]: Network,
 };
 
 export const DEFAULT_INPUT_TYPE_ICON = RectangleEllipsis;

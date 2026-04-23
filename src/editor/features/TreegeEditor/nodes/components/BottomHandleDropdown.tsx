@@ -26,6 +26,7 @@ const BottomHandleDropdown = ({ nodeId, isConnectable }: BottomHandleDropdownPro
   const { onAddFromHandle } = useFlowConnections();
   const t = useTranslate();
   const [open, setOpen] = useState(false);
+  const FlowIcon = getInputTypeIcon(NODE_TYPE.flow);
 
   const handleClick = (event: MouseEvent) => {
     if (event.defaultPrevented) {
@@ -90,6 +91,7 @@ const BottomHandleDropdown = ({ nodeId, isConnectable }: BottomHandleDropdownPro
           <DropdownMenuGroup>
             <DropdownMenuLabel>{t("common.other")}</DropdownMenuLabel>
             <DropdownMenuItem onClick={() => onAddFromHandle(nodeId, { data: {}, type: NODE_TYPE.flow })}>
+              <FlowIcon />
               {t("editor.selectNodeType.options.flow")}
             </DropdownMenuItem>
           </DropdownMenuGroup>

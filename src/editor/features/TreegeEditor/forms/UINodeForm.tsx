@@ -3,6 +3,7 @@ import { useState } from "react";
 import SelectLanguage from "@/editor/features/TreegeEditor/inputs/SelectLanguage";
 import useFlowActions from "@/editor/hooks/useFlowActions";
 import useNodesSelection from "@/editor/hooks/useNodesSelection";
+import { getInputTypeIcon } from "@/editor/utils/inputTypeIcon";
 import { FormItem } from "@/shared/components/ui/form";
 import { Input } from "@/shared/components/ui/input";
 import { Label } from "@/shared/components/ui/label";
@@ -70,13 +71,21 @@ const UINodeForm = () => {
             <SelectGroup>
               <SelectLabel htmlFor={field.name}>Type</SelectLabel>
               <Select value={field.state.value} onValueChange={(newValue: UIType) => field.handleChange(newValue)}>
-                <SelectTrigger id={field.name} className="w-full">
+                <SelectTrigger id={field.name} className="w-full capitalize">
                   <SelectValue placeholder="" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
-                    <SelectItem value={UI_TYPE.title}>Title</SelectItem>
-                    <SelectItem value={UI_TYPE.divider}>Divider</SelectItem>
+                    {Object.values(UI_TYPE).map((type) => {
+                      const Icon = getInputTypeIcon(type);
+
+                      return (
+                        <SelectItem key={type} value={type} className="capitalize">
+                          <Icon />
+                          {type}
+                        </SelectItem>
+                      );
+                    })}
                   </SelectGroup>
                 </SelectContent>
               </Select>
