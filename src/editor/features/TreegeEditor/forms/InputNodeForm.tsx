@@ -28,6 +28,7 @@ const InputNodeForm = () => {
   const availableParentFields = useAvailableParentFields(selectedNode?.id);
   const t = useTranslate();
   const isSubmitType = selectedNode?.data?.type === "submit";
+  const isHiddenType = selectedNode?.data?.type === "hidden";
 
   const { handleSubmit, Field } = useForm({
     defaultValues: {
@@ -92,7 +93,7 @@ const InputNodeForm = () => {
         </div>
 
         {/* Placeholder */}
-        {!isSubmitType && selectedNode?.data?.type !== "file" && (
+        {!(isSubmitType || isHiddenType) && selectedNode?.data?.type !== "file" && (
           <div className="flex items-end gap-2">
             <Field
               name="placeholder"
@@ -119,7 +120,7 @@ const InputNodeForm = () => {
         )}
 
         {/* Helper text */}
-        {!isSubmitType && (
+        {!(isSubmitType || isHiddenType) && (
           <div className="flex items-end gap-2">
             <Field
               name="helperText"

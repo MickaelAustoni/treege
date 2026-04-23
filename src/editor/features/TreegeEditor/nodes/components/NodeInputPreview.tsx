@@ -37,12 +37,6 @@ const NodeInputPreview = ({ nodeId, data }: NodeInputPreviewProps) => {
     return null;
   }
 
-  const Renderer = defaultInputRenderers[inputType] as ((props: InputRenderProps) => ReactNode) | undefined;
-
-  if (!Renderer) {
-    return null;
-  }
-
   const node: Node<InputNodeData> = {
     data,
     id: nodeId,
@@ -51,9 +45,35 @@ const NodeInputPreview = ({ nodeId, data }: NodeInputPreviewProps) => {
   };
 
   const label = getTranslatedText(data.label, language);
+  const name = resolveNodeKey(node);
+
+  // Hidden inputs render nothing at runtime — show a readable summary instead so the node is not blank in the editor
+  if (inputType === "hidden") {
+    const staticValue = data.defaultValue?.type === "static" ? data.defaultValue.staticValue : undefined;
+    const referenceField = data.defaultValue?.type === "reference" ? data.defaultValue.referenceField : undefined;
+    const displayValue = Array.isArray(staticValue)
+      ? staticValue.join(", ")
+      : typeof staticValue === "boolean"
+        ? String(staticValue)
+        : (staticValue ?? (referenceField ? `→ ${referenceField}` : ""));
+    const displayKey = label || name;
+
+    return (
+      <div className="pointer-events-none flex select-none flex-col gap-1 text-sm">
+        <span className="truncate font-medium">{displayKey}</span>
+        <span className="truncate text-muted-foreground text-xs">{displayValue || "—"}</span>
+      </div>
+    );
+  }
+
+  const Renderer = defaultInputRenderers[inputType] as ((props: InputRenderProps) => ReactNode) | undefined;
+
+  if (!Renderer) {
+    return null;
+  }
+
   const helperText = getTranslatedText(data.helperText, language);
   const placeholder = resolveInputPlaceholder(data, language);
-  const name = resolveNodeKey(node);
 
   return (
     <div className={cn("pointer-events-none select-none", inputType === "submit" && "flex justify-center")}>
