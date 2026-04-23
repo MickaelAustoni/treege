@@ -3,6 +3,7 @@ import { Plus } from "lucide-react";
 import { MouseEvent, useState } from "react";
 import useFlowConnections from "@/editor/hooks/useFlowConnections";
 import useTranslate from "@/editor/hooks/useTranslate";
+import { getInputTypeIcon } from "@/editor/utils/inputTypeIcon";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -52,28 +53,38 @@ const BottomHandleDropdown = ({ nodeId, isConnectable }: BottomHandleDropdownPro
         <DropdownMenuContent align="center" side="bottom" className="treege-scrollbar max-h-80">
           <DropdownMenuGroup>
             <DropdownMenuLabel>{t("editor.selectNodeType.options.input")}</DropdownMenuLabel>
-            {Object.values(INPUT_TYPE).map((subType) => (
-              <DropdownMenuItem
-                key={subType}
-                onClick={() => onAddFromHandle(nodeId, { data: { type: subType }, type: NODE_TYPE.input })}
-                className="capitalize"
-              >
-                {subType}
-              </DropdownMenuItem>
-            ))}
+            {Object.values(INPUT_TYPE).map((subType) => {
+              const Icon = getInputTypeIcon(subType);
+
+              return (
+                <DropdownMenuItem
+                  key={subType}
+                  onClick={() => onAddFromHandle(nodeId, { data: { type: subType }, type: NODE_TYPE.input })}
+                  className="capitalize"
+                >
+                  <Icon />
+                  {subType}
+                </DropdownMenuItem>
+              );
+            })}
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
             <DropdownMenuLabel>{t("editor.selectNodeType.options.ui")}</DropdownMenuLabel>
-            {Object.values(UI_TYPE).map((subType) => (
-              <DropdownMenuItem
-                key={subType}
-                onClick={() => onAddFromHandle(nodeId, { data: { type: subType }, type: NODE_TYPE.ui })}
-                className="capitalize"
-              >
-                {subType}
-              </DropdownMenuItem>
-            ))}
+            {Object.values(UI_TYPE).map((subType) => {
+              const Icon = getInputTypeIcon(subType);
+
+              return (
+                <DropdownMenuItem
+                  key={subType}
+                  onClick={() => onAddFromHandle(nodeId, { data: { type: subType }, type: NODE_TYPE.ui })}
+                  className="capitalize"
+                >
+                  <Icon />
+                  {subType}
+                </DropdownMenuItem>
+              );
+            })}
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
