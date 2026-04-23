@@ -1,14 +1,12 @@
 import { Node } from "@xyflow/react";
 import { ComponentType, Fragment, ReactNode, useCallback, useMemo } from "react";
 import { FormValues, InputRenderers, InputRenderProps, InputValue, TreegeRendererComponents } from "@/renderer/types/renderer";
-import { resolveNodeKey } from "@/renderer/utils/node";
+import { resolveInputPlaceholder, resolveNodeKey } from "@/renderer/utils/node";
 import { sanitize } from "@/renderer/utils/sanitize";
 import { NODE_TYPE } from "@/shared/constants/node";
 import { TreegeNodeData, UINodeData } from "@/shared/types/node";
 import { isGroupNode, isInputNode, isUINode } from "@/shared/utils/nodeTypeGuards";
-import { getStaticTranslations, getTranslatedText } from "@/shared/utils/translations";
-
-const TEXTFIELD_INPUT_TYPES: ReadonlySet<string> = new Set(["text", "number", "password", "textarea", "time"]);
+import { getTranslatedText } from "@/shared/utils/translations";
 
 type AnyComponent = ComponentType<any>;
 
@@ -85,14 +83,9 @@ export const useRenderNode = ({
           const value = formValues[fieldId];
           const error = formErrors[fieldId];
           const label = getTranslatedText(inputData.label, config.language);
-          const hasPlaceholderForLanguage = !!inputData.placeholder?.[config.language];
-          const placeholder =
-            !hasPlaceholderForLanguage && TEXTFIELD_INPUT_TYPES.has(inputType)
-              ? getStaticTranslations(config.language)["renderer.defaultInputs.newAnswer"]
-              : getTranslatedText(inputData.placeholder, config.language);
+          const placeholder = resolveInputPlaceholder(inputData, config.language);
           const helperText = getTranslatedText(inputData.helperText, config.language);
           const name = resolveNodeKey(node);
-          // Sanitize all user-controlled text to prevent XSS attacks (plainTextOnly: true by default)
           const safeLabel = sanitize(label);
           const safePlaceholder = sanitize(placeholder);
           const safeHelperText = sanitize(helperText);

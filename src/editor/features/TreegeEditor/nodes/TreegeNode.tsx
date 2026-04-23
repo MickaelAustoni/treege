@@ -1,6 +1,7 @@
 import { Handle, Node, NodeProps, Position } from "@xyflow/react";
 import { memo } from "react";
 import BottomHandleDropdown from "@/editor/features/TreegeEditor/nodes/components/BottomHandleDropdown";
+import NodeInputPreview from "@/editor/features/TreegeEditor/nodes/components/NodeInputPreview";
 import NodeLabelInput from "@/editor/features/TreegeEditor/nodes/components/NodeLabelInput";
 import NodeMoreMenu from "@/editor/features/TreegeEditor/nodes/components/NodeMoreMenu";
 import NodeTypeBadge from "@/editor/features/TreegeEditor/nodes/components/NodeTypeBadge";
@@ -11,12 +12,18 @@ import { cn } from "@/shared/lib/utils";
 import { FlowNodeData, InputNodeData, UINodeData } from "@/shared/types/node";
 
 export type TreegeNodeType = Node<FlowNodeData, "flow"> | Node<InputNodeData, "input"> | Node<UINodeData, "ui">;
-export type TreegeNodeProps = NodeProps<TreegeNodeType>;
+export type TreegeNodeProps =
+  | NodeProps<Node<FlowNodeData, "flow">>
+  | NodeProps<Node<InputNodeData, "input">>
+  | NodeProps<Node<UINodeData, "ui">>;
 
-const TreegeNode = ({ data, isConnectable, parentId, type, id }: TreegeNodeProps) => {
-  const subType = type === "input" || type === "ui" ? (data as InputNodeData | UINodeData)?.type : undefined;
-  const isSubmit = type === "input" && (data as InputNodeData)?.type === "submit";
-  const placeholder = type === "input" ? (data as InputNodeData)?.name : undefined;
+const TreegeNode = (props: TreegeNodeProps) => {
+  const { id, isConnectable, parentId, selected, type } = props;
+  const inputData = props.type === "input" ? props.data : undefined;
+  const uiData = props.type === "ui" ? props.data : undefined;
+  const subType = inputData?.type ?? uiData?.type;
+  const isSubmit = inputData?.type === "submit";
+  const showPreview = !selected && !!inputData?.type;
 
   return (
     <NodeWrapper inGroup={!!parentId} isSubmit={isSubmit}>
@@ -26,17 +33,28 @@ const TreegeNode = ({ data, isConnectable, parentId, type, id }: TreegeNodeProps
       {/* Top handle */}
       <Handle type="target" position={Position.Top} isConnectable={isConnectable} isConnectableStart={type === "ui"} />
 
-      {/* Label */}
-      <NodeLabelInput nodeId={id} label={data?.label} placeholder={placeholder} className={cn("py-1", type === "ui" && "capitalize")} />
+      {showPreview && inputData ? (
+        <NodeInputPreview nodeId={id} data={inputData} />
+      ) : (
+        <>
+          {/* Label */}
+          <NodeLabelInput
+            nodeId={id}
+            label={props.data?.label}
+            placeholder={inputData?.name}
+            className={cn("py-1", type === "ui" && "capitalize")}
+          />
 
-      {/* Badges */}
-      <div className="mb-1 flex gap-1">
-        <NodeTypeBadge nodeId={id} nodeType={type} subType={subType} />
-        {type === "input" && !isSubmit && <RequiredBadge nodeId={id} required={(data as InputNodeData)?.required} />}
-      </div>
+          {/* Badges */}
+          <div className="mb-1 flex gap-1">
+            <NodeTypeBadge nodeId={id} nodeType={type} subType={subType} />
+            {inputData && !isSubmit && <RequiredBadge nodeId={id} required={inputData.required} />}
+          </div>
 
-      {/* Options editor */}
-      {type === "input" && <OptionsEditor nodeId={id} data={data} />}
+          {/* Options editor */}
+          {inputData && <OptionsEditor nodeId={id} data={inputData} />}
+        </>
+      )}
 
       {/* Bottom handle */}
       <BottomHandleDropdown nodeId={id} isConnectable={isConnectable} />

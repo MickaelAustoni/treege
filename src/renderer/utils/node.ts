@@ -1,6 +1,13 @@
 import { Node } from "@xyflow/react";
-import { InputNodeData, TreegeNodeData } from "@/shared/types/node";
+import { InputNodeData, InputType, TreegeNodeData } from "@/shared/types/node";
 import { isInputNode } from "@/shared/utils/nodeTypeGuards";
+import { getStaticTranslations, getTranslatedText } from "@/shared/utils/translations";
+
+/**
+ * Input types that fall back to the "newAnswer" static translation
+ * when no placeholder is defined for the current language.
+ */
+const TEXTFIELD_INPUT_TYPES: ReadonlySet<InputType> = new Set(["text", "number", "password", "textarea", "time"]);
 
 /**
  * Filter nodes to get only input nodes
@@ -36,6 +43,25 @@ export const resolveNodeKey = (node: Node<InputNodeData>): string => {
 
   // Final fallback to node ID
   return node.id;
+};
+
+/**
+ * Resolve the placeholder text for an input, falling back to the static
+ * "newAnswer" translation for textfield-like types when the user has not
+ * defined a placeholder for the current language.
+ * @param data - The input node data
+ * @param language - The current language code
+ * @returns The resolved placeholder string (empty string if none available)
+ */
+export const resolveInputPlaceholder = (data: InputNodeData, language: string): string => {
+  const inputType = data.type ?? "text";
+  const hasPlaceholderForLanguage = !!data.placeholder?.[language];
+
+  if (!hasPlaceholderForLanguage && TEXTFIELD_INPUT_TYPES.has(inputType)) {
+    return getStaticTranslations(language)["renderer.defaultInputs.newAnswer"] ?? "";
+  }
+
+  return getTranslatedText(data.placeholder, language);
 };
 
 /**
