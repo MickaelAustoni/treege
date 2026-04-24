@@ -24,6 +24,7 @@ const Flow = ({ flow, onExportJson, onSave, theme, className }: TreegeEditorProp
   return (
     <ReactFlow
       fitView
+      minZoom={0.1}
       colorMode={theme}
       selectNodesOnDrag={false}
       nodeTypes={NODE_TYPES}
