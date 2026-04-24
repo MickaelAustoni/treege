@@ -7,6 +7,7 @@ import { defaultInputRenderers } from "@/renderer/features/TreegeRenderer/web/co
 import DefaultSubmitButton from "@/renderer/features/TreegeRenderer/web/components/DefaultSubmitButton";
 import DefaultSubmitButtonWrapper from "@/renderer/features/TreegeRenderer/web/components/DefaultSubmitButtonWrapper";
 import { defaultUI } from "@/renderer/features/TreegeRenderer/web/components/DefaultUI";
+import RendererStyles from "@/renderer/features/TreegeRenderer/web/components/styles/RendererStyles";
 import { useRenderNode } from "@/renderer/hooks/useRenderNode";
 import { TreegeRendererProps } from "@/renderer/types/renderer";
 import { ThemeProvider } from "@/shared/context/ThemeContext";
@@ -92,6 +93,7 @@ const TreegeRenderer = ({
 
   return (
     <div className={cn("treege", className)}>
+      <RendererStyles />
       <ThemeProvider theme={config.theme} storageKey="treege-renderer-theme">
         <TreegeRendererProvider
           value={{

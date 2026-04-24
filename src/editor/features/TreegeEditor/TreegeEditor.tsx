@@ -1,7 +1,7 @@
-import "@/editor/styles/style.css";
 import { Background, BackgroundVariant, Controls, MiniMap, ReactFlow, ReactFlowProvider } from "@xyflow/react";
 import { useState } from "react";
-import Logo from "@/editor/components/data-display/logo";
+import Logo from "@/editor/components/branding/Logo";
+import EditorStyles from "@/editor/components/styles/EditorStyles";
 import { EDGE_TYPES } from "@/editor/constants/edgeTypes";
 import { NODE_TYPES } from "@/editor/constants/nodeTypes";
 import { TreegeEditorProvider } from "@/editor/context/TreegeEditorContext";
@@ -56,14 +56,17 @@ const Flow = ({ flow, onExportJson, onSave, theme, className, extraMenuItems }: 
 };
 
 const TreegeEditor = ({ flow, onExportJson, onSave, theme = "dark", language = "en", aiConfig, extraMenuItems }: TreegeEditorProps) => (
-  <ThemeProvider defaultTheme={theme} storageKey="treege-editor-theme" theme={theme}>
-    <TreegeEditorProvider value={{ aiConfig, flowId: flow?.id, language }}>
-      <Toaster position="bottom-center" />
-      <ReactFlowProvider>
-        <Flow onExportJson={onExportJson} onSave={onSave} flow={flow} theme={theme} extraMenuItems={extraMenuItems} />
-      </ReactFlowProvider>
-    </TreegeEditorProvider>
-  </ThemeProvider>
+  <>
+    <EditorStyles />
+    <ThemeProvider defaultTheme={theme} storageKey="treege-editor-theme" theme={theme}>
+      <TreegeEditorProvider value={{ aiConfig, flowId: flow?.id, language }}>
+        <Toaster position="bottom-center" />
+        <ReactFlowProvider>
+          <Flow onExportJson={onExportJson} onSave={onSave} flow={flow} theme={theme} extraMenuItems={extraMenuItems} />
+        </ReactFlowProvider>
+      </TreegeEditorProvider>
+    </ThemeProvider>
+  </>
 );
 
 export default TreegeEditor;

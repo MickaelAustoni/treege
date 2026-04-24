@@ -2,7 +2,7 @@
   "name": "treege",
   "description": "Powerful form generator",
   "license": "ISC",
-  "version": "3.0.0-beta.43",
+  "version": "3.0.0-beta.44",
   "type": "module",
   "types": "./dist/main.d.ts",
   "module": "./dist/main.js",
@@ -104,7 +104,6 @@
     "typescript": "^5.9.2",
     "unplugin-dts": "^1.0.0-beta.6",
     "vite": "^8.0.10",
-    "vite-plugin-css-injected-by-js": "^5.0.1",
     "vitest": "^4.1.5"
   },
   "peerDependencies": {

@@ -3,7 +3,6 @@ import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 import dts from "unplugin-dts/vite";
 import { defineConfig } from "vite";
-import cssInjectedByJsPlugin from "vite-plugin-css-injected-by-js";
 import { dependencies, name, peerDependencies } from "./package.json";
 
 const external = [
@@ -48,28 +47,6 @@ const config = () =>
       }),
       react(),
       tailwindcss(),
-      cssInjectedByJsPlugin({
-        jsAssetsFilterFunction: (outputChunk) => {
-          return outputChunk.fileName.includes("ThemeContext");
-        },
-        injectCodeFunction: (cssCode: string) => {
-          // Inject at the top of <head> so the consumer's stylesheet comes
-          // later in the cascade and can override Treege's tg:-prefixed
-          // utilities without needing !important.
-          const doc = (globalThis as any).document;
-
-          try {
-            if (typeof doc !== "undefined") {
-              const style = doc.createElement("style");
-              style.id = "treege-styles";
-              style.appendChild(doc.createTextNode(cssCode));
-              doc.head.insertBefore(style, doc.head.firstChild);
-            }
-          } catch (e) {
-            console.error("vite-plugin-css-injected-by-js", e);
-          }
-        },
-      }),
     ],
     resolve: {
       alias: [
