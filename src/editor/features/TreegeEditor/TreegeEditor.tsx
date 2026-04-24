@@ -15,13 +15,13 @@ import useFlowConnections from "@/editor/hooks/useFlowConnections";
 import { TreegeEditorProps } from "@/editor/types/editor";
 import { Toaster } from "@/shared/components/ui/sonner";
 import { ThemeProvider } from "@/shared/context/ThemeContext";
-import { useIsMobile } from "@/shared/hooks/useIsMobile";
+import { useMediaQuery } from "@/shared/hooks/useMediaQuery";
 import { cn } from "@/shared/lib/utils";
 
-const Flow = ({ flow, onExportJson, onSave, theme, className }: TreegeEditorProps) => {
+const Flow = ({ flow, onExportJson, onSave, theme, className, extraMenuItems }: TreegeEditorProps) => {
   const { onConnect, onConnectEnd, onEdgesDelete, isValidConnection } = useFlowConnections();
   const [showMiniMap, setShowMiniMap] = useState(false);
-  const isMobile = useIsMobile();
+  const isMobile = useMediaQuery("mobile");
 
   return (
     <ReactFlow
@@ -42,7 +42,7 @@ const Flow = ({ flow, onExportJson, onSave, theme, className }: TreegeEditorProp
     >
       <AutoLayout />
       <Background gap={10} variant={BackgroundVariant.Dots} />
-      <ActionsPanel onExportJson={onExportJson} onSave={onSave} />
+      <ActionsPanel onExportJson={onExportJson} onSave={onSave} extraMenuItems={extraMenuItems} />
       <Logo theme={theme} />
       {showMiniMap && <MiniMap />}
       <Controls>
@@ -55,12 +55,12 @@ const Flow = ({ flow, onExportJson, onSave, theme, className }: TreegeEditorProp
   );
 };
 
-const TreegeEditor = ({ flow, onExportJson, onSave, theme = "dark", language = "en", aiConfig }: TreegeEditorProps) => (
+const TreegeEditor = ({ flow, onExportJson, onSave, theme = "dark", language = "en", aiConfig, extraMenuItems }: TreegeEditorProps) => (
   <ThemeProvider defaultTheme={theme} storageKey="treege-editor-theme" theme={theme}>
     <TreegeEditorProvider value={{ aiConfig, flowId: flow?.id, language }}>
       <Toaster position="bottom-center" />
       <ReactFlowProvider>
-        <Flow onExportJson={onExportJson} onSave={onSave} flow={flow} theme={theme} />
+        <Flow onExportJson={onExportJson} onSave={onSave} flow={flow} theme={theme} extraMenuItems={extraMenuItems} />
       </ReactFlowProvider>
     </TreegeEditorProvider>
   </ThemeProvider>

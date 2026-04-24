@@ -1,10 +1,12 @@
-import { MoonStar, Sun } from "lucide-react";
+import { Eye, MoonStar, Sun } from "lucide-react";
 import { useState } from "react";
 import TreegeEditor from "@/editor/features/TreegeEditor/TreegeEditor";
 import { FormValues, Meta, TreegeRenderer } from "@/renderer";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/components/ui/select";
+import { Sheet, SheetContent, SheetTitle } from "@/shared/components/ui/sheet";
 import { Switch } from "@/shared/components/ui/switch";
 import { Language, LANGUAGES } from "@/shared/constants/languages";
+import { useMediaQuery } from "@/shared/hooks/useMediaQuery";
 import { Flow } from "@/shared/types/node";
 import flows from "~/example/json/treege.json";
 import flowsComplex from "~/example/json/treege-all-inputs.json";
@@ -14,11 +16,13 @@ const EditorPanel = ({
   onSave,
   theme,
   language,
+  onTogglePreview,
 }: {
   flow?: Flow;
   onSave: (data: Flow) => void;
   theme: "light" | "dark";
   language: Language;
+  onTogglePreview: () => void;
 }) => {
   const apiKey = import.meta.env?.VITE_AI_API_KEY || "";
 
@@ -33,6 +37,13 @@ const EditorPanel = ({
           aiConfig={{
             apiKey,
           }}
+          extraMenuItems={[
+            {
+              icon: <Eye />,
+              label: "Toggle preview",
+              onClick: onTogglePreview,
+            },
+          ]}
         />
       </div>
     </div>
@@ -45,12 +56,14 @@ const RendererPanel = ({
   setTheme,
   language,
   setLanguage,
+  inSheet,
 }: {
   flow?: Flow | null;
   theme: "light" | "dark";
   setTheme: (t: "light" | "dark") => void;
   language: Language;
   setLanguage: (l: Language) => void;
+  inSheet?: boolean;
 }) => {
   const [formValues, setFormValues] = useState<FormValues>({});
   const hasNodes = flow && flow.nodes.length > 0;
@@ -78,7 +91,7 @@ const RendererPanel = ({
             {hasNodes ? `${flow.nodes.length} nodes, ${flow.edges.length} edges` : "Save to see the render"}
           </p>
         </div>
-        <div className="tg:flex tg:gap-4 tg:items-center">
+        <div className={`tg:flex tg:gap-4 tg:items-center ${inSheet ? "tg:pr-10" : ""}`}>
           <Select value={language} onValueChange={(value) => setLanguage(value as Language)}>
             <SelectTrigger>
               <SelectValue placeholder="Select language" />
@@ -144,19 +157,42 @@ const Layout = ({ flow }: { flow?: Flow }) => {
   const [savedFlow, setSavedFlow] = useState<Flow | null>(null);
   const [theme, setTheme] = useState<"light" | "dark">("dark");
   const [language, setLanguage] = useState<Language>("en");
+  const [showPreview, setShowPreview] = useState<boolean | null>(null);
+  const isDesktop = useMediaQuery("desktop");
+  const previewOpen = showPreview ?? isDesktop;
 
   const handleSave = (flowData: Flow) => {
     setSavedFlow(flowData);
   };
 
+  const togglePreview = () => setShowPreview((prev) => !(prev ?? isDesktop));
+
   return (
     <div className="tg:h-screen tg:w-screen tg:flex tg:bg-background">
-      <div className="tg:w-8/12 tg:border-r">
-        <EditorPanel onSave={handleSave} flow={flow} theme={theme} language={language} />
+      <div className={`${isDesktop && previewOpen ? "tg:w-8/12 tg:border-r" : "tg:w-full"}`}>
+        <EditorPanel onSave={handleSave} flow={flow} theme={theme} language={language} onTogglePreview={togglePreview} />
       </div>
-      <div className="tg:w-4/12">
-        <RendererPanel flow={savedFlow || flow} theme={theme} setTheme={setTheme} language={language} setLanguage={setLanguage} />
-      </div>
+
+      {isDesktop && previewOpen && (
+        <div className="tg:w-4/12">
+          <RendererPanel flow={savedFlow || flow} theme={theme} setTheme={setTheme} language={language} setLanguage={setLanguage} />
+        </div>
+      )}
+
+      <Sheet open={!isDesktop && previewOpen} onOpenChange={(open) => setShowPreview(open)}>
+        <SheetContent side="right" className="tg:w-full tg:md:w-3/4 tg:max-w-none tg:p-0 tg:sm:max-w-none">
+          <SheetTitle className="tg:sr-only">Form Preview</SheetTitle>
+          <RendererPanel
+            inSheet
+            flow={savedFlow || flow}
+            theme={theme}
+            setTheme={setTheme}
+            language={language}
+            setLanguage={setLanguage}
+
+          />
+        </SheetContent>
+      </Sheet>
     </div>
   );
 };

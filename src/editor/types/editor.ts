@@ -1,6 +1,26 @@
 import { Edge, Node } from "@xyflow/react";
+import { ReactNode } from "react";
 import { AIConfig } from "@/editor/types/ai";
 import { Flow } from "@/shared/types/node";
+
+export interface ExtraMenuItem {
+  /**
+   * Label displayed in the menu item.
+   */
+  label: ReactNode;
+  /**
+   * Optional icon rendered before the label.
+   */
+  icon?: ReactNode;
+  /**
+   * Callback triggered when the menu item is clicked.
+   */
+  onClick?: () => void;
+  /**
+   * When true, styles the item as destructive.
+   */
+  destructive?: boolean;
+}
 
 export interface TreegeEditorProps {
   /**
@@ -33,4 +53,8 @@ export interface TreegeEditorProps {
    * Additional CSS class names for custom styling.
    */
   className?: string;
+  /**
+   * Extra menu items to append to the "more" dropdown of the actions panel.
+   */
+  extraMenuItems?: ExtraMenuItem[];
 }

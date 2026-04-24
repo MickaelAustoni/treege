@@ -17,16 +17,18 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/shared/components/ui/dropdown-menu";
+import { ExtraMenuItem } from "@/editor/types/editor";
 import { Flow } from "@/shared/types/node";
 
 export interface ActionsPanelProps {
   onExportJson?: (data: Flow) => void;
   onSave?: (data: Flow) => void;
+  extraMenuItems?: ExtraMenuItem[];
 }
 
 const uniqueId = nanoid();
 
-const ActionsPanel = ({ onExportJson, onSave }: ActionsPanelProps) => {
+const ActionsPanel = ({ onExportJson, onSave, extraMenuItems }: ActionsPanelProps) => {
   const { flowId, setFlowId, aiConfig } = useTreegeEditorContext();
   const { setNodes, setEdges, addNodes, screenToFlowPosition } = useReactFlow();
   const id = flowId || uniqueId;
@@ -209,6 +211,24 @@ const ActionsPanel = ({ onExportJson, onSave }: ActionsPanelProps) => {
               <ArrowRightFromLine /> {t("editor.actionsPanel.exportJson")}
             </DropdownMenuItem>
           </DropdownMenuGroup>
+
+          {extraMenuItems && extraMenuItems.length > 0 && (
+            <>
+              <DropdownMenuSeparator />
+              <DropdownMenuGroup>
+                {extraMenuItems.map((item, index) => (
+                  <DropdownMenuItem
+                    key={index}
+                    onClick={item.onClick}
+                    className={item.destructive ? "tg:text-destructive tg:focus:text-destructive" : undefined}
+                  >
+                    {item.icon}
+                    {item.label}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuGroup>
+            </>
+          )}
 
           <DropdownMenuSeparator />
 
