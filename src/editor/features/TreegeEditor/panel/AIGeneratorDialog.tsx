@@ -91,7 +91,8 @@ export const AIGeneratorDialog = ({ aiConfig, onGenerate }: AIGeneratorDialogPro
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant="outline" size="sm" disabled={!aiConfig?.apiKey}>
-          <WandSparkles className="tg:h-4 tg:w-4 tg:text-[#13d3b4]" /> {t("editor.aiGenerator.buttonLabel")}
+          <WandSparkles className="tg:h-4 tg:w-4 tg:text-[#13d3b4]" />{" "}
+          <span className="tg:hidden tg:md:inline">{t("editor.aiGenerator.buttonLabel")}</span>
         </Button>
       </DialogTrigger>
       <DialogContent className="tg:sm:max-w-[550px]!">

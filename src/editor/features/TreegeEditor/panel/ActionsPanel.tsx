@@ -171,11 +171,11 @@ const ActionsPanel = ({ onExportJson, onSave }: ActionsPanelProps) => {
       <AIGeneratorDialog aiConfig={aiConfig} onGenerate={handleAIGenerate} />
 
       <Button variant="outline" size="sm" onClick={handleAddNode}>
-        <Plus /> {t("editor.actionsPanel.addNode")}
+        <Plus /> <span className="tg:hidden tg:md:inline">{t("editor.actionsPanel.addNode")}</span>
       </Button>
 
       <Button variant="outline" size="sm" onClick={handleSave}>
-        <Save /> {t("common.save")}
+        <Save /> <span className="tg:hidden tg:md:inline">{t("common.save")}</span>
       </Button>
 
       <DropdownMenu>
