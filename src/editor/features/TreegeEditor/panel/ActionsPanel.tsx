@@ -7,6 +7,7 @@ import { DEFAULT_NODE } from "@/editor/constants/defaultNode";
 import { useTreegeEditorContext } from "@/editor/context/TreegeEditorContext";
 import { AIGeneratorDialog } from "@/editor/features/TreegeEditor/panel/AIGeneratorDialog";
 import useTranslate from "@/editor/hooks/useTranslate";
+import { ExtraMenuItem } from "@/editor/types/editor";
 import { Button } from "@/shared/components/ui/button";
 import {
   DropdownMenu,
@@ -17,7 +18,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/shared/components/ui/dropdown-menu";
-import { ExtraMenuItem } from "@/editor/types/editor";
 import { Flow } from "@/shared/types/node";
 
 export interface ActionsPanelProps {
