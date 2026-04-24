@@ -24,7 +24,7 @@ const selectSizeSignature = (state: { nodeLookup: Map<string, { id: string; meas
  * Group children are laid out independently within their parent, preserving
  * React Flow's parent-relative coordinate system.
  */
-const useAutoLayout = ({ direction, horizontalSpacing, verticalSpacing }: LayoutOptions = {}) => {
+const AutoLayout = ({ direction, horizontalSpacing, verticalSpacing }: LayoutOptions = {}) => {
   const { getNodes, getEdges, setNodes } = useReactFlow();
   const initialized = useNodesInitialized();
   const sizeSignature = useStore(selectSizeSignature);
@@ -44,6 +44,8 @@ const useAutoLayout = ({ direction, horizontalSpacing, verticalSpacing }: Layout
     const laidOutNodes = getLayoutedElements(getNodes(), getEdges(), { direction, horizontalSpacing, verticalSpacing });
     setNodes(laidOutNodes);
   }, [initialized, sizeSignature, direction, horizontalSpacing, verticalSpacing, getNodes, getEdges, setNodes]);
+
+  return null;
 };
 
-export default useAutoLayout;
+export default AutoLayout;

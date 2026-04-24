@@ -8,9 +8,9 @@ import { TreegeEditorProvider } from "@/editor/context/TreegeEditorContext";
 import MiniMapControl from "@/editor/features/TreegeEditor/controls/MiniMapControl";
 import ChangeNodeTypeDialog from "@/editor/features/TreegeEditor/dialogs/ChangeNodeTypeDialog";
 import DeleteNodeDialog from "@/editor/features/TreegeEditor/dialogs/DeleteNodeDialog";
+import AutoLayout from "@/editor/features/TreegeEditor/layout/AutoLayout";
 import ActionsPanel from "@/editor/features/TreegeEditor/panel/ActionsPanel";
 import NodeActionsSheet from "@/editor/features/TreegeEditor/sheets/NodeActionsSheet";
-import useAutoLayout from "@/editor/hooks/useAutoLayout";
 import useFlowConnections from "@/editor/hooks/useFlowConnections";
 import { TreegeEditorProps } from "@/editor/types/editor";
 import { Toaster } from "@/shared/components/ui/sonner";
@@ -20,7 +20,6 @@ import { cn } from "@/shared/lib/utils";
 const Flow = ({ flow, onExportJson, onSave, theme, className }: TreegeEditorProps) => {
   const { onConnect, onConnectEnd, onEdgesDelete, isValidConnection } = useFlowConnections();
   const [showMiniMap, setShowMiniMap] = useState(true);
-  useAutoLayout();
 
   return (
     <ReactFlow
@@ -37,6 +36,7 @@ const Flow = ({ flow, onExportJson, onSave, theme, className }: TreegeEditorProp
       isValidConnection={isValidConnection}
       className={cn(className, "treege")}
     >
+      <AutoLayout />
       <Background gap={10} variant={BackgroundVariant.Dots} />
       <ActionsPanel onExportJson={onExportJson} onSave={onSave} />
       <Logo theme={theme} />
