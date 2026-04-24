@@ -54,13 +54,13 @@ const SubmitConfigForm = ({ value, onChange }: SubmitConfigFormProps) => {
 
   return (
     <div>
-      <div className="grid gap-6">
+      <div className="tg:grid tg:gap-6">
         <Field
           name="url"
           children={(field) => (
             <FormItem>
               <Label htmlFor={field.name}>{t("editor.submitConfigForm.apiUrl")}</Label>
-              <div className="flex gap-2">
+              <div className="tg:flex tg:gap-2">
                 <Input
                   id={field.name}
                   name={field.name}
@@ -68,12 +68,12 @@ const SubmitConfigForm = ({ value, onChange }: SubmitConfigFormProps) => {
                   onBlur={field.handleBlur}
                   onChange={({ target }) => field.handleChange(target.value)}
                   placeholder={t("editor.submitConfigForm.apiUrlPlaceholder")}
-                  className="flex-1"
+                  className="tg:flex-1"
                 />
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button type="button" variant="outline" size="icon">
-                      <Variable className="h-4 w-4" />
+                      <Variable className="tg:h-4 tg:w-4" />
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
@@ -89,9 +89,9 @@ const SubmitConfigForm = ({ value, onChange }: SubmitConfigFormProps) => {
                             field.handleChange(currentValue + variable);
                           }}
                         >
-                          <div className="flex flex-col">
-                            <span className="font-medium">{availField.label}</span>
-                            <span className="text-muted-foreground text-xs">{`{{${availField.nodeId}}}`}</span>
+                          <div className="tg:flex tg:flex-col">
+                            <span className="tg:font-medium">{availField.label}</span>
+                            <span className="tg:text-muted-foreground tg:text-xs">{`{{${availField.nodeId}}}`}</span>
                           </div>
                         </DropdownMenuItem>
                       ))
@@ -127,16 +127,16 @@ const SubmitConfigForm = ({ value, onChange }: SubmitConfigFormProps) => {
           )}
         />
 
-        <div className="space-y-4">
-          <h4 className="font-semibold text-sm">{t("editor.submitConfigForm.headers")}</h4>
+        <div className="tg:space-y-4">
+          <h4 className="tg:font-semibold tg:text-sm">{t("editor.submitConfigForm.headers")}</h4>
           <Field name="headers" mode="array">
             {(field) => (
-              <div className="space-y-2">
+              <div className="tg:space-y-2">
                 {field.state.value?.map((_, index) => {
                   const key = `headers[${index}]`;
 
                   return (
-                    <div key={key} className="flex items-start gap-2">
+                    <div key={key} className="tg:flex tg:items-start tg:gap-2">
                       <Field name={`headers[${index}].key`}>
                         {(subField) => (
                           <Input
@@ -165,7 +165,7 @@ const SubmitConfigForm = ({ value, onChange }: SubmitConfigFormProps) => {
                           field.removeValue(index);
                         }}
                       >
-                        <X className="h-4 w-4" />
+                        <X className="tg:h-4 tg:w-4" />
                       </Button>
                     </div>
                   );
@@ -179,7 +179,7 @@ const SubmitConfigForm = ({ value, onChange }: SubmitConfigFormProps) => {
                     field.pushValue({ key: "", value: "" });
                   }}
                 >
-                  <Plus className="mr-2 h-4 w-4" />
+                  <Plus className="tg:mr-2 tg:h-4 tg:w-4" />
                   {t("editor.submitConfigForm.addHeader")}
                 </Button>
               </div>
@@ -190,10 +190,10 @@ const SubmitConfigForm = ({ value, onChange }: SubmitConfigFormProps) => {
         <Subscribe selector={(state) => ({ method: state.values.method, sendAllFormValues: state.values.sendAllFormValues })}>
           {({ method, sendAllFormValues }) =>
             METHODS_NEEDING_BODY.includes(method || "") && (
-              <div className="space-y-4">
+              <div className="tg:space-y-4">
                 <Field name="sendAllFormValues">
                   {(field) => (
-                    <div className="flex items-center space-x-2">
+                    <div className="tg:flex tg:items-center tg:space-x-2">
                       <Switch id={field.name} checked={field.state.value} onCheckedChange={(newValue) => field.handleChange(newValue)} />
                       <Label htmlFor={field.name}>{t("editor.submitConfigForm.sendAllFormValues")}</Label>
                     </div>
@@ -203,13 +203,13 @@ const SubmitConfigForm = ({ value, onChange }: SubmitConfigFormProps) => {
                 <Field name="body">
                   {(field) => (
                     <FormItem>
-                      <div className="mb-2 flex items-center justify-between">
+                      <div className="tg:mb-2 tg:flex tg:items-center tg:justify-between">
                         <Label htmlFor={field.name}>{t("editor.submitConfigForm.requestBody")}</Label>
 
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                             <Button type="button" variant="ghost" size="sm" disabled={sendAllFormValues}>
-                              <Variable className="mr-2 h-4 w-4" />
+                              <Variable className="tg:mr-2 tg:h-4 tg:w-4" />
                               {t("editor.submitConfigForm.insertVariable")}
                             </Button>
                           </DropdownMenuTrigger>
@@ -227,9 +227,9 @@ const SubmitConfigForm = ({ value, onChange }: SubmitConfigFormProps) => {
                                     handleSubmit().then();
                                   }}
                                 >
-                                  <div className="flex flex-col">
-                                    <span className="font-medium">{availField.label}</span>
-                                    <span className="text-muted-foreground text-xs">{`{{${availField.nodeId}}}`}</span>
+                                  <div className="tg:flex tg:flex-col">
+                                    <span className="tg:font-medium">{availField.label}</span>
+                                    <span className="tg:text-muted-foreground tg:text-xs">{`{{${availField.nodeId}}}`}</span>
                                   </div>
                                 </DropdownMenuItem>
                               ))
@@ -260,8 +260,8 @@ const SubmitConfigForm = ({ value, onChange }: SubmitConfigFormProps) => {
           }
         </Subscribe>
 
-        <div className="space-y-4">
-          <h4 className="font-semibold text-sm">{t("editor.submitConfigForm.postSubmission")}</h4>
+        <div className="tg:space-y-4">
+          <h4 className="tg:font-semibold tg:text-sm">{t("editor.submitConfigForm.postSubmission")}</h4>
 
           <Field
             name="redirectUrl"
@@ -281,11 +281,11 @@ const SubmitConfigForm = ({ value, onChange }: SubmitConfigFormProps) => {
             )}
           />
 
-          <div className="flex items-center gap-2">
+          <div className="tg:flex tg:items-center tg:gap-2">
             <Field
               name="successMessage"
               children={(field) => (
-                <FormItem className="flex-1">
+                <FormItem className="tg:flex-1">
                   <Label htmlFor={field.name}>{t("editor.submitConfigForm.successMessage")}</Label>
                   <Input
                     id={field.name}
@@ -307,11 +307,11 @@ const SubmitConfigForm = ({ value, onChange }: SubmitConfigFormProps) => {
             <SelectLanguage value={selectedLanguage} onValueChange={setSelectedLanguage} />
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="tg:flex tg:items-center tg:gap-2">
             <Field
               name="errorMessage"
               children={(field) => (
-                <FormItem className="flex-1">
+                <FormItem className="tg:flex-1">
                   <Label htmlFor={field.name}>{t("editor.submitConfigForm.errorMessage")}</Label>
                   <Input
                     id={field.name}
@@ -334,13 +334,13 @@ const SubmitConfigForm = ({ value, onChange }: SubmitConfigFormProps) => {
           </div>
         </div>
 
-        <div className="space-y-4">
-          <h4 className="font-semibold text-sm">{t("editor.submitConfigForm.behavior")}</h4>
+        <div className="tg:space-y-4">
+          <h4 className="tg:font-semibold tg:text-sm">{t("editor.submitConfigForm.behavior")}</h4>
 
           <Field
             name="showLoading"
             children={(field) => (
-              <div className="flex items-center space-x-2">
+              <div className="tg:flex tg:items-center tg:space-x-2">
                 <Switch id={field.name} checked={field.state.value} onCheckedChange={(newValue) => field.handleChange(newValue)} />
                 <Label htmlFor={field.name}>{t("editor.submitConfigForm.showLoadingState")}</Label>
               </div>

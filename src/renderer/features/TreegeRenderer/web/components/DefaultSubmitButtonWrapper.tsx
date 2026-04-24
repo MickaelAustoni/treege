@@ -23,9 +23,9 @@ const DefaultSubmitButtonWrapper = ({ children, missingFields = [] }: SubmitButt
       <Tooltip>
         <TooltipTrigger asChild>{children}</TooltipTrigger>
         <TooltipContent>
-          <div className="space-y-1">
-            <p className="font-semibold">{t("renderer.defaultSubmitButton.requiredFieldsMissing")}:</p>
-            <ul className="list-inside list-disc">
+          <div className="tg:space-y-1">
+            <p className="tg:font-semibold">{t("renderer.defaultSubmitButton.requiredFieldsMissing")}:</p>
+            <ul className="tg:list-inside tg:list-disc">
               {missingFields.map((field, index) => (
                 <li key={index}>{field}</li>
               ))}

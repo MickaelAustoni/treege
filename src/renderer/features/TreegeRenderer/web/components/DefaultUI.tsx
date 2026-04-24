@@ -11,15 +11,15 @@ export const Divider = ({ node }: UiRenderProps) => {
 
   if (label) {
     return (
-      <div className="flex items-center gap-x-3">
-        <Separator className="my-8 flex-1" />
-        <h4 className="font-semibold text-sm">{label}</h4>
-        <Separator className="my-8 flex-1" />
+      <div className="tg:flex tg:items-center tg:gap-x-3">
+        <Separator className="tg:my-8 tg:flex-1" />
+        <h4 className="tg:font-semibold tg:text-sm">{label}</h4>
+        <Separator className="tg:my-8 tg:flex-1" />
       </div>
     );
   }
 
-  return <Separator className="my-8" />;
+  return <Separator className="tg:my-8" />;
 };
 
 export const Title = ({ node }: UiRenderProps) => {
@@ -27,7 +27,7 @@ export const Title = ({ node }: UiRenderProps) => {
   const t = useTranslate();
   const isFirst = isStartNode(node.id, edges);
 
-  return <h2 className={cn("mb-5 font-bold text-2xl", !isFirst && "mt-10")}>{t(node.data?.label)}</h2>;
+  return <h2 className={cn("tg:mb-5 tg:font-bold tg:text-2xl", !isFirst && "tg:mt-10")}>{t(node.data?.label)}</h2>;
 };
 export const defaultUI = {
   divider: Divider,

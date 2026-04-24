@@ -5,10 +5,10 @@ import { Label } from "@/shared/components/ui/label";
 
 const DefaultTimeInput = ({ node, value, setValue, error, label, placeholder, helperText, name, id }: InputRenderProps<"time">) => {
   return (
-    <FormItem className="mb-4">
+    <FormItem className="tg:mb-4">
       <Label htmlFor={id}>
         {label || node.data.name}
-        {node.data.required && <span className="text-red-500">*</span>}
+        {node.data.required && <span className="tg:text-red-500">*</span>}
       </Label>
       <Input
         type="time"
@@ -17,7 +17,7 @@ const DefaultTimeInput = ({ node, value, setValue, error, label, placeholder, he
         value={value ?? ""}
         onChange={(e) => setValue(e.target.value)}
         placeholder={placeholder}
-        className="bg-background [color-scheme:light] dark:[color-scheme:dark]"
+        className="tg:bg-background tg:[color-scheme:light] tg:dark:[color-scheme:dark]"
       />
       {error && <FormError>{error}</FormError>}
       {helperText && !error && <FormDescription>{helperText}</FormDescription>}

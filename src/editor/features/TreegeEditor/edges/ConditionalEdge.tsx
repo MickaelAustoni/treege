@@ -143,12 +143,12 @@ const ConditionalEdge = ({
 
   const getEdgeStrokeColor = () => {
     if (data?.isFallback) {
-      return "var(--color-chart-4)";
+      return "var(--treege-chart-4)";
     }
     if (isConfigured) {
-      return "var(--color-chart-2)";
+      return "var(--treege-chart-2)";
     }
-    return "var(--color-chart-3)";
+    return "var(--treege-chart-3)";
   };
 
   return (
@@ -166,7 +166,7 @@ const ConditionalEdge = ({
 
       <EdgeLabelRenderer>
         <div
-          className="nodrag nopan absolute"
+          className="nodrag nopan tg:absolute"
           style={{
             pointerEvents: "all",
             transform: `translate(-50%, -50%) translate(${labelX}px,${labelY}px)`,
@@ -178,30 +178,30 @@ const ConditionalEdge = ({
                 variant={isConfigured ? "default" : "secondary"}
                 size="xs"
                 className={cn(
-                  "transition-[filter]",
-                  isConfigured ? "hover:bg-primary hover:brightness-125" : "hover:bg-secondary hover:brightness-90",
+                  "tg:transition-[filter]",
+                  isConfigured ? "tg:hover:bg-primary tg:hover:brightness-125" : "tg:hover:bg-secondary tg:hover:brightness-90",
                 )}
                 onClick={onEdgeClick}
               >
-                <Waypoints className="h-3 w-3" />
+                <Waypoints className="tg:h-3 tg:w-3" />
                 {isConfigured ? getConditionSummary() : t("editor.conditionalEdge.defineCondition")}
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-96 p-1" align="center" onClick={(e) => e.stopPropagation()}>
-              <ScrollArea className="flex max-h-150 flex-col p-3">
+            <PopoverContent className="tg:w-96 tg:p-1" align="center" onClick={(e) => e.stopPropagation()}>
+              <ScrollArea className="tg:flex tg:max-h-150 tg:flex-col tg:p-3">
                 <form
                   onSubmit={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
                   }}
                 >
-                  <div className="grid gap-5">
-                    <div className="space-y-2">
-                      <h4 className="font-medium leading-none">{t("editor.conditionalEdge.displayConditions")}</h4>
-                      <p className="text-muted-foreground text-sm">{t("editor.conditionalEdge.displayConditionsDesc")}</p>
+                  <div className="tg:grid tg:gap-5">
+                    <div className="tg:space-y-2">
+                      <h4 className="tg:font-medium tg:leading-none">{t("editor.conditionalEdge.displayConditions")}</h4>
+                      <p className="tg:text-muted-foreground tg:text-sm">{t("editor.conditionalEdge.displayConditionsDesc")}</p>
                     </div>
 
-                    <div className="grid gap-4">
+                    <div className="tg:grid tg:gap-4">
                       <Field name="label">
                         {(field) => (
                           <FormItem>
@@ -220,17 +220,17 @@ const ConditionalEdge = ({
                       <Field name="isFallback">
                         {(field) => (
                           <FormItem>
-                            <div className="flex items-center gap-3 rounded-lg border bg-muted/20 p-3">
+                            <div className="tg:flex tg:items-center tg:gap-3 tg:rounded-lg tg:border tg:bg-muted/20 tg:p-3">
                               <Checkbox
                                 id={field.name}
                                 checked={field.state.value}
                                 onCheckedChange={(checked) => field.handleChange(checked as boolean)}
                               />
-                              <div className="flex flex-col gap-1">
-                                <Label htmlFor={field.name} className="cursor-pointer font-medium">
+                              <div className="tg:flex tg:flex-col tg:gap-1">
+                                <Label htmlFor={field.name} className="tg:cursor-pointer tg:font-medium">
                                   {t("editor.conditionalEdge.fallbackPath")}
                                 </Label>
-                                <FormDescription className="text-xs">{t("editor.conditionalEdge.fallbackPathDesc")}</FormDescription>
+                                <FormDescription className="tg:text-xs">{t("editor.conditionalEdge.fallbackPathDesc")}</FormDescription>
                               </div>
                             </div>
                           </FormItem>
@@ -242,13 +242,15 @@ const ConditionalEdge = ({
                           const isFallback = conditionsField.form.getFieldValue("isFallback");
 
                           return (
-                            <div className="space-y-3">
-                              <Label className={isFallback ? "text-muted-foreground" : ""}>{t("editor.conditionalEdge.conditions")}</Label>
+                            <div className="tg:space-y-3">
+                              <Label className={isFallback ? "tg:text-muted-foreground" : ""}>
+                                {t("editor.conditionalEdge.conditions")}
+                              </Label>
 
-                              <div className="space-y-2">
+                              <div className="tg:space-y-2">
                                 {conditionsField.state.value?.map((_, index) => (
-                                  <div key={`condition-${index}`} className="space-y-2">
-                                    <div className="space-y-2 rounded-lg border bg-muted/30 p-3">
+                                  <div key={`condition-${index}`} className="tg:space-y-2">
+                                    <div className="tg:space-y-2 tg:rounded-lg tg:border tg:bg-muted/30 tg:p-3">
                                       <Field name={`conditions[${index}].field`}>
                                         {(fieldField) => (
                                           <FormItem>
@@ -258,7 +260,7 @@ const ConditionalEdge = ({
                                               value={fieldField.state.value || ""}
                                               onValueChange={(value: string) => fieldField.handleChange(value)}
                                             >
-                                              <SelectTrigger id={`field-${index}`} className="w-full">
+                                              <SelectTrigger id={`field-${index}`} className="tg:w-full">
                                                 <SelectValue placeholder={t("editor.conditionalEdge.selectField")} />
                                               </SelectTrigger>
                                               <SelectContent>
@@ -279,7 +281,7 @@ const ConditionalEdge = ({
                                         )}
                                       </Field>
 
-                                      <div className="flex gap-2">
+                                      <div className="tg:flex tg:gap-2">
                                         <Field name={`conditions[${index}].operator`}>
                                           {(operatorField) => (
                                             <FormItem>
@@ -307,7 +309,7 @@ const ConditionalEdge = ({
 
                                         <Field name={`conditions[${index}].value`}>
                                           {(valueField) => (
-                                            <FormItem className="w-full">
+                                            <FormItem className="tg:w-full">
                                               <Label htmlFor={`value-${index}`}>{t("editor.conditionalEdge.value")}</Label>
                                               <Input
                                                 disabled={isFallback}
@@ -327,13 +329,13 @@ const ConditionalEdge = ({
                                           type="button"
                                           variant="ghost"
                                           size="sm"
-                                          className="w-full"
+                                          className="tg:w-full"
                                           onClick={() => {
                                             conditionsField.removeValue(index);
                                             handleSubmit().then();
                                           }}
                                         >
-                                          <X className="mr-1 h-4 w-4" />
+                                          <X className="tg:mr-1 tg:h-4 tg:w-4" />
                                           {t("editor.conditionalEdge.removeCondition")}
                                         </Button>
                                       )}
@@ -342,13 +344,13 @@ const ConditionalEdge = ({
                                     {conditionsField.state.value && index < conditionsField.state.value.length - 1 && (
                                       <Field name={`conditions[${index}].logicalOperator`}>
                                         {(logicalField) => (
-                                          <div className="flex justify-center">
+                                          <div className="tg:flex tg:justify-center">
                                             <Select
                                               disabled={isFallback}
                                               value={logicalField.state.value || LOGICAL_OPERATOR.AND}
                                               onValueChange={(value: LogicalOperator) => logicalField.handleChange(value)}
                                             >
-                                              <SelectTrigger className="h-9 w-32 font-semibold">
+                                              <SelectTrigger className="tg:h-9 tg:w-32 tg:font-semibold">
                                                 <SelectValue />
                                               </SelectTrigger>
                                               <SelectContent>
@@ -368,7 +370,7 @@ const ConditionalEdge = ({
                                   type="button"
                                   variant="outline"
                                   size="sm"
-                                  className="w-full"
+                                  className="tg:w-full"
                                   onClick={() => {
                                     conditionsField.pushValue({
                                       field: availableParentFields[0]?.nodeId ?? "",
@@ -379,7 +381,7 @@ const ConditionalEdge = ({
                                     handleSubmit().then();
                                   }}
                                 >
-                                  <Plus className="mr-2 h-4 w-4" />
+                                  <Plus className="tg:mr-2 tg:h-4 tg:w-4" />
                                   {t("editor.conditionalEdge.addCondition")}
                                 </Button>
                               </div>
@@ -389,9 +391,9 @@ const ConditionalEdge = ({
                       </Field>
                     </div>
 
-                    <div className="flex justify-end gap-2 pt-2">
+                    <div className="tg:flex tg:justify-end tg:gap-2 tg:pt-2">
                       <Button type="button" size="sm" variant="outline" onClick={handleClear}>
-                        <X className="mr-1 h-4 w-4" />
+                        <X className="tg:mr-1 tg:h-4 tg:w-4" />
                         {t("common.clear")}
                       </Button>
                       <Button type="button" size="sm" onClick={() => handleOpenChange(false)}>

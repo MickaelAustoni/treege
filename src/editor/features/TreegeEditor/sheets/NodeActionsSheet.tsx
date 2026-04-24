@@ -42,16 +42,17 @@ const NodeActionsSheet = () => {
 
   return (
     <Sheet open={isNodeSheetOpen && !!selectedNode} onOpenChange={handleOpenChange}>
-      <SheetContent className="flex flex-col gap-0">
+      <SheetContent className="tg:flex tg:flex-col tg:gap-0">
         <SheetHeader>
           <SheetTitle>
-            {t("editor.nodeActionsSheet.editNode")} <span className="font-light text-muted-foreground text-xs">{selectedNode?.id}</span>
+            {t("editor.nodeActionsSheet.editNode")}{" "}
+            <span className="tg:font-light tg:text-muted-foreground tg:text-xs">{selectedNode?.id}</span>
           </SheetTitle>
           <SheetDescription>{label || "\u00A0"}</SheetDescription>
         </SheetHeader>
 
-        <ScrollArea className="flex min-h-0 flex-1 flex-col px-4">
-          <div className="space-y-6 py-4">
+        <ScrollArea className="tg:flex tg:min-h-0 tg:flex-1 tg:flex-col tg:px-4">
+          <div className="tg:space-y-6 tg:py-4">
             <SelectNodeType />
             <SelectNodeGroup />
 
@@ -64,7 +65,7 @@ const NodeActionsSheet = () => {
           </div>
         </ScrollArea>
 
-        <SheetFooter className="flex items-end border-t">
+        <SheetFooter className="tg:flex tg:items-end tg:border-t">
           <Button variant="ghost" size="icon" onClick={handleDelete} aria-label={t("editor.nodeActionsSheet.deleteNode")}>
             <Trash2 />
           </Button>

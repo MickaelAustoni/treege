@@ -12,10 +12,14 @@ export type GroupNodeProps = NodeProps<GroupNodeType>;
 const GroupNode = ({ data, id }: GroupNodeProps) => (
   <>
     <NodeResizer />
-    <div className="-top-3.5 absolute left-6">
-      <Badge className="max-w-50 bg-chart-2">
-        <Boxes className="!w-3 !h-3" />
-        <NodeLabelInput nodeId={id} label={data?.label} className="min-w-0 flex-1 text-xs text-white placeholder:text-white/60" />
+    <div className="tg:-top-3.5 tg:absolute tg:left-6">
+      <Badge className="tg:max-w-50 tg:bg-chart-2">
+        <Boxes className="tg:!w-3 tg:!h-3" />
+        <NodeLabelInput
+          nodeId={id}
+          label={data?.label}
+          className="tg:min-w-0 tg:flex-1 tg:text-xs tg:text-white tg:placeholder:text-white/60"
+        />
       </Badge>
     </div>
     <NodeMoreMenu nodeId={id} />

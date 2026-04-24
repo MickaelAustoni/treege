@@ -36,11 +36,11 @@ const GroupNodeForm = () => {
         e.stopPropagation();
       }}
     >
-      <div className="flex items-end gap-2">
+      <div className="tg:flex tg:items-end tg:gap-2">
         <Field
           name="label"
           children={(field) => (
-            <FormItem className="flex-1">
+            <FormItem className="tg:flex-1">
               <Label htmlFor={field.name}>Label</Label>
               <Input
                 id={field.name}

@@ -131,12 +131,12 @@ const DefaultAddressInput = ({ node, value, setValue, error, label, placeholder,
   return (
     <>
       {googleApiKey && <script async src={`https://maps.googleapis.com/maps/api/js?key=${googleApiKey}&libraries=places`} />}
-      <FormItem className="mb-4">
+      <FormItem className="tg:mb-4">
         <Label htmlFor={id}>
           {label || node.data.name}
-          {node.data.required && <span className="text-red-500">*</span>}
+          {node.data.required && <span className="tg:text-red-500">*</span>}
         </Label>
-        <div className="relative">
+        <div className="tg:relative">
           <Input
             type="text"
             id={id}
@@ -149,12 +149,12 @@ const DefaultAddressInput = ({ node, value, setValue, error, label, placeholder,
               }
             }}
             placeholder={placeholder || t("renderer.defaultAddressInput.enterAddress")}
-            className="pr-10"
+            className="tg:pr-10"
             autoComplete="off"
           />
-          <MapPin className="-translate-y-1/2 pointer-events-none absolute top-1/2 right-3 h-4 w-4 text-muted-foreground" />
+          <MapPin className="tg:-translate-y-1/2 tg:pointer-events-none tg:absolute tg:top-1/2 tg:right-3 tg:h-4 tg:w-4 tg:text-muted-foreground" />
           {popoverOpen && (
-            <div className="absolute z-50 mt-1 w-full rounded-md border bg-popover shadow-md">
+            <div className="tg:absolute tg:z-50 tg:mt-1 tg:w-full tg:rounded-md tg:border tg:bg-popover tg:shadow-md">
               <Command>
                 <CommandList>
                   <CommandEmpty>{t("renderer.defaultAddressInput.noAddressesFound")}</CommandEmpty>
@@ -166,7 +166,7 @@ const DefaultAddressInput = ({ node, value, setValue, error, label, placeholder,
                         onSelect={() => handleSelectSuggestion(suggestion)}
                         onMouseDown={(e) => e.preventDefault()}
                       >
-                        <MapPin className="mr-2 h-4 w-4" />
+                        <MapPin className="tg:mr-2 tg:h-4 tg:w-4" />
                         {suggestion.label}
                       </CommandItem>
                     ))}

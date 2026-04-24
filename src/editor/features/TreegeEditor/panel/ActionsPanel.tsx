@@ -167,7 +167,7 @@ const ActionsPanel = ({ onExportJson, onSave }: ActionsPanelProps) => {
   }, [handleSave]);
 
   return (
-    <Panel position="top-right" className="flex gap-2">
+    <Panel position="top-right" className="tg:flex tg:gap-2">
       <AIGeneratorDialog aiConfig={aiConfig} onGenerate={handleAIGenerate} />
 
       <Button variant="outline" size="sm" onClick={handleAddNode}>
@@ -185,16 +185,16 @@ const ActionsPanel = ({ onExportJson, onSave }: ActionsPanelProps) => {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="start">
-          <DropdownMenuLabel className="font-normal">
-            <div className="flex flex-col gap-1">
-              <span className="text-muted-foreground text-xs">Flow ID</span>
+          <DropdownMenuLabel className="tg:font-normal">
+            <div className="tg:flex tg:flex-col tg:gap-1">
+              <span className="tg:text-muted-foreground tg:text-xs">Flow ID</span>
               <button
                 onClick={handleCopyId}
-                className="flex items-center gap-2 font-mono text-muted-foreground transition-colors hover:text-primary"
+                className="tg:flex tg:items-center tg:gap-2 tg:font-mono tg:text-muted-foreground tg:transition-colors tg:hover:text-primary"
                 type="button"
               >
-                <Copy className="h-3 w-3" />
-                <span className="truncate text-xs">{id}</span>
+                <Copy className="tg:h-3 tg:w-3" />
+                <span className="tg:truncate tg:text-xs">{id}</span>
               </button>
             </div>
           </DropdownMenuLabel>
@@ -213,14 +213,14 @@ const ActionsPanel = ({ onExportJson, onSave }: ActionsPanelProps) => {
           <DropdownMenuSeparator />
 
           <DropdownMenuGroup>
-            <DropdownMenuItem onClick={handleClear} className="text-destructive focus:text-destructive">
-              <Trash2 className="text-destructive" /> {t("editor.actionsPanel.clear")}
+            <DropdownMenuItem onClick={handleClear} className="tg:text-destructive tg:focus:text-destructive">
+              <Trash2 className="tg:text-destructive" /> {t("editor.actionsPanel.clear")}
             </DropdownMenuItem>
           </DropdownMenuGroup>
         </DropdownMenuContent>
       </DropdownMenu>
 
-      <input type="file" accept="application/json,.json" className="hidden" ref={inputFileRef} onChange={handleImport} />
+      <input type="file" accept="application/json,.json" className="tg:hidden" ref={inputFileRef} onChange={handleImport} />
     </Panel>
   );
 };

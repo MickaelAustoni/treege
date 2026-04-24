@@ -5,20 +5,20 @@ import * as React from "react";
 import { cn } from "@/shared/lib/utils";
 
 const badgeVariants = cva(
-  "inline-flex w-fit shrink-0 items-center justify-center gap-1 overflow-hidden rounded-full border border-transparent px-2 py-0.5 text-xs font-medium whitespace-nowrap transition-[color,box-shadow] focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&>svg]:pointer-events-none [&>svg]:size-3",
+  "tg:inline-flex tg:w-fit tg:shrink-0 tg:items-center tg:justify-center tg:gap-1 tg:overflow-hidden tg:rounded-full tg:border tg:border-transparent tg:px-2 tg:py-0.5 tg:text-xs tg:font-medium tg:whitespace-nowrap tg:transition-[color,box-shadow] tg:focus-visible:border-ring tg:focus-visible:ring-[3px] tg:focus-visible:ring-ring/50 tg:aria-invalid:border-destructive tg:aria-invalid:ring-destructive/20 tg:dark:aria-invalid:ring-destructive/40 tg:[&>svg]:pointer-events-none tg:[&>svg]:size-3",
   {
     defaultVariants: {
       variant: "default",
     },
     variants: {
       variant: {
-        blue: "bg-blue-500 text-white dark:bg-blue-600",
-        default: "border-transparent bg-primary text-primary-foreground [a&]:hover:bg-primary/90",
+        blue: "tg:bg-blue-500 tg:text-white tg:dark:bg-blue-600",
+        default: "tg:border-transparent tg:bg-primary tg:text-primary-foreground tg:[a&]:hover:bg-primary/90",
         destructive:
-          "border-transparent bg-destructive text-white [a&]:hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60",
-        outline: "border-foreground/30 text-foreground [a&]:hover:bg-accent [a&]:hover:text-accent-foreground",
-        purple: "bg-purple-600 hover:bg-purple-700 text-white",
-        secondary: "border-transparent bg-secondary text-secondary-foreground [a&]:hover:bg-secondary/90",
+          "tg:border-transparent tg:bg-destructive tg:text-white tg:[a&]:hover:bg-destructive/90 tg:focus-visible:ring-destructive/20 tg:dark:focus-visible:ring-destructive/40 tg:dark:bg-destructive/60",
+        outline: "tg:border-foreground/30 tg:text-foreground tg:[a&]:hover:bg-accent tg:[a&]:hover:text-accent-foreground",
+        purple: "tg:bg-purple-600 tg:hover:bg-purple-700 tg:text-white",
+        secondary: "tg:border-transparent tg:bg-secondary tg:text-secondary-foreground tg:[a&]:hover:bg-secondary/90",
       },
     },
   },

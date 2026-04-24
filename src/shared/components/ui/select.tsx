@@ -25,14 +25,14 @@ const SelectTrigger = ({
     data-slot="select-trigger"
     data-size={size}
     className={cn(
-      "flex w-fit items-center justify-between gap-2 whitespace-nowrap rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-xs outline-none transition-[color,box-shadow] focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 data-[size=default]:h-9 data-[size=sm]:h-8 data-[placeholder]:text-muted-foreground *:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-2 dark:bg-input/30 dark:aria-invalid:ring-destructive/40 dark:hover:bg-input/50 [&_svg:not([class*='size-'])]:size-4 [&_svg:not([class*='text-'])]:text-muted-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0",
+      "tg:flex tg:w-fit tg:items-center tg:justify-between tg:gap-2 tg:whitespace-nowrap tg:rounded-md tg:border tg:border-input tg:bg-transparent tg:px-3 tg:py-2 tg:text-sm tg:shadow-xs tg:outline-none tg:transition-[color,box-shadow] tg:focus-visible:border-ring tg:focus-visible:ring-[3px] tg:focus-visible:ring-ring/50 tg:disabled:cursor-not-allowed tg:disabled:opacity-50 tg:aria-invalid:border-destructive tg:aria-invalid:ring-destructive/20 tg:data-[size=default]:h-9 tg:data-[size=sm]:h-8 tg:data-[placeholder]:text-muted-foreground tg:*:data-[slot=select-value]:line-clamp-1 tg:*:data-[slot=select-value]:flex tg:*:data-[slot=select-value]:items-center tg:*:data-[slot=select-value]:gap-2 tg:dark:bg-input/30 tg:dark:aria-invalid:ring-destructive/40 tg:dark:hover:bg-input/50 tg:[&_svg:not([class*='size-'])]:size-4 tg:[&_svg:not([class*='text-'])]:text-muted-foreground tg:[&_svg]:pointer-events-none tg:[&_svg]:shrink-0",
       className,
     )}
     {...props}
   >
     {children}
     <SelectPrimitive.Icon asChild>
-      <ChevronDownIcon className="size-4 opacity-50" />
+      <ChevronDownIcon className="tg:size-4 tg:opacity-50" />
     </SelectPrimitive.Icon>
   </SelectPrimitive.Trigger>
 );
@@ -42,9 +42,9 @@ const SelectContent = ({ className, children, position = "popper", ...props }: R
     <SelectPrimitive.Content
       data-slot="select-content"
       className={cn(
-        "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 relative z-50 max-h-(--radix-select-content-available-height) min-w-[8rem] origin-(--radix-select-content-transform-origin) overflow-y-auto overflow-x-hidden rounded-md border bg-popover text-popover-foreground shadow-md data-[state=closed]:animate-out data-[state=open]:animate-in",
+        "tg:data-[state=closed]:fade-out-0 tg:data-[state=open]:fade-in-0 tg:data-[state=closed]:zoom-out-95 tg:data-[state=open]:zoom-in-95 tg:data-[side=bottom]:slide-in-from-top-2 tg:data-[side=left]:slide-in-from-right-2 tg:data-[side=right]:slide-in-from-left-2 tg:data-[side=top]:slide-in-from-bottom-2 tg:relative tg:z-50 tg:max-h-(--radix-select-content-available-height) tg:min-w-[8rem] tg:origin-(--radix-select-content-transform-origin) tg:overflow-y-auto tg:overflow-x-hidden tg:rounded-md tg:border tg:bg-popover tg:text-popover-foreground tg:shadow-md tg:data-[state=closed]:animate-out tg:data-[state=open]:animate-in",
         position === "popper" &&
-          "data-[side=left]:-translate-x-1 data-[side=top]:-translate-y-1 data-[side=right]:translate-x-1 data-[side=bottom]:translate-y-1",
+          "tg:data-[side=left]:-translate-x-1 tg:data-[side=top]:-translate-y-1 tg:data-[side=right]:translate-x-1 tg:data-[side=bottom]:translate-y-1",
         className,
       )}
       position={position}
@@ -53,8 +53,9 @@ const SelectContent = ({ className, children, position = "popper", ...props }: R
       <SelectScrollUpButton />
       <SelectPrimitive.Viewport
         className={cn(
-          "p-1",
-          position === "popper" && "h-[var(--radix-select-trigger-height)] w-full min-w-[var(--radix-select-trigger-width)] scroll-my-1",
+          "tg:p-1",
+          position === "popper" &&
+            "tg:h-[var(--radix-select-trigger-height)] tg:w-full tg:min-w-[var(--radix-select-trigger-width)] tg:scroll-my-1",
         )}
       >
         {children}
@@ -70,7 +71,11 @@ const SelectLabel = ({
   children,
   ...props
 }: React.ComponentProps<typeof SelectPrimitive.Label> & { htmlFor?: string }) => (
-  <SelectPrimitive.Label data-slot="select-label" className={cn("pb-1.5 font-medium text-muted-foreground text-sm", className)} {...props}>
+  <SelectPrimitive.Label
+    data-slot="select-label"
+    className={cn("tg:pb-1.5 tg:font-medium tg:text-muted-foreground tg:text-sm", className)}
+    {...props}
+  >
     <label htmlFor={htmlFor}>{children}</label>
   </SelectPrimitive.Label>
 );
@@ -79,14 +84,14 @@ const SelectItem = ({ className, children, ...props }: React.ComponentProps<type
   <SelectPrimitive.Item
     data-slot="select-item"
     className={cn(
-      "relative flex w-full cursor-pointer select-none items-center gap-2 rounded-sm py-1.5 pr-8 pl-2 text-sm outline-hidden focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg:not([class*='size-'])]:size-4 [&_svg:not([class*='text-'])]:text-muted-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 *:[span]:last:flex *:[span]:last:items-center *:[span]:last:gap-2",
+      "tg:relative tg:flex tg:w-full tg:cursor-pointer tg:select-none tg:items-center tg:gap-2 tg:rounded-sm tg:py-1.5 tg:pr-8 tg:pl-2 tg:text-sm tg:outline-hidden tg:focus:bg-accent tg:focus:text-accent-foreground tg:data-[disabled]:pointer-events-none tg:data-[disabled]:opacity-50 tg:[&_svg:not([class*='size-'])]:size-4 tg:[&_svg:not([class*='text-'])]:text-muted-foreground tg:[&_svg]:pointer-events-none tg:[&_svg]:shrink-0 tg:*:[span]:last:flex tg:*:[span]:last:items-center tg:*:[span]:last:gap-2",
       className,
     )}
     {...props}
   >
-    <span className="absolute right-2 flex size-3.5 items-center justify-center">
+    <span className="tg:absolute tg:right-2 tg:flex tg:size-3.5 tg:items-center tg:justify-center">
       <SelectPrimitive.ItemIndicator>
-        <CheckIcon className="size-4" />
+        <CheckIcon className="tg:size-4" />
       </SelectPrimitive.ItemIndicator>
     </span>
     <SelectPrimitive.ItemText>{children}</SelectPrimitive.ItemText>
@@ -96,7 +101,7 @@ const SelectItem = ({ className, children, ...props }: React.ComponentProps<type
 const SelectSeparator = ({ className, ...props }: React.ComponentProps<typeof SelectPrimitive.Separator>) => (
   <SelectPrimitive.Separator
     data-slot="select-separator"
-    className={cn("-mx-1 pointer-events-none my-1 h-px bg-border", className)}
+    className={cn("tg:-mx-1 tg:pointer-events-none tg:my-1 tg:h-px tg:bg-border", className)}
     {...props}
   />
 );
@@ -104,20 +109,20 @@ const SelectSeparator = ({ className, ...props }: React.ComponentProps<typeof Se
 const SelectScrollUpButton = ({ className, ...props }: React.ComponentProps<typeof SelectPrimitive.ScrollUpButton>) => (
   <SelectPrimitive.ScrollUpButton
     data-slot="select-scroll-up-button"
-    className={cn("flex cursor-default items-center justify-center py-1", className)}
+    className={cn("tg:flex tg:cursor-default tg:items-center tg:justify-center tg:py-1", className)}
     {...props}
   >
-    <ChevronUpIcon className="size-4" />
+    <ChevronUpIcon className="tg:size-4" />
   </SelectPrimitive.ScrollUpButton>
 );
 
 const SelectScrollDownButton = ({ className, ...props }: React.ComponentProps<typeof SelectPrimitive.ScrollDownButton>) => (
   <SelectPrimitive.ScrollDownButton
     data-slot="select-scroll-down-button"
-    className={cn("flex cursor-default items-center justify-center py-1", className)}
+    className={cn("tg:flex tg:cursor-default tg:items-center tg:justify-center tg:py-1", className)}
     {...props}
   >
-    <ChevronDownIcon className="size-4" />
+    <ChevronDownIcon className="tg:size-4" />
   </SelectPrimitive.ScrollDownButton>
 );
 

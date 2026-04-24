@@ -9,13 +9,13 @@ export interface SelectLanguageProps {
 
 const SelectLanguage = ({ value = "en", onValueChange }: SelectLanguageProps) => (
   <Select value={value} onValueChange={onValueChange}>
-    <SelectTrigger className="uppercase">
+    <SelectTrigger className="tg:uppercase">
       <SelectValue placeholder="" />
     </SelectTrigger>
     <SelectContent>
       <SelectGroup>
         {Object.values(LANGUAGES).map((type) => (
-          <SelectItem key={type} value={type} className="uppercase">
+          <SelectItem key={type} value={type} className="tg:uppercase">
             {type}
           </SelectItem>
         ))}

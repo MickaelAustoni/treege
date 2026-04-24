@@ -49,7 +49,7 @@ const NodeInputPreview = ({ nodeId, data }: NodeInputPreviewProps) => {
   const name = resolveNodeKey(node);
   const SubTypeIcon = getInputTypeIcon(inputType);
   const subTypeHint = (
-    <div className="flex items-center gap-1 text-[10px] text-muted-foreground capitalize [&>svg]:size-3">
+    <div className="tg:flex tg:items-center tg:gap-1 tg:text-[10px] tg:text-muted-foreground tg:capitalize tg:[&>svg]:size-3">
       <SubTypeIcon />
       {inputType}
     </div>
@@ -67,10 +67,10 @@ const NodeInputPreview = ({ nodeId, data }: NodeInputPreviewProps) => {
     const displayKey = label || name;
 
     return (
-      <div className="pointer-events-none flex select-none flex-col gap-1 text-sm">
+      <div className="tg:pointer-events-none tg:flex tg:select-none tg:flex-col tg:gap-1 tg:text-sm">
         {subTypeHint}
-        <span className="truncate font-medium">{displayKey}</span>
-        <span className="truncate text-muted-foreground text-xs">{displayValue || "—"}</span>
+        <span className="tg:truncate tg:font-medium">{displayKey}</span>
+        <span className="tg:truncate tg:text-muted-foreground tg:text-xs">{displayValue || "—"}</span>
       </div>
     );
   }
@@ -85,7 +85,7 @@ const NodeInputPreview = ({ nodeId, data }: NodeInputPreviewProps) => {
   const placeholder = resolveInputPlaceholder(data, language);
 
   return (
-    <div className={cn("pointer-events-none flex select-none flex-col gap-1", inputType === "submit" && "items-center")}>
+    <div className={cn("tg:pointer-events-none tg:flex tg:select-none tg:flex-col tg:gap-1", inputType === "submit" && "tg:items-center")}>
       {subTypeHint}
       <Renderer
         node={node}

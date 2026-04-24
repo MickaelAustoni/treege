@@ -366,28 +366,28 @@ const DefaultHttpInput = ({ node, value, setValue, error, label, placeholder, he
     if (httpConfig.searchParam) {
       const isLoading = loading && httpConfig?.showLoading;
       const buttonContent = isLoading ? (
-        <div className="flex items-center gap-2">
-          <Loader2 className="h-4 w-4 animate-spin" />
-          <span className="text-muted-foreground">{selectedOption?.label || placeholder || t("renderer.defaultHttpInput.search")}</span>
+        <div className="tg:flex tg:items-center tg:gap-2">
+          <Loader2 className="tg:h-4 tg:w-4 tg:animate-spin" />
+          <span className="tg:text-muted-foreground">{selectedOption?.label || placeholder || t("renderer.defaultHttpInput.search")}</span>
         </div>
       ) : (
         selectedOption?.label || placeholder || t("renderer.defaultHttpInput.search")
       );
 
       return (
-        <FormItem className="mb-4">
+        <FormItem className="tg:mb-4">
           <Label>
             {label || node.data.name}
-            {node.data.required && <span className="text-red-500">*</span>}
+            {node.data.required && <span className="tg:text-red-500">*</span>}
           </Label>
           <Popover open={comboboxOpen} onOpenChange={setComboboxOpen}>
             <PopoverTrigger asChild>
-              <Button variant="outline" role="combobox" aria-expanded={comboboxOpen} className="w-full justify-between">
+              <Button variant="outline" role="combobox" aria-expanded={comboboxOpen} className="tg:w-full tg:justify-between">
                 {buttonContent}
-                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                <ChevronsUpDown className="tg:ml-2 tg:h-4 tg:w-4 tg:shrink-0 tg:opacity-50" />
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-[300px] p-0" align="start">
+            <PopoverContent className="tg:w-[300px] tg:p-0" align="start">
               <Command shouldFilter={false}>
                 <CommandInput
                   placeholder={t("renderer.defaultHttpInput.search")}
@@ -399,14 +399,18 @@ const DefaultHttpInput = ({ node, value, setValue, error, label, placeholder, he
                 />
                 <CommandList>
                   {loading && (
-                    <div className="flex items-center justify-center p-4">
-                      <Loader2 className="h-4 w-4 animate-spin" />
+                    <div className="tg:flex tg:items-center tg:justify-center tg:p-4">
+                      <Loader2 className="tg:h-4 tg:w-4 tg:animate-spin" />
                     </div>
                   )}
                   {!loading && fetchError && (
-                    <div className="p-4 text-destructive text-sm">
+                    <div className="tg:p-4 tg:text-destructive tg:text-sm">
                       <div>{fetchError}</div>
-                      <button type="button" onClick={() => fetchData(searchQuery)} className="mt-2 block text-primary hover:underline">
+                      <button
+                        type="button"
+                        onClick={() => fetchData(searchQuery)}
+                        className="tg:mt-2 tg:block tg:text-primary tg:hover:underline"
+                      >
                         {t("renderer.defaultHttpInput.retry")}
                       </button>
                     </div>
@@ -424,7 +428,7 @@ const DefaultHttpInput = ({ node, value, setValue, error, label, placeholder, he
                               setComboboxOpen(false);
                             }}
                           >
-                            <Check className={cn("mr-2 h-4 w-4", value === option.value ? "opacity-100" : "opacity-0")} />
+                            <Check className={cn("tg:mr-2 tg:h-4 tg:w-4", value === option.value ? "tg:opacity-100" : "tg:opacity-0")} />
                             {option.label}
                           </CommandItem>
                         ))}
@@ -469,8 +473,8 @@ const DefaultHttpInput = ({ node, value, setValue, error, label, placeholder, he
         disabled={isLoading || options.length === 0}
         name={name}
       >
-        <SelectTrigger id={id} name={name} className="w-full">
-          {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+        <SelectTrigger id={id} name={name} className="tg:w-full">
+          {isLoading && <Loader2 className="tg:mr-2 tg:h-4 tg:w-4 tg:animate-spin" />}
           <SelectValue placeholder={placeholder || t("renderer.defaultHttpInput.selectOption")} />
         </SelectTrigger>
         <SelectContent>
@@ -486,16 +490,16 @@ const DefaultHttpInput = ({ node, value, setValue, error, label, placeholder, he
     );
 
     return (
-      <FormItem className="mb-4">
+      <FormItem className="tg:mb-4">
         <Label htmlFor={id}>
           {label || node.data.name}
-          {node.data.required && <span className="text-red-500">*</span>}
+          {node.data.required && <span className="tg:text-red-500">*</span>}
         </Label>
         {tooltipMessage ? (
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <div className="w-full">{selectElement}</div>
+                <div className="tg:w-full">{selectElement}</div>
               </TooltipTrigger>
               <TooltipContent>
                 <p>{tooltipMessage}</p>
@@ -513,10 +517,10 @@ const DefaultHttpInput = ({ node, value, setValue, error, label, placeholder, he
 
   // If no responseMapping, render the value as text (hidden or display-only)
   return (
-    <FormItem className="mb-4">
+    <FormItem className="tg:mb-4">
       <Label htmlFor={id}>
         {label || node.data.name}
-        {node.data.required && <span className="text-red-500">*</span>}
+        {node.data.required && <span className="tg:text-red-500">*</span>}
       </Label>
       <Input type="text" name={name} id={id} value={typeof value === "string" ? value : JSON.stringify(value)} readOnly disabled />
       {error && <FormError>{error}</FormError>}

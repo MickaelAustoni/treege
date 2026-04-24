@@ -42,16 +42,16 @@ const BottomHandleDropdown = ({ nodeId, isConnectable }: BottomHandleDropdownPro
         position={Position.Bottom}
         isConnectable={isConnectable}
         onClick={handleClick}
-        className="flex h-6! w-6! cursor-pointer items-center justify-center rounded-sm transition-colors hover:bg-primary/80!"
+        className="tg:flex tg:h-6! tg:w-6! tg:cursor-pointer tg:items-center tg:justify-center tg:rounded-sm tg:transition-colors tg:hover:bg-primary/80!"
       >
-        <Plus className="h-4 w-4 text-primary-foreground" />
+        <Plus className="tg:h-4 tg:w-4 tg:text-primary-foreground" />
       </Handle>
 
       <DropdownMenu open={open} onOpenChange={setOpen}>
         <DropdownMenuTrigger asChild>
-          <span aria-hidden className="-translate-x-1/2 pointer-events-none absolute bottom-0 left-1/2 h-0 w-0" />
+          <span aria-hidden className="tg:-translate-x-1/2 tg:pointer-events-none tg:absolute tg:bottom-0 tg:left-1/2 tg:h-0 tg:w-0" />
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="center" side="bottom" className="treege-scrollbar max-h-80">
+        <DropdownMenuContent align="center" side="bottom" className="treege-scrollbar tg:max-h-80">
           <DropdownMenuGroup>
             <DropdownMenuLabel>{t("editor.selectNodeType.options.input")}</DropdownMenuLabel>
             {Object.values(INPUT_TYPE).map((subType) => {
@@ -61,7 +61,7 @@ const BottomHandleDropdown = ({ nodeId, isConnectable }: BottomHandleDropdownPro
                 <DropdownMenuItem
                   key={subType}
                   onClick={() => onAddFromHandle(nodeId, { data: { type: subType }, type: NODE_TYPE.input })}
-                  className="capitalize"
+                  className="tg:capitalize"
                 >
                   <Icon />
                   {subType}
@@ -79,7 +79,7 @@ const BottomHandleDropdown = ({ nodeId, isConnectable }: BottomHandleDropdownPro
                 <DropdownMenuItem
                   key={subType}
                   onClick={() => onAddFromHandle(nodeId, { data: { type: subType }, type: NODE_TYPE.ui })}
-                  className="capitalize"
+                  className="tg:capitalize"
                 >
                   <Icon />
                   {subType}

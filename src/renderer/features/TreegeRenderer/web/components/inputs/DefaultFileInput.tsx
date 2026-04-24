@@ -26,10 +26,10 @@ const DefaultFileInput = ({ node, setValue, error, label, placeholder, helperTex
   };
 
   return (
-    <FormItem className="mb-4">
+    <FormItem className="tg:mb-4">
       <Label htmlFor={id}>
         {label || node.data.name}
-        {node.data.required && <span className="text-red-500">*</span>}
+        {node.data.required && <span className="tg:text-red-500">*</span>}
       </Label>
       <Input type="file" name={name} id={id} onChange={handleFileChange} multiple={node.data.multiple} placeholder={placeholder} />
       {error && <FormError>{error}</FormError>}

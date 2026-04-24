@@ -75,7 +75,7 @@ const useFlowActions = () => {
 
           return {
             ...node,
-            data: subType !== undefined ? { ...baseData, type: subType } : baseData,
+            data: subType === undefined ? baseData : { ...baseData, type: subType },
             type,
           };
         }),

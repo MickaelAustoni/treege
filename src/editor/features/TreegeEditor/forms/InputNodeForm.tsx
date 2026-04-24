@@ -65,13 +65,13 @@ const InputNodeForm = () => {
         e.stopPropagation();
       }}
     >
-      <div className="grid gap-6">
+      <div className="tg:grid tg:gap-6">
         {/* Label */}
-        <div className="flex items-end gap-2">
+        <div className="tg:flex tg:items-end tg:gap-2">
           <Field
             name="label"
             children={(field) => (
-              <FormItem className="flex-1">
+              <FormItem className="tg:flex-1">
                 <Label htmlFor={field.name}>{t("editor.inputNodeForm.label")}</Label>
                 <Input
                   autoFocus
@@ -94,11 +94,11 @@ const InputNodeForm = () => {
 
         {/* Placeholder */}
         {!(isSubmitType || isHiddenType) && selectedNode?.data?.type !== "file" && (
-          <div className="flex items-end gap-2">
+          <div className="tg:flex tg:items-end tg:gap-2">
             <Field
               name="placeholder"
               children={(field) => (
-                <FormItem className="flex-1">
+                <FormItem className="tg:flex-1">
                   <Label htmlFor={field.name}>{t("editor.inputNodeForm.placeholder")}</Label>
                   <Input
                     id={field.name}
@@ -121,11 +121,11 @@ const InputNodeForm = () => {
 
         {/* Helper text */}
         {!(isSubmitType || isHiddenType) && (
-          <div className="flex items-end gap-2">
+          <div className="tg:flex tg:items-end tg:gap-2">
             <Field
               name="helperText"
               children={(field) => (
-                <FormItem className="flex-1">
+                <FormItem className="tg:flex-1">
                   <Label htmlFor={field.name}>{t("editor.inputNodeForm.helperText")}</Label>
                   <Input
                     id={field.name}
@@ -148,18 +148,18 @@ const InputNodeForm = () => {
 
         {/* HTTP config */}
         {selectedNode?.data?.type === "http" && (
-          <Collapsible defaultOpen className="flex w-full max-w-[350px] flex-col gap-2">
+          <Collapsible defaultOpen className="tg:flex tg:w-full tg:max-w-[350px] tg:flex-col tg:gap-2">
             <CollapsibleTrigger asChild>
-              <div className="flex items-center justify-between gap-4">
-                <h4 className="font-semibold text-sm">{t("editor.inputNodeForm.httpConfiguration")}</h4>
-                <Button variant="ghost" size="icon" className="size-8">
+              <div className="tg:flex tg:items-center tg:justify-between tg:gap-4">
+                <h4 className="tg:font-semibold tg:text-sm">{t("editor.inputNodeForm.httpConfiguration")}</h4>
+                <Button variant="ghost" size="icon" className="tg:size-8">
                   <ChevronsUpDown />
-                  <span className="sr-only">{t("common.toggle")}</span>
+                  <span className="tg:sr-only">{t("common.toggle")}</span>
                 </Button>
               </div>
             </CollapsibleTrigger>
 
-            <CollapsibleContent className="flex flex-col gap-4">
+            <CollapsibleContent className="tg:flex tg:flex-col tg:gap-4">
               <Field name="httpConfig">
                 {(field) => (
                   <HttpConfigForm
@@ -177,18 +177,18 @@ const InputNodeForm = () => {
 
         {/* Submit config */}
         {isSubmitType && (
-          <Collapsible className="flex w-full max-w-[350px] flex-col gap-2">
+          <Collapsible className="tg:flex tg:w-full tg:max-w-[350px] tg:flex-col tg:gap-2">
             <CollapsibleTrigger asChild>
-              <div className="flex items-center justify-between gap-4">
-                <h4 className="font-semibold text-sm">{t("editor.inputNodeForm.submitConfiguration")}</h4>
-                <Button variant="ghost" size="icon" className="size-8">
+              <div className="tg:flex tg:items-center tg:justify-between tg:gap-4">
+                <h4 className="tg:font-semibold tg:text-sm">{t("editor.inputNodeForm.submitConfiguration")}</h4>
+                <Button variant="ghost" size="icon" className="tg:size-8">
                   <ChevronsUpDown />
-                  <span className="sr-only">{t("common.toggle")}</span>
+                  <span className="tg:sr-only">{t("common.toggle")}</span>
                 </Button>
               </div>
             </CollapsibleTrigger>
 
-            <CollapsibleContent className="flex flex-col gap-4">
+            <CollapsibleContent className="tg:flex tg:flex-col tg:gap-4">
               <Field name="submitConfig">
                 {(field) => (
                   <SubmitConfigForm
@@ -209,7 +209,7 @@ const InputNodeForm = () => {
           <Field
             name="multiple"
             children={(field) => (
-              <div className="flex items-center space-x-2">
+              <div className="tg:flex tg:items-center tg:space-x-2">
                 <Switch id={field.name} checked={field.state.value} onCheckedChange={(newValue) => field.handleChange(newValue)} />
                 <Label htmlFor={field.name}>{t("editor.inputNodeForm.multipleFiles")}</Label>
               </div>
@@ -219,27 +219,27 @@ const InputNodeForm = () => {
 
         {/* Options */}
         {needsOptions && (
-          <Collapsible defaultOpen className="flex w-full max-w-[350px] flex-col gap-2">
+          <Collapsible defaultOpen className="tg:flex tg:w-full tg:max-w-[350px] tg:flex-col tg:gap-2">
             <CollapsibleTrigger asChild>
-              <div className="flex items-center justify-between gap-4">
-                <h4 className="font-semibold text-sm">{t("editor.inputNodeForm.options")}</h4>
-                <Button variant="ghost" size="icon" className="size-8">
+              <div className="tg:flex tg:items-center tg:justify-between tg:gap-4">
+                <h4 className="tg:font-semibold tg:text-sm">{t("editor.inputNodeForm.options")}</h4>
+                <Button variant="ghost" size="icon" className="tg:size-8">
                   <ChevronsUpDown />
-                  <span className="sr-only">{t("common.toggle")}</span>
+                  <span className="tg:sr-only">{t("common.toggle")}</span>
                 </Button>
               </div>
             </CollapsibleTrigger>
 
-            <CollapsibleContent className="flex flex-col gap-4">
+            <CollapsibleContent className="tg:flex tg:flex-col tg:gap-4">
               <Field name="options" mode="array">
                 {(field) => (
-                  <div className="space-y-2">
+                  <div className="tg:space-y-2">
                     {field.state.value?.map((_, index) => {
                       const key = `options[${index}]`;
 
                       return (
-                        <div key={key} className="flex flex-col gap-2">
-                          <div className="flex items-start gap-2">
+                        <div key={key} className="tg:flex tg:flex-col tg:gap-2">
+                          <div className="tg:flex tg:items-start tg:gap-2">
                             {selectedNode?.data?.type === "radio" && (
                               <Field name={`options[${index}].image`}>
                                 {(subField) => (
@@ -284,7 +284,7 @@ const InputNodeForm = () => {
                                 handleSubmit().then();
                               }}
                             >
-                              <X className="h-4 w-4" />
+                              <X className="tg:h-4 tg:w-4" />
                             </Button>
                           </div>
 
@@ -331,7 +331,7 @@ const InputNodeForm = () => {
                 <Field
                   name="multiple"
                   children={(field) => (
-                    <div className="flex items-center space-x-2">
+                    <div className="tg:flex tg:items-center tg:space-x-2">
                       <Switch id={field.name} checked={field.state.value} onCheckedChange={(newValue) => field.handleChange(newValue)} />
                       <Label htmlFor={field.name}>{t("editor.inputNodeForm.multipleSelection")}</Label>
                     </div>
@@ -349,7 +349,7 @@ const InputNodeForm = () => {
                         value={(field.state.value as string) || "default"}
                         onValueChange={(newValue) => field.handleChange(newValue as never)}
                       >
-                        <SelectTrigger id={field.name} className="w-full">
+                        <SelectTrigger id={field.name} className="tg:w-full">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
@@ -367,23 +367,23 @@ const InputNodeForm = () => {
 
         {/* Validation */}
         {!isSubmitType && (
-          <Collapsible className="flex w-full max-w-[350px] flex-col gap-2">
+          <Collapsible className="tg:flex tg:w-full tg:max-w-[350px] tg:flex-col tg:gap-2">
             <CollapsibleTrigger asChild>
-              <div className="flex items-center justify-between gap-4">
-                <h4 className="font-semibold text-sm">{t("editor.inputNodeForm.validation")}</h4>
-                <Button variant="ghost" size="icon" className="size-8">
+              <div className="tg:flex tg:items-center tg:justify-between tg:gap-4">
+                <h4 className="tg:font-semibold tg:text-sm">{t("editor.inputNodeForm.validation")}</h4>
+                <Button variant="ghost" size="icon" className="tg:size-8">
                   <ChevronsUpDown />
-                  <span className="sr-only">{t("common.toggle")}</span>
+                  <span className="tg:sr-only">{t("common.toggle")}</span>
                 </Button>
               </div>
             </CollapsibleTrigger>
 
-            <CollapsibleContent className="flex flex-col gap-6">
+            <CollapsibleContent className="tg:flex tg:flex-col tg:gap-6">
               <Field
                 name="required"
                 children={(field) => (
                   <FormItem>
-                    <div className="flex items-center space-x-2">
+                    <div className="tg:flex tg:items-center tg:space-x-2">
                       <Switch id={field.name} checked={field.state.value} onCheckedChange={(newValue) => field.handleChange(newValue)} />
                       <Label htmlFor={field.name}>{t("editor.inputNodeForm.required")}</Label>
                     </div>
@@ -396,7 +396,7 @@ const InputNodeForm = () => {
                   name="disablePast"
                   children={(field) => (
                     <FormItem>
-                      <div className="flex items-center space-x-2">
+                      <div className="tg:flex tg:items-center tg:space-x-2">
                         <Switch id={field.name} checked={field.state.value} onCheckedChange={(newValue) => field.handleChange(newValue)} />
                         <Label htmlFor={field.name}>{t("editor.inputNodeForm.disablePast")}</Label>
                       </div>
@@ -415,11 +415,11 @@ const InputNodeForm = () => {
                 )}
               />
 
-              <div className="flex items-end gap-2">
+              <div className="tg:flex tg:items-end tg:gap-2">
                 <Field
                   name="errorMessage"
                   children={(field) => (
-                    <FormItem className="flex-1">
+                    <FormItem className="tg:flex-1">
                       <Label htmlFor={field.name}>{t("editor.inputNodeForm.errorMessage")}</Label>
                       <Input
                         id={field.name}
@@ -444,18 +444,18 @@ const InputNodeForm = () => {
 
         {/* Advanced config */}
         {!isSubmitType && (
-          <Collapsible className="flex w-full max-w-[350px] flex-col gap-2">
+          <Collapsible className="tg:flex tg:w-full tg:max-w-[350px] tg:flex-col tg:gap-2">
             <CollapsibleTrigger asChild>
-              <div className="flex items-center justify-between gap-4">
-                <h4 className="font-semibold text-sm">{t("editor.inputNodeForm.advancedConfiguration")}</h4>
-                <Button variant="ghost" size="icon" className="size-8">
+              <div className="tg:flex tg:items-center tg:justify-between tg:gap-4">
+                <h4 className="tg:font-semibold tg:text-sm">{t("editor.inputNodeForm.advancedConfiguration")}</h4>
+                <Button variant="ghost" size="icon" className="tg:size-8">
                   <ChevronsUpDown />
-                  <span className="sr-only">{t("common.toggle")}</span>
+                  <span className="tg:sr-only">{t("common.toggle")}</span>
                 </Button>
               </div>
             </CollapsibleTrigger>
 
-            <CollapsibleContent className="flex flex-col gap-6">
+            <CollapsibleContent className="tg:flex tg:flex-col tg:gap-6">
               <Field
                 name="name"
                 children={(field) => (
@@ -525,7 +525,7 @@ const InputNodeForm = () => {
                           if (inputType === "checkbox") {
                             return (
                               <FormItem>
-                                <div className="flex items-center space-x-2">
+                                <div className="tg:flex tg:items-center tg:space-x-2">
                                   <Switch
                                     id={field.name}
                                     checked={!!field.state.value}
@@ -632,9 +632,9 @@ const InputNodeForm = () => {
                             {(mappingField) => (
                               <FormItem>
                                 <Label>{t("editor.inputNodeForm.objectMapping")}</Label>
-                                <div className="space-y-2">
+                                <div className="tg:space-y-2">
                                   {mappingField.state.value?.map((_, index) => (
-                                    <div key={`mapping-${index}`} className="flex items-center gap-2">
+                                    <div key={`mapping-${index}`} className="tg:flex tg:items-center tg:gap-2">
                                       <Field name={`defaultValue.objectMapping[${index}].sourceKey`}>
                                         {(sourceField) => (
                                           <Input
@@ -645,7 +645,7 @@ const InputNodeForm = () => {
                                         )}
                                       </Field>
 
-                                      <span className="text-muted-foreground">→</span>
+                                      <span className="tg:text-muted-foreground">→</span>
 
                                       <Field name={`defaultValue.objectMapping[${index}].targetKey`}>
                                         {(targetField) => (
@@ -666,7 +666,7 @@ const InputNodeForm = () => {
                                           handleSubmit().then();
                                         }}
                                       >
-                                        <X className="h-4 w-4" />
+                                        <X className="tg:h-4 tg:w-4" />
                                       </Button>
                                     </div>
                                   ))}
@@ -675,13 +675,13 @@ const InputNodeForm = () => {
                                     type="button"
                                     variant="outline"
                                     size="sm"
-                                    className="w-full"
+                                    className="tg:w-full"
                                     onClick={() => {
                                       mappingField.pushValue({ sourceKey: "", targetKey: "" });
                                       handleSubmit().then();
                                     }}
                                   >
-                                    <Plus className="mr-2 h-4 w-4" />
+                                    <Plus className="tg:mr-2 tg:h-4 tg:w-4" />
                                     {t("editor.inputNodeForm.addMapping")}
                                   </Button>
                                 </div>

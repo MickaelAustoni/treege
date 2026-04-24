@@ -41,19 +41,19 @@ const DefaultDateRangeInput = ({ node, value, setValue, error, label, helperText
   };
 
   return (
-    <FormItem className="mb-4">
+    <FormItem className="tg:mb-4">
       <Label htmlFor={id}>
         {label || node.data.name}
-        {node.data.required && <span className="text-red-500">*</span>}
+        {node.data.required && <span className="tg:text-red-500">*</span>}
       </Label>
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
-          <Button id={id} variant="outline" className="w-full justify-between font-normal">
+          <Button id={id} variant="outline" className="tg:w-full tg:justify-between tg:font-normal">
             {formatDateRange()}
-            <ChevronDownIcon className="size-4" />
+            <ChevronDownIcon className="tg:size-4" />
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-auto overflow-hidden p-0" align="start">
+        <PopoverContent className="tg:w-auto tg:overflow-hidden tg:p-0" align="start">
           <Calendar
             mode="range"
             selected={{ from: startDate, to: endDate }}

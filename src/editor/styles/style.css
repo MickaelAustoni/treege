@@ -14,7 +14,7 @@
 }
 
 button {
-  @apply cursor-pointer select-none;
+  @apply tg:cursor-pointer tg:select-none;
 }
 
 #root {
@@ -30,7 +30,7 @@ div.react-flow__node.react-flow__node-input {
 
 /* Neon node */
 div.react-flow__node__wrapper {
-  @apply flex justify-center flex-col p-7;
+  @apply tg:flex tg:justify-center tg:flex-col tg:p-7;
   width: 270px;
   min-height: 150px;
   border-radius: 30px;
@@ -39,7 +39,7 @@ div.react-flow__node__wrapper {
     0 0 20px 6px oklch(from var(--treege-color-primary) l c h / 10%),
     0 0 20px oklch(from var(--treege-color-tertiary) l c h / 10%);
   background:
-    linear-gradient(oklch(from var(--color-card) l c h / 33%), oklch(from var(--color-card) l c h / 33%)) padding-box,
+    linear-gradient(oklch(from var(--treege-card) l c h / 33%), oklch(from var(--treege-card) l c h / 33%)) padding-box,
     linear-gradient(
       145deg,
       oklch(from var(--treege-color-primary) l c h / 40%),
@@ -52,8 +52,8 @@ div.react-flow__node__wrapper {
 /* Neon node in group */
 div.react-flow__node__wrapper.in-group {
   background:
-    linear-gradient(oklch(from var(--color-card) l c h / 33%), oklch(from var(--color-card) l c h / 33%)) padding-box,
-    linear-gradient(145deg, oklch(from var(--color-chart-2) l c h / 33%), oklch(0 0 0 / 0), oklch(from var(--color-chart-2) l c h / 33%))
+    linear-gradient(oklch(from var(--treege-card) l c h / 33%), oklch(from var(--treege-card) l c h / 33%)) padding-box,
+    linear-gradient(145deg, oklch(from var(--treege-chart-2) l c h / 33%), oklch(0 0 0 / 0), oklch(from var(--treege-chart-2) l c h / 33%))
     border-box;
 }
 
@@ -70,7 +70,7 @@ div.react-flow__node__wrapper.submit-type {
     0 0 20px 6px oklch(from var(--treege-color-submit-primary) l c h / 10%),
     0 0 20px oklch(from var(--treege-color-submit-tertiary) l c h / 10%);
   background:
-    linear-gradient(oklch(from var(--color-card) l c h / 33%), oklch(from var(--color-card) l c h / 33%)) padding-box,
+    linear-gradient(oklch(from var(--treege-card) l c h / 33%), oklch(from var(--treege-card) l c h / 33%)) padding-box,
     linear-gradient(
       145deg,
       oklch(from var(--treege-color-submit-primary) l c h / 40%),
@@ -90,9 +90,9 @@ div.react-flow__node.selected .react-flow__node__wrapper.submit-type {
 /* Group node */
 div.react-flow__node-group,
 div.react-flow__node-group.selected {
-  background: oklch(from var(--color-chart-2) l c h / 5%);
+  background: oklch(from var(--treege-chart-2) l c h / 5%);
   box-shadow: none;
-  border: 3px dashed var(--color-chart-2);
+  border: 3px dashed var(--treege-chart-2);
 }
 
 /* Group node  resize */
@@ -111,7 +111,7 @@ div.react-flow__node-group:hover .react-flow__resize-control,
 /* Handle */
 div.react-flow__handle {
   background-color: var(--treege-muted-foreground);
-  @apply rounded-sm hover:bg-primary/80 w-6 h-6 flex items-center justify-center cursor-pointer transition-colors;
+  @apply tg:rounded-sm tg:hover:bg-primary/80 tg:w-6 tg:h-6 tg:flex tg:items-center tg:justify-center tg:cursor-pointer tg:transition-colors;
 }
 
 /* Edge */
@@ -131,7 +131,7 @@ path.react-flow__edge-path {
   width: 30px;
   height: 30px;
   border: 5px solid var(--xy-minimap-background-color-default);
-  background-color: var(--color-ring);
+  background-color: var(--treege-ring);
   color: var(--treege-primary);
   cursor: pointer;
   border-radius: 50%;
@@ -147,13 +147,13 @@ path.react-flow__edge-path {
 
 /* Json editor */
 .w-tc-editor {
-  @apply bg-input/30 dark:bg-input/30 rounded-md border border-input;
+  @apply tg:bg-input/30 tg:dark:bg-input/30 tg:rounded-md tg:border tg:border-input;
 }
 
 /* Themed thin scrollbar */
 .treege-scrollbar {
   scrollbar-width: thin;
-  scrollbar-color: var(--color-border) transparent;
+  scrollbar-color: var(--treege-border) transparent;
 }
 .treege-scrollbar::-webkit-scrollbar {
   width: 6px;
@@ -163,9 +163,9 @@ path.react-flow__edge-path {
   background: transparent;
 }
 .treege-scrollbar::-webkit-scrollbar-thumb {
-  background-color: var(--color-border);
+  background-color: var(--treege-border);
   border-radius: 3px;
 }
 .treege-scrollbar::-webkit-scrollbar-thumb:hover {
-  background-color: var(--color-muted-foreground);
+  background-color: var(--treege-muted-foreground);
 }

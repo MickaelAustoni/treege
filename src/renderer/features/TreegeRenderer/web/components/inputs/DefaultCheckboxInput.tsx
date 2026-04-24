@@ -17,29 +17,29 @@ const DefaultCheckboxInput = ({ node, value, setValue, error, label, helperText,
     };
 
     return (
-      <FormItem className="mb-4">
-        <Label className="mb-1">
+      <FormItem className="tg:mb-4">
+        <Label className="tg:mb-1">
           {label || node.data.name}
-          {node.data.required && <span className="text-red-500">*</span>}
+          {node.data.required && <span className="tg:text-red-500">*</span>}
         </Label>
-        <div className="space-y-2">
+        <div className="tg:space-y-2">
           {node.data.options.map((option, index) => {
             const optionDescription = t(option.description);
             return (
-              <div key={option.value + index} className="flex items-start gap-3">
+              <div key={option.value + index} className="tg:flex tg:items-start tg:gap-3">
                 <Checkbox
                   id={`${id}-${option.value}`}
                   name={name}
                   checked={selectedValues.includes(String(option.value))}
                   onCheckedChange={(checked) => handleCheckboxChange(String(option.value), Boolean(checked))}
                   disabled={option.disabled}
-                  className="mt-0.5"
+                  className="tg:mt-0.5"
                 />
-                <div className="flex flex-col">
-                  <Label htmlFor={`${id}-${option.value}`} className="cursor-pointer font-normal text-sm">
+                <div className="tg:flex tg:flex-col">
+                  <Label htmlFor={`${id}-${option.value}`} className="tg:cursor-pointer tg:font-normal tg:text-sm">
                     {t(option.label) ? t(option.label) : option.value}
                   </Label>
-                  {optionDescription && <span className="text-muted-foreground text-xs">{optionDescription}</span>}
+                  {optionDescription && <span className="tg:text-muted-foreground tg:text-xs">{optionDescription}</span>}
                 </div>
               </div>
             );
@@ -53,8 +53,8 @@ const DefaultCheckboxInput = ({ node, value, setValue, error, label, helperText,
 
   // Single checkbox (no options)
   return (
-    <FormItem className="mb-4">
-      <div className="flex items-center gap-3">
+    <FormItem className="tg:mb-4">
+      <div className="tg:flex tg:items-center tg:gap-3">
         <Checkbox
           id={id}
           name={name}
@@ -62,9 +62,9 @@ const DefaultCheckboxInput = ({ node, value, setValue, error, label, helperText,
           onCheckedChange={(checked) => setValue(Boolean(checked))}
         />
         <div>
-          <Label htmlFor={id} className="cursor-pointer font-medium text-sm">
+          <Label htmlFor={id} className="tg:cursor-pointer tg:font-medium tg:text-sm">
             {label || node.data.name}
-            {node.data.required && <span className="text-red-500">*</span>}
+            {node.data.required && <span className="tg:text-red-500">*</span>}
           </Label>
           {helperText && !error && <FormDescription>{helperText}</FormDescription>}
         </div>

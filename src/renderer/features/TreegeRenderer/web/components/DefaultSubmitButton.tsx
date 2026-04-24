@@ -24,7 +24,7 @@ const DefaultSubmitButton = forwardRef<HTMLButtonElement, SubmitButtonProps>(
         onPointerLeave={onPointerLeave}
         onPointerMove={onPointerMove}
         type="submit"
-        className="mt-4 rounded-md bg-blue-500 px-4 py-2 font-medium text-white transition-colors hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+        className="tg:mt-4 tg:rounded-md tg:bg-blue-500 tg:px-4 tg:py-2 tg:font-medium tg:text-white tg:transition-colors tg:hover:bg-blue-600 tg:focus:outline-none tg:focus:ring-2 tg:focus:ring-blue-500 tg:focus:ring-offset-2 tg:disabled:cursor-not-allowed tg:disabled:opacity-50"
         {...props}
       >
         {label || t("renderer.defaultSubmitButton.submit")}

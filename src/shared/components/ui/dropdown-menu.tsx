@@ -23,7 +23,7 @@ function DropdownMenuContent({ className, sideOffset = 4, ...props }: React.Comp
         data-slot="dropdown-menu-content"
         sideOffset={sideOffset}
         className={cn(
-          "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 max-h-(--radix-dropdown-menu-content-available-height) min-w-[8rem] origin-(--radix-dropdown-menu-content-transform-origin) overflow-y-auto overflow-x-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-md data-[state=closed]:animate-out data-[state=open]:animate-in",
+          "tg:data-[state=closed]:fade-out-0 tg:data-[state=open]:fade-in-0 tg:data-[state=closed]:zoom-out-95 tg:data-[state=open]:zoom-in-95 tg:data-[side=bottom]:slide-in-from-top-2 tg:data-[side=left]:slide-in-from-right-2 tg:data-[side=right]:slide-in-from-left-2 tg:data-[side=top]:slide-in-from-bottom-2 tg:z-50 tg:max-h-(--radix-dropdown-menu-content-available-height) tg:min-w-[8rem] tg:origin-(--radix-dropdown-menu-content-transform-origin) tg:overflow-y-auto tg:overflow-x-hidden tg:rounded-md tg:border tg:bg-popover tg:p-1 tg:text-popover-foreground tg:shadow-md tg:data-[state=closed]:animate-out tg:data-[state=open]:animate-in",
           className,
         )}
         {...props}
@@ -51,7 +51,7 @@ function DropdownMenuItem({
       data-inset={inset}
       data-variant={variant}
       className={cn(
-        "data-[variant=destructive]:*:[svg]:!text-destructive relative flex cursor-default select-none items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[inset]:pl-8 data-[variant=destructive]:text-destructive data-[disabled]:opacity-50 data-[variant=destructive]:focus:bg-destructive/10 data-[variant=destructive]:focus:text-destructive dark:data-[variant=destructive]:focus:bg-destructive/20 [&_svg:not([class*='size-'])]:size-4 [&_svg:not([class*='text-'])]:text-muted-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0",
+        "tg:data-[variant=destructive]:*:[svg]:!text-destructive tg:relative tg:flex tg:cursor-default tg:select-none tg:items-center tg:gap-2 tg:rounded-sm tg:px-2 tg:py-1.5 tg:text-sm tg:outline-hidden tg:focus:bg-accent tg:focus:text-accent-foreground tg:data-[disabled]:pointer-events-none tg:data-[inset]:pl-8 tg:data-[variant=destructive]:text-destructive tg:data-[disabled]:opacity-50 tg:data-[variant=destructive]:focus:bg-destructive/10 tg:data-[variant=destructive]:focus:text-destructive tg:dark:data-[variant=destructive]:focus:bg-destructive/20 tg:[&_svg:not([class*='size-'])]:size-4 tg:[&_svg:not([class*='text-'])]:text-muted-foreground tg:[&_svg]:pointer-events-none tg:[&_svg]:shrink-0",
         className,
       )}
       {...props}
@@ -69,15 +69,15 @@ function DropdownMenuCheckboxItem({
     <DropdownMenuPrimitive.CheckboxItem
       data-slot="dropdown-menu-checkbox-item"
       className={cn(
-        "relative flex cursor-default select-none items-center gap-2 rounded-sm py-1.5 pr-2 pl-8 text-sm outline-hidden focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0",
+        "tg:relative tg:flex tg:cursor-default tg:select-none tg:items-center tg:gap-2 tg:rounded-sm tg:py-1.5 tg:pr-2 tg:pl-8 tg:text-sm tg:outline-hidden tg:focus:bg-accent tg:focus:text-accent-foreground tg:data-[disabled]:pointer-events-none tg:data-[disabled]:opacity-50 tg:[&_svg:not([class*='size-'])]:size-4 tg:[&_svg]:pointer-events-none tg:[&_svg]:shrink-0",
         className,
       )}
       checked={checked}
       {...props}
     >
-      <span className="pointer-events-none absolute left-2 flex size-3.5 items-center justify-center">
+      <span className="tg:pointer-events-none tg:absolute tg:left-2 tg:flex tg:size-3.5 tg:items-center tg:justify-center">
         <DropdownMenuPrimitive.ItemIndicator>
-          <CheckIcon className="size-4" />
+          <CheckIcon className="tg:size-4" />
         </DropdownMenuPrimitive.ItemIndicator>
       </span>
       {children}
@@ -94,14 +94,14 @@ function DropdownMenuRadioItem({ className, children, ...props }: React.Componen
     <DropdownMenuPrimitive.RadioItem
       data-slot="dropdown-menu-radio-item"
       className={cn(
-        "relative flex cursor-default select-none items-center gap-2 rounded-sm py-1.5 pr-2 pl-8 text-sm outline-hidden focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0",
+        "tg:relative tg:flex tg:cursor-default tg:select-none tg:items-center tg:gap-2 tg:rounded-sm tg:py-1.5 tg:pr-2 tg:pl-8 tg:text-sm tg:outline-hidden tg:focus:bg-accent tg:focus:text-accent-foreground tg:data-[disabled]:pointer-events-none tg:data-[disabled]:opacity-50 tg:[&_svg:not([class*='size-'])]:size-4 tg:[&_svg]:pointer-events-none tg:[&_svg]:shrink-0",
         className,
       )}
       {...props}
     >
-      <span className="pointer-events-none absolute left-2 flex size-3.5 items-center justify-center">
+      <span className="tg:pointer-events-none tg:absolute tg:left-2 tg:flex tg:size-3.5 tg:items-center tg:justify-center">
         <DropdownMenuPrimitive.ItemIndicator>
-          <CircleIcon className="size-2 fill-current" />
+          <CircleIcon className="tg:size-2 tg:fill-current" />
         </DropdownMenuPrimitive.ItemIndicator>
       </span>
       {children}
@@ -120,7 +120,7 @@ function DropdownMenuLabel({
     <DropdownMenuPrimitive.Label
       data-slot="dropdown-menu-label"
       data-inset={inset}
-      className={cn("px-1.5 py-1 font-medium text-muted-foreground text-xs data-[inset]:pl-7", className)}
+      className={cn("tg:px-1.5 tg:py-1 tg:font-medium tg:text-muted-foreground tg:text-xs tg:data-[inset]:pl-7", className)}
       {...props}
     />
   );
@@ -130,7 +130,7 @@ function DropdownMenuSeparator({ className, ...props }: React.ComponentProps<typ
   return (
     <DropdownMenuPrimitive.Separator
       data-slot="dropdown-menu-separator"
-      className={cn("-mx-1 my-1 h-px bg-border", className)}
+      className={cn("tg:-mx-1 tg:my-1 tg:h-px tg:bg-border", className)}
       {...props}
     />
   );
@@ -140,7 +140,7 @@ function DropdownMenuShortcut({ className, ...props }: React.ComponentProps<"spa
   return (
     <span
       data-slot="dropdown-menu-shortcut"
-      className={cn("ml-auto text-muted-foreground text-xs tracking-widest", className)}
+      className={cn("tg:ml-auto tg:text-muted-foreground tg:text-xs tg:tracking-widest", className)}
       {...props}
     />
   );
@@ -163,13 +163,13 @@ function DropdownMenuSubTrigger({
       data-slot="dropdown-menu-sub-trigger"
       data-inset={inset}
       className={cn(
-        "flex cursor-default select-none items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden focus:bg-accent focus:text-accent-foreground data-[state=open]:bg-accent data-[inset]:pl-8 data-[state=open]:text-accent-foreground [&_svg:not([class*='size-'])]:size-4 [&_svg:not([class*='text-'])]:text-muted-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0",
+        "tg:flex tg:cursor-default tg:select-none tg:items-center tg:gap-2 tg:rounded-sm tg:px-2 tg:py-1.5 tg:text-sm tg:outline-hidden tg:focus:bg-accent tg:focus:text-accent-foreground tg:data-[state=open]:bg-accent tg:data-[inset]:pl-8 tg:data-[state=open]:text-accent-foreground tg:[&_svg:not([class*='size-'])]:size-4 tg:[&_svg:not([class*='text-'])]:text-muted-foreground tg:[&_svg]:pointer-events-none tg:[&_svg]:shrink-0",
         className,
       )}
       {...props}
     >
       {children}
-      <ChevronRightIcon className="ml-auto size-4" />
+      <ChevronRightIcon className="tg:ml-auto tg:size-4" />
     </DropdownMenuPrimitive.SubTrigger>
   );
 }
@@ -179,7 +179,7 @@ function DropdownMenuSubContent({ className, ...props }: React.ComponentProps<ty
     <DropdownMenuPrimitive.SubContent
       data-slot="dropdown-menu-sub-content"
       className={cn(
-        "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 min-w-[8rem] origin-(--radix-dropdown-menu-content-transform-origin) overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-lg data-[state=closed]:animate-out data-[state=open]:animate-in",
+        "tg:data-[state=closed]:fade-out-0 tg:data-[state=open]:fade-in-0 tg:data-[state=closed]:zoom-out-95 tg:data-[state=open]:zoom-in-95 tg:data-[side=bottom]:slide-in-from-top-2 tg:data-[side=left]:slide-in-from-right-2 tg:data-[side=right]:slide-in-from-left-2 tg:data-[side=top]:slide-in-from-bottom-2 tg:z-50 tg:min-w-[8rem] tg:origin-(--radix-dropdown-menu-content-transform-origin) tg:overflow-hidden tg:rounded-md tg:border tg:bg-popover tg:p-1 tg:text-popover-foreground tg:shadow-lg tg:data-[state=closed]:animate-out tg:data-[state=open]:animate-in",
         className,
       )}
       {...props}

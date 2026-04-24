@@ -27,10 +27,10 @@ const DefaultAutocompleteInput = ({
   const selectedOption = options.find((option) => option.value === value);
 
   return (
-    <FormItem className="mb-4">
+    <FormItem className="tg:mb-4">
       <Label htmlFor={triggerId}>
         {label || node.data.name}
-        {node.data.required && <span className="text-red-500">*</span>}
+        {node.data.required && <span className="tg:text-red-500">*</span>}
       </Label>
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
@@ -41,17 +41,17 @@ const DefaultAutocompleteInput = ({
             aria-expanded={open}
             aria-invalid={Boolean(error) || undefined}
             aria-describedby={error ? errorId : undefined}
-            className="w-full justify-between font-normal"
+            className="tg:w-full tg:justify-between tg:font-normal"
           >
             {value
               ? selectedOption?.label
                 ? t(selectedOption.label)
                 : value
               : placeholder || t("renderer.defaultAutocompleteInput.selectOption")}
-            <ChevronsUpDown className="ml-2 size-4 shrink-0 opacity-50" />
+            <ChevronsUpDown className="tg:ml-2 tg:size-4 tg:shrink-0 tg:opacity-50" />
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-full p-0" align="start">
+        <PopoverContent className="tg:w-full tg:p-0" align="start">
           <Command>
             <CommandInput placeholder={placeholder || t("renderer.defaultAutocompleteInput.search")} />
             <CommandList>
@@ -67,7 +67,7 @@ const DefaultAutocompleteInput = ({
                       setOpen(false);
                     }}
                   >
-                    <Check className={cn("mr-2 size-4", value === option.value ? "opacity-100" : "opacity-0")} />
+                    <Check className={cn("tg:mr-2 tg:size-4", value === option.value ? "tg:opacity-100" : "tg:opacity-0")} />
                     {t(option.label)}
                   </CommandItem>
                 ))}

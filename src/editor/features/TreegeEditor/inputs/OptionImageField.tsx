@@ -103,32 +103,32 @@ const OptionImageField = ({ value, onChange }: OptionImageFieldProps) => {
   };
 
   return (
-    <div className="relative">
-      <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
+    <div className="tg:relative">
+      <input ref={fileInputRef} type="file" accept="image/*" className="tg:hidden" onChange={handleFileChange} />
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           {value ? (
             <button
               type="button"
-              className="h-9 w-9 cursor-pointer overflow-hidden rounded-md border border-input"
+              className="tg:h-9 tg:w-9 tg:cursor-pointer tg:overflow-hidden tg:rounded-md tg:border tg:border-input"
               aria-label={t("editor.inputNodeForm.optionImageReplace")}
             >
-              <img src={value} alt="" className="h-full w-full object-cover" />
+              <img src={value} alt="" className="tg:h-full tg:w-full tg:object-cover" />
             </button>
           ) : (
             <Button type="button" variant="outline" size="icon" aria-label={t("editor.inputNodeForm.optionImageAdd")}>
-              <ImagePlus className="h-4 w-4" />
+              <ImagePlus className="tg:h-4 tg:w-4" />
             </Button>
           )}
         </PopoverTrigger>
-        <PopoverContent align="start" className="w-64 space-y-3 p-3">
-          <Button type="button" variant="outline" size="sm" className="w-full" onClick={() => fileInputRef.current?.click()}>
-            <Upload className="mr-2 h-4 w-4" />
+        <PopoverContent align="start" className="tg:w-64 tg:space-y-3 tg:p-3">
+          <Button type="button" variant="outline" size="sm" className="tg:w-full" onClick={() => fileInputRef.current?.click()}>
+            <Upload className="tg:mr-2 tg:h-4 tg:w-4" />
             {t("editor.inputNodeForm.optionImageUpload")}
           </Button>
           <Separator />
-          <div className="flex items-center gap-2">
-            <Link2 className="h-4 w-4 shrink-0 text-muted-foreground" />
+          <div className="tg:flex tg:items-center tg:gap-2">
+            <Link2 className="tg:h-4 tg:w-4 tg:shrink-0 tg:text-muted-foreground" />
             <Input
               placeholder={t("editor.inputNodeForm.optionImageUrlPlaceholder")}
               value={urlDraft}
@@ -151,10 +151,10 @@ const OptionImageField = ({ value, onChange }: OptionImageFieldProps) => {
             event.stopPropagation();
             onChange("");
           }}
-          className="-top-1 -right-1 absolute flex h-4 w-4 cursor-pointer items-center justify-center rounded-full bg-destructive text-destructive-foreground"
+          className="tg:-top-1 tg:-right-1 tg:absolute tg:flex tg:h-4 tg:w-4 tg:cursor-pointer tg:items-center tg:justify-center tg:rounded-full tg:bg-destructive tg:text-destructive-foreground"
           aria-label={t("editor.inputNodeForm.optionImageRemove")}
         >
-          <X className="h-3 w-3" />
+          <X className="tg:h-3 tg:w-3" />
         </button>
       )}
     </div>

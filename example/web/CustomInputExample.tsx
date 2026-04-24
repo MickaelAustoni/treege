@@ -17,10 +17,10 @@ import { ChangeEvent } from "react";
 // Also notice how label, placeholder, and helperText are already translated!
 const CustomTextInput = ({ node, value, setValue, error, label, placeholder, helperText, id, name }: InputRenderProps<"text">) => {
   return (
-    <div className="mb-4">
-      <label className="block text-sm font-medium mb-1" htmlFor={id}>
+    <div className="tg:mb-4">
+      <label className="tg:block tg:text-sm tg:font-medium tg:mb-1" htmlFor={id}>
         {label} {/* ✅ Already translated based on current language! */}
-        {node.data.required && <span className="text-red-500 ml-1">*</span>}
+        {node.data.required && <span className="tg:text-red-500 tg:ml-1">*</span>}
       </label>
       <input
         id={id}
@@ -29,11 +29,11 @@ const CustomTextInput = ({ node, value, setValue, error, label, placeholder, hel
         value={value} // ✅ TypeScript knows this is a string
         onChange={(e) => setValue(e.target.value)} // ✅ TypeScript knows setValue accepts a string
         placeholder={placeholder} // ✅ Already translated!
-        className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        className="tg:w-full tg:border tg:border-gray-300 tg:rounded tg:px-3 tg:py-2 tg:focus:outline-none tg:focus:ring-2 tg:focus:ring-blue-500"
       />
-      {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
+      {error && <p className="tg:text-red-500 tg:text-sm tg:mt-1">{error}</p>}
       {helperText && !error && (
-        <p className="text-gray-500 text-sm mt-1">
+        <p className="tg:text-gray-500 tg:text-sm tg:mt-1">
           {helperText} {/* ✅ Already translated! */}
         </p>
       )}
@@ -50,10 +50,10 @@ const CustomNumberInput = ({ node, value, setValue, error, label, id, name, plac
   };
 
   return (
-    <div className="mb-4">
-      <label className="block text-sm font-medium mb-1" htmlFor={id}>
+    <div className="tg:mb-4">
+      <label className="tg:block tg:text-sm tg:font-medium tg:mb-1" htmlFor={id}>
         {label} {/* ✅ Already translated! */}
-        {node.data.required && <span className="text-red-500 ml-1">*</span>}
+        {node.data.required && <span className="tg:text-red-500 tg:ml-1">*</span>}
       </label>
       <input
         id={id}
@@ -62,9 +62,9 @@ const CustomNumberInput = ({ node, value, setValue, error, label, id, name, plac
         type="number"
         value={value ?? ""} // ✅ TypeScript knows value is number | null
         onChange={handleChange}
-        className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        className="tg:w-full tg:border tg:border-gray-300 tg:rounded tg:px-3 tg:py-2 tg:focus:outline-none tg:focus:ring-2 tg:focus:ring-blue-500"
       />
-      {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
+      {error && <p className="tg:text-red-500 tg:text-sm tg:mt-1">{error}</p>}
     </div>
   );
 };
@@ -77,17 +77,17 @@ const CustomSelectInput = ({ node, value, setValue, error, label, id, name }: In
   const selectValue = Array.isArray(value) ? value[0] ?? "" : value;
 
   return (
-    <div className="mb-4">
-      <label className="block text-sm font-medium mb-1" htmlFor={id}>
+    <div className="tg:mb-4">
+      <label className="tg:block tg:text-sm tg:font-medium tg:mb-1" htmlFor={id}>
         {label} {/* ✅ Already translated! */}
-        {node.data.required && <span className="text-red-500 ml-1">*</span>}
+        {node.data.required && <span className="tg:text-red-500 tg:ml-1">*</span>}
       </label>
       <select
         id={id}
         name={name}
         value={selectValue}
         onChange={(e) => setValue(e.target.value)}
-        className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        className="tg:w-full tg:border tg:border-gray-300 tg:rounded tg:px-3 tg:py-2 tg:focus:outline-none tg:focus:ring-2 tg:focus:ring-blue-500"
       >
         <option value="">-- Select --</option>
         {node.data.options?.map((option) => (
@@ -97,7 +97,7 @@ const CustomSelectInput = ({ node, value, setValue, error, label, id, name }: In
           </option>
         ))}
       </select>
-      {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
+      {error && <p className="tg:text-red-500 tg:text-sm tg:mt-1">{error}</p>}
     </div>
   );
 };
@@ -109,7 +109,7 @@ const CustomInputsExample = () => {
   };
 
   return (
-      <div className={"p-6"}>
+      <div className={"tg:p-6"}>
         <TreegeRenderer
           flows={flows as Flow}
           onSubmit={handleSubmit}

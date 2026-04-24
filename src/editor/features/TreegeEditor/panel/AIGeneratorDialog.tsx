@@ -91,18 +91,18 @@ export const AIGeneratorDialog = ({ aiConfig, onGenerate }: AIGeneratorDialogPro
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant="outline" size="sm" disabled={!aiConfig?.apiKey}>
-          <WandSparkles className="h-4 w-4 text-[#13d3b4]" /> {t("editor.aiGenerator.buttonLabel")}
+          <WandSparkles className="tg:h-4 tg:w-4 tg:text-[#13d3b4]" /> {t("editor.aiGenerator.buttonLabel")}
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[550px]!">
+      <DialogContent className="tg:sm:max-w-[550px]!">
         <DialogHeader>
           <DialogTitle>{t("editor.aiGenerator.title")}</DialogTitle>
           <DialogDescription>{t("editor.aiGenerator.titleDescription")}</DialogDescription>
         </DialogHeader>
 
-        <div className="grid gap-4 py-4">
-          <div className="grid gap-2">
-            <label htmlFor="ai-prompt" className="font-medium text-sm">
+        <div className="tg:grid tg:gap-4 tg:py-4">
+          <div className="tg:grid tg:gap-2">
+            <label htmlFor="ai-prompt" className="tg:font-medium tg:text-sm">
               {t("editor.aiGenerator.description")}
             </label>
             <Textarea
@@ -112,19 +112,19 @@ export const AIGeneratorDialog = ({ aiConfig, onGenerate }: AIGeneratorDialogPro
               onKeyDown={handleKeyDown}
               rows={6}
               disabled={loading}
-              className="resize-none"
+              className="tg:resize-none"
             />
-            <p className="text-muted-foreground text-xs">
+            <p className="tg:text-muted-foreground tg:text-xs">
               {t("editor.aiGenerator.keyboardShortcut").replace("{cmdEnter}", "⌘ Enter").replace("{ctrlEnter}", "Ctrl Enter")}
             </p>
           </div>
 
           {!aiConfig?.apiKey && (
-            <div className="rounded-md bg-muted p-3 text-sm">
-              <p className="font-medium">{t("editor.aiGenerator.aiNotConfigured")}</p>
-              <p className="mt-1 text-muted-foreground text-xs">
+            <div className="tg:rounded-md tg:bg-muted tg:p-3 tg:text-sm">
+              <p className="tg:font-medium">{t("editor.aiGenerator.aiNotConfigured")}</p>
+              <p className="tg:mt-1 tg:text-muted-foreground tg:text-xs">
                 {t("editor.aiGenerator.aiNotConfiguredDesc").replace("{code}", "")}{" "}
-                <code className="rounded bg-background px-1 py-0.5">aiConfig</code>
+                <code className="tg:rounded tg:bg-background tg:px-1 tg:py-0.5">aiConfig</code>
               </p>
             </div>
           )}
@@ -137,12 +137,12 @@ export const AIGeneratorDialog = ({ aiConfig, onGenerate }: AIGeneratorDialogPro
           <Button onClick={handleGenerate} disabled={loading || !prompt.trim() || !aiConfig?.apiKey}>
             {loading ? (
               <>
-                <Loader2 className="h-4 w-4 animate-spin" />
+                <Loader2 className="tg:h-4 tg:w-4 tg:animate-spin" />
                 {t("editor.aiGenerator.generating")}
               </>
             ) : (
               <>
-                <WandSparkles className="h-4 w-4 text-[--treege-color-primary]" />
+                <WandSparkles className="tg:h-4 tg:w-4 tg:text-[--treege-color-primary]" />
                 {t("editor.aiGenerator.generate")}
               </>
             )}

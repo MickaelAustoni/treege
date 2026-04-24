@@ -15,7 +15,7 @@
     }
   },
   "files": {
-    "includes": ["src/**", "!node_modules", "!dist", "!build", "!coverage"]
+    "includes": ["src/**", "!node_modules", "!dist", "!build", "!coverage", "!**/*.css"]
   },
   "formatter": {
     "enabled": true,

@@ -25,7 +25,7 @@ function SheetOverlay({ className, ...props }: React.ComponentProps<typeof Sheet
     <SheetPrimitive.Overlay
       data-slot="sheet-overlay"
       className={cn(
-        "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-black/50 data-[state=closed]:animate-out data-[state=open]:animate-in",
+        "tg:data-[state=closed]:fade-out-0 tg:data-[state=open]:fade-in-0 tg:fixed tg:inset-0 tg:z-50 tg:bg-black/50 tg:data-[state=closed]:animate-out tg:data-[state=open]:animate-in",
         className,
       )}
       {...props}
@@ -47,22 +47,23 @@ function SheetContent({
       <SheetPrimitive.Content
         data-slot="sheet-content"
         className={cn(
-          "fixed z-50 flex flex-col gap-4 bg-background shadow-lg transition ease-in-out data-[state=closed]:animate-out data-[state=open]:animate-in data-[state=closed]:duration-300 data-[state=open]:duration-500",
+          "tg:fixed tg:z-50 tg:flex tg:flex-col tg:gap-4 tg:bg-background tg:shadow-lg tg:transition tg:ease-in-out tg:data-[state=closed]:animate-out tg:data-[state=open]:animate-in tg:data-[state=closed]:duration-300 tg:data-[state=open]:duration-500",
           side === "right" &&
-            "data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right inset-y-0 right-0 h-full w-3/4 border-l sm:max-w-sm",
+            "tg:data-[state=closed]:slide-out-to-right tg:data-[state=open]:slide-in-from-right tg:inset-y-0 tg:right-0 tg:h-full tg:w-3/4 tg:border-l tg:sm:max-w-sm",
           side === "left" &&
-            "data-[state=closed]:slide-out-to-left data-[state=open]:slide-in-from-left inset-y-0 left-0 h-full w-3/4 border-r sm:max-w-sm",
-          side === "top" && "data-[state=closed]:slide-out-to-top data-[state=open]:slide-in-from-top inset-x-0 top-0 h-auto border-b",
+            "tg:data-[state=closed]:slide-out-to-left tg:data-[state=open]:slide-in-from-left tg:inset-y-0 tg:left-0 tg:h-full tg:w-3/4 tg:border-r tg:sm:max-w-sm",
+          side === "top" &&
+            "tg:data-[state=closed]:slide-out-to-top tg:data-[state=open]:slide-in-from-top tg:inset-x-0 tg:top-0 tg:h-auto tg:border-b",
           side === "bottom" &&
-            "data-[state=closed]:slide-out-to-bottom data-[state=open]:slide-in-from-bottom inset-x-0 bottom-0 h-auto border-t",
+            "tg:data-[state=closed]:slide-out-to-bottom tg:data-[state=open]:slide-in-from-bottom tg:inset-x-0 tg:bottom-0 tg:h-auto tg:border-t",
           className,
         )}
         {...props}
       >
         {children}
-        <SheetPrimitive.Close className="absolute top-4 right-4 rounded-xs opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-hidden focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-secondary">
-          <XIcon className="size-4" />
-          <span className="sr-only">Close</span>
+        <SheetPrimitive.Close className="tg:absolute tg:top-4 tg:right-4 tg:rounded-xs tg:opacity-70 tg:ring-offset-background tg:transition-opacity tg:hover:opacity-100 tg:focus:outline-hidden tg:focus:ring-2 tg:focus:ring-ring tg:focus:ring-offset-2 tg:disabled:pointer-events-none tg:data-[state=open]:bg-secondary">
+          <XIcon className="tg:size-4" />
+          <span className="tg:sr-only">Close</span>
         </SheetPrimitive.Close>
       </SheetPrimitive.Content>
     </SheetPortal>
@@ -70,19 +71,21 @@ function SheetContent({
 }
 
 function SheetHeader({ className, ...props }: React.ComponentProps<"div">) {
-  return <div data-slot="sheet-header" className={cn("flex flex-col gap-1.5 p-4", className)} {...props} />;
+  return <div data-slot="sheet-header" className={cn("tg:flex tg:flex-col tg:gap-1.5 tg:p-4", className)} {...props} />;
 }
 
 function SheetFooter({ className, ...props }: React.ComponentProps<"div">) {
-  return <div data-slot="sheet-footer" className={cn("mt-auto flex flex-col gap-2 p-4", className)} {...props} />;
+  return <div data-slot="sheet-footer" className={cn("tg:mt-auto tg:flex tg:flex-col tg:gap-2 tg:p-4", className)} {...props} />;
 }
 
 function SheetTitle({ className, ...props }: React.ComponentProps<typeof SheetPrimitive.Title>) {
-  return <SheetPrimitive.Title data-slot="sheet-title" className={cn("font-semibold text-foreground", className)} {...props} />;
+  return <SheetPrimitive.Title data-slot="sheet-title" className={cn("tg:font-semibold tg:text-foreground", className)} {...props} />;
 }
 
 function SheetDescription({ className, ...props }: React.ComponentProps<typeof SheetPrimitive.Description>) {
-  return <SheetPrimitive.Description data-slot="sheet-description" className={cn("text-muted-foreground text-sm", className)} {...props} />;
+  return (
+    <SheetPrimitive.Description data-slot="sheet-description" className={cn("tg:text-muted-foreground tg:text-sm", className)} {...props} />
+  );
 }
 
 export { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger };

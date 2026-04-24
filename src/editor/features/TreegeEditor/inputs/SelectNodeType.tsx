@@ -79,10 +79,10 @@ const SelectNodeType = () => {
     <SelectGroup>
       <SelectLabel htmlFor={id}>{t("editor.selectNodeType.nodeType")}</SelectLabel>
       <Select value={getValue()} onValueChange={handleChange} disabled={isGroup}>
-        <SelectTrigger className="w-full capitalize" id={id}>
+        <SelectTrigger className="tg:w-full tg:capitalize" id={id}>
           <SelectValue placeholder={t("editor.selectNodeType.nodeType")} />
         </SelectTrigger>
-        <SelectContent className="treege-scrollbar max-h-80">
+        <SelectContent className="treege-scrollbar tg:max-h-80">
           {isGroup ? (
             <SelectGroup>
               <SelectItem value={NODE_TYPE.group}>{t("editor.selectNodeType.options.group")}</SelectItem>
@@ -95,7 +95,7 @@ const SelectNodeType = () => {
                   const Icon = getInputTypeIcon(type);
 
                   return (
-                    <SelectItem key={type} value={type} className="capitalize">
+                    <SelectItem key={type} value={type} className="tg:capitalize">
                       <Icon />
                       {type}
                     </SelectItem>
@@ -109,7 +109,7 @@ const SelectNodeType = () => {
                   const Icon = getInputTypeIcon(type);
 
                   return (
-                    <SelectItem key={type} value={type} className="capitalize">
+                    <SelectItem key={type} value={type} className="tg:capitalize">
                       <Icon />
                       {type}
                     </SelectItem>

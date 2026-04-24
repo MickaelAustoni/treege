@@ -90,13 +90,13 @@ const ComboboxWithCreate = ({
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className={cn("w-full justify-between font-normal", className)}
+          className={cn("tg:w-full tg:justify-between tg:font-normal", className)}
         >
-          <span className="truncate">{hasSelection && selectedOption ? selectedOption.label : placeholder}</span>
-          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+          <span className="tg:truncate">{hasSelection && selectedOption ? selectedOption.label : placeholder}</span>
+          <ChevronsUpDown className="tg:ml-2 tg:h-4 tg:w-4 tg:shrink-0 tg:opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-full p-0" align="start">
+      <PopoverContent className="tg:w-full tg:p-0" align="start">
         <Command shouldFilter={false}>
           <CommandInput placeholder={searchPlaceholder} value={search} onValueChange={setSearch} />
           <CommandList>
@@ -105,8 +105,8 @@ const ComboboxWithCreate = ({
             {/* Clear option - appears at the end if there's a selection */}
             {allowClear && hasSelection && (
               <CommandGroup>
-                <CommandItem value="__clear__" onSelect={handleClear} className="mt-1 text-muted-foreground">
-                  <X className="mr-2 h-4 w-4" />
+                <CommandItem value="__clear__" onSelect={handleClear} className="tg:mt-1 tg:text-muted-foreground">
+                  <X className="tg:mr-2 tg:h-4 tg:w-4" />
                   {clearLabel}
                 </CommandItem>
               </CommandGroup>
@@ -115,8 +115,8 @@ const ComboboxWithCreate = ({
             <CommandGroup>
               {/* Create new option */}
               {canCreate && (
-                <CommandItem value={`__create__${search}`} onSelect={handleCreate} className="text-primary">
-                  <Plus className="mr-2 h-4 w-4" />
+                <CommandItem value={`__create__${search}`} onSelect={handleCreate} className="tg:text-primary">
+                  <Plus className="tg:mr-2 tg:h-4 tg:w-4" />
                   {createLabel(search)}
                 </CommandItem>
               )}
@@ -136,8 +136,8 @@ const ComboboxWithCreate = ({
                     <Check
                       aria-hidden="true"
                       className={cn(
-                        "mr-2 h-4 w-4",
-                        hasSelection && normalize(option.value) === normalizedValue ? "opacity-100" : "opacity-0",
+                        "tg:mr-2 tg:h-4 tg:w-4",
+                        hasSelection && normalize(option.value) === normalizedValue ? "tg:opacity-100" : "tg:opacity-0",
                       )}
                     />
                     {option.label}

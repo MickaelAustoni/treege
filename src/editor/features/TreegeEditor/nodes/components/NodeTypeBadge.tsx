@@ -55,13 +55,16 @@ const NodeTypeBadge = ({ nodeId, nodeType, subType }: NodeTypeBadgeProps) => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild onClick={stopPropagation}>
-        <Badge variant="default" className="nodrag nopan cursor-pointer px-1.5 py-0 text-[10px] capitalize [&>svg]:size-2.5">
-          <Icon className="mt-0.5" />
+        <Badge
+          variant="default"
+          className="nodrag nopan tg:cursor-pointer tg:px-1.5 tg:py-0 tg:text-[10px] tg:capitalize tg:[&>svg]:size-2.5"
+        >
+          <Icon className="tg:mt-0.5" />
           {label || t("editor.selectNodeType.nodeType")}
           <ChevronDown />
         </Badge>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="start" className="treege-scrollbar max-h-80" onClick={stopPropagation}>
+      <DropdownMenuContent align="start" className="treege-scrollbar tg:max-h-80" onClick={stopPropagation}>
         <DropdownMenuGroup>
           <DropdownMenuLabel>{t("editor.selectNodeType.options.input")}</DropdownMenuLabel>
           {INPUT_TYPES.map((type) => {
@@ -71,7 +74,7 @@ const NodeTypeBadge = ({ nodeId, nodeType, subType }: NodeTypeBadgeProps) => {
               <DropdownMenuItem
                 key={type}
                 onClick={() => handleTypeChange(NODE_TYPE.input, type)}
-                className={cn("capitalize", nodeType === NODE_TYPE.input && type === subType && "bg-accent")}
+                className={cn("tg:capitalize", nodeType === NODE_TYPE.input && type === subType && "tg:bg-accent")}
               >
                 <OptionIcon />
                 {type}
@@ -89,7 +92,7 @@ const NodeTypeBadge = ({ nodeId, nodeType, subType }: NodeTypeBadgeProps) => {
               <DropdownMenuItem
                 key={type}
                 onClick={() => handleTypeChange(NODE_TYPE.ui, type)}
-                className={cn("capitalize", nodeType === NODE_TYPE.ui && type === subType && "bg-accent")}
+                className={cn("tg:capitalize", nodeType === NODE_TYPE.ui && type === subType && "tg:bg-accent")}
               >
                 <OptionIcon />
                 {type}
@@ -100,7 +103,7 @@ const NodeTypeBadge = ({ nodeId, nodeType, subType }: NodeTypeBadgeProps) => {
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <DropdownMenuLabel>{t("common.other")}</DropdownMenuLabel>
-          <DropdownMenuItem onClick={() => handleTypeChange(NODE_TYPE.flow)} className={cn(nodeType === NODE_TYPE.flow && "bg-accent")}>
+          <DropdownMenuItem onClick={() => handleTypeChange(NODE_TYPE.flow)} className={cn(nodeType === NODE_TYPE.flow && "tg:bg-accent")}>
             <FlowIcon />
             {t("editor.selectNodeType.options.flow")}
           </DropdownMenuItem>

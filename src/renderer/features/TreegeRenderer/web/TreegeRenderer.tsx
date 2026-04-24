@@ -116,25 +116,25 @@ const TreegeRenderer = ({
             )}
 
             {/* Powered by Treege */}
-            <p className="py-2 text-muted-foreground text-xs">Powered by Treege</p>
+            <p className="tg:py-2 tg:text-muted-foreground tg:text-xs">Powered by Treege</p>
           </FormWrapper>
 
           {/* Submit message (success/error) */}
           {submitMessage && (
             <div
-              className={`my-4 rounded-md p-4 ${
+              className={`tg:my-4 tg:rounded-md tg:p-4 ${
                 submitMessage.type === "success"
                   ? "bg-green-50 text-green-800 dark:bg-green-900/20 dark:text-green-300"
                   : "bg-red-50 text-red-800 dark:bg-red-900/20 dark:text-red-300"
               }`}
               role="alert"
             >
-              <div className="flex items-center justify-between">
-                <p className="font-medium text-sm">{submitMessage.message}</p>
+              <div className="tg:flex tg:items-center tg:justify-between">
+                <p className="tg:font-medium tg:text-sm">{submitMessage.message}</p>
                 <button
                   type="button"
                   onClick={clearSubmitMessage}
-                  className="ml-4 font-medium text-sm underline hover:no-underline focus:outline-none"
+                  className="tg:ml-4 tg:font-medium tg:text-sm tg:underline tg:hover:no-underline tg:focus:outline-none"
                 >
                   {t("common.close")}
                 </button>

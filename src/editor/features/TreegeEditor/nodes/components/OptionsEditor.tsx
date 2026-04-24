@@ -72,13 +72,13 @@ const OptionsEditor = ({ nodeId, data }: OptionsEditorProps) => {
   const stopPropagation = (event: MouseEvent) => event.stopPropagation();
 
   return (
-    <div className="nodrag nopan my-1 flex flex-col gap-0.5">
+    <div className="nodrag nopan tg:my-1 tg:flex tg:flex-col tg:gap-0.5">
       {options.map((option, index) => {
         const optionLabel = t(option.label) || option.value || "—";
         const key = `${option.value || "opt"}-${index}`;
 
         return (
-          <div key={key} className="truncate text-muted-foreground text-xs">
+          <div key={key} className="tg:truncate tg:text-muted-foreground tg:text-xs">
             {optionLabel}
           </div>
         );
@@ -86,15 +86,20 @@ const OptionsEditor = ({ nodeId, data }: OptionsEditorProps) => {
 
       <Popover open={open} onOpenChange={handleOpenChange}>
         <PopoverTrigger asChild onClick={stopPropagation}>
-          <Button type="button" variant="link" size="xs" className="w-fit p-0! focus-visible:border-transparent! focus-visible:ring-0!">
-            <Plus className="size-3" />
+          <Button
+            type="button"
+            variant="link"
+            size="xs"
+            className="tg:w-fit tg:p-0! tg:focus-visible:border-transparent! tg:focus-visible:ring-0!"
+          >
+            <Plus className="tg:size-3" />
             {t("editor.inputNodeForm.addOption")}
           </Button>
         </PopoverTrigger>
-        <PopoverContent align="start" className="w-64 p-3" onClick={stopPropagation}>
-          <form onSubmit={handleSubmit} className="flex flex-col gap-2">
-            <div className="flex flex-col gap-1">
-              <Label htmlFor={`${nodeId}-option-label`} className="text-xs">
+        <PopoverContent align="start" className="tg:w-64 tg:p-3" onClick={stopPropagation}>
+          <form onSubmit={handleSubmit} className="tg:flex tg:flex-col tg:gap-2">
+            <div className="tg:flex tg:flex-col tg:gap-1">
+              <Label htmlFor={`${nodeId}-option-label`} className="tg:text-xs">
                 {t("editor.inputNodeForm.optionLabel")}
               </Label>
               <Input
@@ -105,8 +110,8 @@ const OptionsEditor = ({ nodeId, data }: OptionsEditorProps) => {
                 onKeyDown={handleKeyDown}
               />
             </div>
-            <div className="flex flex-col gap-1">
-              <Label htmlFor={`${nodeId}-option-value`} className="text-xs">
+            <div className="tg:flex tg:flex-col tg:gap-1">
+              <Label htmlFor={`${nodeId}-option-value`} className="tg:text-xs">
                 {t("editor.inputNodeForm.optionValue")}
               </Label>
               <Input

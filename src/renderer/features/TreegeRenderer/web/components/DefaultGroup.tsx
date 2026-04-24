@@ -7,8 +7,8 @@ export const DefaultGroup = ({ node, children }: NodeRenderProps & { children: R
   const label = t(node.data.label);
 
   return (
-    <section className="mb-6 rounded-lg border p-4">
-      {label && <h3 className="mb-4 font-semibold text-lg">{label}</h3>}
+    <section className="tg:mb-6 tg:rounded-lg tg:border tg:p-4">
+      {label && <h3 className="tg:mb-4 tg:font-semibold tg:text-lg">{label}</h3>}
       {children}
     </section>
   );

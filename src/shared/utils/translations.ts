@@ -19,11 +19,12 @@ export type TranslationDict = {
 /**
  * Helper type to extract all dot-notation paths from a nested object
  */
-type DotNotationKeys<T, Prefix extends string = ""> = T extends Record<string, unknown>
-  ? {
-      [K in keyof T & string]: T[K] extends Record<string, unknown> ? DotNotationKeys<T[K], `${Prefix}${K}.`> : `${Prefix}${K}`;
-    }[keyof T & string]
-  : never;
+type DotNotationKeys<T, Prefix extends string = ""> =
+  T extends Record<string, unknown>
+    ? {
+        [K in keyof T & string]: T[K] extends Record<string, unknown> ? DotNotationKeys<T[K], `${Prefix}${K}.`> : `${Prefix}${K}`;
+      }[keyof T & string]
+    : never;
 
 /**
  * Dynamically generated type of all available translation keys

@@ -7,6 +7,6 @@ interface NodeWrapperProps extends PropsWithChildren {
 }
 
 const NodeWrapper = ({ children, inGroup, isSubmit }: NodeWrapperProps) => (
-  <div className={cn("react-flow__node__wrapper relative", inGroup && "in-group", isSubmit && "submit-type")}>{children}</div>
+  <div className={cn("react-flow__node__wrapper tg:relative", inGroup && "in-group", isSubmit && "submit-type")}>{children}</div>
 );
 export default NodeWrapper;

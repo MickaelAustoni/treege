@@ -122,8 +122,8 @@ const ChangeNodeTypeDialog = () => {
           <DialogDescription>{t("editor.changeNodeTypeDialog.description")}</DialogDescription>
         </DialogHeader>
 
-        <ScrollArea className="max-h-80">
-          <RadioGroup value={selectedEdgeId} onValueChange={setSelectedEdgeId} className="gap-2 pr-2">
+        <ScrollArea className="tg:max-h-80">
+          <RadioGroup value={selectedEdgeId} onValueChange={setSelectedEdgeId} className="tg:gap-2 tg:pr-2">
             {outgoingEdges.map((edge) => {
               const edgeData = edge.data as ConditionalEdgeData | undefined;
               const summary = getEdgeSummary(edgeData);
@@ -133,12 +133,12 @@ const ChangeNodeTypeDialog = () => {
                 <Label
                   key={edge.id}
                   htmlFor={`keep-${edge.id}`}
-                  className="flex cursor-pointer items-start gap-3 rounded-lg border bg-muted/20 p-3"
+                  className="tg:flex tg:cursor-pointer tg:items-start tg:gap-3 tg:rounded-lg tg:border tg:bg-muted/20 tg:p-3"
                 >
-                  <RadioGroupItem id={`keep-${edge.id}`} value={edge.id} className="mt-1" />
-                  <div className="flex flex-col gap-1">
-                    <span className="font-medium">{targetLabel}</span>
-                    <span className="text-muted-foreground text-xs">{summary}</span>
+                  <RadioGroupItem id={`keep-${edge.id}`} value={edge.id} className="tg:mt-1" />
+                  <div className="tg:flex tg:flex-col tg:gap-1">
+                    <span className="tg:font-medium">{targetLabel}</span>
+                    <span className="tg:text-muted-foreground tg:text-xs">{summary}</span>
                   </div>
                 </Label>
               );

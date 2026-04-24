@@ -9,13 +9,13 @@ const DefaultSelectInput = ({ node, value, setValue, error, label, placeholder, 
   const normalizedValue = value ? String(value) : "";
 
   return (
-    <FormItem className="mb-4">
+    <FormItem className="tg:mb-4">
       <Label htmlFor={id}>
         {label || node.data.name}
-        {node.data.required && <span className="text-red-500">*</span>}
+        {node.data.required && <span className="tg:text-red-500">*</span>}
       </Label>
       <Select name={name} value={normalizedValue} onValueChange={(val) => setValue(val)}>
-        <SelectTrigger id={id} name={name} className="w-full">
+        <SelectTrigger id={id} name={name} className="tg:w-full">
           <SelectValue placeholder={placeholder || t("renderer.defaultSelectInput.selectOption")} />
         </SelectTrigger>
         <SelectContent>

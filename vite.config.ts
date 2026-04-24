@@ -53,8 +53,9 @@ const config = () =>
           return outputChunk.fileName.includes("ThemeContext");
         },
         injectCodeFunction: (cssCode: string) => {
-          // Inject CSS at the beginning of <head> for lower specificity
-          // This allows users to easily override Treege styles
+          // Inject at the top of <head> so the consumer's stylesheet comes
+          // later in the cascade and can override Treege's tg:-prefixed
+          // utilities without needing !important.
           const doc = (globalThis as any).document;
 
           try {

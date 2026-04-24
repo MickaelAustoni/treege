@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import "tailwindcss" prefix(tg);
 @import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
@@ -112,9 +112,9 @@
 
 @layer base {
   * {
-    @apply border-border;
+    @apply tg:border-border;
   }
   body {
-    @apply text-foreground;
+    @apply tg:text-foreground;
   }
 }

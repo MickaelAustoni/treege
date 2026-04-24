@@ -5,10 +5,10 @@ import { Textarea } from "@/shared/components/ui/textarea";
 
 const DefaultTextAreaInput = ({ node, value, setValue, error, label, placeholder, helperText, name, id }: InputRenderProps<"textarea">) => {
   return (
-    <FormItem className="mb-4">
+    <FormItem className="tg:mb-4">
       <Label htmlFor={id}>
         {label || node.data.name}
-        {node.data.required && <span className="text-red-500">*</span>}
+        {node.data.required && <span className="tg:text-red-500">*</span>}
       </Label>
       <Textarea
         id={id}
@@ -16,7 +16,7 @@ const DefaultTextAreaInput = ({ node, value, setValue, error, label, placeholder
         value={value ?? ""}
         onChange={(e) => setValue(e.target.value)}
         placeholder={placeholder}
-        className="w-full rounded-md border px-3 py-2"
+        className="tg:w-full tg:rounded-md tg:border tg:px-3 tg:py-2"
         rows={4}
       />
       {error && <FormError>{error}</FormError>}

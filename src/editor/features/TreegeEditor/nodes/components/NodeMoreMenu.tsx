@@ -40,11 +40,11 @@ const NodeMoreMenu = ({ nodeId, className }: NodeMoreMenuProps) => {
           type="button"
           aria-label={t("editor.nodeActionsSheet.editNode")}
           className={cn(
-            "nodrag nopan absolute top-2 right-2 flex h-6 w-6 cursor-pointer items-center justify-center rounded-md opacity-60 transition-all hover:text-[--treege-color-primary] hover:opacity-100",
+            "nodrag nopan tg:absolute tg:top-2 tg:right-2 tg:flex tg:h-6 tg:w-6 tg:cursor-pointer tg:items-center tg:justify-center tg:rounded-md tg:opacity-60 tg:transition-all tg:hover:text-[--treege-color-primary] tg:hover:opacity-100",
             className,
           )}
         >
-          <MoreVertical className="h-3.5 w-3.5" />
+          <MoreVertical className="tg:h-3.5 tg:w-3.5" />
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" onClick={stopPropagation}>

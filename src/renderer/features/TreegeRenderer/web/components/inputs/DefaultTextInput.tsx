@@ -5,10 +5,10 @@ import { Label } from "@/shared/components/ui/label";
 
 const DefaultTextInput = ({ node, value, setValue, error, label, placeholder, helperText, name, id }: InputRenderProps<"text">) => {
   return (
-    <FormItem className="mb-4">
+    <FormItem className="tg:mb-4">
       <Label htmlFor={id}>
         {label || node.data.name}
-        {node.data.required && <span className="text-red-500">*</span>}
+        {node.data.required && <span className="tg:text-red-500">*</span>}
       </Label>
       <Input type="text" id={id} name={name} value={value ?? ""} onChange={(e) => setValue(e.target.value)} placeholder={placeholder} />
       {error && <FormError>{error}</FormError>}

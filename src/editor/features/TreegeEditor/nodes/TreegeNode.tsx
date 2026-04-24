@@ -42,11 +42,11 @@ const TreegeNode = (props: TreegeNodeProps) => {
             nodeId={id}
             label={props.data?.label}
             placeholder={inputData?.name}
-            className={cn("py-1", type === "ui" && "capitalize")}
+            className={cn("tg:py-1", type === "ui" && "tg:capitalize")}
           />
 
           {/* Badges */}
-          <div className="mb-1 flex gap-1">
+          <div className="tg:mb-1 tg:flex tg:gap-1">
             <NodeTypeBadge nodeId={id} nodeType={type} subType={subType} />
             {inputData && !isSubmit && <RequiredBadge nodeId={id} required={inputData.required} />}
           </div>

@@ -19,12 +19,12 @@ const DefaultTimeRangeInput = ({ node, value, setValue, error, label, helperText
   };
 
   return (
-    <FormItem className="mb-4">
+    <FormItem className="tg:mb-4">
       <Label htmlFor={`${id}-start`}>
         {label || node.data.name}
-        {node.data.required && <span className="text-red-500">*</span>}
+        {node.data.required && <span className="tg:text-red-500">*</span>}
       </Label>
-      <div className="flex gap-2">
+      <div className="tg:flex tg:gap-2">
         <Input
           id={`${id}-start`}
           name={`${name}-start`}
@@ -35,7 +35,7 @@ const DefaultTimeRangeInput = ({ node, value, setValue, error, label, helperText
           value={startTime}
           onChange={(e) => handleStartTimeChange(e.target.value)}
           placeholder={t("renderer.defaultInputs.startTime")}
-          className="flex-1 bg-background [color-scheme:light] dark:[color-scheme:dark]"
+          className="tg:flex-1 tg:bg-background tg:[color-scheme:light] tg:dark:[color-scheme:dark]"
         />
         <Input
           id={`${id}-end`}
@@ -47,7 +47,7 @@ const DefaultTimeRangeInput = ({ node, value, setValue, error, label, helperText
           value={endTime}
           onChange={(e) => handleEndTimeChange(e.target.value)}
           placeholder={t("renderer.defaultInputs.endTime")}
-          className="flex-1 bg-background [color-scheme:light] dark:[color-scheme:dark]"
+          className="tg:flex-1 tg:bg-background tg:[color-scheme:light] tg:dark:[color-scheme:dark]"
         />
       </div>
       {error && <FormError>{error}</FormError>}

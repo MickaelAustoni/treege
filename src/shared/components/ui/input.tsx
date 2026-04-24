@@ -8,9 +8,9 @@ function Input({ className, type, ...props }: React.ComponentProps<"input">) {
       type={type}
       data-slot="input"
       className={cn(
-        "h-9 w-full min-w-0 rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-xs outline-none transition-[color,box-shadow] selection:bg-primary selection:text-primary-foreground file:inline-flex file:h-7 file:border-0 file:bg-transparent file:font-medium file:text-foreground file:text-sm placeholder:text-muted-foreground disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm dark:bg-input/30",
-        "focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50",
-        "aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40",
+        "tg:h-9 tg:w-full tg:min-w-0 tg:rounded-md tg:border tg:border-input tg:bg-transparent tg:px-3 tg:py-1 tg:text-base tg:shadow-xs tg:outline-none tg:transition-[color,box-shadow] tg:selection:bg-primary tg:selection:text-primary-foreground tg:file:inline-flex tg:file:h-7 tg:file:border-0 tg:file:bg-transparent tg:file:font-medium tg:file:text-foreground tg:file:text-sm tg:placeholder:text-muted-foreground tg:disabled:pointer-events-none tg:disabled:cursor-not-allowed tg:disabled:opacity-50 tg:md:text-sm tg:dark:bg-input/30",
+        "tg:focus-visible:border-ring tg:focus-visible:ring-[3px] tg:focus-visible:ring-ring/50",
+        "tg:aria-invalid:border-destructive tg:aria-invalid:ring-destructive/20 tg:dark:aria-invalid:ring-destructive/40",
         className,
       )}
       {...props}

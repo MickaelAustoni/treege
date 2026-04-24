@@ -8,7 +8,7 @@
     "css": "src/shared/styles/style.css",
     "baseColor": "neutral",
     "cssVariables": true,
-    "prefix": ""
+    "prefix": "tg"
   },
   "iconLibrary": "lucide",
   "aliases": {

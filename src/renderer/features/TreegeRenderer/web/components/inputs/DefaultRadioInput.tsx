@@ -11,17 +11,17 @@ const DefaultRadioInput = ({ node, value, setValue, error, label, helperText, id
   const isCard = node.data.variant === "card";
 
   return (
-    <FormItem className="mb-4">
-      <Label className="mb-1" htmlFor={id}>
+    <FormItem className="tg:mb-4">
+      <Label className="tg:mb-1" htmlFor={id}>
         {label || node.data.name}
-        {node.data.required && <span className="text-red-500">*</span>}
+        {node.data.required && <span className="tg:text-red-500">*</span>}
       </Label>
       <RadioGroup
         value={normalizedValue}
         onValueChange={(val) => setValue(val)}
         id={id}
         name={name}
-        className={isCard ? "flex flex-col gap-2" : undefined}
+        className={isCard ? "tg:flex tg:flex-col tg:gap-2" : undefined}
       >
         {node.data.options?.map((option, index) => {
           const optionId = `${id}-${option.value}`;
@@ -35,31 +35,31 @@ const DefaultRadioInput = ({ node, value, setValue, error, label, helperText, id
                 key={option.value + index}
                 htmlFor={optionId}
                 className={cn(
-                  "flex cursor-pointer items-start gap-3 rounded-md border p-3 transition-colors",
-                  "hover:border-primary/50",
-                  isSelected && "border-primary bg-primary/5",
-                  option.disabled && "pointer-events-none opacity-50",
+                  "tg:flex tg:cursor-pointer tg:items-start tg:gap-3 tg:rounded-md tg:border tg:p-3 tg:transition-colors",
+                  "tg:hover:border-primary/50",
+                  isSelected && "tg:border-primary tg:bg-primary/5",
+                  option.disabled && "tg:pointer-events-none tg:opacity-50",
                 )}
               >
-                <RadioGroupItem value={String(option.value)} id={optionId} disabled={option.disabled} className="mt-1" />
-                {option.image && <img src={option.image} alt="" className="h-10 w-10 shrink-0 rounded object-cover" />}
-                <div className="flex min-w-0 flex-col">
-                  <span className="font-medium text-sm">{optionLabel}</span>
-                  {optionDescription && <span className="text-muted-foreground text-xs">{optionDescription}</span>}
+                <RadioGroupItem value={String(option.value)} id={optionId} disabled={option.disabled} className="tg:mt-1" />
+                {option.image && <img src={option.image} alt="" className="tg:h-10 tg:w-10 tg:shrink-0 tg:rounded tg:object-cover" />}
+                <div className="tg:flex tg:min-w-0 tg:flex-col">
+                  <span className="tg:font-medium tg:text-sm">{optionLabel}</span>
+                  {optionDescription && <span className="tg:text-muted-foreground tg:text-xs">{optionDescription}</span>}
                 </div>
               </Label>
             );
           }
 
           return (
-            <div key={option.value + index} className="flex items-start space-x-2">
-              <RadioGroupItem value={String(option.value)} id={optionId} disabled={option.disabled} className="mt-0.5" />
-              {option.image && <img src={option.image} alt="" className="h-8 w-8 rounded object-cover" />}
-              <div className="flex flex-col">
-                <Label htmlFor={optionId} className="cursor-pointer font-normal text-sm">
+            <div key={option.value + index} className="tg:flex tg:items-start tg:space-x-2">
+              <RadioGroupItem value={String(option.value)} id={optionId} disabled={option.disabled} className="tg:mt-0.5" />
+              {option.image && <img src={option.image} alt="" className="tg:h-8 tg:w-8 tg:rounded tg:object-cover" />}
+              <div className="tg:flex tg:flex-col">
+                <Label htmlFor={optionId} className="tg:cursor-pointer tg:font-normal tg:text-sm">
                   {optionLabel}
                 </Label>
-                {optionDescription && <span className="text-muted-foreground text-xs">{optionDescription}</span>}
+                {optionDescription && <span className="tg:text-muted-foreground tg:text-xs">{optionDescription}</span>}
               </div>
             </div>
           );

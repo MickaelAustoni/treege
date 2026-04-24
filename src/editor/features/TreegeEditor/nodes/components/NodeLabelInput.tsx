@@ -57,7 +57,10 @@ const NodeLabelInput = ({ nodeId, label, placeholder, className }: NodeLabelInpu
       onClick={stopPropagation}
       onMouseDown={stopPropagation}
       onPointerDown={stopPropagation}
-      className={cn("nodrag nopan w-full truncate bg-transparent outline-none placeholder:text-muted-foreground/40", className)}
+      className={cn(
+        "nodrag nopan tg:w-full tg:truncate tg:bg-transparent tg:outline-none tg:placeholder:text-muted-foreground/40",
+        className,
+      )}
     />
   );
 };
