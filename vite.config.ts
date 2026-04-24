@@ -49,11 +49,9 @@ const config = () =>
       react(),
       tailwindcss(),
       cssInjectedByJsPlugin({
-        // Attach the injection to every web entry chunk so the <style> lands
-        // before React mounts. Attaching it to a shared lazy chunk (the
-        // previous setup) caused a FOUC while that chunk was still in flight.
-        // renderer-native is excluded — React Native has no document.
-        jsAssetsFilterFunction: (outputChunk) => outputChunk.isEntry && outputChunk.fileName !== "renderer-native.js",
+        jsAssetsFilterFunction: (outputChunk) => {
+          return outputChunk.fileName.includes("ThemeContext");
+        },
         injectCodeFunction: (cssCode: string) => {
           // Inject at the top of <head> so the consumer's stylesheet comes
           // later in the cascade and can override Treege's tg:-prefixed
@@ -61,13 +59,12 @@ const config = () =>
           const doc = (globalThis as any).document;
 
           try {
-            if (typeof doc === "undefined" || doc.getElementById("treege-styles")) {
-              return;
+            if (typeof doc !== "undefined") {
+              const style = doc.createElement("style");
+              style.id = "treege-styles";
+              style.appendChild(doc.createTextNode(cssCode));
+              doc.head.insertBefore(style, doc.head.firstChild);
             }
-            const style = doc.createElement("style");
-            style.id = "treege-styles";
-            style.appendChild(doc.createTextNode(cssCode));
-            doc.head.insertBefore(style, doc.head.firstChild);
           } catch (e) {
             console.error("vite-plugin-css-injected-by-js", e);
           }
