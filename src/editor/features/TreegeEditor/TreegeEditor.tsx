@@ -1,9 +1,11 @@
 import "@/editor/styles/style.css";
 import { Background, BackgroundVariant, Controls, MiniMap, ReactFlow, ReactFlowProvider } from "@xyflow/react";
+import { useState } from "react";
 import Logo from "@/editor/components/data-display/logo";
 import { EDGE_TYPES } from "@/editor/constants/edgeTypes";
 import { NODE_TYPES } from "@/editor/constants/nodeTypes";
 import { TreegeEditorProvider } from "@/editor/context/TreegeEditorContext";
+import MiniMapControl from "@/editor/features/TreegeEditor/controls/MiniMapControl";
 import ChangeNodeTypeDialog from "@/editor/features/TreegeEditor/dialogs/ChangeNodeTypeDialog";
 import DeleteNodeDialog from "@/editor/features/TreegeEditor/dialogs/DeleteNodeDialog";
 import ActionsPanel from "@/editor/features/TreegeEditor/panel/ActionsPanel";
@@ -17,6 +19,7 @@ import { cn } from "@/shared/lib/utils";
 
 const Flow = ({ flow, onExportJson, onSave, theme, className }: TreegeEditorProps) => {
   const { onConnect, onConnectEnd, onEdgesDelete, isValidConnection } = useFlowConnections();
+  const [showMiniMap, setShowMiniMap] = useState(true);
   useAutoLayout();
 
   return (
@@ -37,8 +40,10 @@ const Flow = ({ flow, onExportJson, onSave, theme, className }: TreegeEditorProp
       <Background gap={10} variant={BackgroundVariant.Dots} />
       <ActionsPanel onExportJson={onExportJson} onSave={onSave} />
       <Logo theme={theme} />
-      <MiniMap />
-      <Controls />
+      {showMiniMap && <MiniMap />}
+      <Controls>
+        <MiniMapControl show={showMiniMap} onToggle={() => setShowMiniMap((prev) => !prev)} />
+      </Controls>
       <NodeActionsSheet />
       <DeleteNodeDialog />
       <ChangeNodeTypeDialog />
