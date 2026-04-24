@@ -15,16 +15,19 @@ import useFlowConnections from "@/editor/hooks/useFlowConnections";
 import { TreegeEditorProps } from "@/editor/types/editor";
 import { Toaster } from "@/shared/components/ui/sonner";
 import { ThemeProvider } from "@/shared/context/ThemeContext";
+import { useIsMobile } from "@/shared/hooks/useIsMobile";
 import { cn } from "@/shared/lib/utils";
 
 const Flow = ({ flow, onExportJson, onSave, theme, className }: TreegeEditorProps) => {
   const { onConnect, onConnectEnd, onEdgesDelete, isValidConnection } = useFlowConnections();
-  const [showMiniMap, setShowMiniMap] = useState(true);
+  const [showMiniMap, setShowMiniMap] = useState(false);
+  const isMobile = useIsMobile();
 
   return (
     <ReactFlow
       fitView
       minZoom={0.1}
+      fitViewOptions={{ maxZoom: isMobile ? 0.6 : 1 }}
       colorMode={theme}
       selectNodesOnDrag={false}
       nodeTypes={NODE_TYPES}
