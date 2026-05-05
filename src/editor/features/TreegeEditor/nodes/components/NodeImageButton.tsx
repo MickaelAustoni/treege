@@ -8,6 +8,7 @@ import { Button } from "@/shared/components/ui/button";
 import { Input } from "@/shared/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/shared/components/ui/popover";
 import { Separator } from "@/shared/components/ui/separator";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/shared/components/ui/tooltip";
 import { cn } from "@/shared/lib/utils";
 
 interface NodeImageButtonProps {
@@ -116,18 +117,27 @@ const NodeImageButton = ({ nodeId, image }: NodeImageButtonProps) => {
     <>
       <input ref={fileInputRef} type="file" accept="image/*" className="tg:hidden" onChange={handleFileChange} />
       <Popover open={open} onOpenChange={setOpen}>
-        <PopoverTrigger asChild>
-          <button
-            type="button"
-            className={cn(
-              "nodrag nopan tg:flex tg:size-6 tg:cursor-pointer tg:items-center tg:justify-center tg:rounded-md tg:transition-all tg:hover:opacity-100",
-              image ? "tg:opacity-100" : "tg:opacity-60",
-            )}
-            aria-label={t("editor.inputNodeForm.optionImageAdd")}
-          >
-            <Image className="tg:h-3.5 tg:w-3.5" />
-          </button>
-        </PopoverTrigger>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <PopoverTrigger asChild>
+                <button
+                  type="button"
+                  className={cn(
+                    "nodrag nopan tg:flex tg:size-6 tg:cursor-pointer tg:items-center tg:justify-center tg:rounded-md tg:transition-all tg:hover:opacity-100",
+                    image ? "tg:opacity-60" : "tg:opacity-60",
+                  )}
+                  aria-label={t(image ? "editor.inputNodeForm.optionImageReplace" : "editor.inputNodeForm.optionImageAdd")}
+                >
+                  <Image className="tg:h-3.5 tg:w-3.5" />
+                </button>
+              </PopoverTrigger>
+            </TooltipTrigger>
+            <TooltipContent side="bottom">
+              {t(image ? "editor.inputNodeForm.optionImageReplace" : "editor.inputNodeForm.optionImageAdd")}
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
         <PopoverContent align="end" className="tg:w-64 tg:space-y-3 tg:p-3">
           <Button type="button" variant="outline" size="sm" className="tg:w-full" onClick={() => fileInputRef.current?.click()}>
             <Upload className="tg:mr-2 tg:h-4 tg:w-4" />

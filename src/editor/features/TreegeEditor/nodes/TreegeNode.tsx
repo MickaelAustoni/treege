@@ -12,7 +12,6 @@ import NodeWrapper from "@/editor/features/TreegeEditor/nodes/layout/NodeWrapper
 import { cn } from "@/shared/lib/utils";
 import { FlowNodeData, InputNodeData, UINodeData } from "@/shared/types/node";
 
-export type TreegeNodeType = Node<FlowNodeData, "flow"> | Node<InputNodeData, "input"> | Node<UINodeData, "ui">;
 export type TreegeNodeProps =
   | NodeProps<Node<FlowNodeData, "flow">>
   | NodeProps<Node<InputNodeData, "input">>
@@ -29,7 +28,7 @@ const TreegeNode = (props: TreegeNodeProps) => {
   return (
     <NodeWrapper inGroup={!!parentId} isSubmit={isSubmit}>
       {/* Node actions */}
-      <div className="tg:absolute tg:top-2 tg:right-2 tg:flex tg:items-center tg:gap-1">
+      <div className="tg:absolute tg:top-2 tg:right-2 tg:flex tg:items-center tg:gap-0.5">
         {selected && inputData && !isSubmit && (
           <>
             <RequiredAsterisk nodeId={id} required={inputData.required} />
