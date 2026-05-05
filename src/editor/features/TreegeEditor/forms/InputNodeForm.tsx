@@ -16,6 +16,7 @@ import { FormDescription, FormItem } from "@/shared/components/ui/form";
 import { Input } from "@/shared/components/ui/input";
 import { Label } from "@/shared/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/components/ui/select";
+import { Separator } from "@/shared/components/ui/separator";
 import { Switch } from "@/shared/components/ui/switch";
 import { Language } from "@/shared/types/languages";
 import { InputNodeData } from "@/shared/types/node";
@@ -148,7 +149,7 @@ const InputNodeForm = () => {
 
         {/* HTTP config */}
         {selectedNode?.data?.type === "http" && (
-          <Collapsible defaultOpen className="tg:flex tg:w-full tg:max-w-[350px] tg:flex-col tg:gap-2">
+          <Collapsible defaultOpen className="tg:flex tg:w-full tg:max-w-87.5 tg:flex-col tg:gap-2">
             <CollapsibleTrigger asChild>
               <div className="tg:flex tg:items-center tg:justify-between tg:gap-4">
                 <h4 className="tg:font-semibold tg:text-sm">{t("editor.inputNodeForm.httpConfiguration")}</h4>
@@ -177,7 +178,7 @@ const InputNodeForm = () => {
 
         {/* Submit config */}
         {isSubmitType && (
-          <Collapsible className="tg:flex tg:w-full tg:max-w-[350px] tg:flex-col tg:gap-2">
+          <Collapsible className="tg:flex tg:w-full tg:max-w-87.5 tg:flex-col tg:gap-2">
             <CollapsibleTrigger asChild>
               <div className="tg:flex tg:items-center tg:justify-between tg:gap-4">
                 <h4 className="tg:font-semibold tg:text-sm">{t("editor.inputNodeForm.submitConfiguration")}</h4>
@@ -219,7 +220,7 @@ const InputNodeForm = () => {
 
         {/* Options */}
         {needsOptions && (
-          <Collapsible defaultOpen className="tg:flex tg:w-full tg:max-w-[350px] tg:flex-col tg:gap-2">
+          <Collapsible defaultOpen className="tg:flex tg:w-full tg:max-w-87.5 tg:flex-col tg:gap-2">
             <CollapsibleTrigger asChild>
               <div className="tg:flex tg:items-center tg:justify-between tg:gap-4">
                 <h4 className="tg:font-semibold tg:text-sm">{t("editor.inputNodeForm.options")}</h4>
@@ -239,6 +240,7 @@ const InputNodeForm = () => {
 
                       return (
                         <div key={key} className="tg:flex tg:flex-col tg:gap-2">
+                          {index > 0 && <Separator className="tg:my-1" />}
                           <div className="tg:flex tg:items-start tg:gap-2">
                             {selectedNode?.data?.type === "radio" && (
                               <Field name={`options[${index}].image`}>
@@ -367,7 +369,7 @@ const InputNodeForm = () => {
 
         {/* Validation */}
         {!isSubmitType && (
-          <Collapsible className="tg:flex tg:w-full tg:max-w-[350px] tg:flex-col tg:gap-2">
+          <Collapsible className="tg:flex tg:w-full tg:max-w-87.5 tg:flex-col tg:gap-2">
             <CollapsibleTrigger asChild>
               <div className="tg:flex tg:items-center tg:justify-between tg:gap-4">
                 <h4 className="tg:font-semibold tg:text-sm">{t("editor.inputNodeForm.validation")}</h4>
@@ -444,7 +446,7 @@ const InputNodeForm = () => {
 
         {/* Advanced config */}
         {!isSubmitType && (
-          <Collapsible className="tg:flex tg:w-full tg:max-w-[350px] tg:flex-col tg:gap-2">
+          <Collapsible className="tg:flex tg:w-full tg:max-w-87.5 tg:flex-col tg:gap-2">
             <CollapsibleTrigger asChild>
               <div className="tg:flex tg:items-center tg:justify-between tg:gap-4">
                 <h4 className="tg:font-semibold tg:text-sm">{t("editor.inputNodeForm.advancedConfiguration")}</h4>

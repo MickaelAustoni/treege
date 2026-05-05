@@ -1,11 +1,11 @@
 import { Plus } from "lucide-react";
 import { FormEvent, KeyboardEvent, MouseEvent, useState } from "react";
 import { useTreegeEditorContext } from "@/editor/context/TreegeEditorContext";
+import OptionImageField from "@/editor/features/TreegeEditor/inputs/OptionImageField";
 import useFlowActions from "@/editor/hooks/useFlowActions";
 import useTranslate from "@/editor/hooks/useTranslate";
 import { Button } from "@/shared/components/ui/button";
 import { Input } from "@/shared/components/ui/input";
-import { Label } from "@/shared/components/ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "@/shared/components/ui/popover";
 import { Language } from "@/shared/types/languages";
 import { FlowNodeData, InputNodeData, InputOption, UINodeData } from "@/shared/types/node";
@@ -21,6 +21,8 @@ const OptionsEditor = ({ nodeId, data }: OptionsEditorProps) => {
   const [open, setOpen] = useState(false);
   const [labelDraft, setLabelDraft] = useState("");
   const [valueDraft, setValueDraft] = useState("");
+  const [imageDraft, setImageDraft] = useState("");
+  const [descriptionDraft, setDescriptionDraft] = useState("");
   const { updateNodeData } = useFlowActions();
   const { language } = useTreegeEditorContext();
   const t = useTranslate();
@@ -32,10 +34,14 @@ const OptionsEditor = ({ nodeId, data }: OptionsEditorProps) => {
   }
 
   const options = (data as InputNodeData).options ?? [];
+  const supportsImage = dataType === "radio";
+  const supportsDescription = dataType === "radio" || dataType === "checkbox";
 
   const resetDraft = () => {
     setLabelDraft("");
     setValueDraft("");
+    setImageDraft("");
+    setDescriptionDraft("");
   };
 
   const handleSubmit = (event?: FormEvent) => {
@@ -46,9 +52,12 @@ const OptionsEditor = ({ nodeId, data }: OptionsEditorProps) => {
       return;
     }
 
+    const description = descriptionDraft.trim();
     const newOption: InputOption = {
       label: { [language as Language]: label } as InputOption["label"],
       value,
+      ...(supportsImage && imageDraft && { image: imageDraft }),
+      ...(supportsDescription && description && { description: { [language as Language]: description } as InputOption["description"] }),
     };
     updateNodeData(nodeId, { options: [...options, newOption] });
     resetDraft();
@@ -96,31 +105,35 @@ const OptionsEditor = ({ nodeId, data }: OptionsEditorProps) => {
             {t("editor.inputNodeForm.addOption")}
           </Button>
         </PopoverTrigger>
-        <PopoverContent align="start" className="tg:w-64 tg:p-3" onClick={stopPropagation}>
+        <PopoverContent align="start" className="tg:w-80 tg:p-3" onClick={stopPropagation}>
           <form onSubmit={handleSubmit} className="tg:flex tg:flex-col tg:gap-2">
-            <div className="tg:flex tg:flex-col tg:gap-1">
-              <Label htmlFor={`${nodeId}-option-label`} className="tg:text-xs">
-                {t("editor.inputNodeForm.optionLabel")}
-              </Label>
+            <div className="tg:flex tg:items-start tg:gap-2">
+              {supportsImage && <OptionImageField value={imageDraft} onChange={setImageDraft} />}
               <Input
                 id={`${nodeId}-option-label`}
                 autoFocus
+                placeholder={t("editor.inputNodeForm.optionLabel")}
                 value={labelDraft}
                 onChange={(event) => setLabelDraft(event.target.value)}
                 onKeyDown={handleKeyDown}
               />
-            </div>
-            <div className="tg:flex tg:flex-col tg:gap-1">
-              <Label htmlFor={`${nodeId}-option-value`} className="tg:text-xs">
-                {t("editor.inputNodeForm.optionValue")}
-              </Label>
               <Input
                 id={`${nodeId}-option-value`}
+                placeholder={t("editor.inputNodeForm.optionValue")}
                 value={valueDraft}
                 onChange={(event) => setValueDraft(event.target.value)}
                 onKeyDown={handleKeyDown}
               />
             </div>
+            {supportsDescription && (
+              <Input
+                id={`${nodeId}-option-description`}
+                placeholder={t("editor.inputNodeForm.optionDescription")}
+                value={descriptionDraft}
+                onChange={(event) => setDescriptionDraft(event.target.value)}
+                onKeyDown={handleKeyDown}
+              />
+            )}
             <Button type="submit" size="sm" disabled={!(labelDraft.trim() || valueDraft.trim())}>
               {t("common.create")}
             </Button>
