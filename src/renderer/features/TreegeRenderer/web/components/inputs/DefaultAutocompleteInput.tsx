@@ -1,5 +1,6 @@
-import { Check, ChevronsUpDown } from "lucide-react";
+import { Check, ChevronsUpDown, Loader2 } from "lucide-react";
 import { useState } from "react";
+import { useInputOptions } from "@/renderer/hooks/useInputOptions";
 import { useTranslate } from "@/renderer/hooks/useTranslate";
 import { InputRenderProps } from "@/renderer/types/renderer";
 import { Button } from "@/shared/components/ui/button";
@@ -21,9 +22,9 @@ const DefaultAutocompleteInput = ({
 }: InputRenderProps<"autocomplete">) => {
   const t = useTranslate();
   const [open, setOpen] = useState(false);
+  const { options, isLoading, error: sourceError } = useInputOptions(node);
   const triggerId = `${id}-trigger`;
   const errorId = `${id}-error`;
-  const options = node.data.options || [];
   const selectedOption = options.find((option) => option.value === value);
 
   return (
@@ -41,13 +42,17 @@ const DefaultAutocompleteInput = ({
             aria-expanded={open}
             aria-invalid={Boolean(error) || undefined}
             aria-describedby={error ? errorId : undefined}
+            disabled={isLoading}
             className="tg:w-full tg:justify-between tg:font-normal"
           >
-            {value
-              ? selectedOption?.label
-                ? t(selectedOption.label)
-                : value
-              : placeholder || t("renderer.defaultAutocompleteInput.selectOption")}
+            <span className="tg:flex tg:items-center tg:gap-2 tg:truncate">
+              {isLoading && <Loader2 className="tg:h-4 tg:w-4 tg:shrink-0 tg:animate-spin" />}
+              {value
+                ? selectedOption?.label
+                  ? t(selectedOption.label)
+                  : value
+                : placeholder || t("renderer.defaultAutocompleteInput.selectOption")}
+            </span>
             <ChevronsUpDown className="tg:ml-2 tg:size-4 tg:shrink-0 tg:opacity-50" />
           </Button>
         </PopoverTrigger>
@@ -77,7 +82,8 @@ const DefaultAutocompleteInput = ({
         </PopoverContent>
       </Popover>
       {error && <FormError id={errorId}>{error}</FormError>}
-      {helperText && !error && <FormDescription>{helperText}</FormDescription>}
+      {sourceError && !error && <FormError>{sourceError}</FormError>}
+      {helperText && !error && !sourceError && <FormDescription>{helperText}</FormDescription>}
     </FormItem>
   );
 };

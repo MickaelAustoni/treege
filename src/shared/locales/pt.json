@@ -209,6 +209,32 @@
       "deleteNodeSuccess": "Nó excluído com sucesso",
       "editNode": "Editar nó"
     },
+    "optionsSourceForm": {
+      "descriptionField": "Description",
+      "descriptionFieldPlaceholder": "Path to description (optional)",
+      "detect": "Detect fields",
+      "detectFailed": "Failed to fetch the API.",
+      "detectSuccess": "Fields detected.",
+      "disable": "Use static options",
+      "dynamicHint": "Options are fetched from this API at runtime.",
+      "enable": "Fetch from API",
+      "imageField": "Image",
+      "imageFieldPlaceholder": "Path to image URL (optional)",
+      "labelField": "Label",
+      "labelFieldPlaceholder": "Path to label (e.g., name)",
+      "noFieldsDetected": "No fields detected — check the URL or response path.",
+      "none": "— None —",
+      "previewCount": "{count} options detected",
+      "responsePath": "Response path",
+      "responsePathHint": "Optional. Use a path like \"data.users\" if the array is nested.",
+      "responsePathPlaceholder": "e.g., data.users",
+      "staticOptions": "Static options",
+      "staticOptionsHint": "Options are defined manually in the editor.",
+      "title": "Options source",
+      "urlRequired": "URL is required.",
+      "valueField": "Value",
+      "valueFieldPlaceholder": "Path to value (e.g., id)"
+    },
     "selectInputType": {
       "type": "Tipo"
     },
@@ -290,6 +316,9 @@
       "search": "Pesquisar...",
       "selectOption": "Selecione uma opção"
     },
+    "defaultCheckboxInput": {
+      "loadingOptions": "Carregando opções..."
+    },
     "defaultHttpInput": {
       "fetchFailed": "Falha ao buscar dados. Por favor, verifique sua conexão de rede.",
       "httpError": "Erro HTTP {status}: {statusText}",
@@ -317,6 +346,9 @@
       "selectFiles": "Selecionar arquivos",
       "startDate": "Data de início",
       "startTime": "Hora de início"
+    },
+    "defaultRadioInput": {
+      "loadingOptions": "Carregando opções..."
     },
     "defaultSelectInput": {
       "selectOption": "Selecione uma opção"

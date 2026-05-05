@@ -2,6 +2,7 @@ import { useForm } from "@tanstack/react-form";
 import { ChevronsUpDown, Plus, X } from "lucide-react";
 import { useState } from "react";
 import HttpConfigForm from "@/editor/features/TreegeEditor/forms/HttpConfigForm";
+import OptionsSourceForm from "@/editor/features/TreegeEditor/forms/OptionsSourceForm";
 import SubmitConfigForm from "@/editor/features/TreegeEditor/forms/SubmitConfigForm";
 import ComboboxPattern from "@/editor/features/TreegeEditor/inputs/ComboboxPattern";
 import OptionImageField from "@/editor/features/TreegeEditor/inputs/OptionImageField";
@@ -31,7 +32,7 @@ const InputNodeForm = () => {
   const isSubmitType = selectedNode?.data?.type === "submit";
   const isHiddenType = selectedNode?.data?.type === "hidden";
 
-  const { handleSubmit, Field } = useForm({
+  const { handleSubmit, Field, Subscribe } = useForm({
     defaultValues: {
       defaultValue: selectedNode?.data?.defaultValue,
       disablePast: selectedNode?.data?.disablePast,
@@ -42,6 +43,7 @@ const InputNodeForm = () => {
       multiple: selectedNode?.data?.multiple,
       name: selectedNode?.data?.name || "",
       options: selectedNode?.data?.options || [],
+      optionsSource: selectedNode?.data?.optionsSource,
       pattern: selectedNode?.data?.pattern || "",
       placeholder: selectedNode?.data?.placeholder || { en: "" },
       required: selectedNode?.data?.required,
@@ -232,102 +234,116 @@ const InputNodeForm = () => {
             </CollapsibleTrigger>
 
             <CollapsibleContent className="tg:flex tg:flex-col tg:gap-4">
-              <Field name="options" mode="array">
-                {(field) => (
-                  <div className="tg:space-y-2">
-                    {field.state.value?.map((_, index) => {
-                      const key = `options[${index}]`;
-
-                      return (
-                        <div key={key} className="tg:flex tg:flex-col tg:gap-2">
-                          {index > 0 && <Separator className="tg:my-1" />}
-                          <div className="tg:flex tg:items-start tg:gap-2">
-                            {selectedNode?.data?.type === "radio" && (
-                              <Field name={`options[${index}].image`}>
-                                {(subField) => (
-                                  <OptionImageField value={subField.state.value} onChange={(newValue) => subField.handleChange(newValue)} />
-                                )}
-                              </Field>
-                            )}
-
-                            <Field name={`options[${index}].label`}>
-                              {(subField) => (
-                                <Input
-                                  placeholder={t("editor.inputNodeForm.optionLabel")}
-                                  value={subField.state.value?.[selectedLanguage] || ""}
-                                  onChange={({ target }) => {
-                                    subField.handleChange({
-                                      ...(typeof subField.state.value === "object" && subField.state.value !== null
-                                        ? subField.state.value
-                                        : {}),
-                                      [selectedLanguage]: target.value,
-                                    });
-                                  }}
-                                />
-                              )}
-                            </Field>
-
-                            <Field name={`options[${index}].value`}>
-                              {(subField) => (
-                                <Input
-                                  placeholder={t("editor.inputNodeForm.optionValue")}
-                                  value={subField.state.value || ""}
-                                  onChange={({ target }) => subField.handleChange(target.value)}
-                                />
-                              )}
-                            </Field>
-
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => {
-                                field.removeValue(index);
-                                handleSubmit().then();
-                              }}
-                            >
-                              <X className="tg:h-4 tg:w-4" />
-                            </Button>
-                          </div>
-
-                          {(selectedNode?.data?.type === "radio" || selectedNode?.data?.type === "checkbox") && (
-                            <Field name={`options[${index}].description`}>
-                              {(subField) => (
-                                <Input
-                                  placeholder={t("editor.inputNodeForm.optionDescription")}
-                                  value={
-                                    (subField.state.value as { [key: string]: string | undefined } | undefined)?.[selectedLanguage] || ""
-                                  }
-                                  onChange={({ target }) => {
-                                    subField.handleChange({
-                                      ...(typeof subField.state.value === "object" && subField.state.value !== null
-                                        ? subField.state.value
-                                        : {}),
-                                      [selectedLanguage]: target.value,
-                                    } as never);
-                                  }}
-                                />
-                              )}
-                            </Field>
-                          )}
-                        </div>
-                      );
-                    })}
-
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={() => {
-                        field.pushValue({ label: { en: "" }, value: "" });
-                        handleSubmit().then();
-                      }}
-                    >
-                      {t("editor.inputNodeForm.addOption")}
-                    </Button>
-                  </div>
-                )}
+              <Field name="optionsSource">
+                {(field) => <OptionsSourceForm value={field.state.value} onChange={(next) => field.handleChange(next)} />}
               </Field>
+
+              <Subscribe selector={(state) => Boolean(state.values.optionsSource)}>
+                {(hasOptionsSource) =>
+                  !hasOptionsSource && (
+                    <Field name="options" mode="array">
+                      {(field) => (
+                        <div className="tg:space-y-2">
+                          {field.state.value?.map((_, index) => {
+                            const key = `options[${index}]`;
+
+                            return (
+                              <div key={key} className="tg:flex tg:flex-col tg:gap-2">
+                                {index > 0 && <Separator className="tg:my-1" />}
+                                <div className="tg:flex tg:items-start tg:gap-2">
+                                  {selectedNode?.data?.type === "radio" && (
+                                    <Field name={`options[${index}].image`}>
+                                      {(subField) => (
+                                        <OptionImageField
+                                          value={subField.state.value}
+                                          onChange={(newValue) => subField.handleChange(newValue)}
+                                        />
+                                      )}
+                                    </Field>
+                                  )}
+
+                                  <Field name={`options[${index}].label`}>
+                                    {(subField) => (
+                                      <Input
+                                        placeholder={t("editor.inputNodeForm.optionLabel")}
+                                        value={subField.state.value?.[selectedLanguage] || ""}
+                                        onChange={({ target }) => {
+                                          subField.handleChange({
+                                            ...(typeof subField.state.value === "object" && subField.state.value !== null
+                                              ? subField.state.value
+                                              : {}),
+                                            [selectedLanguage]: target.value,
+                                          });
+                                        }}
+                                      />
+                                    )}
+                                  </Field>
+
+                                  <Field name={`options[${index}].value`}>
+                                    {(subField) => (
+                                      <Input
+                                        placeholder={t("editor.inputNodeForm.optionValue")}
+                                        value={subField.state.value || ""}
+                                        onChange={({ target }) => subField.handleChange(target.value)}
+                                      />
+                                    )}
+                                  </Field>
+
+                                  <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="icon"
+                                    onClick={() => {
+                                      field.removeValue(index);
+                                      handleSubmit().then();
+                                    }}
+                                  >
+                                    <X className="tg:h-4 tg:w-4" />
+                                  </Button>
+                                </div>
+
+                                {(selectedNode?.data?.type === "radio" || selectedNode?.data?.type === "checkbox") && (
+                                  <Field name={`options[${index}].description`}>
+                                    {(subField) => (
+                                      <Input
+                                        placeholder={t("editor.inputNodeForm.optionDescription")}
+                                        value={
+                                          (subField.state.value as { [key: string]: string | undefined } | undefined)?.[selectedLanguage] ||
+                                          ""
+                                        }
+                                        onChange={({ target }) => {
+                                          subField.handleChange({
+                                            ...(typeof subField.state.value === "object" && subField.state.value !== null
+                                              ? subField.state.value
+                                              : {}),
+                                            [selectedLanguage]: target.value,
+                                          } as never);
+                                        }}
+                                      />
+                                    )}
+                                  </Field>
+                                )}
+                              </div>
+                            );
+                          })}
+
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              field.pushValue({ label: { en: "" }, value: "" });
+                              handleSubmit().then();
+                            }}
+                          >
+                            {t("editor.inputNodeForm.addOption")}
+                          </Button>
+                        </div>
+                      )}
+                    </Field>
+                  )
+                }
+              </Subscribe>
 
               {selectedNode?.data?.type === "select" && (
                 <Field
@@ -348,7 +364,7 @@ const InputNodeForm = () => {
                     <FormItem>
                       <Label htmlFor={field.name}>{t("editor.inputNodeForm.variant")}</Label>
                       <Select
-                        value={(field.state.value as string) || "default"}
+                        value={(field.state.value as string) || "card"}
                         onValueChange={(newValue) => field.handleChange(newValue as never)}
                       >
                         <SelectTrigger id={field.name} className="tg:w-full">

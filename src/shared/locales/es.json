@@ -209,6 +209,32 @@
       "deleteNodeSuccess": "Nodo eliminado exitosamente",
       "editNode": "Editar nodo"
     },
+    "optionsSourceForm": {
+      "descriptionField": "Description",
+      "descriptionFieldPlaceholder": "Path to description (optional)",
+      "detect": "Detect fields",
+      "detectFailed": "Failed to fetch the API.",
+      "detectSuccess": "Fields detected.",
+      "disable": "Use static options",
+      "dynamicHint": "Options are fetched from this API at runtime.",
+      "enable": "Fetch from API",
+      "imageField": "Image",
+      "imageFieldPlaceholder": "Path to image URL (optional)",
+      "labelField": "Label",
+      "labelFieldPlaceholder": "Path to label (e.g., name)",
+      "noFieldsDetected": "No fields detected — check the URL or response path.",
+      "none": "— None —",
+      "previewCount": "{count} options detected",
+      "responsePath": "Response path",
+      "responsePathHint": "Optional. Use a path like \"data.users\" if the array is nested.",
+      "responsePathPlaceholder": "e.g., data.users",
+      "staticOptions": "Static options",
+      "staticOptionsHint": "Options are defined manually in the editor.",
+      "title": "Options source",
+      "urlRequired": "URL is required.",
+      "valueField": "Value",
+      "valueFieldPlaceholder": "Path to value (e.g., id)"
+    },
     "selectInputType": {
       "type": "Tipo"
     },
@@ -290,6 +316,9 @@
       "search": "Buscar...",
       "selectOption": "Seleccionar una opción"
     },
+    "defaultCheckboxInput": {
+      "loadingOptions": "Cargando opciones..."
+    },
     "defaultHttpInput": {
       "fetchFailed": "Error al obtener los datos. Por favor, verifique su conexión de red.",
       "httpError": "Error HTTP {status}: {statusText}",
@@ -317,6 +346,9 @@
       "selectFiles": "Seleccionar archivos",
       "startDate": "Fecha de inicio",
       "startTime": "Hora de inicio"
+    },
+    "defaultRadioInput": {
+      "loadingOptions": "Cargando opciones..."
     },
     "defaultSelectInput": {
       "selectOption": "Seleccionar una opción"

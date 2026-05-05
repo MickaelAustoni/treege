@@ -209,6 +209,32 @@
       "deleteNodeSuccess": "Nœud supprimé avec succès",
       "editNode": "Modifier le nœud"
     },
+    "optionsSourceForm": {
+      "descriptionField": "Description",
+      "descriptionFieldPlaceholder": "Chemin vers la description (optionnel)",
+      "detect": "Détecter les champs",
+      "detectFailed": "Échec de la requête.",
+      "detectSuccess": "Champs détectés.",
+      "disable": "Utiliser des options statiques",
+      "dynamicHint": "Les options sont récupérées depuis cette API au runtime.",
+      "enable": "Récupérer depuis une API",
+      "imageField": "Image",
+      "imageFieldPlaceholder": "Chemin vers l'URL de l'image (optionnel)",
+      "labelField": "Label",
+      "labelFieldPlaceholder": "Chemin vers le label (ex. name)",
+      "noFieldsDetected": "Aucun champ détecté — vérifiez l'URL ou le chemin de réponse.",
+      "none": "— Aucun —",
+      "previewCount": "{count} options détectées",
+      "responsePath": "Chemin de réponse",
+      "responsePathHint": "Optionnel. Utilisez un chemin comme \"data.users\" si le tableau est imbriqué.",
+      "responsePathPlaceholder": "ex. data.users",
+      "staticOptions": "Options statiques",
+      "staticOptionsHint": "Les options sont définies manuellement dans l'éditeur.",
+      "title": "Source des options",
+      "urlRequired": "L'URL est requise.",
+      "valueField": "Valeur",
+      "valueFieldPlaceholder": "Chemin vers la valeur (ex. id)"
+    },
     "selectInputType": {
       "type": "Type"
     },
@@ -290,6 +316,9 @@
       "search": "Recherche...",
       "selectOption": "Sélectionner une option"
     },
+    "defaultCheckboxInput": {
+      "loadingOptions": "Chargement des options..."
+    },
     "defaultHttpInput": {
       "fetchFailed": "Échec de la récupération des données. Veuillez vérifier votre connexion réseau.",
       "httpError": "Erreur HTTP {status} : {statusText}",
@@ -317,6 +346,9 @@
       "selectFiles": "Sélectionner des fichiers",
       "startDate": "Date de début",
       "startTime": "Heure de début"
+    },
+    "defaultRadioInput": {
+      "loadingOptions": "Chargement des options..."
     },
     "defaultSelectInput": {
       "selectOption": "Sélectionner une option"

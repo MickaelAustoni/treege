@@ -4,43 +4,12 @@ import { useTreegeRendererContext } from "@/renderer/context/TreegeRendererConte
 import { useTranslate } from "@/renderer/hooks/useTranslate";
 import { InputRenderProps } from "@/renderer/types/renderer";
 import { convertFormValuesToNamedFormat } from "@/renderer/utils/form";
-import { mergeHttpHeaders } from "@/renderer/utils/http";
+import { getValueByPath, mergeHttpHeaders } from "@/renderer/utils/http";
 import { getFieldNameFromNodeId } from "@/renderer/utils/node";
 import { sanitizeHttpResponse } from "@/renderer/utils/sanitize.native";
 import { useTheme } from "@/shared/context/ThemeContext";
 
 type HttpResponse = Record<string, unknown> | unknown[];
-
-/**
- * Extracts a value from an object using a path like "data.users" or "results[0].name"
- */
-const getValueByPath = (obj: HttpResponse, path: string): unknown => {
-  if (!path) {
-    return obj;
-  }
-
-  const parts = path.split(".");
-
-  return parts.reduce<unknown>((current, part) => {
-    if (current === null || current === undefined) {
-      return undefined;
-    }
-
-    // Handle array indexing like "results[0]"
-    const arrayMatch = part.match(/^(\w+)\[(\d+)]$/);
-
-    if (arrayMatch) {
-      const [, key, index] = arrayMatch;
-      const intermediate = (current as Record<string, unknown>)[key];
-      if (Array.isArray(intermediate)) {
-        return intermediate[Number.parseInt(index, 10)];
-      }
-      return intermediate;
-    }
-
-    return (current as Record<string, unknown>)[part];
-  }, obj);
-};
 
 /**
  * Extracts variable names from a template string

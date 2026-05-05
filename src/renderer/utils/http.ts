@@ -1,6 +1,6 @@
 import { FormValues } from "@/renderer/types/renderer";
 import { sanitize } from "@/renderer/utils/sanitize";
-import { HttpHeader } from "@/shared/types/node";
+import { HttpHeader, InputOption, OptionsSourceMapping } from "@/shared/types/node";
 
 /**
  * Merge multiple lists of HTTP headers. Later sources override earlier ones
@@ -69,6 +69,10 @@ export interface HttpRequestOptions {
    * Request body (for POST/PUT/PATCH)
    */
   body?: string;
+  /**
+   * Optional abort signal to cancel the request
+   */
+  signal?: AbortSignal;
 }
 
 /**
@@ -82,7 +86,7 @@ export interface HttpRequestOptions {
  */
 export const makeHttpRequest = async (options: HttpRequestOptions): Promise<HttpRequestResult> => {
   try {
-    const { url, method = "GET", headers: customHeaders = [], body } = options;
+    const { url, method = "GET", headers: customHeaders = [], body, signal } = options;
 
     // Validate URL
     if (!url || url.trim() === "") {
@@ -101,6 +105,7 @@ export const makeHttpRequest = async (options: HttpRequestOptions): Promise<Http
     const requestOptions: RequestInit = {
       headers,
       method,
+      signal,
     };
 
     // Add body for methods that support it
@@ -262,4 +267,86 @@ const getNestedValue = (obj: unknown, path: string): unknown => {
     }
     return (current as Record<string, unknown>)[part];
   }, obj);
+};
+
+/**
+ * Extract a value from an object using a path that supports dot notation
+ * and array indexing. Examples:
+ * - "data.users" → obj.data.users
+ * - "results[0].name" → obj.results[0].name
+ *
+ * @param obj - The object to extract value from
+ * @param path - The path expression (empty string returns the object as-is)
+ * @returns The value at the path, or undefined if not found
+ */
+export const getValueByPath = (obj: unknown, path: string): unknown => {
+  if (!path) {
+    return obj;
+  }
+
+  return path.split(".").reduce<unknown>((current, part) => {
+    if (current === null || current === undefined) {
+      return undefined;
+    }
+
+    const arrayMatch = part.match(/^(\w+)\[(\d+)]$/);
+    if (arrayMatch) {
+      const [, key, index] = arrayMatch;
+      const intermediate = (current as Record<string, unknown>)[key];
+      if (Array.isArray(intermediate)) {
+        return intermediate[Number.parseInt(index, 10)];
+      }
+      return intermediate;
+    }
+
+    return (current as Record<string, unknown>)[part];
+  }, obj);
+};
+
+/**
+ * Project a list-shaped HTTP response into InputOption objects, applying
+ * a field-to-property mapping. Returns an empty array when the data is not
+ * iterable or required fields are missing.
+ */
+export const extractOptionsFromResponse = (
+  response: unknown,
+  responsePath: string | undefined,
+  mapping: OptionsSourceMapping,
+): InputOption[] => {
+  const data = getValueByPath(response, responsePath ?? "");
+  if (!Array.isArray(data)) {
+    return [];
+  }
+
+  return data
+    .map((item): InputOption | null => {
+      const rawValue = getValueByPath(item, mapping.valueField);
+      const rawLabel = getValueByPath(item, mapping.labelField);
+      if (rawValue === undefined || rawValue === null) {
+        return null;
+      }
+
+      const labelText = rawLabel === undefined || rawLabel === null ? String(rawValue) : String(rawLabel);
+      const option: InputOption = {
+        label: { en: labelText },
+        value: String(rawValue),
+      };
+
+      if (mapping.descriptionField) {
+        const description = getValueByPath(item, mapping.descriptionField);
+        if (description !== undefined && description !== null && description !== "") {
+          option.description = { en: String(description) };
+        }
+      }
+
+      if (mapping.imageField) {
+        const image = getValueByPath(item, mapping.imageField);
+        if (typeof image === "string" && image !== "") {
+          option.image = image;
+        }
+      }
+
+      return option;
+    })
+    .filter((option): option is InputOption => option !== null);
 };

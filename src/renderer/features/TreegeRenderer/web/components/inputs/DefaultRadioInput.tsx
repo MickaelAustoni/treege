@@ -1,3 +1,5 @@
+import { Loader2 } from "lucide-react";
+import { useInputOptions } from "@/renderer/hooks/useInputOptions";
 import { useTranslate } from "@/renderer/hooks/useTranslate";
 import { InputRenderProps } from "@/renderer/types/renderer";
 import { Field, FieldContent, FieldDescription, FieldLabel, FieldTitle } from "@/shared/components/ui/field";
@@ -6,6 +8,7 @@ import { Label } from "@/shared/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/shared/components/ui/radio-group";
 
 const DefaultRadioInput = ({ node, value, setValue, error, label, helperText, id, name }: InputRenderProps<"radio">) => {
+  const { options, isLoading, error: sourceError } = useInputOptions(node);
   const t = useTranslate();
   const normalizedValue = value ? String(value) : "";
   const isCard = node.data.variant !== "default";
@@ -17,6 +20,12 @@ const DefaultRadioInput = ({ node, value, setValue, error, label, helperText, id
         {label || node.data.name}
         {node.data.required && <span className="tg:text-red-500">*</span>}
       </Label>
+      {isLoading && (
+        <div className="tg:flex tg:items-center tg:gap-2 tg:py-2 tg:text-muted-foreground tg:text-sm">
+          <Loader2 className="tg:h-4 tg:w-4 tg:animate-spin" />
+          <span>{t("renderer.defaultRadioInput.loadingOptions")}</span>
+        </div>
+      )}
       <RadioGroup
         value={normalizedValue}
         onValueChange={(val) => setValue(val)}
@@ -24,7 +33,7 @@ const DefaultRadioInput = ({ node, value, setValue, error, label, helperText, id
         name={name}
         className={isCard ? "tg:flex tg:flex-col tg:gap-2" : undefined}
       >
-        {node.data.options?.map((option, index) => {
+        {options.map((option, index) => {
           const optionId = `${id}-${option.value}`;
           const optionLabel = t(option.label) || option.value;
           const optionDescription = t(option.description);
@@ -61,7 +70,8 @@ const DefaultRadioInput = ({ node, value, setValue, error, label, helperText, id
         })}
       </RadioGroup>
       {error && <FormError>{error}</FormError>}
-      {helperText && !error && <FormDescription>{helperText}</FormDescription>}
+      {sourceError && !error && <FormError>{sourceError}</FormError>}
+      {helperText && !error && !sourceError && <FormDescription>{helperText}</FormDescription>}
     </FormItem>
   );
 };

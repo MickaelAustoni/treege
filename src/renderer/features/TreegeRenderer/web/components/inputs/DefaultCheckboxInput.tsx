@@ -1,3 +1,5 @@
+import { Loader2 } from "lucide-react";
+import { useInputOptions } from "@/renderer/hooks/useInputOptions";
 import { useTranslate } from "@/renderer/hooks/useTranslate";
 import { InputRenderProps } from "@/renderer/types/renderer";
 import { Checkbox } from "@/shared/components/ui/checkbox";
@@ -5,10 +7,11 @@ import { FormDescription, FormError, FormItem } from "@/shared/components/ui/for
 import { Label } from "@/shared/components/ui/label";
 
 const DefaultCheckboxInput = ({ node, value, setValue, error, label, helperText, id, name }: InputRenderProps<"checkbox">) => {
+  const { options, isLoading, error: sourceError } = useInputOptions(node);
   const t = useTranslate();
 
-  // If there are options, render a checkbox group (multiple checkboxes)
-  if (node.data.options && node.data.options.length > 0) {
+  // If there are options (static or dynamic), render a checkbox group
+  if (options.length > 0 || node.data.optionsSource) {
     const selectedValues = Array.isArray(value) ? value.map(String) : [];
 
     const handleCheckboxChange = (optionValue: string, checked: boolean) => {
@@ -22,8 +25,14 @@ const DefaultCheckboxInput = ({ node, value, setValue, error, label, helperText,
           {label || node.data.name}
           {node.data.required && <span className="tg:text-red-500">*</span>}
         </Label>
+        {isLoading && (
+          <div className="tg:flex tg:items-center tg:gap-2 tg:py-2 tg:text-muted-foreground tg:text-sm">
+            <Loader2 className="tg:h-4 tg:w-4 tg:animate-spin" />
+            <span>{t("renderer.defaultCheckboxInput.loadingOptions")}</span>
+          </div>
+        )}
         <div className="tg:space-y-2">
-          {node.data.options.map((option, index) => {
+          {options.map((option, index) => {
             const optionDescription = t(option.description);
             return (
               <div key={option.value + index} className="tg:flex tg:items-start tg:gap-3">
@@ -46,7 +55,8 @@ const DefaultCheckboxInput = ({ node, value, setValue, error, label, helperText,
           })}
         </div>
         {error && <FormError>{error}</FormError>}
-        {helperText && !error && <FormDescription>{helperText}</FormDescription>}
+        {sourceError && !error && <FormError>{sourceError}</FormError>}
+        {helperText && !error && !sourceError && <FormDescription>{helperText}</FormDescription>}
       </FormItem>
     );
   }

@@ -209,6 +209,32 @@
       "deleteNodeSuccess": "Knoten erfolgreich gelöscht",
       "editNode": "Knoten bearbeiten"
     },
+    "optionsSourceForm": {
+      "descriptionField": "Description",
+      "descriptionFieldPlaceholder": "Path to description (optional)",
+      "detect": "Detect fields",
+      "detectFailed": "Failed to fetch the API.",
+      "detectSuccess": "Fields detected.",
+      "disable": "Use static options",
+      "dynamicHint": "Options are fetched from this API at runtime.",
+      "enable": "Fetch from API",
+      "imageField": "Image",
+      "imageFieldPlaceholder": "Path to image URL (optional)",
+      "labelField": "Label",
+      "labelFieldPlaceholder": "Path to label (e.g., name)",
+      "noFieldsDetected": "No fields detected — check the URL or response path.",
+      "none": "— None —",
+      "previewCount": "{count} options detected",
+      "responsePath": "Response path",
+      "responsePathHint": "Optional. Use a path like \"data.users\" if the array is nested.",
+      "responsePathPlaceholder": "e.g., data.users",
+      "staticOptions": "Static options",
+      "staticOptionsHint": "Options are defined manually in the editor.",
+      "title": "Options source",
+      "urlRequired": "URL is required.",
+      "valueField": "Value",
+      "valueFieldPlaceholder": "Path to value (e.g., id)"
+    },
     "selectInputType": {
       "type": "Typ"
     },
@@ -290,6 +316,9 @@
       "search": "Suchen...",
       "selectOption": "Option auswählen"
     },
+    "defaultCheckboxInput": {
+      "loadingOptions": "Optionen werden geladen..."
+    },
     "defaultHttpInput": {
       "fetchFailed": "Fehler beim Abrufen der Daten. Bitte überprüfen Sie Ihre Netzwerkverbindung.",
       "httpError": "HTTP-Fehler {status}: {statusText}",
@@ -317,6 +346,9 @@
       "selectFiles": "Dateien auswählen",
       "startDate": "Startdatum",
       "startTime": "Startzeit"
+    },
+    "defaultRadioInput": {
+      "loadingOptions": "Optionen werden geladen..."
     },
     "defaultSelectInput": {
       "selectOption": "Option auswählen"

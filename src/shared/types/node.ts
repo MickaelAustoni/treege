@@ -122,6 +122,41 @@ export type HttpConfig = {
   showLoading?: boolean;
 };
 
+/**
+ * Maps response item fields to InputOption properties.
+ * Each value is a path expression (e.g., "id", "user.name", "items[0].title").
+ */
+export type OptionsSourceMapping = {
+  /** Path to the field used as InputOption.value */
+  valueField: string;
+  /** Path to the field used as InputOption.label */
+  labelField: string;
+  /** Path to the field used as InputOption.description (optional) */
+  descriptionField?: string;
+  /** Path to the field used as InputOption.image (optional) */
+  imageField?: string;
+};
+
+/**
+ * Dynamic options source — fetches the option list from an HTTP endpoint
+ * at runtime. Applies to inputs that use options (radio, checkbox, select,
+ * autocomplete). When set, overrides the static `options` array.
+ */
+export type OptionsSource = {
+  /** API URL (supports template variables like {{fieldId}}) */
+  url?: string;
+  /** HTTP method */
+  method?: "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
+  /** Custom headers (merged with global headers; field-level wins) */
+  headers?: HttpHeader[];
+  /** Request body (for POST/PUT/PATCH; supports template variables) */
+  body?: string;
+  /** JSONPath to extract the array from the response (e.g., "data.users") */
+  responsePath?: string;
+  /** Field-to-property mapping for each response item */
+  mapping?: OptionsSourceMapping;
+};
+
 export type SubmitConfig = {
   /**
    * The HTTP method to use for form submission
@@ -224,6 +259,12 @@ export type InputNodeData = BaseNodeData & {
    * HTTP configuration for the input field (used with type="http")
    */
   httpConfig?: HttpConfig;
+  /**
+   * Dynamic options source — fetches the option list from an HTTP endpoint
+   * at runtime. Used by option-based inputs (radio, checkbox, select, autocomplete).
+   * When set, overrides the static `options` array.
+   */
+  optionsSource?: OptionsSource;
   /**
    * Submit configuration for the input field (used with type="submit")
    */
