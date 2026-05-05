@@ -1,7 +1,7 @@
 import { Node } from "@xyflow/react";
 import { FormEvent, ReactNode } from "react";
 import { SerializableFile } from "@/renderer/utils/file";
-import { Flow, InputNodeData, InputType, TreegeNodeData, UINodeData, UIType } from "@/shared/types/node";
+import { Flow, HttpHeader, InputNodeData, InputType, TreegeNodeData, UINodeData, UIType } from "@/shared/types/node";
 
 /**
  * Type mapping for input values based on input type
@@ -182,6 +182,12 @@ export type TreegeRendererConfig = {
    */
   components?: TreegeRendererComponents;
   /**
+   * Global HTTP headers applied to every request issued by the renderer
+   * (HTTP inputs, submit buttons). Field-level headers with the same key
+   * (case-insensitive) take precedence over these.
+   */
+  headers?: HttpHeader[];
+  /**
    * Google Maps API key for address autocomplete
    * If not provided, falls back to free Nominatim (OpenStreetMap)
    */
@@ -205,16 +211,16 @@ export type TreegeRendererConfig = {
 
 /**
  * Props for the TreegeRenderer component
+ *
+ * Inherits all configuration fields from TreegeRendererConfig (components,
+ * headers, googleApiKey, language, theme, validationMode) and adds the
+ * instance-specific ones (flows, callbacks, initial values, etc.).
  */
-export interface TreegeRendererProps {
+export interface TreegeRendererProps extends TreegeRendererConfig {
   /**
    * Additional class name for the renderer container
    */
   className?: string;
-  /**
-   * Custom component renderers
-   */
-  components?: TreegeRendererComponents;
   /**
    * Flow or array of flows
    * - If a single Flow: renders that flow
@@ -222,18 +228,9 @@ export interface TreegeRendererProps {
    */
   flows?: Flow | Flow[] | null;
   /**
-   * Google Maps API key for address autocomplete
-   * If not provided, falls back to free Nominatim (OpenStreetMap)
-   */
-  googleApiKey?: string;
-  /**
    * Initial form values
    */
   initialValues?: FormValues;
-  /**
-   * Current language for translations
-   */
-  language?: string;
   /**
    * Callback when form values change
    */
@@ -245,16 +242,7 @@ export interface TreegeRendererProps {
    */
   onSubmit?: (values: FormValues, meta?: Meta) => void;
   /**
-   * Theme for the renderer
-   * @default "dark"
-   */
-  theme?: "dark" | "light";
-  /**
    * Custom validation function
    */
   validate?: (values: FormValues, nodes: Node<TreegeNodeData>[]) => Record<string, string>;
-  /**
-   * Validation mode
-   */
-  validationMode?: "onChange" | "onSubmit";
 }

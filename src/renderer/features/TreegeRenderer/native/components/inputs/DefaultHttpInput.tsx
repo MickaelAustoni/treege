@@ -4,6 +4,7 @@ import { useTreegeRendererContext } from "@/renderer/context/TreegeRendererConte
 import { useTranslate } from "@/renderer/hooks/useTranslate";
 import { InputRenderProps } from "@/renderer/types/renderer";
 import { convertFormValuesToNamedFormat } from "@/renderer/utils/form";
+import { mergeHttpHeaders } from "@/renderer/utils/http";
 import { getFieldNameFromNodeId } from "@/renderer/utils/node";
 import { sanitizeHttpResponse } from "@/renderer/utils/sanitize.native";
 import { useTheme } from "@/shared/context/ThemeContext";
@@ -87,16 +88,17 @@ const DefaultHttpInput = ({
   const [options, setOptions] = useState<Array<{ value: string; label: string }>>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
-  const { formValues, inputNodes } = useTreegeRendererContext();
-  const t = useTranslate();
+  const { formValues, inputNodes, headers } = useTreegeRendererContext();
   const { colors } = useTheme();
   const { httpConfig } = node.data;
+  const t = useTranslate();
   const hasFetchedOnMount = useRef(false);
   const lastFetchedTemplateValues = useRef<string>("");
   // Refs to store latest values without triggering re-renders
   const httpConfigRef = useRef(httpConfig);
   const formValuesRef = useRef(formValues);
   const inputNodesRef = useRef(inputNodes);
+  const headersRef = useRef(headers);
   const setValueRef = useRef(setValue);
   const fetchDataRef = useRef<((search?: string) => Promise<void>) | null>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
@@ -174,11 +176,17 @@ const DefaultHttpInput = ({
             ? `${baseUrl}${baseUrl.includes("?") ? "&" : "?"}${currentHttpConfig.searchParam}=${encodeURIComponent(search)}`
             : baseUrl;
 
-        // Replace template variables in headers
-        const headers: Record<string, string> = {};
-        currentHttpConfig.headers?.forEach((header) => {
-          headers[header.key] = replaceTemplateVars(header.value, currentFormValues);
+        // Replace template variables in headers, merge with global ones
+        // (field-level headers override globals on key collision).
+        const replaceVars = (header: { key: string; value: string }) => ({
+          key: header.key,
+          value: replaceTemplateVars(header.value, currentFormValues),
         });
+        const mergedHeaders = mergeHttpHeaders(
+          [{ key: "Content-Type", value: "application/json" }],
+          headersRef.current?.map(replaceVars),
+          currentHttpConfig.headers?.map(replaceVars),
+        );
 
         // Prepare body
         const body = ["POST", "PUT", "PATCH"].includes(currentHttpConfig.method || "")
@@ -192,13 +200,11 @@ const DefaultHttpInput = ({
         const timeoutId = setTimeout(() => abortController.abort(), 30000);
         const response = await fetch(url, {
           body: body || undefined,
-          headers: {
-            "Content-Type": "application/json",
-            ...headers,
-          },
+          headers: Object.fromEntries(mergedHeaders.filter((h) => h.key && h.value).map((h) => [h.key, h.value])),
           method: currentHttpConfig.method || "GET",
           signal: abortController.signal,
         });
+
         clearTimeout(timeoutId);
 
         if (!response.ok) {
@@ -254,9 +260,10 @@ const DefaultHttpInput = ({
     httpConfigRef.current = httpConfig;
     formValuesRef.current = formValues;
     inputNodesRef.current = inputNodes;
+    headersRef.current = headers;
     setValueRef.current = setValue;
     fetchDataRef.current = fetchData;
-  }, [httpConfig, formValues, inputNodes, setValue, fetchData]);
+  }, [httpConfig, formValues, inputNodes, headers, setValue, fetchData]);
 
   /**
    * Cleanup: abort any pending request on unmount

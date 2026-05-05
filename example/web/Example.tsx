@@ -1,15 +1,83 @@
-import { Eye, MoonStar, Sun } from "lucide-react";
+import { Eye, KeyRound, MoonStar, Plus, Sun, Trash2 } from "lucide-react";
 import { useState } from "react";
 import TreegeEditor from "@/editor/features/TreegeEditor/TreegeEditor";
 import { FormValues, Meta, TreegeRenderer } from "@/renderer";
+import { Button } from "@/shared/components/ui/button";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/shared/components/ui/dialog";
+import { Input } from "@/shared/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/components/ui/select";
 import { Sheet, SheetContent, SheetTitle } from "@/shared/components/ui/sheet";
 import { Switch } from "@/shared/components/ui/switch";
 import { Language, LANGUAGES } from "@/shared/constants/languages";
 import { useMediaQuery } from "@/shared/hooks/useMediaQuery";
-import { Flow } from "@/shared/types/node";
+import { Flow, HttpHeader } from "@/shared/types/node";
 import flows from "~/example/json/treege.json";
 import flowsComplex from "~/example/json/treege-all-inputs.json";
+
+const HeadersDialog = ({
+  open,
+  onOpenChange,
+  headers,
+  onChange,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  headers: HttpHeader[];
+  onChange: (headers: HttpHeader[]) => void;
+}) => {
+  const updateHeader = (index: number, patch: Partial<HttpHeader>) => {
+    onChange(headers.map((h, i) => (i === index ? { ...h, ...patch } : h)));
+  };
+
+  const removeHeader = (index: number) => {
+    onChange(headers.filter((_, i) => i !== index));
+  };
+
+  const addHeader = () => {
+    onChange([...headers, { key: "", value: "" }]);
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="tg:max-w-lg">
+        <DialogHeader>
+          <DialogTitle>Global headers</DialogTitle>
+        </DialogHeader>
+        <p className="tg:text-muted-foreground tg:text-sm">
+          These headers are forwarded to every HTTP request issued by the renderer (HTTP inputs, submit). Field-level headers with the same
+          key override these.
+        </p>
+        <div className="tg:flex tg:flex-col tg:gap-2">
+          {headers.length === 0 && (
+            <p className="tg:py-4 tg:text-center tg:text-muted-foreground tg:text-sm">No headers yet.</p>
+          )}
+          {headers.map((header, index) => (
+            <div key={index} className="tg:flex tg:items-center tg:gap-2">
+              <Input
+                placeholder="Authorization"
+                value={header.key}
+                onChange={(e) => updateHeader(index, { key: e.target.value })}
+              />
+              <Input
+                placeholder="Bearer ..."
+                value={header.value}
+                onChange={(e) => updateHeader(index, { value: e.target.value })}
+              />
+              <Button variant="ghost" size="icon" onClick={() => removeHeader(index)} aria-label="Remove header">
+                <Trash2 className="tg:h-4 tg:w-4" />
+              </Button>
+            </div>
+          ))}
+        </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={addHeader}>
+            <Plus className="tg:mr-2 tg:h-4 tg:w-4" /> Add header
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+};
 
 const EditorPanel = ({
   flow,
@@ -17,12 +85,14 @@ const EditorPanel = ({
   theme,
   language,
   onTogglePreview,
+  onOpenHeaders,
 }: {
   flow?: Flow;
   onSave: (data: Flow) => void;
   theme: "light" | "dark";
   language: Language;
   onTogglePreview: () => void;
+  onOpenHeaders: () => void;
 }) => {
   const apiKey = import.meta.env?.VITE_AI_API_KEY || "";
 
@@ -43,6 +113,11 @@ const EditorPanel = ({
               label: "Toggle preview",
               onClick: onTogglePreview,
             },
+            {
+              icon: <KeyRound />,
+              label: "Global headers",
+              onClick: onOpenHeaders,
+            },
           ]}
         />
       </div>
@@ -57,6 +132,7 @@ const RendererPanel = ({
   language,
   setLanguage,
   inSheet,
+  headers,
 }: {
   flow?: Flow | null;
   theme: "light" | "dark";
@@ -64,6 +140,7 @@ const RendererPanel = ({
   language: Language;
   setLanguage: (l: Language) => void;
   inSheet?: boolean;
+  headers?: HttpHeader[];
 }) => {
   const [formValues, setFormValues] = useState<FormValues>({});
   const hasNodes = flow && flow.nodes.length > 0;
@@ -123,6 +200,7 @@ const RendererPanel = ({
               flows={flow}
               language={language}
               theme={theme}
+              headers={headers}
               validationMode="onSubmit"
               onSubmit={handleSubmit}
               onChange={setFormValues}
@@ -158,6 +236,8 @@ const Layout = ({ flow }: { flow?: Flow }) => {
   const [theme, setTheme] = useState<"light" | "dark">("dark");
   const [language, setLanguage] = useState<Language>("en");
   const [showPreview, setShowPreview] = useState<boolean | null>(null);
+  const [headers, setHeaders] = useState<HttpHeader[]>([]);
+  const [headersDialogOpen, setHeadersDialogOpen] = useState(false);
   const isDesktop = useMediaQuery("desktop");
   const previewOpen = showPreview ?? isDesktop;
 
@@ -170,12 +250,26 @@ const Layout = ({ flow }: { flow?: Flow }) => {
   return (
     <div className="tg:h-screen tg:w-screen tg:flex tg:bg-background">
       <div className={`${isDesktop && previewOpen ? "tg:w-8/12 tg:border-r" : "tg:w-full"}`}>
-        <EditorPanel onSave={handleSave} flow={flow} theme={theme} language={language} onTogglePreview={togglePreview} />
+        <EditorPanel
+          onSave={handleSave}
+          flow={flow}
+          theme={theme}
+          language={language}
+          onTogglePreview={togglePreview}
+          onOpenHeaders={() => setHeadersDialogOpen(true)}
+        />
       </div>
 
       {isDesktop && previewOpen && (
         <div className="tg:w-4/12">
-          <RendererPanel flow={savedFlow || flow} theme={theme} setTheme={setTheme} language={language} setLanguage={setLanguage} />
+          <RendererPanel
+            flow={savedFlow || flow}
+            theme={theme}
+            setTheme={setTheme}
+            language={language}
+            setLanguage={setLanguage}
+            headers={headers}
+          />
         </div>
       )}
 
@@ -189,10 +283,12 @@ const Layout = ({ flow }: { flow?: Flow }) => {
             setTheme={setTheme}
             language={language}
             setLanguage={setLanguage}
-
+            headers={headers}
           />
         </SheetContent>
       </Sheet>
+
+      <HeadersDialog open={headersDialogOpen} onOpenChange={setHeadersDialogOpen} headers={headers} onChange={setHeaders} />
     </div>
   );
 };

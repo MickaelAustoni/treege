@@ -2,13 +2,14 @@ import { Node } from "@xyflow/react";
 import { createContext, PropsWithChildren, useContext, useMemo } from "react";
 import { FormValues } from "@/renderer/types/renderer";
 import { mergeFlows } from "@/renderer/utils/flow";
-import { Flow, InputNodeData } from "@/shared/types/node";
+import { Flow, HttpHeader, InputNodeData } from "@/shared/types/node";
 
 export interface TreegeRendererContextValue {
   flows?: Flow | null;
   formErrors: Record<string, string>;
   formValues: FormValues;
   googleApiKey?: string;
+  headers?: HttpHeader[];
   inputNodes: Node<InputNodeData>[];
   language: string;
   setFieldValue: (fieldName: string, value: unknown) => void;
@@ -32,6 +33,7 @@ export const useTreegeRendererContext = () => {
     formErrors: {},
     formValues: {},
     googleApiKey: undefined,
+    headers: undefined,
     inputNodes: [],
     language: "",
     setFieldValue: () => {},

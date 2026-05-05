@@ -2,7 +2,7 @@ import { Node } from "@xyflow/react";
 import { useCallback, useMemo, useState } from "react";
 import { FormValues } from "@/renderer/types/renderer";
 import { redirect, SubmitResult, submitFormData } from "@/renderer/utils/submit";
-import { InputNodeData, TreegeNodeData } from "@/shared/types/node";
+import { HttpHeader, InputNodeData, TreegeNodeData } from "@/shared/types/node";
 import { isInputNode } from "@/shared/utils/nodeTypeGuards";
 import { getTranslatedText } from "@/shared/utils/translations";
 
@@ -20,6 +20,7 @@ import { getTranslatedText } from "@/shared/utils/translations";
  * @param formValues - Current form values
  * @param language - Current language for translations
  * @param inputNodes - All input nodes for form data conversion
+ * @param headers
  * @returns Submit handler state and functions
  */
 export const useSubmitHandler = (
@@ -27,6 +28,7 @@ export const useSubmitHandler = (
   formValues: FormValues,
   language: string,
   inputNodes: Node<InputNodeData>[],
+  headers?: HttpHeader[],
 ) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitMessage, setSubmitMessage] = useState<{ type: "success" | "error"; message: string } | null>(null);
@@ -69,7 +71,7 @@ export const useSubmitHandler = (
 
       try {
         // Perform the HTTP submission
-        const result = await submitFormData(config, formValues, inputNodes);
+        const result = await submitFormData(config, formValues, inputNodes, headers);
 
         if (result.success) {
           // Show success message if configured
@@ -109,7 +111,7 @@ export const useSubmitHandler = (
         setIsSubmitting(false);
       }
     },
-    [submitButtonNode, formValues, language, inputNodes],
+    [submitButtonNode, formValues, language, inputNodes, headers],
   );
 
   /**

@@ -3,6 +3,27 @@ import { sanitize } from "@/renderer/utils/sanitize";
 import { HttpHeader } from "@/shared/types/node";
 
 /**
+ * Merge multiple lists of HTTP headers. Later sources override earlier ones
+ * when they specify the same key (case-insensitive comparison, since HTTP
+ * header names are case-insensitive). The casing of the latest occurrence
+ * is preserved in the output.
+ */
+export const mergeHttpHeaders = (...sources: (HttpHeader[] | undefined)[]): HttpHeader[] => {
+  const byLowerKey = new Map<string, HttpHeader>();
+
+  sources.forEach((source) => {
+    source?.forEach((header) => {
+      if (!header.key) {
+        return;
+      }
+      byLowerKey.set(header.key.toLowerCase(), header);
+    });
+  });
+
+  return Array.from(byLowerKey.values());
+};
+
+/**
  * Result of an HTTP request
  */
 export interface HttpRequestResult {
@@ -71,17 +92,10 @@ export const makeHttpRequest = async (options: HttpRequestOptions): Promise<Http
       };
     }
 
-    // Prepare headers
-    const headers: Record<string, string> = {
-      "Content-Type": "application/json",
-    };
-
-    // Add custom headers
-    customHeaders.forEach((header) => {
-      if (header.key && header.value) {
-        headers[header.key] = header.value;
-      }
-    });
+    // Default Content-Type has the lowest priority — caller-provided headers
+    // (global or field-level) win when they specify the same key.
+    const merged = mergeHttpHeaders([{ key: "Content-Type", value: "application/json" }], customHeaders);
+    const headers = Object.fromEntries(merged.filter((h) => h.key && h.value).map((h) => [h.key, h.value]));
 
     // Prepare request options
     const requestOptions: RequestInit = {

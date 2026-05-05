@@ -6,6 +6,7 @@ import { useTranslate } from "@/renderer/hooks/useTranslate";
 import { FormValues, TreegeRendererProps } from "@/renderer/types/renderer";
 import { getFlowRenderState, mergeFlows } from "@/renderer/utils/flow";
 import { calculateReferenceFieldUpdates, convertFormValuesToNamedFormat, isFieldEmpty } from "@/renderer/utils/form";
+import { mergeHttpHeaders } from "@/renderer/utils/http";
 import { getInputNodes } from "@/renderer/utils/node";
 import { TreegeNodeData } from "@/shared/types/node";
 import { isInputNode } from "@/shared/utils/nodeTypeGuards";
@@ -32,6 +33,7 @@ export const useTreegeRenderer = ({
   components,
   flows,
   googleApiKey,
+  headers,
   initialValues = {},
   language,
   onChange,
@@ -41,7 +43,17 @@ export const useTreegeRenderer = ({
   validationMode,
 }: Pick<
   TreegeRendererProps,
-  "components" | "flows" | "googleApiKey" | "initialValues" | "language" | "onChange" | "onSubmit" | "theme" | "validate" | "validationMode"
+  | "components"
+  | "flows"
+  | "googleApiKey"
+  | "headers"
+  | "initialValues"
+  | "language"
+  | "onChange"
+  | "onSubmit"
+  | "theme"
+  | "validate"
+  | "validationMode"
 >) => {
   // ============================================
   // CONFIGURATION
@@ -62,11 +74,12 @@ export const useTreegeRenderer = ({
         ui: { ...globalConfig?.components?.ui, ...components?.ui },
       },
       googleApiKey: googleApiKey ?? globalConfig?.googleApiKey,
+      headers: mergeHttpHeaders(globalConfig?.headers, headers),
       language: language ?? globalConfig?.language ?? "en",
       theme: theme ?? globalConfig?.theme ?? "dark",
       validationMode: validationMode ?? globalConfig?.validationMode ?? "onSubmit",
     }),
-    [components, globalConfig, googleApiKey, language, theme, validationMode],
+    [components, globalConfig, googleApiKey, headers, language, theme, validationMode],
   );
 
   // ============================================
@@ -134,6 +147,7 @@ export const useTreegeRenderer = ({
     formValues,
     config.language,
     inputNodes,
+    config.headers,
   );
 
   // ============================================
