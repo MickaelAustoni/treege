@@ -1,6 +1,7 @@
 import { Handle, Node, NodeProps, Position } from "@xyflow/react";
 import { memo } from "react";
 import BottomHandleDropdown from "@/editor/features/TreegeEditor/nodes/components/BottomHandleDropdown";
+import NodeImageButton from "@/editor/features/TreegeEditor/nodes/components/NodeImageButton";
 import NodeInputPreview from "@/editor/features/TreegeEditor/nodes/components/NodeInputPreview";
 import NodeLabelInput from "@/editor/features/TreegeEditor/nodes/components/NodeLabelInput";
 import NodeMoreMenu from "@/editor/features/TreegeEditor/nodes/components/NodeMoreMenu";
@@ -29,12 +30,22 @@ const TreegeNode = (props: TreegeNodeProps) => {
     <NodeWrapper inGroup={!!parentId} isSubmit={isSubmit}>
       {/* Node actions */}
       <div className="tg:absolute tg:top-2 tg:right-2 tg:flex tg:items-center tg:gap-1">
-        {selected && inputData && !isSubmit && <RequiredAsterisk nodeId={id} required={inputData.required} />}
+        {selected && inputData && !isSubmit && (
+          <>
+            <RequiredAsterisk nodeId={id} required={inputData.required} />
+            <NodeImageButton nodeId={id} image={inputData.image} />
+          </>
+        )}
         <NodeMoreMenu nodeId={id} />
       </div>
 
       {/* Top handle */}
       <Handle type="target" position={Position.Top} isConnectable={isConnectable} isConnectableStart={type === "ui"} />
+
+      {/* Illustrative image */}
+      {inputData?.image && (
+        <img src={inputData.image} alt="" className="tg:pointer-events-none tg:my-2 tg:max-h-24 tg:w-full tg:rounded-md tg:object-cover" />
+      )}
 
       {showPreview && inputData ? (
         <NodeInputPreview nodeId={id} data={inputData} />

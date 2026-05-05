@@ -228,6 +228,11 @@ export type InputNodeData = BaseNodeData & {
    * Submit configuration for the input field (used with type="submit")
    */
   submitConfig?: SubmitConfig;
+  /**
+   * Optional illustrative image displayed above the input label.
+   * Stored as a base64 data URL (uploads are resized/compressed) or a remote URL.
+   */
+  image?: string;
 };
 
 export type UINodeData = BaseNodeData & {

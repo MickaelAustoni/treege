@@ -238,8 +238,6 @@ const Layout = ({ flow }: { flow?: Flow }) => {
   const isDesktop = useMediaQuery("desktop");
   const previewOpen = showPreview ?? isDesktop;
 
-  console.log(headers)
-
   const handleSave = (flowData: Flow) => {
     setSavedFlow(flowData);
   };
