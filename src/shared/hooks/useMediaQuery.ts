@@ -18,6 +18,10 @@ export const useMediaQuery = (query: Breakpoint | (string & {})) => {
   const [matches, setMatches] = useState<boolean | undefined>(undefined);
   const resolvedQuery = isBreakpoint(query) ? MEDIA_QUERIES[query] : query;
 
+  /**
+   * Subscribe to the media query and keep `matches` in sync with it.
+   * Re-subscribes when the query string changes.
+   */
   useEffect(() => {
     const mql = window.matchMedia(resolvedQuery);
     const onChange = () => setMatches(mql.matches);

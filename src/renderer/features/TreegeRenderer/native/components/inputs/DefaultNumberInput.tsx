@@ -7,6 +7,10 @@ const DefaultNumberInput = ({ node, value, setValue, error, label, placeholder, 
   const { colors } = useTheme();
   const [textValue, setTextValue] = useState(value?.toString() ?? "");
 
+  /**
+   * Sync the local text buffer when the form value changes from outside
+   * (default values, programmatic resets, reference fields).
+   */
   useEffect(() => {
     setTextValue(value?.toString() ?? "");
   }, [value]);

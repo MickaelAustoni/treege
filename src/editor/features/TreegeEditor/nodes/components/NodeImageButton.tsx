@@ -98,12 +98,20 @@ const NodeImageButton = ({ nodeId, image }: NodeImageButtonProps) => {
     apply("");
   };
 
+  /**
+   * Reset the URL draft to the persisted image whenever the popover closes,
+   * so reopening shows the current state rather than a stale typed value.
+   */
   useEffect(() => {
     if (!open) {
       setUrlDraft(image && /^https?:\/\//i.test(image) ? image : "");
     }
   }, [open, image]);
 
+  /**
+   * Cancel the pending auto-apply timer on unmount so we don't update node
+   * data after the component is gone.
+   */
   useEffect(
     () => () => {
       if (autoApplyTimeoutRef.current) {

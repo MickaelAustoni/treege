@@ -98,7 +98,23 @@ const DefaultAddressInput = ({ node, value, setValue, error, label, placeholder,
     [setValue],
   );
 
-  // Fetch suggestions with debounce
+  const handleInputChange = useCallback(
+    (newValue: string) => {
+      setValue(newValue);
+      setSearchQuery(newValue);
+
+      if (newValue.length >= 3) {
+        setPopoverOpen(true);
+      }
+    },
+    [setValue],
+  );
+
+  /**
+   * Debounced fetch of address suggestions from Google Places (when an API key
+   * is available) or Nominatim. Skips queries shorter than 3 characters and
+   * cancels any in-flight timer when the query changes.
+   */
   useEffect(() => {
     if (!searchQuery || searchQuery.trim().length < 3) {
       setSuggestions([]);
@@ -115,18 +131,6 @@ const DefaultAddressInput = ({ node, value, setValue, error, label, placeholder,
 
     return () => clearTimeout(timer);
   }, [searchQuery, googleApiKey, language]);
-
-  const handleInputChange = useCallback(
-    (newValue: string) => {
-      setValue(newValue);
-      setSearchQuery(newValue);
-
-      if (newValue.length >= 3) {
-        setPopoverOpen(true);
-      }
-    },
-    [setValue],
-  );
 
   return (
     <>

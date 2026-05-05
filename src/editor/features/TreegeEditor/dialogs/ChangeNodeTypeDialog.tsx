@@ -59,12 +59,6 @@ const ChangeNodeTypeDialog = () => {
 
   const [selectedEdgeId, setSelectedEdgeId] = useState<string>("");
 
-  useEffect(() => {
-    if (outgoingEdges.length > 0) {
-      setSelectedEdgeId(outgoingEdges[0].id);
-    }
-  }, [outgoingEdges]);
-
   const handleOpenChange = (open: boolean) => {
     if (!open) {
       closeNodeTypeChangeConfirmation();
@@ -113,6 +107,17 @@ const ChangeNodeTypeDialog = () => {
     const summary = summarizeConditions(edgeData?.conditions, resolveFieldLabel);
     return summary || t("editor.changeNodeTypeDialog.noConditions");
   };
+
+  /**
+   * Auto-select the first outgoing edge whenever the list changes (e.g. when
+   * the dialog opens for a different node), so the radio group always has
+   * a default selection.
+   */
+  useEffect(() => {
+    if (outgoingEdges.length > 0) {
+      setSelectedEdgeId(outgoingEdges[0].id);
+    }
+  }, [outgoingEdges]);
 
   return (
     <Dialog open={pendingNodeTypeChange !== null} onOpenChange={handleOpenChange}>

@@ -73,7 +73,9 @@ export const ThemeProvider = ({
   );
 
   /**
-   * Sync controlled theme changes
+   * Sync the internal state to the controlled `theme` prop whenever it
+   * changes — keeps internal state ready to take over if the consumer
+   * stops passing `theme` later.
    */
   useEffect(() => {
     if (controlledTheme) {
@@ -82,7 +84,9 @@ export const ThemeProvider = ({
   }, [controlledTheme]);
 
   /**
-   * Apply theme to document root
+   * Apply the resolved theme to the document root by toggling the `light` /
+   * `dark` class. When `theme === "system"`, also subscribe to the OS-level
+   * `prefers-color-scheme` media query so the class follows OS changes live.
    */
   useEffect(() => {
     if (typeof window === "undefined") {

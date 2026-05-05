@@ -352,28 +352,35 @@ export const useTreegeRenderer = ({
   // ============================================
 
   /**
-   * Keep onChange ref updated
+   * Mirror the latest `onChange` callback into a ref so the value-change
+   * effect below can fire it without resubscribing on every render when the
+   * caller passes a fresh function reference each render.
    */
   useEffect(() => {
     onChangeRef.current = onChange;
   }, [onChange]);
 
   /**
-   * Keep validate ref updated
+   * Mirror the latest `validate` callback into a ref for the same reason as
+   * the `onChange` ref above — keeps the validation effect stable.
    */
   useEffect(() => {
     validateRef.current = validate;
   }, [validate]);
 
   /**
-   * Trigger onChange callback when form values change
+   * Notify the consumer (`props.onChange`) whenever the externally-shaped
+   * form values change. `exportedValues` is memoized, so this only fires on
+   * actual value changes.
    */
   useEffect(() => {
     onChangeRef.current?.(exportedValues);
   }, [exportedValues]);
 
   /**
-   * Run validation on form values change if validationMode is "onChange"
+   * In `onChange` validation mode, re-run validation whenever form values
+   * change so errors update live as the user types. Skipped in `onSubmit`
+   * mode where validation only runs on submit.
    */
   useEffect(() => {
     if (config.validationMode === "onChange") {
@@ -382,8 +389,11 @@ export const useTreegeRenderer = ({
   }, [config.validationMode, validateForm]);
 
   /**
-   * Sync reference fields when their source changes (one-way binding)
-   * Note: prevFormValuesRef is intentionally not in deps (refs don't trigger re-renders)
+   * One-way reference-field binding: when an input is configured to mirror
+   * another field, propagate the source value into the dependent field
+   * whenever the source changes. Uses `prevFormValuesRef` (intentionally
+   * not in deps — refs don't trigger renders) to detect which sources
+   * actually changed since the last render.
    */
   useEffect(() => {
     const updatedValues = calculateReferenceFieldUpdates(inputNodes, formValues, prevFormValuesRef.current);

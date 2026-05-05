@@ -70,6 +70,12 @@ const DefaultFileInput = ({ node, value, setValue, error, label, helperText }: I
     return `${(size / (1024 * 1024)).toFixed(1)} MB`;
   };
 
+  /**
+   * Lazy-load `react-native-document-picker` once on mount. The package is an
+   * optional peer dependency: we resolve it dynamically so consumers who don't
+   * use file inputs aren't forced to install it. If the import fails, fall
+   * back to the "unavailable" UI rendered below.
+   */
   useEffect(() => {
     const loadDocumentPicker = async () => {
       try {

@@ -223,7 +223,9 @@ const DefaultHttpInput = ({
   );
 
   /**
-   * Update refs
+   * Mirror the latest props/state into refs so the async `fetchData` (and
+   * the mount/refetch effects below) always see the freshest values without
+   * needing every changing identity in their dependency arrays.
    */
   useEffect(() => {
     httpConfigRef.current = httpConfig;
@@ -235,7 +237,8 @@ const DefaultHttpInput = ({
   }, [httpConfig, formValues, inputNodes, headers, setValue, fetchData]);
 
   /**
-   * Cleanup: abort any pending request on unmount
+   * Abort any in-flight request when the component unmounts so we don't
+   * call `setValue`/`setOptions` after teardown.
    */
   useEffect(() => {
     return () => {
@@ -246,7 +249,9 @@ const DefaultHttpInput = ({
   }, []);
 
   /**
-   * Effect 1: Fetch on mount if fetchOnMount is true
+   * Initial mount fetch: fires once if `fetchOnMount` is enabled AND all
+   * URL template variables are filled. Records the template-var fingerprint
+   * to prevent the watcher effect below from re-fetching for the same values.
    */
   useEffect(() => {
     if (hasFetchedOnMount.current) {
@@ -274,7 +279,10 @@ const DefaultHttpInput = ({
   }, []);
 
   /**
-   * Effect 2: Watch template variables and refetch when they change (debounced)
+   * Watch template variable values and refetch (debounced 500ms) when they
+   * change after the initial mount. Skips when the URL has no template vars,
+   * when the values are unchanged from the last fetch, or when not all
+   * template vars are filled yet.
    */
   useEffect(() => {
     if (!hasFetchedOnMount.current) {
@@ -302,7 +310,9 @@ const DefaultHttpInput = ({
   }, [templateVarValuesKey, hasTemplateVars, canFetch, fetchData]);
 
   /**
-   * Effect 3: Debounced search for combobox
+   * Debounce combobox search-as-you-type: refetch with the current query
+   * 300ms after the user stops typing. Only active when the HTTP config
+   * declares a `searchParam` (which is what enables the combobox UI).
    */
   useEffect(() => {
     if (!(httpConfig?.searchParam && searchQuery)) {

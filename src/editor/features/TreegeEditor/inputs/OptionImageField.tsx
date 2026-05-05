@@ -34,21 +34,6 @@ const OptionImageField = ({ value, onChange }: OptionImageFieldProps) => {
   const [urlDraft, setUrlDraft] = useState(value && /^https?:\/\//i.test(value) ? value : "");
   const t = useTranslate();
 
-  useEffect(() => {
-    if (!open) {
-      setUrlDraft(value && /^https?:\/\//i.test(value) ? value : "");
-    }
-  }, [open, value]);
-
-  useEffect(
-    () => () => {
-      if (autoApplyTimeoutRef.current) {
-        clearTimeout(autoApplyTimeoutRef.current);
-      }
-    },
-    [],
-  );
-
   const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) {
@@ -101,6 +86,29 @@ const OptionImageField = ({ value, onChange }: OptionImageFieldProps) => {
       onChange(trimmed);
     }, URL_AUTO_APPLY_DELAY_MS);
   };
+
+  /**
+   * Reset the URL draft to the persisted value whenever the popover closes,
+   * so reopening shows the current state rather than a stale typed value.
+   */
+  useEffect(() => {
+    if (!open) {
+      setUrlDraft(value && /^https?:\/\//i.test(value) ? value : "");
+    }
+  }, [open, value]);
+
+  /**
+   * Cancel the pending auto-apply timer on unmount so we don't call onChange
+   * after the consumer is gone.
+   */
+  useEffect(
+    () => () => {
+      if (autoApplyTimeoutRef.current) {
+        clearTimeout(autoApplyTimeoutRef.current);
+      }
+    },
+    [],
+  );
 
   return (
     <div className="tg:relative">

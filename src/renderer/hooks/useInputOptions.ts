@@ -32,32 +32,25 @@ interface UseInputOptionsResult {
  * Re-fetches when the URL or its template variable values change.
  */
 export const useInputOptions = (node: Node<InputNodeData>): UseInputOptionsResult => {
-  const { formValues, headers: globalHeaders } = useTreegeRendererContext();
-  const source = node.data.optionsSource;
-  const staticOptions = node.data.options;
-
   const [state, setState] = useState<{ fetched: InputOption[] | null; isLoading: boolean; error: string | null }>({
     error: null,
     fetched: null,
     isLoading: false,
   });
-
-  // Keep latest values in refs so the effect can read them without
-  // re-subscribing on every render.
+  const { formValues, headers: globalHeaders } = useTreegeRendererContext();
+  const source = node.data.optionsSource;
+  const staticOptions = node.data.options;
+  // Refs that mirror the latest props/context so the fetch effect can read
+  // them without re-subscribing on every render.
   const sourceRef = useRef(source);
   const formValuesRef = useRef(formValues);
   const globalHeadersRef = useRef(globalHeaders);
-  useEffect(() => {
-    sourceRef.current = source;
-    formValuesRef.current = formValues;
-    globalHeadersRef.current = globalHeaders;
-  });
-
   const url = source?.url ?? "";
   const mapping = source?.mapping;
 
   /**
    * Stable string that changes only when the URL's template var values change.
+   * Used as a re-trigger signal for the fetch effect.
    */
   const templateVarValuesKey = useMemo(() => {
     const vars = extractTemplateVars(url);
@@ -75,6 +68,29 @@ export const useInputOptions = (node: Node<InputNodeData>): UseInputOptionsResul
     });
   }, [url, mapping?.valueField, mapping?.labelField, formValues]);
 
+  /**
+   * Mirror the latest source/formValues/globalHeaders into refs whenever
+   * any of them changes, so the async `run` below always reads fresh values
+   * without forcing a re-subscription of the fetch effect.
+   */
+  useEffect(() => {
+    sourceRef.current = source;
+    formValuesRef.current = formValues;
+    globalHeadersRef.current = globalHeaders;
+  }, [source, formValues, globalHeaders]);
+
+  /**
+   * Fetch the option list whenever the source becomes fetchable, the URL
+   * changes, or any template variable value referenced in the URL changes.
+   * Replaces template variables in URL/body/headers, merges global +
+   * field-level headers (field wins), and aborts any in-flight request when
+   * the effect cleans up.
+   *
+   * `url` and `templateVarValuesKey` are intentional re-trigger signals: the
+   * body reads everything via refs, but we need a refetch when the URL changes
+   * or when template variable values change, even if `canFetch` stays true.
+   */
+  // biome-ignore lint/correctness/useExhaustiveDependencies: trigger-only deps
   useEffect(() => {
     if (!canFetch) {
       setState({ error: null, fetched: null, isLoading: false });
@@ -126,5 +142,9 @@ export const useInputOptions = (node: Node<InputNodeData>): UseInputOptionsResul
 
   const options = state.fetched ?? staticOptions ?? [];
 
-  return { error: state.error, isLoading: state.isLoading, options };
+  return {
+    error: state.error,
+    isLoading: state.isLoading,
+    options,
+  };
 };
