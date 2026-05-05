@@ -9,17 +9,18 @@ const DefaultRadioInput = ({ node, value, setValue, error, label, helperText, id
   const t = useTranslate();
   const normalizedValue = value ? String(value) : "";
   const isCard = node.data.variant !== "default";
+  const labelId = `${id}-label`;
 
   return (
     <FormItem className="tg:mb-4">
-      <Label className="tg:mb-1" htmlFor={id}>
+      <Label className="tg:mb-1" id={labelId}>
         {label || node.data.name}
         {node.data.required && <span className="tg:text-red-500">*</span>}
       </Label>
       <RadioGroup
         value={normalizedValue}
         onValueChange={(val) => setValue(val)}
-        id={id}
+        aria-labelledby={labelId}
         name={name}
         className={isCard ? "tg:flex tg:flex-col tg:gap-2" : undefined}
       >
