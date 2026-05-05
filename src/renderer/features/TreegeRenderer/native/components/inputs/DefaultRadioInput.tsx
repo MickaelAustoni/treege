@@ -8,7 +8,7 @@ const DefaultRadioInput = ({ node, value, setValue, error, label, helperText }: 
   const { colors } = useTheme();
   const options = node.data.options || [];
   const selectedValue = value || "";
-  const isCard = node.data.variant === "card";
+  const isCard = node.data.variant !== "default";
 
   const handleSelect = (optionValue: string) => {
     setValue(optionValue);
@@ -40,19 +40,20 @@ const DefaultRadioInput = ({ node, value, setValue, error, label, helperText }: 
               disabled={option.disabled}
               activeOpacity={0.7}
             >
+              {option.image && <Image source={{ uri: option.image }} style={styles.cardImage} />}
+              <View style={styles.cardTextContainer}>
+                <Text style={[styles.cardLabel, { color: colors.textSecondary }]}>{optionLabel}</Text>
+                {optionDescription && <Text style={[styles.cardDescription, { color: colors.textMuted }]}>{optionDescription}</Text>}
+              </View>
               <View
                 style={[
                   styles.radio,
+                  styles.cardRadio,
                   { backgroundColor: colors.input, borderColor: colors.border },
                   isSelected && { borderColor: colors.primary },
                 ]}
               >
                 {isSelected && <View style={[styles.radioInner, { backgroundColor: colors.primary }]} />}
-              </View>
-              {option.image && <Image source={{ uri: option.image }} style={styles.cardImage} />}
-              <View style={styles.cardTextContainer}>
-                <Text style={[styles.cardLabel, { color: colors.textSecondary }]}>{optionLabel}</Text>
-                {optionDescription && <Text style={[styles.cardDescription, { color: colors.textMuted }]}>{optionDescription}</Text>}
               </View>
             </TouchableOpacity>
           );
@@ -94,16 +95,16 @@ const DefaultRadioInput = ({ node, value, setValue, error, label, helperText }: 
 
 const styles = StyleSheet.create({
   card: {
-    alignItems: "flex-start",
+    alignItems: "center",
     borderRadius: 8,
     borderWidth: 1,
     flexDirection: "row",
     marginBottom: 8,
-    padding: 12,
+    padding: 16,
   },
   cardDescription: {
     fontSize: 12,
-    marginTop: 2,
+    marginTop: 4,
   },
   cardImage: {
     borderRadius: 4,
@@ -114,6 +115,10 @@ const styles = StyleSheet.create({
   cardLabel: {
     fontSize: 14,
     fontWeight: "500",
+  },
+  cardRadio: {
+    marginLeft: 12,
+    marginRight: 0,
   },
   cardTextContainer: {
     flex: 1,

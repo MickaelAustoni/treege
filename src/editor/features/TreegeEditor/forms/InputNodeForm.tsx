@@ -46,7 +46,7 @@ const InputNodeForm = () => {
       placeholder: selectedNode?.data?.placeholder || { en: "" },
       required: selectedNode?.data?.required,
       submitConfig: selectedNode?.data?.submitConfig,
-      variant: selectedNode?.data?.variant || "default",
+      variant: selectedNode?.data?.variant || "card",
     } as InputNodeData,
     listeners: {
       onChange: ({ formApi }) => {
