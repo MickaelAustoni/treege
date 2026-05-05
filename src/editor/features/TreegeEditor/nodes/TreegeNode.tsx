@@ -6,7 +6,7 @@ import NodeLabelInput from "@/editor/features/TreegeEditor/nodes/components/Node
 import NodeMoreMenu from "@/editor/features/TreegeEditor/nodes/components/NodeMoreMenu";
 import NodeTypeBadge from "@/editor/features/TreegeEditor/nodes/components/NodeTypeBadge";
 import OptionsEditor from "@/editor/features/TreegeEditor/nodes/components/OptionsEditor";
-import RequiredBadge from "@/editor/features/TreegeEditor/nodes/components/RequiredBadge";
+import RequiredAsterisk from "@/editor/features/TreegeEditor/nodes/components/RequiredAsterisk";
 import NodeWrapper from "@/editor/features/TreegeEditor/nodes/layout/NodeWrapper";
 import { cn } from "@/shared/lib/utils";
 import { FlowNodeData, InputNodeData, UINodeData } from "@/shared/types/node";
@@ -27,8 +27,11 @@ const TreegeNode = (props: TreegeNodeProps) => {
 
   return (
     <NodeWrapper inGroup={!!parentId} isSubmit={isSubmit}>
-      {/* More menu */}
-      <NodeMoreMenu nodeId={id} />
+      {/* Node actions */}
+      <div className="tg:absolute tg:top-2 tg:right-2 tg:flex tg:items-center tg:gap-1">
+        {selected && inputData && !isSubmit && <RequiredAsterisk nodeId={id} required={inputData.required} />}
+        <NodeMoreMenu nodeId={id} />
+      </div>
 
       {/* Top handle */}
       <Handle type="target" position={Position.Top} isConnectable={isConnectable} isConnectableStart={type === "ui"} />
@@ -48,7 +51,6 @@ const TreegeNode = (props: TreegeNodeProps) => {
           {/* Badges */}
           <div className="tg:mb-1 tg:flex tg:gap-1">
             <NodeTypeBadge nodeId={id} nodeType={type} subType={subType} />
-            {inputData && !isSubmit && <RequiredBadge nodeId={id} required={inputData.required} />}
           </div>
 
           {/* Options editor */}

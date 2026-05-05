@@ -40,7 +40,7 @@ const NodeMoreMenu = ({ nodeId, className }: NodeMoreMenuProps) => {
           type="button"
           aria-label={t("editor.nodeActionsSheet.editNode")}
           className={cn(
-            "nodrag nopan tg:absolute tg:top-2 tg:right-2 tg:flex tg:h-6 tg:w-6 tg:cursor-pointer tg:items-center tg:justify-center tg:rounded-md tg:opacity-60 tg:transition-all tg:hover:text-[--treege-color-primary] tg:hover:opacity-100",
+            "nodrag nopan tg:flex tg:h-6 tg:w-6 tg:cursor-pointer tg:items-center tg:justify-center tg:rounded-md tg:opacity-60 tg:transition-all tg:hover:text-[--treege-color-primary] tg:hover:opacity-100",
             className,
           )}
         >

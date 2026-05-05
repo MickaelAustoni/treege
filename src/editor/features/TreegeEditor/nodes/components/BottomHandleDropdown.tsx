@@ -49,7 +49,7 @@ const BottomHandleDropdown = ({ nodeId, isConnectable }: BottomHandleDropdownPro
 
       <DropdownMenu open={open} onOpenChange={setOpen}>
         <DropdownMenuTrigger asChild>
-          <span aria-hidden className="tg:-translate-x-1/2 tg:pointer-events-none tg:absolute tg:bottom-0 tg:left-1/2 tg:h-0 tg:w-0" />
+          <span aria-hidden className="tg:pointer-events-none tg:absolute tg:bottom-0 tg:left-1/2 tg:h-0 tg:w-0 tg:-translate-x-1/2" />
         </DropdownMenuTrigger>
         <DropdownMenuContent align="center" side="bottom" className="treege-scrollbar tg:max-h-80">
           <DropdownMenuGroup>
