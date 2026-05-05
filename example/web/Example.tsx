@@ -48,9 +48,6 @@ const HeadersDialog = ({
           key override these.
         </p>
         <div className="tg:flex tg:flex-col tg:gap-2">
-          {headers.length === 0 && (
-            <p className="tg:py-4 tg:text-center tg:text-muted-foreground tg:text-sm">No headers yet.</p>
-          )}
           {headers.map((header, index) => (
             <div key={index} className="tg:flex tg:items-center tg:gap-2">
               <Input
@@ -240,6 +237,8 @@ const Layout = ({ flow }: { flow?: Flow }) => {
   const [headersDialogOpen, setHeadersDialogOpen] = useState(false);
   const isDesktop = useMediaQuery("desktop");
   const previewOpen = showPreview ?? isDesktop;
+
+  console.log(headers)
 
   const handleSave = (flowData: Flow) => {
     setSavedFlow(flowData);
