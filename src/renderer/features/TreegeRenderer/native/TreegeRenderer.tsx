@@ -3,6 +3,7 @@ import { TreegeRendererProvider } from "@/renderer/context/TreegeRendererContext
 import DefaultFormWrapper from "@/renderer/features/TreegeRenderer/native/components/DefaultFormWrapper";
 import DefaultGroup from "@/renderer/features/TreegeRenderer/native/components/DefaultGroup";
 import { defaultInputRenderers } from "@/renderer/features/TreegeRenderer/native/components/DefaultInputs";
+import DefaultInputWrapper from "@/renderer/features/TreegeRenderer/native/components/DefaultInputWrapper";
 import DefaultSubmitButton from "@/renderer/features/TreegeRenderer/native/components/DefaultSubmitButton";
 import DefaultSubmitButtonWrapper from "@/renderer/features/TreegeRenderer/native/components/DefaultSubmitButtonWrapper";
 import { defaultUI } from "@/renderer/features/TreegeRenderer/native/components/DefaultUI";
@@ -84,6 +85,7 @@ const TreegeRendererContent = ({
     config,
     DefaultFormWrapper,
     DefaultGroup,
+    DefaultInputWrapper,
     DefaultSubmitButton,
     DefaultSubmitButtonWrapper,
     defaultInputRenderers,

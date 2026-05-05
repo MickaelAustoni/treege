@@ -4,7 +4,7 @@ import { FormValues, InputRenderers, InputRenderProps, InputValue, TreegeRendere
 import { resolveInputPlaceholder, resolveNodeKey } from "@/renderer/utils/node";
 import { sanitize } from "@/renderer/utils/sanitize";
 import { NODE_TYPE } from "@/shared/constants/node";
-import { TreegeNodeData, UINodeData } from "@/shared/types/node";
+import { InputNodeData, TreegeNodeData, UINodeData } from "@/shared/types/node";
 import { isGroupNode, isInputNode, isUINode } from "@/shared/utils/nodeTypeGuards";
 import { getTranslatedText } from "@/shared/utils/translations";
 
@@ -17,6 +17,7 @@ type UseRenderNodeParams = {
   };
   DefaultFormWrapper: AnyComponent;
   DefaultGroup: AnyComponent;
+  DefaultInputWrapper: ComponentType<{ node: Node<InputNodeData>; children: ReactNode }>;
   DefaultSubmitButton: AnyComponent;
   DefaultSubmitButtonWrapper?: AnyComponent;
   defaultInputRenderers: InputRenderers;
@@ -41,6 +42,7 @@ type UseRenderNodeParams = {
 export const useRenderNode = ({
   DefaultFormWrapper,
   DefaultGroup,
+  DefaultInputWrapper,
   DefaultSubmitButton,
   DefaultSubmitButtonWrapper,
   config,
@@ -96,19 +98,20 @@ export const useRenderNode = ({
           }
 
           return (
-            <Renderer
-              key={node.id}
-              id={node.id}
-              node={node}
-              value={value}
-              error={error}
-              label={safeLabel}
-              placeholder={safePlaceholder}
-              helperText={safeHelperText}
-              name={name}
-              setValue={setValue}
-              missingRequiredFields={missingRequiredFields}
-            />
+            <DefaultInputWrapper key={node.id} node={node}>
+              <Renderer
+                id={node.id}
+                node={node}
+                value={value}
+                error={error}
+                label={safeLabel}
+                placeholder={safePlaceholder}
+                helperText={safeHelperText}
+                name={name}
+                setValue={setValue}
+                missingRequiredFields={missingRequiredFields}
+              />
+            </DefaultInputWrapper>
           );
         }
 
@@ -161,7 +164,18 @@ export const useRenderNode = ({
           return null;
       }
     },
-    [config, visibleNodes, formValues, formErrors, setFieldValue, missingRequiredFields, defaultInputRenderers, defaultUI, DefaultGroup],
+    [
+      config,
+      visibleNodes,
+      formValues,
+      formErrors,
+      setFieldValue,
+      missingRequiredFields,
+      defaultInputRenderers,
+      defaultUI,
+      DefaultGroup,
+      DefaultInputWrapper,
+    ],
   );
 
   return {

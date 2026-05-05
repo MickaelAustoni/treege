@@ -4,6 +4,7 @@ import { useTreegeRenderer } from "@/renderer/features/TreegeRenderer/useTreegeR
 import DefaultFormWrapper from "@/renderer/features/TreegeRenderer/web/components/DefaultFormWrapper";
 import DefaultGroup from "@/renderer/features/TreegeRenderer/web/components/DefaultGroup";
 import { defaultInputRenderers } from "@/renderer/features/TreegeRenderer/web/components/DefaultInputs";
+import DefaultInputWrapper from "@/renderer/features/TreegeRenderer/web/components/DefaultInputWrapper";
 import DefaultSubmitButton from "@/renderer/features/TreegeRenderer/web/components/DefaultSubmitButton";
 import DefaultSubmitButtonWrapper from "@/renderer/features/TreegeRenderer/web/components/DefaultSubmitButtonWrapper";
 import { defaultUI } from "@/renderer/features/TreegeRenderer/web/components/DefaultUI";
@@ -62,6 +63,7 @@ const TreegeRenderer = ({
     config,
     DefaultFormWrapper,
     DefaultGroup,
+    DefaultInputWrapper,
     DefaultSubmitButton,
     DefaultSubmitButtonWrapper,
     defaultInputRenderers,
