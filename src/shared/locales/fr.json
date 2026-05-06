@@ -64,8 +64,12 @@
       "bearerLabel": "Jeton Bearer",
       "clear": "Effacer",
       "description": "Authentifiez-vous auprès de l'API pour transmettre les identifiants à chaque requête émise par le formulaire.",
+      "exchangeFailed": "Échec de l'obtention du token d'accès",
       "noSchemes": "Aucun schéma de sécurité supporté n'est déclaré dans ce document OpenAPI.",
-      "title": "Autoriser"
+      "oauth2PasswordLabel": "OAuth2 mot de passe",
+      "passwordPlaceholder": "Mot de passe",
+      "title": "Autoriser",
+      "usernamePlaceholder": "Nom d'utilisateur"
     },
     "changeNodeTypeDialog": {
       "description": "Ce nœud possède plusieurs branches sortantes. Le nouveau type n'en supporte qu'une seule. Choisissez la branche à conserver ; les autres seront supprimées.",

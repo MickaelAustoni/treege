@@ -1,5 +1,10 @@
 import { ApiRoute, ApiRouteMethod, OpenApiDocument, OpenApiPathItem, OpenApiSecurityScheme } from "@/editor/types/openapi";
 
+/**
+ * The HTTP methods we project out of an OpenAPI path item. Each entry pairs
+ * the lower-case key used by the spec with the upper-case method we expose
+ * in `ApiRoute`.
+ */
 const METHOD_KEYS: Array<{ key: keyof OpenApiPathItem; method: ApiRouteMethod }> = [
   { key: "get", method: "GET" },
   { key: "post", method: "POST" },
@@ -24,6 +29,31 @@ export const isOpenApi3Document = (value: unknown): value is OpenApiDocument => 
 };
 
 /**
+ * Heuristic to discriminate between an inlined JSON document and a URL.
+ * A leading `{` is unambiguous: URLs never start with one.
+ */
+const isJsonLiteral = (input: string): boolean => input.startsWith("{");
+
+/**
+ * GET the URL and return its parsed JSON body. Throws on non-2xx responses
+ * so callers don't have to inspect status codes.
+ */
+const fetchRawDocument = async (url: string): Promise<unknown> => {
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error(`HTTP ${response.status} ${response.statusText}`);
+  }
+  return response.json();
+};
+
+/**
+ * Resolve raw JSON from either an inlined literal or a URL. The caller-facing
+ * `loadOpenApiDocument` then validates the OpenAPI shape on top.
+ */
+const readRawDocument = (input: string): Promise<unknown> =>
+  isJsonLiteral(input) ? Promise.resolve(JSON.parse(input)) : fetchRawDocument(input);
+
+/**
  * Load an OpenAPI document from either a remote URL or a raw JSON string.
  * Throws when the input is empty, unreachable, malformed JSON, or not an
  * OpenAPI 3.x document.
@@ -33,18 +63,7 @@ export const loadOpenApiDocument = async (input: string): Promise<OpenApiDocumen
   if (!trimmed) {
     throw new Error("Empty input");
   }
-
-  let raw: unknown;
-  if (trimmed.startsWith("{")) {
-    raw = JSON.parse(trimmed);
-  } else {
-    const response = await fetch(trimmed);
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status} ${response.statusText}`);
-    }
-    raw = await response.json();
-  }
-
+  const raw = await readRawDocument(trimmed);
   if (!isOpenApi3Document(raw)) {
     throw new Error("Not a valid OpenAPI 3.x document");
   }
@@ -122,8 +141,36 @@ export const extractSecuritySchemes = (doc: OpenApiDocument): Array<{ name: stri
           type: "apiKey",
         },
       });
+    } else if (s.type === "oauth2" && s.flows && typeof s.flows === "object") {
+      const flows = s.flows as Record<string, unknown>;
+      const passwordFlow = flows.password as Record<string, unknown> | undefined;
+      if (passwordFlow && typeof passwordFlow.tokenUrl === "string") {
+        result.push({
+          name,
+          scheme: {
+            description: typeof s.description === "string" ? s.description : undefined,
+            tokenUrl: passwordFlow.tokenUrl,
+            type: "oauth2",
+          },
+        });
+      }
     }
   }
 
   return result;
+};
+
+/**
+ * Resolve a `tokenUrl` (which the OpenAPI spec sometimes leaves relative)
+ * against the document's first declared server URL.
+ */
+export const resolveTokenUrl = (tokenUrl: string, doc: OpenApiDocument): string => {
+  if (/^https?:\/\//i.test(tokenUrl)) {
+    return tokenUrl;
+  }
+  const baseUrl = getBaseUrl(doc);
+  if (!baseUrl) {
+    return tokenUrl;
+  }
+  return `${baseUrl}/${tokenUrl.replace(/^\//, "")}`;
 };

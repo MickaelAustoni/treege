@@ -64,8 +64,12 @@
       "bearerLabel": "Bearer token",
       "clear": "Clear",
       "description": "Authenticate against the API to forward credentials to every request issued by the form.",
+      "exchangeFailed": "Failed to fetch access token",
       "noSchemes": "No supported security schemes are declared in this OpenAPI document.",
-      "title": "Authorize"
+      "oauth2PasswordLabel": "OAuth2 password",
+      "passwordPlaceholder": "Password",
+      "title": "Authorize",
+      "usernamePlaceholder": "Username"
     },
     "changeNodeTypeDialog": {
       "description": "Este nodo tiene varias ramas salientes. El nuevo tipo solo admite una. Elige qué rama conservar; las demás serán eliminadas.",

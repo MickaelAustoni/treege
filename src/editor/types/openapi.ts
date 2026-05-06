@@ -47,10 +47,27 @@ export interface OpenApiApiKeyHeaderScheme {
 }
 
 /**
- * Security schemes the editor supports today. Other schemes (OAuth2,
- * cookie/query API keys, openIdConnect) are filtered out at extraction time.
+ * OAuth2 with the `password` grant. The user provides username + password
+ * directly, the editor exchanges them at `tokenUrl` and uses the returned
+ * access token as a Bearer header.
+ *
+ * Other OAuth2 flows (`authorization_code`, `client_credentials`, `implicit`)
+ * are out of scope — they require browser redirects, server-side state, or
+ * PKCE.
  */
-export type OpenApiSecurityScheme = OpenApiHttpBearerScheme | OpenApiApiKeyHeaderScheme;
+export interface OpenApiOAuth2PasswordScheme {
+  type: "oauth2";
+  /** Resolved against `servers[0].url` when the spec uses a relative path. */
+  tokenUrl: string;
+  description?: string;
+}
+
+/**
+ * Security schemes the editor supports today. Other schemes (OAuth2 flows
+ * other than password, cookie/query API keys, openIdConnect) are filtered
+ * out at extraction time.
+ */
+export type OpenApiSecurityScheme = OpenApiHttpBearerScheme | OpenApiApiKeyHeaderScheme | OpenApiOAuth2PasswordScheme;
 
 export type ApiRouteMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
 
