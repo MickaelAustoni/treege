@@ -1,4 +1,4 @@
-import { Globe, Plus } from "lucide-react";
+import { Globe, Pencil, Plus, Trash2 } from "lucide-react";
 import { KeyboardEvent, MouseEvent, SubmitEvent, useState } from "react";
 import { useTreegeEditorContext } from "@/editor/context/TreegeEditorContext";
 import OptionImageField from "@/editor/features/TreegeEditor/inputs/OptionImageField";
@@ -14,6 +14,11 @@ import { FlowNodeData, InputNodeData, InputOption, UINodeData } from "@/shared/t
 interface NodeOptionsProps {
   nodeId: string;
   data?: FlowNodeData | InputNodeData | UINodeData;
+  /**
+   * When true, hovering an option row reveals edit/delete icons. We gate the
+   * icons on selection so unselected nodes stay visually clean.
+   */
+  selected?: boolean;
 }
 
 /**
@@ -35,12 +40,13 @@ const shortenUrl = (url: string): string => {
   return stripped || url;
 };
 
-const NodeOptions = ({ nodeId, data }: NodeOptionsProps) => {
+const NodeOptions = ({ nodeId, data, selected }: NodeOptionsProps) => {
   const [open, setOpen] = useState(false);
   const [labelDraft, setLabelDraft] = useState("");
   const [valueDraft, setValueDraft] = useState("");
   const [imageDraft, setImageDraft] = useState("");
   const [descriptionDraft, setDescriptionDraft] = useState("");
+  const [editingIndex, setEditingIndex] = useState<number | null>(null); // null = creating a new option; number = editing the option at that index.
   const { updateNodeData } = useFlowActions();
   const { language } = useTreegeEditorContext();
   const t = useTranslate();
@@ -65,6 +71,7 @@ const NodeOptions = ({ nodeId, data }: NodeOptionsProps) => {
     event?.preventDefault();
     const label = labelDraft.trim();
     const value = valueDraft.trim() || label;
+
     if (!(label || value)) {
       return;
     }
@@ -76,8 +83,11 @@ const NodeOptions = ({ nodeId, data }: NodeOptionsProps) => {
       ...(supportsImage && imageDraft && { image: imageDraft }),
       ...(supportsDescription && description && { description: { [language as Language]: description } as InputOption["description"] }),
     };
-    updateNodeData(nodeId, { options: [...options, newOption] });
+    const nextOptions = editingIndex === null ? [...options, newOption] : options.map((opt, i) => (i === editingIndex ? newOption : opt));
+
+    updateNodeData(nodeId, { options: nextOptions });
     resetDraft();
+    setEditingIndex(null);
     setOpen(false);
   };
 
@@ -85,7 +95,27 @@ const NodeOptions = ({ nodeId, data }: NodeOptionsProps) => {
     setOpen(nextOpen);
     if (!nextOpen) {
       resetDraft();
+      setEditingIndex(null);
     }
+  };
+
+  const handleEditOption = (index: number, event: MouseEvent) => {
+    event.stopPropagation();
+    const option = options[index];
+    if (!option) {
+      return;
+    }
+    setLabelDraft(t(option.label) || "");
+    setValueDraft(option.value || "");
+    setImageDraft(option.image ?? "");
+    setDescriptionDraft(t(option.description) || "");
+    setEditingIndex(index);
+    setOpen(true);
+  };
+
+  const handleDeleteOption = (index: number, event: MouseEvent) => {
+    event.stopPropagation();
+    updateNodeData(nodeId, { options: options.filter((_, i) => i !== index) });
   };
 
   const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
@@ -126,8 +156,32 @@ const NodeOptions = ({ nodeId, data }: NodeOptionsProps) => {
         const key = `${option.value || "opt"}-${index}`;
 
         return (
-          <div key={key} className="tg:truncate tg:text-muted-foreground tg:text-xs">
-            {optionLabel}
+          <div key={key} className="tg:group tg:flex tg:items-center tg:gap-1 tg:text-muted-foreground tg:text-xs">
+            <span className="tg:truncate">{optionLabel}</span>
+            {selected && (
+              <div className="tg:ml-auto tg:flex tg:shrink-0 tg:gap-0.5 tg:opacity-0 tg:transition-opacity tg:group-hover:opacity-100">
+                <Button
+                  type="button"
+                  variant="icon"
+                  size="icon-sm"
+                  aria-label={t("editor.inputNodeForm.editOption")}
+                  className="tg:size-5 tg:[&_svg:not([class*='size-'])]:size-3"
+                  onClick={(event) => handleEditOption(index, event)}
+                >
+                  <Pencil />
+                </Button>
+                <Button
+                  type="button"
+                  variant="icon"
+                  size="icon-sm"
+                  aria-label={t("editor.inputNodeForm.deleteOption")}
+                  className="tg:size-5 tg:hover:text-destructive tg:[&_svg:not([class*='size-'])]:size-3"
+                  onClick={(event) => handleDeleteOption(index, event)}
+                >
+                  <Trash2 />
+                </Button>
+              </div>
+            )}
           </div>
         );
       })}
@@ -173,9 +227,14 @@ const NodeOptions = ({ nodeId, data }: NodeOptionsProps) => {
                 onKeyDown={handleKeyDown}
               />
             )}
-            <Button type="submit" size="sm" disabled={!(labelDraft.trim() || valueDraft.trim())}>
-              {t("common.create")}
-            </Button>
+            <div className="tg:flex tg:gap-2">
+              <Button type="button" variant="outline" size="sm" className="tg:flex-1" onClick={() => handleOpenChange(false)}>
+                {t("common.cancel")}
+              </Button>
+              <Button type="submit" size="sm" className="tg:flex-1" disabled={!(labelDraft.trim() || valueDraft.trim())}>
+                {editingIndex === null ? t("common.create") : t("common.save")}
+              </Button>
+            </div>
           </form>
         </PopoverContent>
       </Popover>

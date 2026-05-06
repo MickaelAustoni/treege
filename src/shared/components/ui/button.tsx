@@ -26,6 +26,7 @@ const buttonVariants = cva(
         destructive:
           "tg:bg-destructive tg:text-white tg:hover:bg-destructive/90 tg:focus-visible:ring-destructive/20 tg:dark:focus-visible:ring-destructive/40 tg:dark:bg-destructive/60",
         ghost: "tg:hover:bg-accent tg:hover:text-accent-foreground tg:dark:hover:bg-accent/50",
+        icon: "tg:opacity-60 tg:hover:bg-transparent! tg:hover:opacity-100",
         link: "tg:text-primary tg:underline-offset-4 tg:hover:underline",
         outline:
           "tg:border tg:bg-background tg:shadow-xs tg:hover:bg-accent tg:hover:text-accent-foreground tg:dark:bg-input/30 tg:dark:border-input tg:dark:hover:bg-input/50",

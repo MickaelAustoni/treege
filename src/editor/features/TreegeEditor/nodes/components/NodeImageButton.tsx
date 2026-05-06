@@ -9,7 +9,6 @@ import { Input } from "@/shared/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/shared/components/ui/popover";
 import { Separator } from "@/shared/components/ui/separator";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/shared/components/ui/tooltip";
-import { cn } from "@/shared/lib/utils";
 
 interface NodeImageButtonProps {
   nodeId: string;
@@ -129,16 +128,15 @@ const NodeImageButton = ({ nodeId, image }: NodeImageButtonProps) => {
           <Tooltip>
             <TooltipTrigger asChild>
               <PopoverTrigger asChild>
-                <button
+                <Button
                   type="button"
-                  className={cn(
-                    "nodrag nopan tg:flex tg:size-6 tg:cursor-pointer tg:items-center tg:justify-center tg:rounded-md tg:transition-all tg:hover:opacity-100",
-                    image ? "tg:opacity-60" : "tg:opacity-60",
-                  )}
+                  variant="icon"
+                  size="icon-sm"
+                  className="nodrag nopan tg:size-6 tg:[&_svg:not([class*='size-'])]:size-3.5"
                   aria-label={t(image ? "editor.inputNodeForm.optionImageReplace" : "editor.inputNodeForm.optionImageAdd")}
                 >
-                  <Image className="tg:h-3.5 tg:w-3.5" />
-                </button>
+                  <Image />
+                </Button>
               </PopoverTrigger>
             </TooltipTrigger>
             <TooltipContent side="bottom">
