@@ -2,6 +2,13 @@ import { createContext, ReactNode, useContext, useMemo, useState } from "react";
 import { ApiRoute, OpenApiDocument } from "@/editor/types/openapi";
 import { extractApiRoutes, getBaseUrl } from "@/editor/utils/openapi";
 
+/**
+ * The exact input the user fed to the OpenAPI dialog last time it loaded
+ * successfully. Kept around so re-opening the dialog can pre-fill the field
+ * (the user may want to tweak/re-load the same source).
+ */
+export type OpenApiSourceInput = { mode: "url"; value: string } | { mode: "json"; value: string };
+
 interface OpenApiContextValue {
   /** The currently loaded OpenAPI document, or `null` when none is set. */
   document: OpenApiDocument | null;
@@ -19,19 +26,28 @@ interface OpenApiContextValue {
    * first declared server. Trailing slash trimmed.
    */
   baseUrl: string;
+  /**
+   * Last source input (URL or pasted JSON) used to load the document. `null`
+   * before the user has loaded anything.
+   */
+  lastSourceInput: OpenApiSourceInput | null;
   /** Replace the loaded document. Pass `null` to clear. */
   setDocument: (next: OpenApiDocument | null) => void;
   /** Replace the base URL override. Pass `""` to clear. */
   setBaseUrlOverride: (next: string) => void;
+  /** Record the last source input the user used to load the document. */
+  setLastSourceInput: (next: OpenApiSourceInput | null) => void;
 }
 
 const EMPTY: OpenApiContextValue = {
   baseUrl: "",
   baseUrlOverride: "",
   document: null,
+  lastSourceInput: null,
   routes: [],
   setBaseUrlOverride: () => {},
   setDocument: () => {},
+  setLastSourceInput: () => {},
 };
 
 const OpenApiContext = createContext<OpenApiContextValue | null>(null);
@@ -49,6 +65,7 @@ interface OpenApiProviderProps {
 export const OpenApiProvider = ({ children, initialDocument }: OpenApiProviderProps) => {
   const [document, setDocument] = useState<OpenApiDocument | null>(initialDocument ?? null);
   const [baseUrlOverride, setBaseUrlOverride] = useState("");
+  const [lastSourceInput, setLastSourceInput] = useState<OpenApiSourceInput | null>(null);
   const routes = useMemo(() => (document ? extractApiRoutes(document) : []), [document]);
   const baseUrl = useMemo(() => {
     const trimmedOverride = baseUrlOverride.trim().replace(/\/$/, "");
@@ -59,8 +76,17 @@ export const OpenApiProvider = ({ children, initialDocument }: OpenApiProviderPr
   }, [document, baseUrlOverride]);
 
   const value = useMemo<OpenApiContextValue>(
-    () => ({ baseUrl, baseUrlOverride, document, routes, setBaseUrlOverride, setDocument }),
-    [baseUrl, baseUrlOverride, document, routes],
+    () => ({
+      baseUrl,
+      baseUrlOverride,
+      document,
+      lastSourceInput,
+      routes,
+      setBaseUrlOverride,
+      setDocument,
+      setLastSourceInput,
+    }),
+    [baseUrl, baseUrlOverride, document, lastSourceInput, routes],
   );
 
   return <OpenApiContext.Provider value={value}>{children}</OpenApiContext.Provider>;

@@ -24,7 +24,7 @@ const OpenApiDialog = ({ open, onOpenChange }: OpenApiDialogProps) => {
   const [json, setJson] = useState("");
   const [baseUrlDraft, setBaseUrlDraft] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const { document, baseUrlOverride, setDocument, setBaseUrlOverride } = useOpenApi();
+  const { document, baseUrlOverride, lastSourceInput, setDocument, setBaseUrlOverride, setLastSourceInput } = useOpenApi();
   const t = useTranslate();
 
   const handleLoad = async () => {
@@ -39,6 +39,7 @@ const OpenApiDialog = ({ open, onOpenChange }: OpenApiDialogProps) => {
       const doc = await loadOpenApiDocument(input);
       setDocument(doc);
       setBaseUrlOverride(baseUrlDraft.trim());
+      setLastSourceInput({ mode, value: input });
       toast.success(t("editor.openApiDialog.loadSuccess"));
       onOpenChange(false);
     } catch (error) {
@@ -52,24 +53,32 @@ const OpenApiDialog = ({ open, onOpenChange }: OpenApiDialogProps) => {
   const handleClear = () => {
     setDocument(null);
     setBaseUrlOverride("");
+    setLastSourceInput(null);
     onOpenChange(false);
     toast.success(t("editor.openApiDialog.cleared"));
   };
 
   /**
-   * Sync the local drafts whenever the dialog opens. Source inputs reset to
-   * blank (they're meant to be replayed only when the user re-loads), while
-   * the base URL hydrates from the persisted override so the user can tweak
-   * it without re-entering it from scratch.
+   * Sync the local drafts whenever the dialog opens. Both the source input
+   * (URL or pasted JSON) and the base URL override hydrate from the persisted
+   * values so the user can tweak and re-load without re-entering everything.
+   * Switches the mode toggle to whichever was last used.
    */
   useEffect(() => {
-    if (open) {
+    if (!open) {
+      return;
+    }
+    setBaseUrlDraft(baseUrlOverride);
+    if (lastSourceInput) {
+      setMode(lastSourceInput.mode);
+      setUrl(lastSourceInput.mode === "url" ? lastSourceInput.value : "");
+      setJson(lastSourceInput.mode === "json" ? lastSourceInput.value : "");
+    } else {
+      setMode("url");
       setUrl("");
       setJson("");
-      setMode("url");
-      setBaseUrlDraft(baseUrlOverride);
     }
-  }, [open, baseUrlOverride]);
+  }, [open, baseUrlOverride, lastSourceInput]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
