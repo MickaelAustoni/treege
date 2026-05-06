@@ -16,7 +16,13 @@ interface NodeOptionsProps {
   data?: FlowNodeData | InputNodeData | UINodeData;
 }
 
-const OPTIONS_TYPES = ["radio", "select", "checkbox", "autocomplete"] as const;
+/**
+ * Type guard: narrows the node `data` to an `InputNodeData` whose type
+ * supports an option list. Used so the rest of the component can access
+ * `data.options`, `data.optionsSource`, etc. without casts.
+ */
+const isOptionsInputData = (data: NodeOptionsProps["data"]): data is InputNodeData =>
+  Boolean(data && "type" in data && data.type && ["radio", "select", "checkbox", "autocomplete"].includes(data.type));
 
 /**
  * Returns a shortened URL suitable for inline display: just the path (and
@@ -38,17 +44,15 @@ const NodeOptions = ({ nodeId, data }: NodeOptionsProps) => {
   const { updateNodeData } = useFlowActions();
   const { language } = useTreegeEditorContext();
   const t = useTranslate();
-  const dataType = data && "type" in data ? data.type : undefined;
-  const hasOptions = dataType && OPTIONS_TYPES.includes(dataType as (typeof OPTIONS_TYPES)[number]);
-  const inputData = data as InputNodeData;
-  const options = inputData.options ?? [];
-  const optionsSourceUrl = inputData.optionsSource?.url;
-  const supportsImage = dataType === "radio";
-  const supportsDescription = dataType === "radio" || dataType === "checkbox";
 
-  if (!hasOptions) {
+  if (!isOptionsInputData(data)) {
     return null;
   }
+
+  const options = data.options ?? [];
+  const optionsSourceUrl = data.optionsSource?.url;
+  const supportsImage = data.type === "radio";
+  const supportsDescription = data.type === "radio" || data.type === "checkbox";
 
   const resetDraft = () => {
     setLabelDraft("");
