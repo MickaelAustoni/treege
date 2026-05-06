@@ -22,8 +22,9 @@ const OpenApiDialog = ({ open, onOpenChange }: OpenApiDialogProps) => {
   const [mode, setMode] = useState<Mode>("url");
   const [url, setUrl] = useState("");
   const [json, setJson] = useState("");
+  const [baseUrlDraft, setBaseUrlDraft] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const { document, setDocument } = useOpenApi();
+  const { document, baseUrlOverride, setDocument, setBaseUrlOverride } = useOpenApi();
   const t = useTranslate();
 
   const handleLoad = async () => {
@@ -37,6 +38,7 @@ const OpenApiDialog = ({ open, onOpenChange }: OpenApiDialogProps) => {
     try {
       const doc = await loadOpenApiDocument(input);
       setDocument(doc);
+      setBaseUrlOverride(baseUrlDraft.trim());
       toast.success(t("editor.openApiDialog.loadSuccess"));
       onOpenChange(false);
     } catch (error) {
@@ -49,21 +51,25 @@ const OpenApiDialog = ({ open, onOpenChange }: OpenApiDialogProps) => {
 
   const handleClear = () => {
     setDocument(null);
+    setBaseUrlOverride("");
     onOpenChange(false);
     toast.success(t("editor.openApiDialog.cleared"));
   };
 
   /**
-   * Reset local drafts whenever the dialog opens, so a fresh session starts
-   * blank instead of replaying the last attempted input.
+   * Sync the local drafts whenever the dialog opens. Source inputs reset to
+   * blank (they're meant to be replayed only when the user re-loads), while
+   * the base URL hydrates from the persisted override so the user can tweak
+   * it without re-entering it from scratch.
    */
   useEffect(() => {
     if (open) {
       setUrl("");
       setJson("");
       setMode("url");
+      setBaseUrlDraft(baseUrlOverride);
     }
-  }, [open]);
+  }, [open, baseUrlOverride]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -97,6 +103,12 @@ const OpenApiDialog = ({ open, onOpenChange }: OpenApiDialogProps) => {
             />
           </div>
         )}
+
+        <div className="tg:flex tg:flex-col tg:gap-1">
+          <Label className="tg:text-xs">{t("editor.openApiDialog.baseUrlLabel")}</Label>
+          <Input value={baseUrlDraft} placeholder="https://api.example.com" onChange={(e) => setBaseUrlDraft(e.target.value)} />
+          <p className="tg:text-muted-foreground tg:text-xs">{t("editor.openApiDialog.baseUrlHint")}</p>
+        </div>
 
         <DialogFooter className="tg:flex tg:items-center tg:justify-between">
           {document ? (

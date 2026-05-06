@@ -230,6 +230,8 @@
       "editNode": "تعديل العقدة"
     },
     "openApiDialog": {
+      "baseUrlHint": "Optional. Overrides the document's first server URL — useful when the spec points at a different environment.",
+      "baseUrlLabel": "Base URL override",
       "clear": "Clear",
       "cleared": "OpenAPI cleared.",
       "description": "Provide an OpenAPI 3.x document to power URL suggestions and Authorize.",

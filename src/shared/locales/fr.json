@@ -230,6 +230,8 @@
       "editNode": "Modifier le nœud"
     },
     "openApiDialog": {
+      "baseUrlHint": "Optionnel. Remplace l'URL du premier serveur du document — utile quand la spec pointe vers un autre environnement.",
+      "baseUrlLabel": "Override de l'URL de base",
       "clear": "Effacer",
       "cleared": "OpenAPI effacé.",
       "description": "Fournissez un document OpenAPI 3.x pour activer les suggestions d'URL et l'autorisation.",

@@ -3,8 +3,8 @@ import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { useOpenApi } from "@/editor/context/OpenApiContext";
 import useTranslate from "@/editor/hooks/useTranslate";
-import { OpenApiDocument, OpenApiOAuth2PasswordScheme } from "@/editor/types/openapi";
-import { extractSecuritySchemes, resolveTokenUrl } from "@/editor/utils/openapi";
+import { OpenApiOAuth2PasswordScheme } from "@/editor/types/openapi";
+import { extractSecuritySchemes } from "@/editor/utils/openapi";
 import { Button } from "@/shared/components/ui/button";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/shared/components/ui/dialog";
 import { Input } from "@/shared/components/ui/input";
@@ -24,11 +24,13 @@ interface AuthorizeDialogProps {
  */
 const fetchOAuth2PasswordToken = async (
   scheme: OpenApiOAuth2PasswordScheme,
-  doc: OpenApiDocument,
+  baseUrl: string,
   username: string,
   password: string,
 ): Promise<HttpHeader> => {
-  const tokenUrl = resolveTokenUrl(scheme.tokenUrl, doc);
+  const tokenUrl = /^https?:\/\//i.test(scheme.tokenUrl)
+    ? scheme.tokenUrl
+    : `${baseUrl.replace(/\/$/, "")}/${scheme.tokenUrl.replace(/^\//, "")}`;
   const body = new URLSearchParams({ grant_type: "password", password, username }).toString();
 
   const response = await fetch(tokenUrl, {
@@ -65,7 +67,7 @@ const fetchOAuth2PasswordToken = async (
 const AuthorizeDialog = ({ open, onOpenChange, onAuthorize }: AuthorizeDialogProps) => {
   const [values, setValues] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
-  const { document } = useOpenApi();
+  const { document, baseUrl } = useOpenApi();
   const t = useTranslate();
   const schemes = useMemo(() => (document ? extractSecuritySchemes(document) : []), [document]);
 
@@ -98,7 +100,7 @@ const AuthorizeDialog = ({ open, onOpenChange, onAuthorize }: AuthorizeDialogPro
           if (!(username && password)) {
             continue;
           }
-          headers.push(await fetchOAuth2PasswordToken(scheme, document, username, password));
+          headers.push(await fetchOAuth2PasswordToken(scheme, baseUrl, username, password));
         }
       }
 

@@ -3,7 +3,6 @@ import { ComponentProps, ReactNode, useState } from "react";
 import { useOpenApi } from "@/editor/context/OpenApiContext";
 import useTranslate from "@/editor/hooks/useTranslate";
 import { ApiRouteMethod } from "@/editor/types/openapi";
-import { resolveRouteUrl } from "@/editor/utils/openapi";
 import { Button } from "@/shared/components/ui/button";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/shared/components/ui/command";
 import { Input } from "@/shared/components/ui/input";
@@ -45,14 +44,12 @@ const METHOD_BADGE_COLOR: Record<ApiRouteMethod, string> = {
  */
 const ApiUrlCombobox = ({ value, onChange, placeholder, children, ...inputProps }: ApiUrlComboboxProps) => {
   const [open, setOpen] = useState(false);
-  const { document, routes } = useOpenApi();
+  const { baseUrl, routes } = useOpenApi();
   const t = useTranslate();
 
   const handleSelectRoute = (path: string, method: ApiRouteMethod) => {
-    if (!document) {
-      return;
-    }
-    onChange(resolveRouteUrl(document, path), method);
+    const cleanPath = path.startsWith("/") ? path : `/${path}`;
+    onChange(`${baseUrl}${cleanPath}`, method);
     setOpen(false);
   };
 
