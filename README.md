@@ -601,15 +601,21 @@ Once the development server is running, you can access these examples:
 
 ### TreegeEditor Props
 
-| Prop           | Type                                     | Default  | Description                                                                    |
-|----------------|------------------------------------------|----------|--------------------------------------------------------------------------------|
-| `flow`         | `Flow \| null`                           | `null`   | Initial decision tree                                                          |
-| `onSave`       | `(flow: Flow) => void`                   | -        | Callback when tree is saved                                                    |
-| `onExportJson` | `() => { nodes: Node[]; edges: Edge[] }` | -        | Callback for exporting JSON data                                               |
-| `language`     | `string`                                 | `"en"`   | UI language                                                                    |
-| `theme`        | `"light" \| "dark"`                      | `"dark"` | Editor theme                                                                   |
-| `aiConfig`     | `AIConfig`                               | -        | AI configuration for tree generation (see [AI Generation](./AI_GENERATION.md)) |
-| `className`    | `string`                                 | -        | Additional CSS class names for custom styling                                  |
+| Prop              | Type                                     | Default  | Description                                                                                                                                                                                         |
+|-------------------|------------------------------------------|----------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `flow`            | `Flow \| null`                           | `null`   | Initial decision tree                                                                                                                                                                               |
+| `onSave`          | `(flow: Flow) => void`                   | -        | Callback when tree is saved                                                                                                                                                                         |
+| `onExportJson`    | `() => { nodes: Node[]; edges: Edge[] }` | -        | Callback for exporting JSON data                                                                                                                                                                    |
+| `language`        | `string`                                 | `"en"`   | UI language                                                                                                                                                                                         |
+| `theme`           | `"light" \| "dark"`                      | `"dark"` | Editor theme                                                                                                                                                                                        |
+| `aiConfig`        | `AIConfig`                               | -        | AI configuration for tree generation (see [AI Generation](./AI_GENERATION.md))                                                                                                                      |
+| `className`       | `string`                                 | -        | Additional CSS class names for custom styling                                                                                                                                                       |
+| `extraMenuItems`  | `ExtraMenuItem[]`                        | -        | Extra entries appended to the actions panel "more" dropdown                                                                                                                                         |
+| `openApi`         | `OpenApiDocument \| string`              | -        | OpenAPI 3.x source used to power URL/route suggestions and the Authorize flow. Accepts a pre-parsed document or a URL string (the editor fetches it on mount and toasts on failure)                 |
+| `openApiBaseUrl`  | `string`                                 | -        | Base URL used for OpenAPI route resolution. When set, takes precedence over the document's `servers[0].url` — useful when the spec points at a different environment than the one to call           |
+| `headers`         | `HttpHeader[]`                           | -        | Global HTTP headers applied to in-editor requests (e.g. the "Detect fields" button). Pass the same value you give to `TreegeRenderer` so editor previews use the same auth/headers as runtime       |
+| `onAuthorize`     | `(headers: HttpHeader[]) => void`        | -        | Called when the user submits the Authorize dialog. Forward the resulting headers to `TreegeRenderer` (or `TreegeConfigProvider`) so every form request is authenticated                             |
+| `onHeadersChange` | `(headers: HttpHeader[]) => void`        | -        | Called when the user edits headers in the built-in "Global headers" dialog. The component is controlled — update your `headers` state in response and pass the new list back via the `headers` prop |
 
 ### TreegeRenderer Props
 
@@ -625,6 +631,7 @@ Once the development server is running, you can access these examples:
 | `validationMode` | `"onSubmit" \| "onChange"`                  | `"onSubmit"` | When to validate                                           |
 | `theme`          | `"light" \| "dark"`                         | `"dark"`     | Renderer theme                                             |
 | `googleApiKey`   | `string`                                    | -            | API key for address input                                  |
+| `headers`        | `HttpHeader[]`                              | -            | HTTP headers applied to every request (field-level wins)   |
 | `className`      | `string`                                    | -            | Additional CSS class names for custom styling              |
 
 ## Development
