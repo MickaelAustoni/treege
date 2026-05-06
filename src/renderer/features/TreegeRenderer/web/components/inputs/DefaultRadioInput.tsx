@@ -1,4 +1,5 @@
 import { Loader2 } from "lucide-react";
+import { useTreegeRendererContext } from "@/renderer/context/TreegeRendererContext";
 import { useInputOptions } from "@/renderer/hooks/useInputOptions";
 import { useTranslate } from "@/renderer/hooks/useTranslate";
 import { InputRenderProps } from "@/renderer/types/renderer";
@@ -9,10 +10,13 @@ import { RadioGroup, RadioGroupItem } from "@/shared/components/ui/radio-group";
 
 const DefaultRadioInput = ({ node, value, setValue, error, label, helperText, id, name }: InputRenderProps<"radio">) => {
   const { options, isLoading, error: inputOptionsError } = useInputOptions(node);
+  const { optionsDisplayLimit } = useTreegeRendererContext();
   const t = useTranslate();
   const normalizedValue = value ? String(value) : "";
   const isCard = node.data.variant !== "default";
   const labelId = `${id}-label`;
+  const visibleOptions = optionsDisplayLimit ? options.slice(0, optionsDisplayLimit) : options;
+  const hiddenCount = options.length - visibleOptions.length;
 
   return (
     <FormItem className="tg:mb-4">
@@ -33,7 +37,7 @@ const DefaultRadioInput = ({ node, value, setValue, error, label, helperText, id
         name={name}
         className={isCard ? "tg:flex tg:flex-col tg:gap-2" : undefined}
       >
-        {options.map((option, index) => {
+        {visibleOptions.map((option, index) => {
           const optionId = `${id}-${option.value}`;
           const optionLabel = t(option.label) || option.value;
           const optionDescription = t(option.description);
@@ -68,6 +72,7 @@ const DefaultRadioInput = ({ node, value, setValue, error, label, helperText, id
             </div>
           );
         })}
+        {hiddenCount > 0 && <div className="tg:px-2 tg:py-1 tg:text-muted-foreground tg:text-xs">…</div>}
       </RadioGroup>
       {error && <FormError>{error}</FormError>}
       {inputOptionsError && !error && <FormError>{inputOptionsError}</FormError>}

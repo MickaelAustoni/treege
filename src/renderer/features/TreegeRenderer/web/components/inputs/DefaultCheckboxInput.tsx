@@ -1,4 +1,5 @@
 import { Loader2 } from "lucide-react";
+import { useTreegeRendererContext } from "@/renderer/context/TreegeRendererContext";
 import { useInputOptions } from "@/renderer/hooks/useInputOptions";
 import { useTranslate } from "@/renderer/hooks/useTranslate";
 import { InputRenderProps } from "@/renderer/types/renderer";
@@ -8,11 +9,14 @@ import { Label } from "@/shared/components/ui/label";
 
 const DefaultCheckboxInput = ({ node, value, setValue, error, label, helperText, id, name }: InputRenderProps<"checkbox">) => {
   const { options, isLoading, error: inputOptionsError } = useInputOptions(node);
+  const { optionsDisplayLimit } = useTreegeRendererContext();
   const t = useTranslate();
 
   // If there are options (static or dynamic), render a checkbox group
   if (options.length > 0 || node.data.optionsSource) {
     const selectedValues = Array.isArray(value) ? value.map(String) : [];
+    const visibleOptions = optionsDisplayLimit ? options.slice(0, optionsDisplayLimit) : options;
+    const hiddenCount = options.length - visibleOptions.length;
 
     const handleCheckboxChange = (optionValue: string, checked: boolean) => {
       const newValues = checked ? [...selectedValues, optionValue] : selectedValues.filter((v) => v !== optionValue);
@@ -32,7 +36,7 @@ const DefaultCheckboxInput = ({ node, value, setValue, error, label, helperText,
           </div>
         )}
         <div className="tg:space-y-2">
-          {options.map((option, index) => {
+          {visibleOptions.map((option, index) => {
             const optionDescription = t(option.description);
             return (
               <div key={option.value + index} className="tg:flex tg:items-start tg:gap-3">
@@ -53,6 +57,7 @@ const DefaultCheckboxInput = ({ node, value, setValue, error, label, helperText,
               </div>
             );
           })}
+          {hiddenCount > 0 && <div className="tg:px-2 tg:text-muted-foreground tg:text-xs">…</div>}
         </div>
         {error && <FormError>{error}</FormError>}
         {inputOptionsError && !error && <FormError>{inputOptionsError}</FormError>}

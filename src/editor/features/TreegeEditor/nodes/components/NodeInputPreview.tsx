@@ -94,7 +94,7 @@ const NodeInputPreview = ({ nodeId, data }: NodeInputPreviewProps) => {
         The provider merges with sensible defaults — other fields stay no-op
         since the preview is non-interactive.
       */}
-      <TreegeRendererProvider value={{ headers, language }}>
+      <TreegeRendererProvider value={{ headers, language, optionsDisplayLimit: 10 }}>
         <Renderer
           node={node}
           value={defaultValueForType(inputType) as never}
