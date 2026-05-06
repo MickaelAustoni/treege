@@ -161,9 +161,14 @@ const ActionsPanel = ({ onExportJson, onSave, extraMenuItems, onAuthorize }: Act
   /**
    * Re-show the Authorize notification dot every time a different OpenAPI
    * document is loaded, so the user notices the new available action.
+   * Skipping the reset when the document is cleared is intentional — the dot
+   * is already hidden via `showAuthorizeDot` since `Boolean(openApiDocument)`
+   * goes false.
    */
   useEffect(() => {
-    setAuthorizeAcknowledged(false);
+    if (openApiDocument) {
+      setAuthorizeAcknowledged(false);
+    }
   }, [openApiDocument]);
 
   /**
@@ -204,7 +209,7 @@ const ActionsPanel = ({ onExportJson, onSave, extraMenuItems, onAuthorize }: Act
             {showAuthorizeDot && (
               <span
                 aria-hidden
-                className="tg:-top-0.5 tg:-right-0.5 tg:absolute tg:size-2 tg:rounded-full tg:bg-destructive tg:ring-2 tg:ring-background"
+                className="tg:absolute tg:-top-0.5 tg:-right-0.5 tg:size-2 tg:rounded-full tg:bg-destructive tg:ring-2 tg:ring-background"
               />
             )}
           </Button>
@@ -235,6 +240,7 @@ const ActionsPanel = ({ onExportJson, onSave, extraMenuItems, onAuthorize }: Act
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => setOpenApiDialogOpen(true)}>
               <FileJson /> {t("editor.actionsPanel.openApi")}
+              {openApiDocument && <span aria-hidden className="tg:ml-auto tg:size-2 tg:rounded-full tg:bg-emerald-500" />}
             </DropdownMenuItem>
             {openApiDocument && (
               <DropdownMenuItem onClick={() => setAuthorizeDialogOpen(true)}>
