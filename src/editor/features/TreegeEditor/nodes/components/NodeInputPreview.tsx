@@ -2,6 +2,7 @@ import { Node } from "@xyflow/react";
 import { ReactNode } from "react";
 import { useTreegeEditorContext } from "@/editor/context/TreegeEditorContext";
 import { getInputTypeIcon } from "@/editor/utils/inputTypeIcon";
+import { TreegeRendererProvider } from "@/renderer/context/TreegeRendererContext";
 import { defaultInputRenderers } from "@/renderer/features/TreegeRenderer/web/components/DefaultInputs";
 import type { InputRenderProps } from "@/renderer/types/renderer";
 import { resolveInputPlaceholder, resolveNodeKey } from "@/renderer/utils/node";
@@ -31,7 +32,7 @@ const defaultValueForType = (type: InputType): unknown => {
 };
 
 const NodeInputPreview = ({ nodeId, data }: NodeInputPreviewProps) => {
-  const { language } = useTreegeEditorContext();
+  const { language, headers } = useTreegeEditorContext();
   const inputType = data?.type;
 
   if (!inputType) {
@@ -87,16 +88,24 @@ const NodeInputPreview = ({ nodeId, data }: NodeInputPreviewProps) => {
   return (
     <div className={cn("tg:pointer-events-none tg:flex tg:select-none tg:flex-col tg:gap-1", inputType === "submit" && "tg:items-center")}>
       {subTypeHint}
-      <Renderer
-        node={node}
-        value={defaultValueForType(inputType) as never}
-        setValue={() => {}}
-        id={nodeId}
-        name={name}
-        label={label || undefined}
-        placeholder={placeholder || undefined}
-        helperText={helperText || undefined}
-      />
+      {/*
+        Wrap the runtime renderer in a minimal `TreegeRendererProvider` so it
+        picks up the editor's `headers` (e.g. for `useInputOptions`'s fetch).
+        The provider merges with sensible defaults — other fields stay no-op
+        since the preview is non-interactive.
+      */}
+      <TreegeRendererProvider value={{ headers, language }}>
+        <Renderer
+          node={node}
+          value={defaultValueForType(inputType) as never}
+          setValue={() => {}}
+          id={nodeId}
+          name={name}
+          label={label || undefined}
+          placeholder={placeholder || undefined}
+          helperText={helperText || undefined}
+        />
+      </TreegeRendererProvider>
     </div>
   );
 };
