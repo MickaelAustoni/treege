@@ -30,7 +30,7 @@ const EditorPanel = ({
   headers?: HttpHeader[];
   onHeadersChange: (headers: HttpHeader[]) => void;
 }) => {
-  const apiKey = import.meta.env?.VITE_AI_API_KEY || "";
+  const apiKey = import.meta.env.VITE_AI_API_KEY ?? "";
 
   return (
     <div className="tg:h-full tg:flex tg:flex-col">
@@ -183,12 +183,22 @@ const mergeHeaders = (base: HttpHeader[], overrides: HttpHeader[]): HttpHeader[]
   return out;
 };
 
+/**
+ * Seed the example's global headers with `Authorization: Bearer <token>` when
+ * `VITE_BEARER_TOKEN` is set. Lets devs hit protected APIs without going
+ * through the Authorize dialog on every reload.
+ */
+const initialHeaders = (): HttpHeader[] => {
+  const token = import.meta.env.VITE_BEARER_TOKEN?.trim();
+  return token ? [{ key: "Authorization", value: `Bearer ${token}` }] : [];
+};
+
 const Layout = ({ flow }: { flow?: Flow }) => {
   const [savedFlow, setSavedFlow] = useState<Flow | null>(null);
   const [theme, setTheme] = useState<"light" | "dark">("dark");
   const [language, setLanguage] = useState<Language>("en");
   const [showPreview, setShowPreview] = useState<boolean | null>(null);
-  const [headers, setHeaders] = useState<HttpHeader[]>([]);
+  const [headers, setHeaders] = useState<HttpHeader[]>(initialHeaders);
   const [authHeaders, setAuthHeaders] = useState<HttpHeader[]>([]);
   const isDesktop = useMediaQuery("desktop");
   const previewOpen = showPreview ?? isDesktop;
