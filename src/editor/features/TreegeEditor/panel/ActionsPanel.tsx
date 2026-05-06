@@ -35,6 +35,7 @@ const uniqueId = nanoid();
 const ActionsPanel = ({ onExportJson, onSave, extraMenuItems, onAuthorize }: ActionsPanelProps) => {
   const [openApiDialogOpen, setOpenApiDialogOpen] = useState(false);
   const [authorizeDialogOpen, setAuthorizeDialogOpen] = useState(false);
+  const [authorizeAcknowledged, setAuthorizeAcknowledged] = useState(false);
   const { flowId, setFlowId, aiConfig } = useTreegeEditorContext();
   const { document: openApiDocument } = useOpenApi();
   const { setNodes, setEdges, addNodes, screenToFlowPosition } = useReactFlow();
@@ -42,6 +43,7 @@ const ActionsPanel = ({ onExportJson, onSave, extraMenuItems, onAuthorize }: Act
   const nodes = useNodes();
   const edges = useEdges();
   const inputFileRef = useRef<HTMLInputElement>(null);
+  const showAuthorizeDot = Boolean(openApiDocument) && !authorizeAcknowledged;
   const t = useTranslate();
 
   const handleAddNode = () => {
@@ -157,6 +159,14 @@ const ActionsPanel = ({ onExportJson, onSave, extraMenuItems, onAuthorize }: Act
   };
 
   /**
+   * Re-show the Authorize notification dot every time a different OpenAPI
+   * document is loaded, so the user notices the new available action.
+   */
+  useEffect(() => {
+    setAuthorizeAcknowledged(false);
+  }, [openApiDocument]);
+
+  /**
    * Handle keyboard shortcut for saving (Ctrl+S or Cmd+S)
    */
   useEffect(() => {
@@ -179,12 +189,6 @@ const ActionsPanel = ({ onExportJson, onSave, extraMenuItems, onAuthorize }: Act
     <Panel position="top-right" className="tg:flex tg:gap-2">
       <AIGeneratorDialog aiConfig={aiConfig} onGenerate={handleAIGenerate} />
 
-      {openApiDocument && (
-        <Button variant="outline" size="sm" onClick={() => setAuthorizeDialogOpen(true)}>
-          <Lock /> <span className="tg:hidden tg:md:inline">{t("editor.actionsPanel.authorize")}</span>
-        </Button>
-      )}
-
       <Button variant="outline" size="sm" onClick={handleAddNode}>
         <Plus /> <span className="tg:hidden tg:md:inline">{t("editor.actionsPanel.addNode")}</span>
       </Button>
@@ -193,10 +197,16 @@ const ActionsPanel = ({ onExportJson, onSave, extraMenuItems, onAuthorize }: Act
         <Save /> <span className="tg:hidden tg:md:inline">{t("common.save")}</span>
       </Button>
 
-      <DropdownMenu>
+      <DropdownMenu onOpenChange={(open) => !open && setAuthorizeAcknowledged(true)}>
         <DropdownMenuTrigger asChild>
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="sm" className="tg:relative">
             <EllipsisVertical />
+            {showAuthorizeDot && (
+              <span
+                aria-hidden
+                className="tg:-top-0.5 tg:-right-0.5 tg:absolute tg:size-2 tg:rounded-full tg:bg-destructive tg:ring-2 tg:ring-background"
+              />
+            )}
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="start">
@@ -226,6 +236,12 @@ const ActionsPanel = ({ onExportJson, onSave, extraMenuItems, onAuthorize }: Act
             <DropdownMenuItem onClick={() => setOpenApiDialogOpen(true)}>
               <FileJson /> {t("editor.actionsPanel.openApi")}
             </DropdownMenuItem>
+            {openApiDocument && (
+              <DropdownMenuItem onClick={() => setAuthorizeDialogOpen(true)}>
+                <Lock /> {t("editor.actionsPanel.authorize")}
+                {showAuthorizeDot && <span aria-hidden className="tg:ml-auto tg:size-2 tg:rounded-full tg:bg-destructive" />}
+              </DropdownMenuItem>
+            )}
           </DropdownMenuGroup>
 
           {extraMenuItems && extraMenuItems.length > 0 && (
