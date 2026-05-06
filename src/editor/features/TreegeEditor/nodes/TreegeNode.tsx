@@ -64,7 +64,7 @@ const TreegeNode = (props: TreegeNodeProps) => {
           </div>
 
           {/* Options */}
-          {inputData && <NodeOptions nodeId={id} data={inputData} />}
+          <NodeOptions nodeId={id} data={inputData} />
         </>
       )}
 
