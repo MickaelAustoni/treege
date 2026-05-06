@@ -3,6 +3,7 @@ import { MouseEvent } from "react";
 import { useTreegeEditorContext } from "@/editor/context/TreegeEditorContext";
 import useFlowActions from "@/editor/hooks/useFlowActions";
 import useTranslate from "@/editor/hooks/useTranslate";
+import { Button } from "@/shared/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -36,16 +37,15 @@ const NodeMoreMenu = ({ nodeId, className }: NodeMoreMenuProps) => {
   return (
     <DropdownMenu modal={false}>
       <DropdownMenuTrigger asChild onClick={stopPropagation}>
-        <button
+        <Button
           type="button"
+          variant="icon"
+          size="icon-sm"
           aria-label={t("editor.nodeActionsSheet.editNode")}
-          className={cn(
-            "nodrag nopan tg:flex tg:h-6 tg:w-6 tg:cursor-pointer tg:items-center tg:justify-center tg:rounded-md tg:opacity-60 tg:transition-all tg:hover:text-[--treege-color-primary] tg:hover:opacity-100",
-            className,
-          )}
+          className={cn("nodrag nopan tg:size-6 tg:hover:text-[--treege-color-primary]", className)}
         >
-          <MoreVertical className="tg:h-3.5 tg:w-3.5" />
-        </button>
+          <MoreVertical />
+        </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" onClick={stopPropagation}>
         <DropdownMenuItem onSelect={handleOpenSheet}>

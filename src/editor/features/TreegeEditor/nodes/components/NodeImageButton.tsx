@@ -132,7 +132,7 @@ const NodeImageButton = ({ nodeId, image }: NodeImageButtonProps) => {
                   type="button"
                   variant="icon"
                   size="icon-sm"
-                  className="nodrag nopan tg:size-6 tg:[&_svg:not([class*='size-'])]:size-3.5"
+                  className="nodrag nopan tg:size-6"
                   aria-label={t(image ? "editor.inputNodeForm.optionImageReplace" : "editor.inputNodeForm.optionImageAdd")}
                 >
                   <Image />

@@ -165,7 +165,7 @@ const NodeOptions = ({ nodeId, data, selected }: NodeOptionsProps) => {
                   variant="icon"
                   size="icon-sm"
                   aria-label={t("editor.inputNodeForm.editOption")}
-                  className="tg:size-5 tg:[&_svg:not([class*='size-'])]:size-3"
+                  className="tg:size-5"
                   onClick={(event) => handleEditOption(index, event)}
                 >
                   <Pencil />
@@ -175,7 +175,7 @@ const NodeOptions = ({ nodeId, data, selected }: NodeOptionsProps) => {
                   variant="icon"
                   size="icon-sm"
                   aria-label={t("editor.inputNodeForm.deleteOption")}
-                  className="tg:size-5 tg:hover:text-destructive tg:[&_svg:not([class*='size-'])]:size-3"
+                  className="tg:size-5 tg:hover:text-destructive"
                   onClick={(event) => handleDeleteOption(index, event)}
                 >
                   <Trash2 />

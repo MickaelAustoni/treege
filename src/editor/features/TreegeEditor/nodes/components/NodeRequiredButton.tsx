@@ -29,10 +29,7 @@ const NodeRequiredButton = ({ nodeId, required }: NodeRequiredButtonProps) => {
             variant="icon"
             size="icon-sm"
             onClick={handleClick}
-            className={cn(
-              "nodrag nopan tg:size-6 tg:[&_svg:not([class*='size-'])]:size-3.5",
-              required && "tg:opacity-100! tg:text-destructive",
-            )}
+            className={cn("nodrag nopan tg:size-6", required && "tg:text-destructive tg:opacity-100!")}
           >
             <Asterisk />
           </Button>
