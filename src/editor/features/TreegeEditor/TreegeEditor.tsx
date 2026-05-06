@@ -19,9 +19,19 @@ import { ThemeProvider } from "@/shared/context/ThemeContext";
 import { useMediaQuery } from "@/shared/hooks/useMediaQuery";
 import { cn } from "@/shared/lib/utils";
 
-const Flow = ({ flow, onExportJson, onSave, theme, className, extraMenuItems, onAuthorize }: TreegeEditorProps) => {
-  const { onConnect, onConnectEnd, onEdgesDelete, isValidConnection } = useFlowConnections();
+const Flow = ({
+  flow,
+  onExportJson,
+  onSave,
+  theme,
+  className,
+  extraMenuItems,
+  onAuthorize,
+  headers,
+  onHeadersChange,
+}: TreegeEditorProps) => {
   const [showMiniMap, setShowMiniMap] = useState(false);
+  const { onConnect, onConnectEnd, onEdgesDelete, isValidConnection } = useFlowConnections();
   const isMobile = useMediaQuery("mobile");
 
   return (
@@ -43,7 +53,14 @@ const Flow = ({ flow, onExportJson, onSave, theme, className, extraMenuItems, on
     >
       <AutoLayout />
       <Background gap={10} variant={BackgroundVariant.Dots} />
-      <ActionsPanel onExportJson={onExportJson} onSave={onSave} extraMenuItems={extraMenuItems} onAuthorize={onAuthorize} />
+      <ActionsPanel
+        onExportJson={onExportJson}
+        onSave={onSave}
+        extraMenuItems={extraMenuItems}
+        onAuthorize={onAuthorize}
+        headers={headers}
+        onHeadersChange={onHeadersChange}
+      />
       <Logo theme={theme} />
       {showMiniMap && <MiniMap />}
       <Controls>
@@ -67,6 +84,7 @@ const TreegeEditor = ({
   openApi,
   onAuthorize,
   headers,
+  onHeadersChange,
 }: TreegeEditorProps) => (
   <>
     <EditorStyles />
@@ -82,6 +100,8 @@ const TreegeEditor = ({
               theme={theme}
               extraMenuItems={extraMenuItems}
               onAuthorize={onAuthorize}
+              headers={headers}
+              onHeadersChange={onHeadersChange}
             />
           </ReactFlowProvider>
         </OpenApiProvider>

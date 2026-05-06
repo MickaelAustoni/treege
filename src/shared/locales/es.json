@@ -23,6 +23,7 @@
       "downloadSuccess": "Descarga exitosa.",
       "downloadSuccessDesc": "El flujo se ha exportado correctamente.",
       "exportJson": "Exportar JSON",
+      "globalHeaders": "Global headers",
       "idCopied": "ID del flujo copiado!",
       "importJson": "Importar JSON",
       "importSuccess": "¡Importación exitosa!",
@@ -120,6 +121,15 @@
     },
     "groupNodeForm": {
       "label": "Etiqueta"
+    },
+    "headersDialog": {
+      "addHeader": "Add header",
+      "description": "These headers are forwarded to every HTTP request issued by the form (HTTP inputs, submit, options sources). Field-level headers with the same key override these.",
+      "empty": "No headers yet.",
+      "keyPlaceholder": "Authorization",
+      "removeHeader": "Remove header",
+      "title": "Global headers",
+      "valuePlaceholder": "Bearer ..."
     },
     "httpConfigForm": {
       "addHeader": "Agregar encabezado",

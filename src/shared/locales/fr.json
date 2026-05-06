@@ -23,6 +23,7 @@
       "downloadSuccess": "Téléchargement réussi.",
       "downloadSuccessDesc": "Le flux a été exporté avec succès.",
       "exportJson": "Exporter JSON",
+      "globalHeaders": "Headers globaux",
       "idCopied": "ID du flux copié !",
       "importJson": "Importer JSON",
       "importSuccess": "Importation réussie !",
@@ -120,6 +121,15 @@
     },
     "groupNodeForm": {
       "label": "Libellé"
+    },
+    "headersDialog": {
+      "addHeader": "Ajouter un header",
+      "description": "Ces headers sont transmis à chaque requête HTTP émise par le formulaire (inputs HTTP, submit, sources d'options). Les headers field-level avec la même clé prennent le dessus.",
+      "empty": "Aucun header pour l'instant.",
+      "keyPlaceholder": "Authorization",
+      "removeHeader": "Supprimer le header",
+      "title": "Headers globaux",
+      "valuePlaceholder": "Bearer ..."
     },
     "httpConfigForm": {
       "addHeader": "Ajouter un en-tête",

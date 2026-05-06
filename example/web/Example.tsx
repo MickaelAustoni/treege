@@ -1,10 +1,7 @@
-import { Eye, KeyRound, MoonStar, Plus, Sun, Trash2 } from "lucide-react";
+import { Eye, MoonStar, Sun } from "lucide-react";
 import { useState } from "react";
 import TreegeEditor from "@/editor/features/TreegeEditor/TreegeEditor";
 import { FormValues, Meta, TreegeRenderer } from "@/renderer";
-import { Button } from "@/shared/components/ui/button";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/shared/components/ui/dialog";
-import { Input } from "@/shared/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/components/ui/select";
 import { Sheet, SheetContent, SheetTitle } from "@/shared/components/ui/sheet";
 import { Switch } from "@/shared/components/ui/switch";
@@ -14,86 +11,24 @@ import { Flow, HttpHeader } from "@/shared/types/node";
 import flows from "~/example/json/treege.json";
 import flowsComplex from "~/example/json/treege-all-inputs.json";
 
-const HeadersDialog = ({
-  open,
-  onOpenChange,
-  headers,
-  onChange,
-}: {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  headers: HttpHeader[];
-  onChange: (headers: HttpHeader[]) => void;
-}) => {
-  const updateHeader = (index: number, patch: Partial<HttpHeader>) => {
-    onChange(headers.map((h, i) => (i === index ? { ...h, ...patch } : h)));
-  };
-
-  const removeHeader = (index: number) => {
-    onChange(headers.filter((_, i) => i !== index));
-  };
-
-  const addHeader = () => {
-    onChange([...headers, { key: "", value: "" }]);
-  };
-
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="tg:max-w-lg">
-        <DialogHeader>
-          <DialogTitle>Global headers</DialogTitle>
-        </DialogHeader>
-        <p className="tg:text-muted-foreground tg:text-sm">
-          These headers are forwarded to every HTTP request issued by the renderer (HTTP inputs, submit). Field-level headers with the same
-          key override these.
-        </p>
-        <div className="tg:flex tg:flex-col tg:gap-2">
-          {headers.map((header, index) => (
-            <div key={index} className="tg:flex tg:items-center tg:gap-2">
-              <Input
-                placeholder="Authorization"
-                value={header.key}
-                onChange={(e) => updateHeader(index, { key: e.target.value })}
-              />
-              <Input
-                placeholder="Bearer ..."
-                value={header.value}
-                onChange={(e) => updateHeader(index, { value: e.target.value })}
-              />
-              <Button variant="ghost" size="icon" onClick={() => removeHeader(index)} aria-label="Remove header">
-                <Trash2 className="tg:h-4 tg:w-4" />
-              </Button>
-            </div>
-          ))}
-        </div>
-        <DialogFooter>
-          <Button variant="outline" onClick={addHeader}>
-            <Plus className="tg:mr-2 tg:h-4 tg:w-4" /> Add header
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  );
-};
-
 const EditorPanel = ({
   flow,
   onSave,
   theme,
   language,
   onTogglePreview,
-  onOpenHeaders,
   onAuthorize,
   headers,
+  onHeadersChange,
 }: {
   flow?: Flow;
   onSave: (data: Flow) => void;
   theme: "light" | "dark";
   language: Language;
   onTogglePreview: () => void;
-  onOpenHeaders: () => void;
   onAuthorize: (headers: HttpHeader[]) => void;
   headers?: HttpHeader[];
+  onHeadersChange: (headers: HttpHeader[]) => void;
 }) => {
   const apiKey = import.meta.env?.VITE_AI_API_KEY || "";
 
@@ -107,6 +42,7 @@ const EditorPanel = ({
           language={language}
           onAuthorize={onAuthorize}
           headers={headers}
+          onHeadersChange={onHeadersChange}
           aiConfig={{
             apiKey,
           }}
@@ -115,11 +51,6 @@ const EditorPanel = ({
               icon: <Eye />,
               label: "Toggle preview",
               onClick: onTogglePreview,
-            },
-            {
-              icon: <KeyRound />,
-              label: "Global headers",
-              onClick: onOpenHeaders,
             },
           ]}
         />
@@ -259,7 +190,6 @@ const Layout = ({ flow }: { flow?: Flow }) => {
   const [showPreview, setShowPreview] = useState<boolean | null>(null);
   const [headers, setHeaders] = useState<HttpHeader[]>([]);
   const [authHeaders, setAuthHeaders] = useState<HttpHeader[]>([]);
-  const [headersDialogOpen, setHeadersDialogOpen] = useState(false);
   const isDesktop = useMediaQuery("desktop");
   const previewOpen = showPreview ?? isDesktop;
   const mergedHeaders = mergeHeaders(headers, authHeaders);
@@ -279,9 +209,9 @@ const Layout = ({ flow }: { flow?: Flow }) => {
           theme={theme}
           language={language}
           onTogglePreview={togglePreview}
-          onOpenHeaders={() => setHeadersDialogOpen(true)}
           onAuthorize={setAuthHeaders}
           headers={mergedHeaders}
+          onHeadersChange={setHeaders}
         />
       </div>
 
@@ -312,8 +242,6 @@ const Layout = ({ flow }: { flow?: Flow }) => {
           />
         </SheetContent>
       </Sheet>
-
-      <HeadersDialog open={headersDialogOpen} onOpenChange={setHeadersDialogOpen} headers={headers} onChange={setHeaders} />
     </div>
   );
 };

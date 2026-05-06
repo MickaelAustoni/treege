@@ -297,15 +297,15 @@ const OptionsSourceForm = ({ value, onChange }: OptionsSourceFormProps) => {
 
           <div className="tg:grid tg:grid-cols-2 tg:gap-3">
             {renderMappingField(
-              "valueField",
-              t("editor.optionsSourceForm.valueField"),
-              t("editor.optionsSourceForm.valueFieldPlaceholder"),
-              true,
-            )}
-            {renderMappingField(
               "labelField",
               t("editor.optionsSourceForm.labelField"),
               t("editor.optionsSourceForm.labelFieldPlaceholder"),
+              true,
+            )}
+            {renderMappingField(
+              "valueField",
+              t("editor.optionsSourceForm.valueField"),
+              t("editor.optionsSourceForm.valueFieldPlaceholder"),
               true,
             )}
             {renderMappingField(

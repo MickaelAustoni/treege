@@ -78,4 +78,12 @@ export interface TreegeEditorProps {
    * via its `headers` prop so every request issued by the form is authenticated.
    */
   onAuthorize?: (headers: HttpHeader[]) => void;
+  /**
+   * Called whenever the user edits the global headers via the editor's
+   * built-in "Global headers" dialog. The component is controlled — the
+   * parent is expected to update its `headers` state in response and pass
+   * the new list back via the `headers` prop, so every editor-time and
+   * runtime request reflects the change.
+   */
+  onHeadersChange?: (headers: HttpHeader[]) => void;
 }
