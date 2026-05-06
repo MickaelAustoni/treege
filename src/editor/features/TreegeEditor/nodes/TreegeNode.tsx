@@ -1,6 +1,7 @@
 import { Handle, Node, NodeProps, Position } from "@xyflow/react";
 import { memo } from "react";
 import BottomHandleDropdown from "@/editor/features/TreegeEditor/nodes/components/BottomHandleDropdown";
+import NodeImage from "@/editor/features/TreegeEditor/nodes/components/NodeImage";
 import NodeImageButton from "@/editor/features/TreegeEditor/nodes/components/NodeImageButton";
 import NodeInputPreview from "@/editor/features/TreegeEditor/nodes/components/NodeInputPreview";
 import NodeLabelInput from "@/editor/features/TreegeEditor/nodes/components/NodeLabelInput";
@@ -42,9 +43,7 @@ const TreegeNode = (props: TreegeNodeProps) => {
       <Handle type="target" position={Position.Top} isConnectable={isConnectable} isConnectableStart={type === "ui"} />
 
       {/* Illustrative image */}
-      {inputData?.image && (
-        <img src={inputData.image} alt="" className="tg:pointer-events-none tg:my-2 tg:max-h-24 tg:w-full tg:rounded-md tg:object-cover" />
-      )}
+      <NodeImage image={inputData?.image} />
 
       {showPreview && inputData ? (
         <NodeInputPreview nodeId={id} data={inputData} />
