@@ -66,11 +66,12 @@ const TreegeEditor = ({
   extraMenuItems,
   openApi,
   onAuthorize,
+  headers,
 }: TreegeEditorProps) => (
   <>
     <EditorStyles />
     <ThemeProvider defaultTheme={theme} storageKey="treege-editor-theme" theme={theme}>
-      <TreegeEditorProvider value={{ aiConfig, flowId: flow?.id, language }}>
+      <TreegeEditorProvider value={{ aiConfig, flowId: flow?.id, headers, language }}>
         <OpenApiProvider initialDocument={openApi}>
           <Toaster position="bottom-center" />
           <ReactFlowProvider>

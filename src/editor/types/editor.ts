@@ -65,6 +65,13 @@ export interface TreegeEditorProps {
    */
   openApi?: OpenApiDocument;
   /**
+   * Global HTTP headers applied to in-editor requests (e.g. the "Detect
+   * fields" button in `OptionsSourceForm`). Pass the same value you give to
+   * `TreegeRenderer` so editor-time previews use the same auth and headers
+   * that the runtime form will use.
+   */
+  headers?: HttpHeader[];
+  /**
    * Called when the user submits the Authorize dialog. Receives the resulting
    * HTTP headers (`Authorization`, API key headers…). The consumer is expected
    * to forward those headers to `TreegeRenderer` (or `TreegeConfigProvider`)

@@ -1,9 +1,10 @@
 import { Loader2, Plus, Sparkles, X } from "lucide-react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
+import { useTreegeEditorContext } from "@/editor/context/TreegeEditorContext";
 import ApiUrlCombobox from "@/editor/features/TreegeEditor/inputs/ApiUrlCombobox";
 import useTranslate from "@/editor/hooks/useTranslate";
-import { extractOptionsFromResponse, getValueByPath, makeHttpRequest } from "@/renderer/utils/http";
+import { extractOptionsFromResponse, getValueByPath, makeHttpRequest, mergeHttpHeaders } from "@/renderer/utils/http";
 import { Button } from "@/shared/components/ui/button";
 import { FormItem } from "@/shared/components/ui/form";
 import { Input } from "@/shared/components/ui/input";
@@ -55,6 +56,7 @@ const OptionsSourceForm = ({ value, onChange }: OptionsSourceFormProps) => {
   const [detectedPaths, setDetectedPaths] = useState<string[]>([]);
   const [previewCount, setPreviewCount] = useState<number | null>(null);
   const t = useTranslate();
+  const { headers: globalHeaders } = useTreegeEditorContext();
   const url = value?.url ?? "";
   const method = value?.method ?? "GET";
   const headers = value?.headers ?? [];
@@ -98,7 +100,8 @@ const OptionsSourceForm = ({ value, onChange }: OptionsSourceFormProps) => {
     try {
       const result = await makeHttpRequest({
         body: body && METHODS_NEEDING_BODY.includes(method) ? body : undefined,
-        headers,
+        // Field-level headers win over globals on key collision (case-insensitive)
+        headers: mergeHttpHeaders(globalHeaders, headers),
         method,
         url,
       });

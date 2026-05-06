@@ -84,6 +84,7 @@ const EditorPanel = ({
   onTogglePreview,
   onOpenHeaders,
   onAuthorize,
+  headers,
 }: {
   flow?: Flow;
   onSave: (data: Flow) => void;
@@ -92,6 +93,7 @@ const EditorPanel = ({
   onTogglePreview: () => void;
   onOpenHeaders: () => void;
   onAuthorize: (headers: HttpHeader[]) => void;
+  headers?: HttpHeader[];
 }) => {
   const apiKey = import.meta.env?.VITE_AI_API_KEY || "";
 
@@ -104,6 +106,7 @@ const EditorPanel = ({
           theme={theme}
           language={language}
           onAuthorize={onAuthorize}
+          headers={headers}
           aiConfig={{
             apiKey,
           }}
@@ -278,6 +281,7 @@ const Layout = ({ flow }: { flow?: Flow }) => {
           onTogglePreview={togglePreview}
           onOpenHeaders={() => setHeadersDialogOpen(true)}
           onAuthorize={setAuthHeaders}
+          headers={mergedHeaders}
         />
       </div>
 
