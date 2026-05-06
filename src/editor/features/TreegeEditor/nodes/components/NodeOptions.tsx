@@ -1,5 +1,5 @@
 import { Globe, Pencil, Plus, Trash2 } from "lucide-react";
-import { KeyboardEvent, MouseEvent, SubmitEvent, useState } from "react";
+import { FormEvent, KeyboardEvent, MouseEvent, useState } from "react";
 import { useTreegeEditorContext } from "@/editor/context/TreegeEditorContext";
 import OptionImageField from "@/editor/features/TreegeEditor/inputs/OptionImageField";
 import useFlowActions from "@/editor/hooks/useFlowActions";
@@ -67,7 +67,7 @@ const NodeOptions = ({ nodeId, data, selected }: NodeOptionsProps) => {
     setDescriptionDraft("");
   };
 
-  const handleSubmit = (event?: SubmitEvent) => {
+  const handleSubmit = (event?: FormEvent<HTMLFormElement>) => {
     event?.preventDefault();
     const label = labelDraft.trim();
     const value = valueDraft.trim() || label;
