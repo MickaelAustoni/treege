@@ -7,7 +7,7 @@ import { Label } from "@/shared/components/ui/label";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/shared/components/ui/select";
 
 const DefaultSelectInput = ({ node, value, setValue, error, label, placeholder, helperText, name, id }: InputRenderProps<"select">) => {
-  const { options, isLoading, error: sourceError } = useInputOptions(node);
+  const { options, isLoading, error: inputOptionsError } = useInputOptions(node);
   const t = useTranslate();
   const normalizedValue = value ? String(value) : "";
 
@@ -35,8 +35,8 @@ const DefaultSelectInput = ({ node, value, setValue, error, label, placeholder, 
         </SelectContent>
       </Select>
       {error && <FormError>{error}</FormError>}
-      {sourceError && !error && <FormError>{sourceError}</FormError>}
-      {helperText && !error && !sourceError && <FormDescription>{helperText}</FormDescription>}
+      {inputOptionsError && !error && <FormError>{inputOptionsError}</FormError>}
+      {helperText && !error && !inputOptionsError && <FormDescription>{helperText}</FormDescription>}
     </FormItem>
   );
 };

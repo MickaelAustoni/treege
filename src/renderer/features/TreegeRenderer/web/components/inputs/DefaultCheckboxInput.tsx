@@ -7,7 +7,7 @@ import { FormDescription, FormError, FormItem } from "@/shared/components/ui/for
 import { Label } from "@/shared/components/ui/label";
 
 const DefaultCheckboxInput = ({ node, value, setValue, error, label, helperText, id, name }: InputRenderProps<"checkbox">) => {
-  const { options, isLoading, error: sourceError } = useInputOptions(node);
+  const { options, isLoading, error: inputOptionsError } = useInputOptions(node);
   const t = useTranslate();
 
   // If there are options (static or dynamic), render a checkbox group
@@ -55,8 +55,8 @@ const DefaultCheckboxInput = ({ node, value, setValue, error, label, helperText,
           })}
         </div>
         {error && <FormError>{error}</FormError>}
-        {sourceError && !error && <FormError>{sourceError}</FormError>}
-        {helperText && !error && !sourceError && <FormDescription>{helperText}</FormDescription>}
+        {inputOptionsError && !error && <FormError>{inputOptionsError}</FormError>}
+        {helperText && !error && !inputOptionsError && <FormDescription>{helperText}</FormDescription>}
       </FormItem>
     );
   }

@@ -8,7 +8,7 @@ import { Label } from "@/shared/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/shared/components/ui/radio-group";
 
 const DefaultRadioInput = ({ node, value, setValue, error, label, helperText, id, name }: InputRenderProps<"radio">) => {
-  const { options, isLoading, error: sourceError } = useInputOptions(node);
+  const { options, isLoading, error: inputOptionsError } = useInputOptions(node);
   const t = useTranslate();
   const normalizedValue = value ? String(value) : "";
   const isCard = node.data.variant !== "default";
@@ -70,8 +70,8 @@ const DefaultRadioInput = ({ node, value, setValue, error, label, helperText, id
         })}
       </RadioGroup>
       {error && <FormError>{error}</FormError>}
-      {sourceError && !error && <FormError>{sourceError}</FormError>}
-      {helperText && !error && !sourceError && <FormDescription>{helperText}</FormDescription>}
+      {inputOptionsError && !error && <FormError>{inputOptionsError}</FormError>}
+      {helperText && !error && !inputOptionsError && <FormDescription>{helperText}</FormDescription>}
     </FormItem>
   );
 };

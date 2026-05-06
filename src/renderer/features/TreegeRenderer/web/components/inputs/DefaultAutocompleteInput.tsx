@@ -22,7 +22,7 @@ const DefaultAutocompleteInput = ({
 }: InputRenderProps<"autocomplete">) => {
   const t = useTranslate();
   const [open, setOpen] = useState(false);
-  const { options, isLoading, error: sourceError } = useInputOptions(node);
+  const { options, isLoading, error: inputOptionsError } = useInputOptions(node);
   const triggerId = `${id}-trigger`;
   const errorId = `${id}-error`;
   const selectedOption = options.find((option) => option.value === value);
@@ -82,8 +82,8 @@ const DefaultAutocompleteInput = ({
         </PopoverContent>
       </Popover>
       {error && <FormError id={errorId}>{error}</FormError>}
-      {sourceError && !error && <FormError>{sourceError}</FormError>}
-      {helperText && !error && !sourceError && <FormDescription>{helperText}</FormDescription>}
+      {inputOptionsError && !error && <FormError>{inputOptionsError}</FormError>}
+      {helperText && !error && !inputOptionsError && <FormDescription>{helperText}</FormDescription>}
     </FormItem>
   );
 };

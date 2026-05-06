@@ -37,14 +37,15 @@ export const useInputOptions = (node: Node<InputNodeData>): UseInputOptionsResul
     fetched: null,
     isLoading: false,
   });
-  const { formValues, headers: globalHeaders } = useTreegeRendererContext();
+
+  const { formValues, headers } = useTreegeRendererContext();
   const source = node.data.optionsSource;
   const staticOptions = node.data.options;
   // Refs that mirror the latest props/context so the fetch effect can read
   // them without re-subscribing on every render.
   const sourceRef = useRef(source);
   const formValuesRef = useRef(formValues);
-  const globalHeadersRef = useRef(globalHeaders);
+  const globalHeadersRef = useRef(headers);
   const url = source?.url ?? "";
   const mapping = source?.mapping;
 
@@ -76,8 +77,8 @@ export const useInputOptions = (node: Node<InputNodeData>): UseInputOptionsResul
   useEffect(() => {
     sourceRef.current = source;
     formValuesRef.current = formValues;
-    globalHeadersRef.current = globalHeaders;
-  }, [source, formValues, globalHeaders]);
+    globalHeadersRef.current = headers;
+  }, [source, formValues, headers]);
 
   /**
    * Fetch the option list whenever the source becomes fetchable, the URL
