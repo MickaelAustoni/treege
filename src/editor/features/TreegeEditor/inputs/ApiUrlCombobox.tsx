@@ -63,7 +63,14 @@ const ApiUrlCombobox = ({ value, onChange, placeholder, children, ...inputProps 
               <Globe className="tg:h-4 tg:w-4" />
             </Button>
           </PopoverTrigger>
-          <PopoverContent align="end" className="tg:w-[28rem] tg:p-0">
+          <PopoverContent
+            align="end"
+            className="tg:w-md tg:p-0"
+            // ReactFlow attaches a global wheel handler on its canvas for pan/zoom.
+            // Even though Radix portals this content, the event bubbles up — stop
+            // it here so the routes list scrolls under the cursor.
+            onWheel={(event) => event.stopPropagation()}
+          >
             <Command>
               <CommandInput placeholder={t("editor.apiUrlCombobox.searchRoutes")} />
               <CommandList className="tg:max-h-72">
@@ -79,7 +86,7 @@ const ApiUrlCombobox = ({ value, onChange, placeholder, children, ...inputProps 
                         className="tg:flex tg:items-center tg:gap-2"
                       >
                         <span
-                          className={`tg:inline-flex tg:min-w-14 tg:justify-center tg:rounded tg:px-1.5 tg:py-0.5 tg:font-mono tg:text-[10px] tg:font-semibold ${METHOD_BADGE_COLOR[route.method]}`}
+                          className={`tg:inline-flex tg:min-w-14 tg:justify-center tg:rounded tg:px-1.5 tg:py-0.5 tg:font-mono tg:font-semibold tg:text-[10px] ${METHOD_BADGE_COLOR[route.method]}`}
                         >
                           {route.method}
                         </span>
