@@ -5,9 +5,9 @@ import NodeImageButton from "@/editor/features/TreegeEditor/nodes/components/Nod
 import NodeInputPreview from "@/editor/features/TreegeEditor/nodes/components/NodeInputPreview";
 import NodeLabelInput from "@/editor/features/TreegeEditor/nodes/components/NodeLabelInput";
 import NodeMoreMenu from "@/editor/features/TreegeEditor/nodes/components/NodeMoreMenu";
+import NodeOptions from "@/editor/features/TreegeEditor/nodes/components/NodeOptions";
+import NodeRequiredButton from "@/editor/features/TreegeEditor/nodes/components/NodeRequiredButton";
 import NodeTypeBadge from "@/editor/features/TreegeEditor/nodes/components/NodeTypeBadge";
-import OptionsEditor from "@/editor/features/TreegeEditor/nodes/components/OptionsEditor";
-import RequiredAsterisk from "@/editor/features/TreegeEditor/nodes/components/RequiredAsterisk";
 import NodeWrapper from "@/editor/features/TreegeEditor/nodes/layout/NodeWrapper";
 import { cn } from "@/shared/lib/utils";
 import { FlowNodeData, InputNodeData, UINodeData } from "@/shared/types/node";
@@ -31,7 +31,7 @@ const TreegeNode = (props: TreegeNodeProps) => {
       <div className="tg:absolute tg:top-2 tg:right-2 tg:flex tg:items-center tg:gap-0.5">
         {selected && inputData && !isSubmit && (
           <>
-            <RequiredAsterisk nodeId={id} required={inputData.required} />
+            <NodeRequiredButton nodeId={id} required={inputData.required} />
             <NodeImageButton nodeId={id} image={inputData.image} />
           </>
         )}
@@ -63,8 +63,8 @@ const TreegeNode = (props: TreegeNodeProps) => {
             <NodeTypeBadge nodeId={id} nodeType={type} subType={subType} />
           </div>
 
-          {/* Options editor */}
-          {inputData && <OptionsEditor nodeId={id} data={inputData} />}
+          {/* Options */}
+          {inputData && <NodeOptions nodeId={id} data={inputData} />}
         </>
       )}
 

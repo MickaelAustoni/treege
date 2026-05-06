@@ -5,12 +5,12 @@ import useTranslate from "@/editor/hooks/useTranslate";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/shared/components/ui/tooltip";
 import { cn } from "@/shared/lib/utils";
 
-interface RequiredAsteriskProps {
+interface NodeRequiredButtonProps {
   nodeId: string;
   required?: boolean;
 }
 
-const RequiredAsterisk = ({ nodeId, required }: RequiredAsteriskProps) => {
+const NodeRequiredButton = ({ nodeId, required }: NodeRequiredButtonProps) => {
   const { updateNodeData } = useFlowActions();
   const t = useTranslate();
 
@@ -40,4 +40,4 @@ const RequiredAsterisk = ({ nodeId, required }: RequiredAsteriskProps) => {
   );
 };
 
-export default RequiredAsterisk;
+export default NodeRequiredButton;

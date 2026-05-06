@@ -1,5 +1,5 @@
-import { Plus } from "lucide-react";
-import { FormEvent, KeyboardEvent, MouseEvent, useState } from "react";
+import { Globe, Plus } from "lucide-react";
+import { KeyboardEvent, MouseEvent, SubmitEvent, useState } from "react";
 import { useTreegeEditorContext } from "@/editor/context/TreegeEditorContext";
 import OptionImageField from "@/editor/features/TreegeEditor/inputs/OptionImageField";
 import useFlowActions from "@/editor/hooks/useFlowActions";
@@ -7,17 +7,29 @@ import useTranslate from "@/editor/hooks/useTranslate";
 import { Button } from "@/shared/components/ui/button";
 import { Input } from "@/shared/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/shared/components/ui/popover";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/shared/components/ui/tooltip";
 import { Language } from "@/shared/types/languages";
 import { FlowNodeData, InputNodeData, InputOption, UINodeData } from "@/shared/types/node";
 
-interface OptionsEditorProps {
+interface NodeOptionsProps {
   nodeId: string;
   data?: FlowNodeData | InputNodeData | UINodeData;
 }
 
 const OPTIONS_TYPES = ["radio", "select", "checkbox", "autocomplete"] as const;
 
-const OptionsEditor = ({ nodeId, data }: OptionsEditorProps) => {
+/**
+ * Returns a shortened URL suitable for inline display: just the path (and
+ * search string), stripping the protocol/host. Preserves template variables
+ * like `{{id}}` verbatim — uses a regex rather than `URL` to avoid encoding
+ * curly braces. Falls back to the raw value if no protocol is present.
+ */
+const shortenUrl = (url: string): string => {
+  const stripped = url.replace(/^[a-z][\w+.-]*:\/\/[^/]+/i, "");
+  return stripped || url;
+};
+
+const NodeOptions = ({ nodeId, data }: NodeOptionsProps) => {
   const [open, setOpen] = useState(false);
   const [labelDraft, setLabelDraft] = useState("");
   const [valueDraft, setValueDraft] = useState("");
@@ -28,14 +40,15 @@ const OptionsEditor = ({ nodeId, data }: OptionsEditorProps) => {
   const t = useTranslate();
   const dataType = data && "type" in data ? data.type : undefined;
   const hasOptions = dataType && OPTIONS_TYPES.includes(dataType as (typeof OPTIONS_TYPES)[number]);
+  const inputData = data as InputNodeData;
+  const options = inputData.options ?? [];
+  const optionsSourceUrl = inputData.optionsSource?.url;
+  const supportsImage = dataType === "radio";
+  const supportsDescription = dataType === "radio" || dataType === "checkbox";
 
   if (!hasOptions) {
     return null;
   }
-
-  const options = (data as InputNodeData).options ?? [];
-  const supportsImage = dataType === "radio";
-  const supportsDescription = dataType === "radio" || dataType === "checkbox";
 
   const resetDraft = () => {
     setLabelDraft("");
@@ -44,7 +57,7 @@ const OptionsEditor = ({ nodeId, data }: OptionsEditorProps) => {
     setDescriptionDraft("");
   };
 
-  const handleSubmit = (event?: FormEvent) => {
+  const handleSubmit = (event?: SubmitEvent) => {
     event?.preventDefault();
     const label = labelDraft.trim();
     const value = valueDraft.trim() || label;
@@ -79,6 +92,28 @@ const OptionsEditor = ({ nodeId, data }: OptionsEditorProps) => {
   };
 
   const stopPropagation = (event: MouseEvent) => event.stopPropagation();
+
+  /**
+   * When a dynamic source is configured, the static `options` array is ignored
+   * at runtime. Hide the static editor and show a discreet URL indicator so
+   * the user knows where the options come from. Editing the source itself
+   * happens in the side panel.
+   */
+  if (optionsSourceUrl) {
+    return (
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <div className="nodrag nopan tg:my-1 tg:flex tg:items-center tg:gap-1 tg:text-muted-foreground tg:text-xs">
+              <Globe className="tg:size-3 tg:shrink-0" />
+              <span className="tg:truncate">{shortenUrl(optionsSourceUrl)}</span>
+            </div>
+          </TooltipTrigger>
+          <TooltipContent side="bottom">{optionsSourceUrl}</TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    );
+  }
 
   return (
     <div className="nodrag nopan tg:my-1 tg:flex tg:flex-col tg:gap-0.5">
@@ -144,4 +179,4 @@ const OptionsEditor = ({ nodeId, data }: OptionsEditorProps) => {
   );
 };
 
-export default OptionsEditor;
+export default NodeOptions;

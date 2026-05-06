@@ -1,5 +1,5 @@
 import { Node } from "@xyflow/react";
-import { FormEvent, ReactNode } from "react";
+import { ReactNode, SubmitEvent } from "react";
 import { SerializableFile } from "@/renderer/utils/file";
 import { Flow, HttpHeader, InputNodeData, InputType, TreegeNodeData, UINodeData, UIType } from "@/shared/types/node";
 
@@ -143,7 +143,7 @@ export type TreegeRendererComponents = {
   /**
    * Custom form wrapper
    */
-  form?: (props: { children: ReactNode; onSubmit: (e: FormEvent) => void }) => ReactNode;
+  form?: (props: { children: ReactNode; onSubmit: (e: SubmitEvent) => void }) => ReactNode;
   /**
    * Custom submit button (supports both web and native variants)
    * Web variant: { label?: string; disabled?: boolean; ...otherHTMLAttributes }

@@ -1,4 +1,4 @@
-import { FormEvent, useCallback } from "react";
+import { SubmitEvent, useCallback } from "react";
 import { TreegeRendererProvider } from "@/renderer/context/TreegeRendererContext";
 import { useTreegeRenderer } from "@/renderer/features/TreegeRenderer/useTreegeRenderer";
 import DefaultFormWrapper from "@/renderer/features/TreegeRenderer/web/components/DefaultFormWrapper";
@@ -76,10 +76,10 @@ const TreegeRenderer = ({
   });
 
   /**
-   * Web-specific form submission handler with FormEvent and focus logic
+   * Web-specific form submission handler with SubmitEvent and focus logic
    */
   const handleFormSubmit = useCallback(
-    async (e: FormEvent) => {
+    async (e: SubmitEvent) => {
       e.preventDefault();
 
       // Call the shared submit logic
