@@ -59,11 +59,20 @@ export interface TreegeEditorProps {
    */
   extraMenuItems?: ExtraMenuItem[];
   /**
-   * Pre-loaded OpenAPI 3.x document used to power URL/route suggestions
-   * inside HTTP and Options-source forms, and to drive the Authorize flow.
-   * Users can also load one at runtime via the editor's "OpenAPI" button.
+   * OpenAPI 3.x source used to power URL/route suggestions inside HTTP and
+   * Options-source forms, and to drive the Authorize flow. Accepts either:
+   * - a pre-parsed `OpenApiDocument` object
+   * - a URL string (the editor fetches it on mount and toasts on failure)
+   *
+   * Users can still load one at runtime via the editor's "OpenAPI" button.
    */
-  openApi?: OpenApiDocument;
+  openApi?: OpenApiDocument | string;
+  /**
+   * Base URL used for OpenAPI route resolution. When set, it takes precedence
+   * over the document's `servers[0].url` — useful when the spec points at a
+   * different environment than the one to call (e.g. staging vs prod).
+   */
+  openApiBaseUrl?: string;
   /**
    * Global HTTP headers applied to in-editor requests (e.g. the "Detect
    * fields" button in `OptionsSourceForm`). Pass the same value you give to

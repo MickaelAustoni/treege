@@ -31,6 +31,8 @@ const EditorPanel = ({
   onHeadersChange: (headers: HttpHeader[]) => void;
 }) => {
   const apiKey = import.meta.env.VITE_AI_API_KEY ?? "";
+  const openApiUrl = import.meta.env.VITE_OPENAPI_URL || undefined;
+  const openApiBaseUrl = import.meta.env.VITE_OPENAPI_BASE_URL || undefined;
 
   return (
     <div className="tg:h-full tg:flex tg:flex-col">
@@ -43,6 +45,8 @@ const EditorPanel = ({
           onAuthorize={onAuthorize}
           headers={headers}
           onHeadersChange={onHeadersChange}
+          openApi={openApiUrl}
+          openApiBaseUrl={openApiBaseUrl}
           aiConfig={{
             apiKey,
           }}

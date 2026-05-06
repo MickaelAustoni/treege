@@ -1,6 +1,7 @@
-import { createContext, ReactNode, useContext, useMemo, useState } from "react";
+import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react";
+import { toast } from "sonner";
 import { ApiRoute, OpenApiDocument } from "@/editor/types/openapi";
-import { extractApiRoutes, getBaseUrl } from "@/editor/utils/openapi";
+import { extractApiRoutes, getBaseUrl, loadOpenApiDocument } from "@/editor/utils/openapi";
 
 /**
  * The exact input the user fed to the OpenAPI dialog last time it loaded
@@ -10,9 +11,13 @@ import { extractApiRoutes, getBaseUrl } from "@/editor/utils/openapi";
 export type OpenApiSourceInput = { mode: "url"; value: string } | { mode: "json"; value: string };
 
 interface OpenApiContextValue {
-  /** The currently loaded OpenAPI document, or `null` when none is set. */
+  /**
+   * The currently loaded OpenAPI document, or `null` when none is set.
+   */
   document: OpenApiDocument | null;
-  /** Memoized flat list of routes derived from `document`. */
+  /**
+   * Memoized flat list of routes derived from `document`.
+   */
   routes: ApiRoute[];
   /**
    * User-provided base URL that overrides the document's `servers[0].url`.
@@ -31,11 +36,17 @@ interface OpenApiContextValue {
    * before the user has loaded anything.
    */
   lastSourceInput: OpenApiSourceInput | null;
-  /** Replace the loaded document. Pass `null` to clear. */
+  /**
+   * Replace the loaded document. Pass `null` to clear.
+   */
   setDocument: (next: OpenApiDocument | null) => void;
-  /** Replace the base URL override. Pass `""` to clear. */
+  /**
+   * Replace the base URL override. Pass `""` to clear.
+   */
   setBaseUrlOverride: (next: string) => void;
-  /** Record the last source input the user used to load the document. */
+  /**
+   * Record the last source input the user used to load the document.
+   */
   setLastSourceInput: (next: OpenApiSourceInput | null) => void;
 }
 
@@ -54,7 +65,17 @@ const OpenApiContext = createContext<OpenApiContextValue | null>(null);
 
 interface OpenApiProviderProps {
   children: ReactNode;
-  initialDocument?: OpenApiDocument | null;
+  /**
+   * Initial OpenAPI source. Accepts either a pre-parsed document or a URL
+   * string — when a URL is given, the provider fetches it on mount and
+   * toasts on failure (matching the runtime behavior of the dialog).
+   */
+  initialDocument?: OpenApiDocument | string | null;
+  /**
+   * Initial base URL. When set, takes precedence over the document's
+   * `servers[0].url`. Empty string means "no override".
+   */
+  initialBaseUrl?: string;
 }
 
 /**
@@ -62,11 +83,15 @@ interface OpenApiProviderProps {
  * editor-local state (not persisted in the flow JSON), so reloading the
  * editor with a different consumer-supplied initial document is supported.
  */
-export const OpenApiProvider = ({ children, initialDocument }: OpenApiProviderProps) => {
-  const [document, setDocument] = useState<OpenApiDocument | null>(initialDocument ?? null);
-  const [baseUrlOverride, setBaseUrlOverride] = useState("");
-  const [lastSourceInput, setLastSourceInput] = useState<OpenApiSourceInput | null>(null);
+export const OpenApiProvider = ({ children, initialDocument, initialBaseUrl }: OpenApiProviderProps) => {
+  const [document, setDocument] = useState<OpenApiDocument | null>(typeof initialDocument === "object" ? (initialDocument ?? null) : null);
+  const [baseUrlOverride, setBaseUrlOverride] = useState(initialBaseUrl ?? "");
+  const [lastSourceInput, setLastSourceInput] = useState<OpenApiSourceInput | null>(
+    typeof initialDocument === "string" ? { mode: "url", value: initialDocument } : null,
+  );
+
   const routes = useMemo(() => (document ? extractApiRoutes(document) : []), [document]);
+
   const baseUrl = useMemo(() => {
     const trimmedOverride = baseUrlOverride.trim().replace(/\/$/, "");
     if (trimmedOverride) {
@@ -88,6 +113,33 @@ export const OpenApiProvider = ({ children, initialDocument }: OpenApiProviderPr
     }),
     [baseUrl, baseUrlOverride, document, lastSourceInput, routes],
   );
+
+  /**
+   * Auto-load the document when the consumer provided a URL. Runs once per
+   * distinct URL — if the prop changes at runtime we re-fetch.
+   */
+  useEffect(() => {
+    if (typeof initialDocument !== "string") {
+      return;
+    }
+    const url = initialDocument;
+    let cancelled = false;
+    loadOpenApiDocument(url)
+      .then((doc) => {
+        if (!cancelled) {
+          setDocument(doc);
+          setLastSourceInput({ mode: "url", value: url });
+        }
+      })
+      .catch((error: unknown) => {
+        if (!cancelled) {
+          toast.error(error instanceof Error ? error.message : String(error));
+        }
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [initialDocument]);
 
   return <OpenApiContext.Provider value={value}>{children}</OpenApiContext.Provider>;
 };
