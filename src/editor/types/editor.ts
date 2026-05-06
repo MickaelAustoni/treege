@@ -1,7 +1,8 @@
 import { Edge, Node } from "@xyflow/react";
 import { ReactNode } from "react";
 import { AIConfig } from "@/editor/types/ai";
-import { Flow } from "@/shared/types/node";
+import { OpenApiDocument } from "@/editor/types/openapi";
+import { Flow, HttpHeader } from "@/shared/types/node";
 
 export interface ExtraMenuItem {
   /**
@@ -57,4 +58,17 @@ export interface TreegeEditorProps {
    * Extra menu items to append to the "more" dropdown of the actions panel.
    */
   extraMenuItems?: ExtraMenuItem[];
+  /**
+   * Pre-loaded OpenAPI 3.x document used to power URL/route suggestions
+   * inside HTTP and Options-source forms, and to drive the Authorize flow.
+   * Users can also load one at runtime via the editor's "OpenAPI" button.
+   */
+  openApi?: OpenApiDocument;
+  /**
+   * Called when the user submits the Authorize dialog. Receives the resulting
+   * HTTP headers (`Authorization`, API key headers…). The consumer is expected
+   * to forward those headers to `TreegeRenderer` (or `TreegeConfigProvider`)
+   * via its `headers` prop so every request issued by the form is authenticated.
+   */
+  onAuthorize?: (headers: HttpHeader[]) => void;
 }

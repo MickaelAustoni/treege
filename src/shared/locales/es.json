@@ -15,6 +15,7 @@
   "editor": {
     "actionsPanel": {
       "addNode": "Agregar elemento",
+      "authorize": "Authorize",
       "clear": "Limpiar",
       "clearSuccess": "¡Flujo limpiado!",
       "clearSuccessDesc": "Todos los nodos y aristas han sido eliminados.",
@@ -28,6 +29,7 @@
       "importSuccessDesc": "El flujo se ha importado correctamente.",
       "invalidJson": "Archivo JSON inválido.",
       "invalidJsonDesc": "El archivo debe contener matrices de nodos y aristas.",
+      "openApi": "OpenAPI",
       "parseError": "Error al analizar el archivo JSON.",
       "parseErrorDesc": "Intenta corregir el archivo e importarlo nuevamente."
     },
@@ -50,6 +52,20 @@
       "title": "Generar flujo con IA",
       "titleDescription": "Describa el formulario o árbol de decisión que desea crear, y la IA lo generará por usted.",
       "unknownError": "Error desconocido"
+    },
+    "apiUrlCombobox": {
+      "browseRoutes": "Browse OpenAPI routes",
+      "noRoutes": "No matching route",
+      "searchRoutes": "Search by method, path, or summary"
+    },
+    "authorizeDialog": {
+      "apiKeyLabel": "API key",
+      "apply": "Apply",
+      "bearerLabel": "Bearer token",
+      "clear": "Clear",
+      "description": "Authenticate against the API to forward credentials to every request issued by the form.",
+      "noSchemes": "No supported security schemes are declared in this OpenAPI document.",
+      "title": "Authorize"
     },
     "changeNodeTypeDialog": {
       "description": "Este nodo tiene varias ramas salientes. El nuevo tipo solo admite una. Elige qué rama conservar; las demás serán eliminadas.",
@@ -208,6 +224,20 @@
       "deleteNodeConfirm": "¿Estás seguro de que quieres eliminar este nodo?",
       "deleteNodeSuccess": "Nodo eliminado exitosamente",
       "editNode": "Editar nodo"
+    },
+    "openApiDialog": {
+      "clear": "Clear",
+      "cleared": "OpenAPI cleared.",
+      "description": "Provide an OpenAPI 3.x document to power URL suggestions and Authorize.",
+      "emptyInput": "Please provide a URL or paste a JSON document.",
+      "jsonLabel": "Paste your OpenAPI JSON",
+      "load": "Load",
+      "loadFailed": "Failed to load OpenAPI document",
+      "loadSuccess": "OpenAPI loaded.",
+      "modeJson": "Paste JSON",
+      "modeUrl": "From URL",
+      "title": "OpenAPI source",
+      "urlLabel": "OpenAPI document URL"
     },
     "optionsSourceForm": {
       "descriptionField": "Description",

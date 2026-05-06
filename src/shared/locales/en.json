@@ -15,6 +15,7 @@
   "editor": {
     "actionsPanel": {
       "addNode": "Add Element",
+      "authorize": "Authorize",
       "clear": "Clear",
       "clearSuccess": "Flow cleared!",
       "clearSuccessDesc": "All nodes and edges have been removed.",
@@ -28,6 +29,7 @@
       "importSuccessDesc": "The flow has been imported successfully.",
       "invalidJson": "Invalid JSON file.",
       "invalidJsonDesc": "The file must contain nodes and edges arrays.",
+      "openApi": "OpenAPI",
       "parseError": "Error parsing JSON file.",
       "parseErrorDesc": "Try to fix the file and import it again."
     },
@@ -50,6 +52,20 @@
       "title": "Generate Flow with AI",
       "titleDescription": "Describe the form or decision tree you want to create, and AI will generate it for you.",
       "unknownError": "Unknown error occurred"
+    },
+    "apiUrlCombobox": {
+      "browseRoutes": "Browse OpenAPI routes",
+      "noRoutes": "No matching route",
+      "searchRoutes": "Search by method, path, or summary"
+    },
+    "authorizeDialog": {
+      "apiKeyLabel": "API key",
+      "apply": "Apply",
+      "bearerLabel": "Bearer token",
+      "clear": "Clear",
+      "description": "Authenticate against the API to forward credentials to every request issued by the form.",
+      "noSchemes": "No supported security schemes are declared in this OpenAPI document.",
+      "title": "Authorize"
     },
     "changeNodeTypeDialog": {
       "description": "This node has several outgoing branches. The new type only supports one. Choose which branch to keep; the others will be removed.",
@@ -208,6 +224,20 @@
       "deleteNodeConfirm": "Are you sure you want to delete this node?",
       "deleteNodeSuccess": "Node deleted successfully",
       "editNode": "Edit node"
+    },
+    "openApiDialog": {
+      "clear": "Clear",
+      "cleared": "OpenAPI cleared.",
+      "description": "Provide an OpenAPI 3.x document to power URL suggestions and Authorize.",
+      "emptyInput": "Please provide a URL or paste a JSON document.",
+      "jsonLabel": "Paste your OpenAPI JSON",
+      "load": "Load",
+      "loadFailed": "Failed to load OpenAPI document",
+      "loadSuccess": "OpenAPI loaded.",
+      "modeJson": "Paste JSON",
+      "modeUrl": "From URL",
+      "title": "OpenAPI source",
+      "urlLabel": "OpenAPI document URL"
     },
     "optionsSourceForm": {
       "descriptionField": "Description",

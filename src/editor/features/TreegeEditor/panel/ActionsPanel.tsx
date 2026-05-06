@@ -1,10 +1,13 @@
 import { type Edge, type Node, Panel, useEdges, useNodes, useReactFlow } from "@xyflow/react";
-import { ArrowRightFromLine, Copy, Download, EllipsisVertical, Plus, Save, Trash2 } from "lucide-react";
+import { ArrowRightFromLine, Copy, Download, EllipsisVertical, FileJson, Lock, Plus, Save, Trash2 } from "lucide-react";
 import { nanoid } from "nanoid";
-import { ChangeEvent, useCallback, useEffect, useRef } from "react";
+import { ChangeEvent, useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { DEFAULT_NODE } from "@/editor/constants/defaultNode";
+import { useOpenApi } from "@/editor/context/OpenApiContext";
 import { useTreegeEditorContext } from "@/editor/context/TreegeEditorContext";
+import AuthorizeDialog from "@/editor/features/TreegeEditor/dialogs/AuthorizeDialog";
+import OpenApiDialog from "@/editor/features/TreegeEditor/dialogs/OpenApiDialog";
 import { AIGeneratorDialog } from "@/editor/features/TreegeEditor/panel/AIGeneratorDialog";
 import useTranslate from "@/editor/hooks/useTranslate";
 import { ExtraMenuItem } from "@/editor/types/editor";
@@ -18,18 +21,22 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/shared/components/ui/dropdown-menu";
-import { Flow } from "@/shared/types/node";
+import { Flow, HttpHeader } from "@/shared/types/node";
 
 export interface ActionsPanelProps {
   onExportJson?: (data: Flow) => void;
   onSave?: (data: Flow) => void;
   extraMenuItems?: ExtraMenuItem[];
+  onAuthorize?: (headers: HttpHeader[]) => void;
 }
 
 const uniqueId = nanoid();
 
-const ActionsPanel = ({ onExportJson, onSave, extraMenuItems }: ActionsPanelProps) => {
+const ActionsPanel = ({ onExportJson, onSave, extraMenuItems, onAuthorize }: ActionsPanelProps) => {
+  const [openApiDialogOpen, setOpenApiDialogOpen] = useState(false);
+  const [authorizeDialogOpen, setAuthorizeDialogOpen] = useState(false);
   const { flowId, setFlowId, aiConfig } = useTreegeEditorContext();
+  const { document: openApiDocument } = useOpenApi();
   const { setNodes, setEdges, addNodes, screenToFlowPosition } = useReactFlow();
   const id = flowId || uniqueId;
   const nodes = useNodes();
@@ -172,6 +179,12 @@ const ActionsPanel = ({ onExportJson, onSave, extraMenuItems }: ActionsPanelProp
     <Panel position="top-right" className="tg:flex tg:gap-2">
       <AIGeneratorDialog aiConfig={aiConfig} onGenerate={handleAIGenerate} />
 
+      {openApiDocument && (
+        <Button variant="outline" size="sm" onClick={() => setAuthorizeDialogOpen(true)}>
+          <Lock /> <span className="tg:hidden tg:md:inline">{t("editor.actionsPanel.authorize")}</span>
+        </Button>
+      )}
+
       <Button variant="outline" size="sm" onClick={handleAddNode}>
         <Plus /> <span className="tg:hidden tg:md:inline">{t("editor.actionsPanel.addNode")}</span>
       </Button>
@@ -210,6 +223,9 @@ const ActionsPanel = ({ onExportJson, onSave, extraMenuItems }: ActionsPanelProp
             <DropdownMenuItem onClick={handleExport}>
               <ArrowRightFromLine /> {t("editor.actionsPanel.exportJson")}
             </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setOpenApiDialogOpen(true)}>
+              <FileJson /> {t("editor.actionsPanel.openApi")}
+            </DropdownMenuItem>
           </DropdownMenuGroup>
 
           {extraMenuItems && extraMenuItems.length > 0 && (
@@ -241,6 +257,9 @@ const ActionsPanel = ({ onExportJson, onSave, extraMenuItems }: ActionsPanelProp
       </DropdownMenu>
 
       <input type="file" accept="application/json,.json" className="tg:hidden" ref={inputFileRef} onChange={handleImport} />
+
+      <OpenApiDialog open={openApiDialogOpen} onOpenChange={setOpenApiDialogOpen} />
+      <AuthorizeDialog open={authorizeDialogOpen} onOpenChange={setAuthorizeDialogOpen} onAuthorize={onAuthorize} />
     </Panel>
   );
 };

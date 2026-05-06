@@ -15,6 +15,7 @@
   "editor": {
     "actionsPanel": {
       "addNode": "Ajouter un élément",
+      "authorize": "Autoriser",
       "clear": "Supprimer",
       "clearSuccess": "Flux vidé !",
       "clearSuccessDesc": "Tous les nœuds et arêtes ont été supprimés.",
@@ -28,6 +29,7 @@
       "importSuccessDesc": "Le flux a été importé avec succès.",
       "invalidJson": "Fichier JSON invalide.",
       "invalidJsonDesc": "Le fichier doit contenir des tableaux de nœuds et d'arêtes.",
+      "openApi": "OpenAPI",
       "parseError": "Erreur d'analyse du fichier JSON.",
       "parseErrorDesc": "Essayez de corriger le fichier et de l'importer à nouveau."
     },
@@ -50,6 +52,20 @@
       "title": "Générer un flux avec l'IA",
       "titleDescription": "Décrivez le formulaire ou l'arbre de décision que vous souhaitez créer, et l'IA le générera pour vous.",
       "unknownError": "Erreur inconnue"
+    },
+    "apiUrlCombobox": {
+      "browseRoutes": "Parcourir les routes OpenAPI",
+      "noRoutes": "Aucune route correspondante",
+      "searchRoutes": "Rechercher par méthode, chemin ou résumé"
+    },
+    "authorizeDialog": {
+      "apiKeyLabel": "Clé d'API",
+      "apply": "Appliquer",
+      "bearerLabel": "Jeton Bearer",
+      "clear": "Effacer",
+      "description": "Authentifiez-vous auprès de l'API pour transmettre les identifiants à chaque requête émise par le formulaire.",
+      "noSchemes": "Aucun schéma de sécurité supporté n'est déclaré dans ce document OpenAPI.",
+      "title": "Autoriser"
     },
     "changeNodeTypeDialog": {
       "description": "Ce nœud possède plusieurs branches sortantes. Le nouveau type n'en supporte qu'une seule. Choisissez la branche à conserver ; les autres seront supprimées.",
@@ -208,6 +224,20 @@
       "deleteNodeConfirm": "Êtes-vous sûr de vouloir supprimer ce nœud ?",
       "deleteNodeSuccess": "Nœud supprimé avec succès",
       "editNode": "Modifier le nœud"
+    },
+    "openApiDialog": {
+      "clear": "Effacer",
+      "cleared": "OpenAPI effacé.",
+      "description": "Fournissez un document OpenAPI 3.x pour activer les suggestions d'URL et l'autorisation.",
+      "emptyInput": "Veuillez fournir une URL ou coller un document JSON.",
+      "jsonLabel": "Collez votre OpenAPI JSON",
+      "load": "Charger",
+      "loadFailed": "Échec du chargement du document OpenAPI",
+      "loadSuccess": "OpenAPI chargé.",
+      "modeJson": "Coller JSON",
+      "modeUrl": "Depuis URL",
+      "title": "Source OpenAPI",
+      "urlLabel": "URL du document OpenAPI"
     },
     "optionsSourceForm": {
       "descriptionField": "Description",

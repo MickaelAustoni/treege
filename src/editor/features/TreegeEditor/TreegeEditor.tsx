@@ -4,6 +4,7 @@ import Logo from "@/editor/components/branding/Logo";
 import EditorStyles from "@/editor/components/styles/EditorStyles";
 import { EDGE_TYPES } from "@/editor/constants/edgeTypes";
 import { NODE_TYPES } from "@/editor/constants/nodeTypes";
+import { OpenApiProvider } from "@/editor/context/OpenApiContext";
 import { TreegeEditorProvider } from "@/editor/context/TreegeEditorContext";
 import MiniMapControl from "@/editor/features/TreegeEditor/controls/MiniMapControl";
 import ChangeNodeTypeDialog from "@/editor/features/TreegeEditor/dialogs/ChangeNodeTypeDialog";
@@ -18,7 +19,7 @@ import { ThemeProvider } from "@/shared/context/ThemeContext";
 import { useMediaQuery } from "@/shared/hooks/useMediaQuery";
 import { cn } from "@/shared/lib/utils";
 
-const Flow = ({ flow, onExportJson, onSave, theme, className, extraMenuItems }: TreegeEditorProps) => {
+const Flow = ({ flow, onExportJson, onSave, theme, className, extraMenuItems, onAuthorize }: TreegeEditorProps) => {
   const { onConnect, onConnectEnd, onEdgesDelete, isValidConnection } = useFlowConnections();
   const [showMiniMap, setShowMiniMap] = useState(false);
   const isMobile = useMediaQuery("mobile");
@@ -42,7 +43,7 @@ const Flow = ({ flow, onExportJson, onSave, theme, className, extraMenuItems }: 
     >
       <AutoLayout />
       <Background gap={10} variant={BackgroundVariant.Dots} />
-      <ActionsPanel onExportJson={onExportJson} onSave={onSave} extraMenuItems={extraMenuItems} />
+      <ActionsPanel onExportJson={onExportJson} onSave={onSave} extraMenuItems={extraMenuItems} onAuthorize={onAuthorize} />
       <Logo theme={theme} />
       {showMiniMap && <MiniMap />}
       <Controls>
@@ -55,15 +56,34 @@ const Flow = ({ flow, onExportJson, onSave, theme, className, extraMenuItems }: 
   );
 };
 
-const TreegeEditor = ({ flow, onExportJson, onSave, theme = "dark", language = "en", aiConfig, extraMenuItems }: TreegeEditorProps) => (
+const TreegeEditor = ({
+  flow,
+  onExportJson,
+  onSave,
+  theme = "dark",
+  language = "en",
+  aiConfig,
+  extraMenuItems,
+  openApi,
+  onAuthorize,
+}: TreegeEditorProps) => (
   <>
     <EditorStyles />
     <ThemeProvider defaultTheme={theme} storageKey="treege-editor-theme" theme={theme}>
       <TreegeEditorProvider value={{ aiConfig, flowId: flow?.id, language }}>
-        <Toaster position="bottom-center" />
-        <ReactFlowProvider>
-          <Flow onExportJson={onExportJson} onSave={onSave} flow={flow} theme={theme} extraMenuItems={extraMenuItems} />
-        </ReactFlowProvider>
+        <OpenApiProvider initialDocument={openApi}>
+          <Toaster position="bottom-center" />
+          <ReactFlowProvider>
+            <Flow
+              onExportJson={onExportJson}
+              onSave={onSave}
+              flow={flow}
+              theme={theme}
+              extraMenuItems={extraMenuItems}
+              onAuthorize={onAuthorize}
+            />
+          </ReactFlowProvider>
+        </OpenApiProvider>
       </TreegeEditorProvider>
     </ThemeProvider>
   </>

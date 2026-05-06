@@ -1,6 +1,7 @@
 import { Loader2, Plus, Sparkles, X } from "lucide-react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
+import ApiUrlCombobox from "@/editor/features/TreegeEditor/inputs/ApiUrlCombobox";
 import useTranslate from "@/editor/hooks/useTranslate";
 import { extractOptionsFromResponse, getValueByPath, makeHttpRequest } from "@/renderer/utils/http";
 import { Button } from "@/shared/components/ui/button";
@@ -195,9 +196,9 @@ const OptionsSourceForm = ({ value, onChange }: OptionsSourceFormProps) => {
         <>
           <FormItem>
             <Label className="tg:text-xs">{t("editor.httpConfigForm.apiUrl")}</Label>
-            <Input
+            <ApiUrlCombobox
               value={url}
-              onChange={({ target }) => update({ url: target.value })}
+              onChange={(nextUrl, nextMethod) => update(nextMethod ? { method: nextMethod, url: nextUrl } : { url: nextUrl })}
               placeholder={t("editor.httpConfigForm.apiUrlPlaceholder")}
             />
           </FormItem>

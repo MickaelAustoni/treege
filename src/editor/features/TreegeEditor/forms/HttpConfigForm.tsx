@@ -1,5 +1,6 @@
 import { useForm } from "@tanstack/react-form";
 import { Plus, Variable, X } from "lucide-react";
+import ApiUrlCombobox from "@/editor/features/TreegeEditor/inputs/ApiUrlCombobox";
 import useAvailableParentFields from "@/editor/hooks/useAvailableParentFields";
 import useNodesSelection from "@/editor/hooks/useNodesSelection";
 import useTranslate from "@/editor/hooks/useTranslate";
@@ -25,7 +26,7 @@ const HttpConfigForm = ({ value, onChange }: HttpConfigFormProps) => {
   const t = useTranslate();
   const availableParentFields = useAvailableParentFields(selectedNode?.id);
 
-  const { handleSubmit, Field, Subscribe } = useForm({
+  const { handleSubmit, Field, Subscribe, setFieldValue } = useForm({
     defaultValues: {
       body: value?.body || "",
       fetchOnMount: value?.fetchOnMount ?? !value?.searchParam,
@@ -60,16 +61,19 @@ const HttpConfigForm = ({ value, onChange }: HttpConfigFormProps) => {
           children={(field) => (
             <FormItem>
               <Label htmlFor={field.name}>{t("editor.httpConfigForm.apiUrl")}</Label>
-              <div className="tg:flex tg:gap-2">
-                <Input
-                  id={field.name}
-                  name={field.name}
-                  value={field.state.value}
-                  onBlur={field.handleBlur}
-                  onChange={({ target }) => field.handleChange(target.value)}
-                  placeholder={t("editor.httpConfigForm.apiUrlPlaceholder")}
-                  className="tg:flex-1"
-                />
+              <ApiUrlCombobox
+                id={field.name}
+                name={field.name}
+                value={field.state.value ?? ""}
+                onBlur={field.handleBlur}
+                placeholder={t("editor.httpConfigForm.apiUrlPlaceholder")}
+                onChange={(nextUrl, nextMethod) => {
+                  field.handleChange(nextUrl);
+                  if (nextMethod) {
+                    setFieldValue("method", nextMethod);
+                  }
+                }}
+              >
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button type="button" variant="outline" size="icon">
@@ -98,7 +102,7 @@ const HttpConfigForm = ({ value, onChange }: HttpConfigFormProps) => {
                     )}
                   </DropdownMenuContent>
                 </DropdownMenu>
-              </div>
+              </ApiUrlCombobox>
               <FormDescription>{t("editor.httpConfigForm.apiUrlDesc")}</FormDescription>
             </FormItem>
           )}

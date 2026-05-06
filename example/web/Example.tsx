@@ -83,6 +83,7 @@ const EditorPanel = ({
   language,
   onTogglePreview,
   onOpenHeaders,
+  onAuthorize,
 }: {
   flow?: Flow;
   onSave: (data: Flow) => void;
@@ -90,6 +91,7 @@ const EditorPanel = ({
   language: Language;
   onTogglePreview: () => void;
   onOpenHeaders: () => void;
+  onAuthorize: (headers: HttpHeader[]) => void;
 }) => {
   const apiKey = import.meta.env?.VITE_AI_API_KEY || "";
 
@@ -101,6 +103,7 @@ const EditorPanel = ({
           flow={flow}
           theme={theme}
           language={language}
+          onAuthorize={onAuthorize}
           aiConfig={{
             apiKey,
           }}
@@ -228,15 +231,35 @@ const RendererPanel = ({
   );
 };
 
+/**
+ * Merge user-managed global headers with credentials emitted by the editor's
+ * Authorize dialog. Auth headers take precedence on key collision
+ * (case-insensitive) so a fresh "Authorize" overrides any matching key the
+ * user might have set manually.
+ */
+const mergeHeaders = (base: HttpHeader[], overrides: HttpHeader[]): HttpHeader[] => {
+  const out: HttpHeader[] = [];
+  const seen = new Set<string>();
+  for (const header of [...overrides, ...base]) {
+    const key = header.key.toLowerCase();
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push(header);
+  }
+  return out;
+};
+
 const Layout = ({ flow }: { flow?: Flow }) => {
   const [savedFlow, setSavedFlow] = useState<Flow | null>(null);
   const [theme, setTheme] = useState<"light" | "dark">("dark");
   const [language, setLanguage] = useState<Language>("en");
   const [showPreview, setShowPreview] = useState<boolean | null>(null);
   const [headers, setHeaders] = useState<HttpHeader[]>([]);
+  const [authHeaders, setAuthHeaders] = useState<HttpHeader[]>([]);
   const [headersDialogOpen, setHeadersDialogOpen] = useState(false);
   const isDesktop = useMediaQuery("desktop");
   const previewOpen = showPreview ?? isDesktop;
+  const mergedHeaders = mergeHeaders(headers, authHeaders);
 
   const handleSave = (flowData: Flow) => {
     setSavedFlow(flowData);
@@ -254,6 +277,7 @@ const Layout = ({ flow }: { flow?: Flow }) => {
           language={language}
           onTogglePreview={togglePreview}
           onOpenHeaders={() => setHeadersDialogOpen(true)}
+          onAuthorize={setAuthHeaders}
         />
       </div>
 
@@ -265,7 +289,7 @@ const Layout = ({ flow }: { flow?: Flow }) => {
             setTheme={setTheme}
             language={language}
             setLanguage={setLanguage}
-            headers={headers}
+            headers={mergedHeaders}
           />
         </div>
       )}
@@ -280,7 +304,7 @@ const Layout = ({ flow }: { flow?: Flow }) => {
             setTheme={setTheme}
             language={language}
             setLanguage={setLanguage}
-            headers={headers}
+            headers={mergedHeaders}
           />
         </SheetContent>
       </Sheet>
