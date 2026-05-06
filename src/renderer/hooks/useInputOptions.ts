@@ -1,12 +1,10 @@
 import { Node } from "@xyflow/react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useTreegeRendererContext } from "@/renderer/context/TreegeRendererContext";
 import { extractOptionsFromResponse, makeHttpRequest, mergeHttpHeaders, replaceTemplateVariables } from "@/renderer/utils/http";
-import { HttpHeader, InputNodeData, InputOption } from "@/shared/types/node";
+import { HttpHeader, InputNodeData, InputOption, OptionsSourceMapping } from "@/shared/types/node";
 
 const TEMPLATE_VAR_REGEX = /\{\{([\w-]+)}}/g;
-
-const extractTemplateVars = (template: string): string[] => Array.from(template.matchAll(TEMPLATE_VAR_REGEX), (m) => m[1]);
 
 interface UseInputOptionsResult {
   /**
@@ -21,6 +19,22 @@ interface UseInputOptionsResult {
   error: string | null;
 }
 
+type HttpMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
+
+/**
+ * The user-facing `OptionsSource` config with everything resolved and
+ * merged: template variables substituted, global + field-level headers
+ * merged (field wins), default method applied. Ready to be sent as-is.
+ */
+interface ResolvedOptionsSource {
+  url: string;
+  method: HttpMethod;
+  headers: HttpHeader[];
+  body: string | undefined;
+  responsePath: string | undefined;
+  mapping: OptionsSourceMapping;
+}
+
 /**
  * Resolves the options for an option-based input (radio, checkbox, select,
  * autocomplete). If the node declares an `optionsSource`, options are fetched
@@ -29,7 +43,9 @@ interface UseInputOptionsResult {
  * the first successful fetch, or on error, falls back to the static
  * `options` array (if any).
  *
- * Re-fetches when the URL or its template variable values change.
+ * The fetch plan is computed once and serialized to JSON. The fetch effect
+ * keys off this string: changes that don't affect the actual request (e.g.
+ * an unrelated form field) produce the same JSON and don't re-trigger.
  */
 export const useInputOptions = (node: Node<InputNodeData>): UseInputOptionsResult => {
   const [state, setState] = useState<{ fetched: InputOption[] | null; isLoading: boolean; error: string | null }>({
@@ -38,91 +54,74 @@ export const useInputOptions = (node: Node<InputNodeData>): UseInputOptionsResul
     isLoading: false,
   });
 
-  const { formValues, headers } = useTreegeRendererContext();
+  const { formValues, headers: globalHeaders } = useTreegeRendererContext();
   const source = node.data.optionsSource;
   const staticOptions = node.data.options;
-  // Refs that mirror the latest props/context so the fetch effect can read
-  // them without re-subscribing on every render.
-  const sourceRef = useRef(source);
-  const formValuesRef = useRef(formValues);
-  const globalHeadersRef = useRef(headers);
-  const url = source?.url ?? "";
-  const mapping = source?.mapping;
 
   /**
-   * Stable string that changes only when the URL's template var values change.
-   * Used as a re-trigger signal for the fetch effect.
+   * Build a fully-resolved fetch plan, serialized as JSON. Returns `null`
+   * when the source isn't configured or any URL template variable is empty.
+   * The string identity changes only when the resulting HTTP request would
+   * actually differ — that's what makes it a clean effect dependency.
    */
-  const templateVarValuesKey = useMemo(() => {
-    const vars = extractTemplateVars(url);
-    return vars.map((name) => `${name}:${String(formValues[name] ?? "")}`).join("|");
-  }, [url, formValues]);
-
-  const canFetch = useMemo(() => {
-    if (!(url && mapping?.valueField && mapping?.labelField)) {
-      return false;
+  const resolvedSourceJson = useMemo<string | null>(() => {
+    if (!(source?.url && source.mapping?.valueField && source.mapping?.labelField)) {
+      return null;
     }
-    const vars = extractTemplateVars(url);
-    return vars.every((name) => {
+
+    const vars = Array.from(source.url.matchAll(TEMPLATE_VAR_REGEX), (m) => m[1]);
+    const allFilled = vars.every((name) => {
       const value = formValues[name];
       return value !== undefined && value !== null && value !== "";
     });
-  }, [url, mapping?.valueField, mapping?.labelField, formValues]);
+    if (!allFilled) {
+      return null;
+    }
+
+    const replaceHeaderVars = (header: HttpHeader): HttpHeader => ({
+      key: header.key,
+      value: replaceTemplateVariables(header.value, formValues),
+    });
+
+    const method = source.method ?? "GET";
+    const resolved: ResolvedOptionsSource = {
+      body:
+        source.body && ["POST", "PUT", "PATCH"].includes(method)
+          ? replaceTemplateVariables(source.body, formValues, { json: true })
+          : undefined,
+      headers: mergeHttpHeaders(globalHeaders?.map(replaceHeaderVars), source.headers?.map(replaceHeaderVars)),
+      mapping: source.mapping,
+      method,
+      responsePath: source.responsePath,
+      url: replaceTemplateVariables(source.url, formValues, { encode: true }),
+    };
+
+    return JSON.stringify(resolved);
+  }, [source, formValues, globalHeaders]);
 
   /**
-   * Mirror the latest source/formValues/globalHeaders into refs whenever
-   * any of them changes, so the async `run` below always reads fresh values
-   * without forcing a re-subscription of the fetch effect.
+   * Fetch options whenever the plan's content changes. Aborts any in-flight
+   * request on cleanup so a quick succession of changes doesn't race.
    */
   useEffect(() => {
-    sourceRef.current = source;
-    formValuesRef.current = formValues;
-    globalHeadersRef.current = headers;
-  }, [source, formValues, headers]);
-
-  /**
-   * Fetch the option list whenever the source becomes fetchable, the URL
-   * changes, or any template variable value referenced in the URL changes.
-   * Replaces template variables in URL/body/headers, merges global +
-   * field-level headers (field wins), and aborts any in-flight request when
-   * the effect cleans up.
-   *
-   * `url` and `templateVarValuesKey` are intentional re-trigger signals: the
-   * body reads everything via refs, but we need a refetch when the URL changes
-   * or when template variable values change, even if `canFetch` stays true.
-   */
-  // biome-ignore lint/correctness/useExhaustiveDependencies: trigger-only deps
-  useEffect(() => {
-    if (!canFetch) {
+    if (!resolvedSourceJson) {
       setState({ error: null, fetched: null, isLoading: false });
       return;
     }
 
+    const resolved = JSON.parse(resolvedSourceJson);
     const controller = new AbortController();
+
     setState((prev) => ({ ...prev, error: null, isLoading: true }));
 
-    const run = async () => {
-      const currentSource = sourceRef.current;
-      if (!(currentSource?.url && currentSource.mapping)) {
-        return;
-      }
-      const currentFormValues = formValuesRef.current;
-      const currentGlobalHeaders = globalHeadersRef.current;
-
-      const replaceVars = (header: HttpHeader): HttpHeader => ({
-        key: header.key,
-        value: replaceTemplateVariables(header.value, currentFormValues),
+    (async () => {
+      const result = await makeHttpRequest({
+        body: resolved.body,
+        headers: resolved.headers,
+        method: resolved.method,
+        signal: controller.signal,
+        url: resolved.url,
       });
-
-      const requestUrl = replaceTemplateVariables(currentSource.url, currentFormValues, { encode: true });
-      const headers = mergeHttpHeaders(currentGlobalHeaders?.map(replaceVars), currentSource.headers?.map(replaceVars));
-      const method = currentSource.method ?? "GET";
-      const body =
-        currentSource.body && ["POST", "PUT", "PATCH"].includes(method)
-          ? replaceTemplateVariables(currentSource.body, currentFormValues, { json: true })
-          : undefined;
-
-      const result = await makeHttpRequest({ body, headers, method, signal: controller.signal, url: requestUrl });
 
       if (controller.signal.aborted) {
         return;
@@ -133,13 +132,12 @@ export const useInputOptions = (node: Node<InputNodeData>): UseInputOptionsResul
         return;
       }
 
-      const fetched = extractOptionsFromResponse(result.data, currentSource.responsePath, currentSource.mapping);
+      const fetched = extractOptionsFromResponse(result.data, resolved.responsePath, resolved.mapping);
       setState({ error: null, fetched, isLoading: false });
-    };
+    })();
 
-    void run();
     return () => controller.abort();
-  }, [canFetch, templateVarValuesKey, url]);
+  }, [resolvedSourceJson]);
 
   const options = state.fetched ?? staticOptions ?? [];
 
