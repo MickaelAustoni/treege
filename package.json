@@ -2,7 +2,7 @@
   "name": "treege",
   "description": "Powerful form generator",
   "license": "ISC",
-  "version": "3.0.0-beta.45",
+  "version": "3.0.0-beta.46",
   "type": "module",
   "types": "./dist/main.d.ts",
   "module": "./dist/main.js",
