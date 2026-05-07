@@ -1,6 +1,6 @@
 import { useForm } from "@tanstack/react-form";
 import { BaseEdge, Edge, EdgeLabelRenderer, EdgeProps, getBezierPath, useReactFlow } from "@xyflow/react";
-import { Plus, Waypoints, X } from "lucide-react";
+import { Plus, Trash2, Waypoints, X } from "lucide-react";
 import { MouseEvent, memo, useState } from "react";
 import useAvailableParentFields from "@/editor/hooks/useAvailableParentFields";
 import useTranslate from "@/editor/hooks/useTranslate";
@@ -60,7 +60,7 @@ const ConditionalEdge = ({
   });
 
   const [isOpen, setIsOpen] = useState(false);
-  const { updateEdgeData } = useReactFlow();
+  const { updateEdgeData, deleteElements } = useReactFlow();
   const availableParentFields = useAvailableParentFields(target);
   const t = useTranslate();
 
@@ -91,6 +91,11 @@ const ConditionalEdge = ({
   const handleClear = () => {
     reset({ conditions: [], isFallback: false, label: "" });
     updateEdgeData(id, { conditions: undefined, configured: undefined, isFallback: undefined, label: undefined });
+  };
+
+  const handleDelete = () => {
+    setIsOpen(false);
+    void deleteElements({ edges: [{ id }] });
   };
 
   const handleOpenChange = (nextOpen: boolean) => {
@@ -391,14 +396,26 @@ const ConditionalEdge = ({
                       </Field>
                     </div>
 
-                    <div className="tg:flex tg:justify-end tg:gap-2 tg:pt-2">
-                      <Button type="button" size="sm" variant="outline" onClick={handleClear}>
-                        <X className="tg:mr-1 tg:h-4 tg:w-4" />
-                        {t("common.clear")}
+                    <div className="tg:flex tg:items-center tg:gap-2 tg:pt-2">
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="ghost"
+                        className="tg:text-destructive tg:hover:text-destructive"
+                        onClick={handleDelete}
+                      >
+                        <Trash2 className="tg:mr-1 tg:h-4 tg:w-4" />
+                        {t("common.delete")}
                       </Button>
-                      <Button type="button" size="sm" onClick={() => handleOpenChange(false)}>
-                        {t("common.close")}
-                      </Button>
+                      <div className="tg:ml-auto tg:flex tg:gap-2">
+                        <Button type="button" size="sm" variant="outline" onClick={handleClear}>
+                          <X className="tg:mr-1 tg:h-4 tg:w-4" />
+                          {t("common.clear")}
+                        </Button>
+                        <Button type="button" size="sm" onClick={() => handleOpenChange(false)}>
+                          {t("common.close")}
+                        </Button>
+                      </div>
                     </div>
                   </div>
                 </form>
