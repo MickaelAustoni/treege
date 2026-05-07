@@ -2,13 +2,7 @@
  * djb2-ish 32-bit hash. Used only to derive a stable hue from a groupId —
  * not for security, so any cheap deterministic hash is fine.
  */
-const hashString = (input: string): number => {
-  let hash = 0;
-  for (let i = 0; i < input.length; i += 1) {
-    hash = (hash * 31 + input.charCodeAt(i)) | 0;
-  }
-  return Math.abs(hash);
-};
+const hashString = (input: string): number => Math.abs([...input].reduce((hash, char) => (hash * 31 + char.charCodeAt(0)) | 0, 0));
 
 /**
  * Deterministic color for a group, derived from its id.
