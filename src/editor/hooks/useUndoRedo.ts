@@ -63,9 +63,11 @@ const useUndoRedo = ({ enableShortcuts = false }: UseUndoRedoOptions = {}) => {
   }, [getNodes, getEdges, setNodes, setEdges]);
 
   /**
-   *  Binds Cmd/Ctrl+Z (undo) and Cmd/Ctrl+Shift+Z / Cmd/Ctrl+Y (redo) at the window level when
-   *  `enableShortcuts` is true. Skips when focus is on an editable field so the browser's native
-   *  input undo keeps working.
+   * Binds Cmd/Ctrl+Z (undo) and Cmd/Ctrl+Shift+Z / Cmd/Ctrl+Y (redo) at the window level when
+   * `enableShortcuts` is true. Always intercepts — including when an input/textarea has focus —
+   * so the editor undo behaves consistently (Figma / Excalidraw pattern). Trade-off: the browser's
+   * native per-input undo on text fields is shadowed. Capture phase is used to preempt any
+   * input-level handlers that might otherwise consume the shortcut.
    */
   useEffect(() => {
     if (!enableShortcuts) {
@@ -73,14 +75,6 @@ const useUndoRedo = ({ enableShortcuts = false }: UseUndoRedoOptions = {}) => {
     }
 
     const handler = (event: KeyboardEvent) => {
-      // Don't intercept while the user is typing in a field — let the browser handle native undo there.
-      const target = event.target as HTMLElement | null;
-      const isEditable =
-        target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement || (target?.isContentEditable ?? false);
-      if (isEditable) {
-        return;
-      }
-
       const meta = event.metaKey || event.ctrlKey;
       if (!meta) {
         return;
@@ -98,8 +92,8 @@ const useUndoRedo = ({ enableShortcuts = false }: UseUndoRedoOptions = {}) => {
       }
     };
 
-    window.addEventListener("keydown", handler);
-    return () => window.removeEventListener("keydown", handler);
+    window.addEventListener("keydown", handler, { capture: true });
+    return () => window.removeEventListener("keydown", handler, { capture: true });
   }, [enableShortcuts, undo, redo]);
 
   return {
