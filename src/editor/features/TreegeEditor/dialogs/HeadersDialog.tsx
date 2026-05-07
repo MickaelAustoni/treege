@@ -1,7 +1,7 @@
 import { Plus, Trash2 } from "lucide-react";
 import useTranslate from "@/editor/hooks/useTranslate";
 import { Button } from "@/shared/components/ui/button";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/shared/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/shared/components/ui/dialog";
 import { Input } from "@/shared/components/ui/input";
 import { HttpHeader } from "@/shared/types/node";
 
@@ -42,9 +42,8 @@ const HeadersDialog = ({ open, onOpenChange, headers, onChange }: HeadersDialogP
       <DialogContent className="tg:max-w-lg">
         <DialogHeader>
           <DialogTitle>{t("editor.headersDialog.title")}</DialogTitle>
+          <DialogDescription>{t("editor.headersDialog.description")}</DialogDescription>
         </DialogHeader>
-
-        <p className="tg:text-muted-foreground tg:text-sm">{t("editor.headersDialog.description")}</p>
 
         <div className="tg:flex tg:flex-col tg:gap-2">
           {headers.length === 0 && (

@@ -5,7 +5,7 @@ import { useOpenApi } from "@/editor/context/OpenApiContext";
 import useTranslate from "@/editor/hooks/useTranslate";
 import { loadOpenApiDocument } from "@/editor/utils/openapi";
 import { Button } from "@/shared/components/ui/button";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/shared/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/shared/components/ui/dialog";
 import { Input } from "@/shared/components/ui/input";
 import { Label } from "@/shared/components/ui/label";
 import { Textarea } from "@/shared/components/ui/textarea";
@@ -85,9 +85,8 @@ const OpenApiDialog = ({ open, onOpenChange }: OpenApiDialogProps) => {
       <DialogContent className="tg:max-w-lg">
         <DialogHeader>
           <DialogTitle>{t("editor.openApiDialog.title")}</DialogTitle>
+          <DialogDescription>{t("editor.openApiDialog.description")}</DialogDescription>
         </DialogHeader>
-
-        <p className="tg:text-muted-foreground tg:text-sm">{t("editor.openApiDialog.description")}</p>
 
         <ToggleGroup type="single" variant="outline" size="sm" value={mode} onValueChange={(next) => next && setMode(next as Mode)}>
           <ToggleGroupItem value="url">{t("editor.openApiDialog.modeUrl")}</ToggleGroupItem>
