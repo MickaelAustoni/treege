@@ -297,7 +297,8 @@
       "groupNamePlaceholder": "Ex: Step 1 - Personal info",
       "newGroup": "New group",
       "newGroupDescription": "The group will be created around the selected node.",
-      "noGroup": "No group"
+      "noGroup": "No group",
+      "renameGroup": "Rename group"
     },
     "selectNodeType": {
       "nodeType": "Node Type",
@@ -404,6 +405,10 @@
     "defaultSubmitButton": {
       "requiredFieldsMissing": "Required fields missing",
       "submit": "Submit"
+    },
+    "step": {
+      "back": "Back",
+      "continue": "Continue"
     }
   },
   "validation": {

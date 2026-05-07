@@ -44,10 +44,11 @@ const useFlowConnections = () => {
         selected: shouldSelectNode,
       };
 
-      // If the source node is part of a group, set the new node to be part of the same group
+      // If the source node is part of a group, the new node inherits the same group (metadata only).
+      // No `extent: "parent"` constraint — groups are invisible badges, not visual containers,
+      // so children must stay freely positionable on the canvas.
       if (sourceNode?.parentId) {
         newNode.parentId = sourceNode.parentId;
-        newNode.extent = "parent";
       }
 
       // Add the new node first

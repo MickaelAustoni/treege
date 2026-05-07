@@ -297,7 +297,8 @@
       "groupNamePlaceholder": "Ex: Passo 1 - Informações pessoais",
       "newGroup": "Novo grupo",
       "newGroupDescription": "O grupo será criado em torno do nó selecionado.",
-      "noGroup": "Sem grupo"
+      "noGroup": "Sem grupo",
+      "renameGroup": "Renomear grupo"
     },
     "selectNodeType": {
       "nodeType": "Tipo de nó",
@@ -404,6 +405,10 @@
     "defaultSubmitButton": {
       "requiredFieldsMissing": "Campos obrigatórios ausentes",
       "submit": "Enviar"
+    },
+    "step": {
+      "back": "Voltar",
+      "continue": "Continuar"
     }
   },
   "validation": {

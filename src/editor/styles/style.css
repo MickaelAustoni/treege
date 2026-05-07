@@ -49,14 +49,6 @@ div.react-flow__node__wrapper {
     border-box;
 }
 
-/* Neon node in group */
-div.react-flow__node__wrapper.in-group {
-  background:
-    linear-gradient(oklch(from var(--treege-card) l c h / 33%), oklch(from var(--treege-card) l c h / 33%)) padding-box,
-    linear-gradient(145deg, oklch(from var(--treege-chart-2) l c h / 33%), oklch(0 0 0 / 0), oklch(from var(--treege-chart-2) l c h / 33%))
-    border-box;
-}
-
 /* Neon node selected */
 div.react-flow__node.selected .react-flow__node__wrapper {
   box-shadow:
@@ -87,26 +79,6 @@ div.react-flow__node.selected .react-flow__node__wrapper.submit-type {
     0 0 20px oklch(from var(--treege-color-submit-tertiary) l c h / 30%);
 }
 
-/* Group node */
-div.react-flow__node-group,
-div.react-flow__node-group.selected {
-  background: oklch(from var(--treege-chart-2) l c h / 5%);
-  box-shadow: none;
-  border: 3px dashed var(--treege-chart-2);
-}
-
-/* Group node  resize */
-div.react-flow__node-group .react-flow__resize-control {
-  padding: 4px;
-  opacity: 0;
-  transition: opacity 0.2s;
-}
-
-/* Group node hover display  */
-div.react-flow__node-group:hover .react-flow__resize-control,
-.react-flow__resize-control:hover {
-  opacity: 1;
-}
 
 /* Handle */
 div.react-flow__handle {

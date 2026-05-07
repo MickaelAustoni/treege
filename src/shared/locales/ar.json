@@ -297,7 +297,8 @@
       "groupNamePlaceholder": "مثال: الخطوة 1 - معلومات شخصية",
       "newGroup": "مجموعة جديدة",
       "newGroupDescription": "سيتم إنشاء المجموعة حول العقدة المحددة.",
-      "noGroup": "بدون مجموعة"
+      "noGroup": "بدون مجموعة",
+      "renameGroup": "إعادة تسمية المجموعة"
     },
     "selectNodeType": {
       "nodeType": "نوع العقدة",
@@ -404,6 +405,10 @@
     "defaultSubmitButton": {
       "requiredFieldsMissing": "حقول مطلوبة مفقودة:",
       "submit": "إرسال"
+    },
+    "step": {
+      "back": "رجوع",
+      "continue": "متابعة"
     }
   },
   "validation": {

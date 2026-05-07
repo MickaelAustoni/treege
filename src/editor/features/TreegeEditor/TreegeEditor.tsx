@@ -45,6 +45,7 @@ const Flow = ({
       edgeTypes={EDGE_TYPES}
       defaultEdges={flow?.edges || []}
       defaultNodes={flow?.nodes || []}
+      defaultEdgeOptions={{ zIndex: 0 }}
       onConnect={onConnect}
       onConnectEnd={onConnectEnd}
       onEdgesDelete={onEdgesDelete}

@@ -297,7 +297,8 @@
       "groupNamePlaceholder": "Ex : Étape 1 - Informations personnelles",
       "newGroup": "Nouveau groupe",
       "newGroupDescription": "Le groupe sera créé autour du nœud sélectionné.",
-      "noGroup": "Aucun groupe"
+      "noGroup": "Aucun groupe",
+      "renameGroup": "Renommer le groupe"
     },
     "selectNodeType": {
       "nodeType": "Type de nœud",
@@ -404,6 +405,10 @@
     "defaultSubmitButton": {
       "requiredFieldsMissing": "Champs requis manquants",
       "submit": "Envoyer"
+    },
+    "step": {
+      "back": "Retour",
+      "continue": "Continuer"
     }
   },
   "validation": {

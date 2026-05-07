@@ -1,6 +1,7 @@
 import { Handle, Node, NodeProps, Position } from "@xyflow/react";
 import { memo } from "react";
 import BottomHandleDropdown from "@/editor/features/TreegeEditor/nodes/components/BottomHandleDropdown";
+import NodeGroupBadge from "@/editor/features/TreegeEditor/nodes/components/NodeGroupBadge";
 import NodeImage from "@/editor/features/TreegeEditor/nodes/components/NodeImage";
 import NodeImageButton from "@/editor/features/TreegeEditor/nodes/components/NodeImageButton";
 import NodeInputPreview from "@/editor/features/TreegeEditor/nodes/components/NodeInputPreview";
@@ -27,7 +28,7 @@ const TreegeNode = (props: TreegeNodeProps) => {
   const showPreview = !selected && !!inputData?.type;
 
   return (
-    <NodeWrapper inGroup={!!parentId} isSubmit={isSubmit}>
+    <NodeWrapper isSubmit={isSubmit}>
       {/* Node actions */}
       <div className="tg:absolute tg:top-2 tg:right-2 tg:flex tg:items-center tg:gap-0.5">
         {selected && inputData && !isSubmit && (
@@ -58,8 +59,9 @@ const TreegeNode = (props: TreegeNodeProps) => {
           />
 
           {/* Badges */}
-          <div className="tg:mb-1 tg:flex tg:gap-1">
+          <div className="tg:mb-1 tg:flex tg:flex-wrap tg:gap-1">
             <NodeTypeBadge nodeId={id} nodeType={type} subType={subType} />
+            {parentId && <NodeGroupBadge groupId={parentId} />}
           </div>
 
           {/* Options */}

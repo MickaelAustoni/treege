@@ -1,7 +1,7 @@
 import { useReactFlow } from "@xyflow/react";
-import { PlusCircle } from "lucide-react";
+import { Pencil, PlusCircle } from "lucide-react";
 import { nanoid } from "nanoid";
-import { useId, useState } from "react";
+import { useEffect, useId, useState } from "react";
 import { toast } from "sonner";
 import useNodesSelection from "@/editor/hooks/useNodesSelection";
 import useTranslate from "@/editor/hooks/useTranslate";
@@ -14,7 +14,9 @@ import { isGroupNode } from "@/shared/utils/nodeTypeGuards";
 
 const SelectNodeGroup = () => {
   const [newGroupLabel, setNewGroupLabel] = useState("");
+  const [renameLabel, setRenameLabel] = useState("");
   const [popoverOpen, setPopoverOpen] = useState(false);
+  const [renameOpen, setRenameOpen] = useState(false);
   const { selectedNode, groupNodes } = useNodesSelection();
   const { setNodes } = useReactFlow();
   const currentParentId = selectedNode?.parentId || "none";
@@ -22,10 +24,9 @@ const SelectNodeGroup = () => {
   const t = useTranslate();
   const selectGroupId = useId();
   const inputGroupId = useId();
-
-  if (isGroup) {
-    return null;
-  }
+  const renameInputId = useId();
+  const currentParentGroup = currentParentId === "none" ? undefined : groupNodes.find((node) => node.id === currentParentId);
+  const currentParentLabel = currentParentGroup?.data?.label?.en ?? "";
 
   const handleGroupChange = (parentId: string) => {
     if (!selectedNode) {
@@ -50,14 +51,10 @@ const SelectNodeGroup = () => {
 
       return nds.map((node) => {
         if (node.id === selectedNode.id) {
+          const { extent, ...rest } = node;
           return {
-            ...node,
-            extent: "parent" as const,
+            ...rest,
             parentId,
-            position: {
-              x: 50,
-              y: 80,
-            },
           };
         }
         return node;
@@ -91,29 +88,19 @@ const SelectNodeGroup = () => {
             en: newGroupLabel.trim(),
           },
         },
+        hidden: true,
         id: newGroupId,
-        position: {
-          x: selectedNode.position.x - 300,
-          y: selectedNode.position.y,
-        },
-        style: {
-          height: 400,
-          width: 600,
-        },
+        position: { x: 0, y: 0 },
         type: "group",
       };
 
       // Parent nodes must be before their children in the nodes array
       const updatedNodes = nds.map((node) => {
         if (node.id === selectedNode.id) {
+          const { extent, ...rest } = node;
           return {
-            ...node,
-            extent: "parent" as const,
+            ...rest,
             parentId: newGroupId,
-            position: {
-              x: 175,
-              y: 30,
-            },
           };
         }
         return node;
@@ -129,6 +116,56 @@ const SelectNodeGroup = () => {
       description: `The group "${newGroupLabel.trim()}" has been created successfully.`,
     });
   };
+
+  const handleRenameGroup = () => {
+    if (!(renameLabel.trim() && currentParentGroup)) {
+      return;
+    }
+
+    const trimmed = renameLabel.trim();
+    const conflict = groupNodes.find(
+      (node) => node.id !== currentParentGroup.id && String(node.data?.label?.en ?? "").toLowerCase() === trimmed.toLowerCase(),
+    );
+    if (conflict) {
+      toast.error("This group already exists", {
+        description: "Choose a different name.",
+      });
+      return;
+    }
+
+    setNodes((nds) =>
+      nds.map((node) => {
+        if (node.id === currentParentGroup.id) {
+          return {
+            ...node,
+            data: {
+              ...node.data,
+              label: {
+                ...(node.data?.label as Record<string, string> | undefined),
+                en: trimmed,
+              },
+            },
+          };
+        }
+        return node;
+      }),
+    );
+
+    setRenameOpen(false);
+  };
+
+  /**
+   * Sync the rename input with the currently selected parent group whenever the popover opens
+   */
+  useEffect(() => {
+    if (renameOpen) {
+      setRenameLabel(String(currentParentLabel ?? ""));
+    }
+  }, [renameOpen, currentParentLabel]);
+
+  if (isGroup) {
+    return null;
+  }
 
   return (
     <div className="tg:space-y-2">
@@ -150,9 +187,49 @@ const SelectNodeGroup = () => {
           </SelectContent>
         </Select>
 
+        {currentParentGroup && (
+          <Popover open={renameOpen} onOpenChange={setRenameOpen}>
+            <PopoverTrigger asChild>
+              <Button variant="outline" size="icon" title={t("editor.selectNodeGroup.renameGroup")}>
+                <Pencil className="tg:h-4 tg:w-4" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="tg:w-80" align="end" disablePortal>
+              <div className="tg:space-y-4">
+                <div className="tg:space-y-2">
+                  <h4 className="tg:font-medium tg:leading-none">{t("editor.selectNodeGroup.renameGroup")}</h4>
+                </div>
+                <div className="tg:space-y-2">
+                  <Label htmlFor={renameInputId}>{t("editor.selectNodeGroup.groupName")}</Label>
+                  <Input
+                    autoFocus
+                    id={renameInputId}
+                    value={renameLabel}
+                    onChange={(e) => setRenameLabel(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        handleRenameGroup();
+                      }
+                    }}
+                  />
+                </div>
+                <div className="tg:flex tg:justify-end tg:gap-2">
+                  <Button variant="outline" size="sm" onClick={() => setRenameOpen(false)}>
+                    {t("common.cancel")}
+                  </Button>
+                  <Button size="sm" onClick={handleRenameGroup} disabled={!renameLabel.trim()}>
+                    {t("common.save")}
+                  </Button>
+                </div>
+              </div>
+            </PopoverContent>
+          </Popover>
+        )}
+
         <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
           <PopoverTrigger asChild>
-            <Button variant="outline" size="icon" title="Create a new group">
+            <Button variant="outline" size="icon" title={t("editor.selectNodeGroup.createNewGroup")}>
               <PlusCircle className="tg:h-4 tg:w-4" />
             </Button>
           </PopoverTrigger>
@@ -180,10 +257,10 @@ const SelectNodeGroup = () => {
               </div>
               <div className="tg:flex tg:justify-end tg:gap-2">
                 <Button variant="outline" size="sm" onClick={() => setPopoverOpen(false)}>
-                  Cancel
+                  {t("common.cancel")}
                 </Button>
                 <Button size="sm" onClick={handleCreateGroup} disabled={!newGroupLabel.trim()}>
-                  Create
+                  {t("common.create")}
                 </Button>
               </div>
             </div>

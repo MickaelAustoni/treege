@@ -1,10 +1,10 @@
-import { FormEvent, useCallback } from "react";
+import { FormEvent, useCallback, useMemo } from "react";
 import { TreegeRendererProvider } from "@/renderer/context/TreegeRendererContext";
 import { useTreegeRenderer } from "@/renderer/features/TreegeRenderer/useTreegeRenderer";
 import DefaultFormWrapper from "@/renderer/features/TreegeRenderer/web/components/DefaultFormWrapper";
-import DefaultGroup from "@/renderer/features/TreegeRenderer/web/components/DefaultGroup";
 import { defaultInputRenderers } from "@/renderer/features/TreegeRenderer/web/components/DefaultInputs";
 import DefaultInputWrapper from "@/renderer/features/TreegeRenderer/web/components/DefaultInputWrapper";
+import DefaultStep from "@/renderer/features/TreegeRenderer/web/components/DefaultStep";
 import DefaultSubmitButton from "@/renderer/features/TreegeRenderer/web/components/DefaultSubmitButton";
 import DefaultSubmitButtonWrapper from "@/renderer/features/TreegeRenderer/web/components/DefaultSubmitButtonWrapper";
 import { defaultUI } from "@/renderer/features/TreegeRenderer/web/components/DefaultUI";
@@ -29,22 +29,29 @@ const TreegeRenderer = ({
   initialValues = {},
 }: TreegeRendererProps) => {
   const {
+    canContinueStep,
     canSubmit,
     clearSubmitMessage,
     config,
+    currentStep,
+    currentStepGroupNode,
+    currentStepIndex,
     firstErrorFieldId,
     formErrors,
     formValues,
+    goToNextStep,
+    goToPreviousStep,
     handleSubmit,
     inputNodes,
+    isFirstStep,
+    isLastStep,
     isSubmitting,
     mergedFlow,
     missingRequiredFields,
     setFieldValue,
+    steps,
     submitMessage,
     t,
-    visibleNodes,
-    visibleRootNodes,
   } = useTreegeRenderer({
     components,
     flows,
@@ -59,10 +66,9 @@ const TreegeRenderer = ({
     validationMode,
   });
 
-  const { FormWrapper, SubmitButton, SubmitButtonWrapper, renderNode } = useRenderNode({
+  const { FormWrapper, SubmitButtonWrapper, renderNode } = useRenderNode({
     config,
     DefaultFormWrapper,
-    DefaultGroup,
     DefaultInputWrapper,
     DefaultSubmitButton,
     DefaultSubmitButtonWrapper,
@@ -72,8 +78,9 @@ const TreegeRenderer = ({
     formValues,
     missingRequiredFields,
     setFieldValue,
-    visibleNodes,
   });
+
+  const StepComponent = config.components.step ?? DefaultStep;
 
   /**
    * Web-specific form submission handler with focus logic
@@ -95,6 +102,21 @@ const TreegeRenderer = ({
     [handleSubmit, firstErrorFieldId],
   );
 
+  /**
+   * Continue handler. Inside the flow this just advances to the next step;
+   * on the last step it triggers the same submit pipeline as the form's
+   * `onSubmit` (validation + onSubmit callback / submitConfig HTTP call).
+   */
+  const handleContinue = useCallback(() => {
+    if (isLastStep) {
+      void handleSubmit();
+      return;
+    }
+    goToNextStep();
+  }, [isLastStep, handleSubmit, goToNextStep]);
+
+  const stepLabel = useMemo(() => t(currentStepGroupNode?.data?.label), [t, currentStepGroupNode]);
+
   return (
     <div className={cn("treege", className)}>
       <RendererStyles />
@@ -112,18 +134,28 @@ const TreegeRenderer = ({
           }}
         >
           <FormWrapper onSubmit={handleFormSubmit}>
-            {/* Node */}
-            {visibleRootNodes.map((node) => renderNode(node))}
-
-            {/* Submit */}
-            {canSubmit && (
-              <SubmitButtonWrapper missingFields={missingRequiredFields}>
-                <SubmitButton label={t("renderer.defaultSubmitButton.submit")} disabled={isSubmitting} />
+            {currentStep && (
+              <SubmitButtonWrapper missingFields={isLastStep ? missingRequiredFields : undefined}>
+                <StepComponent
+                  step={currentStep}
+                  groupNode={currentStepGroupNode}
+                  stepIndex={currentStepIndex}
+                  totalSteps={steps.length}
+                  isFirstStep={isFirstStep}
+                  isLastStep={isLastStep}
+                  canContinue={canContinueStep && (!isLastStep || canSubmit)}
+                  isSubmitting={isSubmitting}
+                  onBack={goToPreviousStep}
+                  onContinue={handleContinue}
+                  label={stepLabel}
+                >
+                  {currentStep.nodes.map((node) => renderNode(node))}
+                </StepComponent>
               </SubmitButtonWrapper>
             )}
 
             {/* Powered by Treege */}
-            <p className="tg:py-2 tg:text-muted-foreground tg:text-xs">Powered by Treege</p>
+            <p className="tg:py-2 tg:text-right tg:text-muted-foreground tg:text-xs">Powered by Treege</p>
           </FormWrapper>
 
           {/* Submit message (success/error) */}

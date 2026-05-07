@@ -80,29 +80,15 @@ const layoutSiblings = (siblings: Node[], edges: Edge[], config: Required<Layout
 };
 
 /**
- * Groups nodes by their `parentId` (undefined = top-level).
- * Each bucket is laid out independently so that group children are
- * positioned relative to their group, as React Flow expects.
- */
-const groupByParent = (nodes: Node[]) => {
-  const bucketsByParent = new Map<string | undefined, Node[]>();
-
-  nodes.forEach((node) => {
-    const bucket = bucketsByParent.get(node.parentId) ?? [];
-    bucket.push(node);
-    bucketsByParent.set(node.parentId, bucket);
-  });
-
-  return bucketsByParent;
-};
-
-/**
  * Runs Dagre to compute positions for the given nodes and returns a new
  * `nodes` array with updated `position` fields. Nodes not yet measured by
  * React Flow keep their current position.
  *
- * Respects group hierarchy: top-level nodes are laid out together, and
- * each group's children are laid out independently using parent-relative
+ * Groups are metadata only (rendered as colored badges on each child) and
+ * do not influence the layout. They are anchored at the origin (0, 0) and
+ * never moved, which means a child's `position` (parent-relative in React
+ * Flow) is numerically equal to its absolute canvas position — so we can
+ * lay out every non-group node in a single Dagre pass without converting
  * coordinates.
  */
 export const getLayoutedElements = (nodes: Node[], edges: Edge[], options: LayoutOptions = {}): Node[] => {
@@ -112,21 +98,16 @@ export const getLayoutedElements = (nodes: Node[], edges: Edge[], options: Layou
     verticalSpacing: options.verticalSpacing ?? LAYOUT_VERTICAL_SPACING,
   };
 
-  const positionsById = new Map<string, { x: number; y: number }>();
+  const layoutable = nodes.filter((node) => node.type !== "group" && isMeasured(node));
 
-  groupByParent(nodes).forEach((siblings) => {
-    const layoutable = siblings.filter(isMeasured);
+  if (layoutable.length === 0) {
+    return nodes;
+  }
 
-    if (layoutable.length === 0) {
-      return;
-    }
-    layoutSiblings(layoutable, edges, config).forEach((position, id) => {
-      positionsById.set(id, position);
-    });
-  });
+  const computedPositions = layoutSiblings(layoutable, edges, config);
 
   return nodes.map((node) => {
-    const nextPosition = positionsById.get(node.id);
-    return nextPosition ? { ...node, position: nextPosition } : node;
+    const next = computedPositions.get(node.id);
+    return next ? { ...node, position: next } : node;
   });
 };

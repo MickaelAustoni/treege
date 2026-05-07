@@ -2,8 +2,8 @@ export { TreegeConfigProvider, useTreegeConfig } from "@/renderer/context/Treege
 export type { UseTreegeRendererReturn } from "@/renderer/features/TreegeRenderer/useTreegeRenderer";
 export { useTreegeRenderer } from "@/renderer/features/TreegeRenderer/useTreegeRenderer";
 export * from "@/renderer/features/TreegeRenderer/web/components/DefaultFormWrapper";
-export * from "@/renderer/features/TreegeRenderer/web/components/DefaultGroup";
 export * from "@/renderer/features/TreegeRenderer/web/components/DefaultInputs";
+export * from "@/renderer/features/TreegeRenderer/web/components/DefaultStep";
 export * from "@/renderer/features/TreegeRenderer/web/components/DefaultSubmitButton";
 export * from "@/renderer/features/TreegeRenderer/web/components/DefaultUI";
 export * from "@/renderer/features/TreegeRenderer/web/TreegeRenderer";

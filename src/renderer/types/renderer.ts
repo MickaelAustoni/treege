@@ -1,7 +1,8 @@
 import { Node } from "@xyflow/react";
 import { FormEvent, ReactNode } from "react";
 import { SerializableFile } from "@/renderer/utils/file";
-import { Flow, HttpHeader, InputNodeData, InputType, TreegeNodeData, UINodeData, UIType } from "@/shared/types/node";
+import { FlowStep } from "@/renderer/utils/step";
+import { Flow, GroupNodeData, HttpHeader, InputNodeData, InputType, TreegeNodeData, UINodeData, UIType } from "@/shared/types/node";
 
 /**
  * Type mapping for input values based on input type
@@ -124,6 +125,45 @@ export type InputRenderers = {
 };
 
 /**
+ * Props passed to a step renderer. Steps are derived at runtime from the flow's
+ * groups: each contiguous slice of visible nodes sharing the same `parentId`
+ * (or no parent — orphan steps) becomes one step.
+ */
+export type StepRenderProps = {
+  /** The step being rendered (its group id and ordered child nodes). */
+  step: FlowStep;
+  /** Hidden group node carrying the step's metadata (label) — undefined for orphan steps. */
+  groupNode?: Node<GroupNodeData>;
+  /** Zero-based index of this step in the current step sequence. */
+  stepIndex: number;
+  /** Total number of steps currently visible. Recomputes when branching changes. */
+  totalSteps: number;
+  /** True when this is the first step (Back should be hidden/disabled). */
+  isFirstStep: boolean;
+  /**
+   * True when this is the last visible step. The renderer turns Continue
+   * into a submit action on the last step.
+   */
+  isLastStep: boolean;
+  /** Whether all required visible inputs of the step are filled. */
+  canContinue: boolean;
+  /** Submission in progress (passed through from `useTreegeRenderer`). */
+  isSubmitting?: boolean;
+  /** Advance to the previous step. No-op on the first step. */
+  onBack: () => void;
+  /**
+   * Advance to the next step (or trigger submit on the last step). The wrapper
+   * passes `isLastStep` so the implementation can decide between an in-flow
+   * advance and a form submit.
+   */
+  onContinue: () => void;
+  /** Translated label of the group, or empty string for orphan steps. */
+  label?: string;
+  /** The rendered child nodes belonging to this step. */
+  children: ReactNode;
+};
+
+/**
  * Custom renderer components
  */
 export type TreegeRendererComponents = {
@@ -137,9 +177,10 @@ export type TreegeRendererComponents = {
    */
   ui?: Partial<Record<UIType, (props: NodeRenderProps) => ReactNode>>;
   /**
-   * Custom group container renderer
+   * Custom step renderer — wraps the current step's nodes and renders the
+   * Back/Continue navigation. Defaults are provided by `DefaultStep` (web/native).
    */
-  group?: (props: NodeRenderProps & { children?: ReactNode }) => ReactNode;
+  step?: (props: StepRenderProps) => ReactNode;
   /**
    * Custom form wrapper
    */

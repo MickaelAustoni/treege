@@ -297,7 +297,8 @@
       "groupNamePlaceholder": "z.B.: Schritt 1 - Persönliche Informationen",
       "newGroup": "Neue Gruppe",
       "newGroupDescription": "Die Gruppe wird um den ausgewählten Knoten herum erstellt.",
-      "noGroup": "Keine Gruppe"
+      "noGroup": "Keine Gruppe",
+      "renameGroup": "Gruppe umbenennen"
     },
     "selectNodeType": {
       "nodeType": "Knotentyp",
@@ -404,6 +405,10 @@
     "defaultSubmitButton": {
       "requiredFieldsMissing": "Erforderliche Felder fehlen",
       "submit": "Senden"
+    },
+    "step": {
+      "back": "Zurück",
+      "continue": "Weiter"
     }
   },
   "validation": {

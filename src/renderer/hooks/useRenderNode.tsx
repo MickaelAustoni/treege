@@ -5,7 +5,7 @@ import { resolveInputPlaceholder, resolveNodeKey } from "@/renderer/utils/node";
 import { sanitize } from "@/renderer/utils/sanitize";
 import { NODE_TYPE } from "@/shared/constants/node";
 import { InputNodeData, TreegeNodeData, UINodeData } from "@/shared/types/node";
-import { isGroupNode, isInputNode, isUINode } from "@/shared/utils/nodeTypeGuards";
+import { isInputNode, isUINode } from "@/shared/utils/nodeTypeGuards";
 import { getTranslatedText } from "@/shared/utils/translations";
 
 type AnyComponent = ComponentType<any>;
@@ -16,7 +16,6 @@ type UseRenderNodeParams = {
     language: string;
   };
   DefaultFormWrapper: AnyComponent;
-  DefaultGroup: AnyComponent;
   DefaultInputWrapper: ComponentType<{ node: Node<InputNodeData>; children: ReactNode }>;
   DefaultSubmitButton: AnyComponent;
   DefaultSubmitButtonWrapper?: AnyComponent;
@@ -26,7 +25,6 @@ type UseRenderNodeParams = {
   formValues: FormValues;
   missingRequiredFields: string[];
   setFieldValue: (fieldId: string, value: unknown) => void;
-  visibleNodes: Node<TreegeNodeData>[];
 };
 
 /**
@@ -41,7 +39,6 @@ type UseRenderNodeParams = {
  */
 export const useRenderNode = ({
   DefaultFormWrapper,
-  DefaultGroup,
   DefaultInputWrapper,
   DefaultSubmitButton,
   DefaultSubmitButtonWrapper,
@@ -52,7 +49,6 @@ export const useRenderNode = ({
   formValues,
   missingRequiredFields,
   setFieldValue,
-  visibleNodes,
 }: UseRenderNodeParams) => {
   // Components with fallbacks
   const FormWrapper = useMemo(() => config.components.form || DefaultFormWrapper, [config.components.form, DefaultFormWrapper]);
@@ -116,23 +112,10 @@ export const useRenderNode = ({
         }
 
         case NODE_TYPE.group: {
-          if (!isGroupNode(node)) {
-            return null;
-          }
-
-          const GroupComponent = (config.components.group || DefaultGroup) as ComponentType<{
-            key?: string;
-            node: Node<TreegeNodeData>;
-            children: ReactNode;
-          }>;
-          // Filter children - visibleNodes maintains flow order from getFlowRenderState
-          const childNodes = visibleNodes.filter((child) => child.parentId === node.id);
-
-          return (
-            <GroupComponent key={node.id} node={node}>
-              {childNodes.map((child) => renderNode(child))}
-            </GroupComponent>
-          );
+          // Groups are no longer rendered as containers — they're metadata for
+          // the step partitioning in `useTreegeRenderer`. Children are rendered
+          // directly inside their step.
+          return null;
         }
 
         case NODE_TYPE.ui: {
@@ -164,18 +147,7 @@ export const useRenderNode = ({
           return null;
       }
     },
-    [
-      config,
-      visibleNodes,
-      formValues,
-      formErrors,
-      setFieldValue,
-      missingRequiredFields,
-      defaultInputRenderers,
-      defaultUI,
-      DefaultGroup,
-      DefaultInputWrapper,
-    ],
+    [config, formValues, formErrors, setFieldValue, missingRequiredFields, defaultInputRenderers, defaultUI, DefaultInputWrapper],
   );
 
   return {

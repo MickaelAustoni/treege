@@ -8,8 +8,9 @@ import { getFlowRenderState, mergeFlows } from "@/renderer/utils/flow";
 import { calculateReferenceFieldUpdates, convertFormValuesToNamedFormat, isFieldEmpty } from "@/renderer/utils/form";
 import { mergeHttpHeaders } from "@/renderer/utils/http";
 import { getInputNodes } from "@/renderer/utils/node";
-import { TreegeNodeData } from "@/shared/types/node";
-import { isInputNode } from "@/shared/utils/nodeTypeGuards";
+import { computeSteps } from "@/renderer/utils/step";
+import { GroupNodeData, TreegeNodeData } from "@/shared/types/node";
+import { isGroupNode, isInputNode } from "@/shared/utils/nodeTypeGuards";
 
 /**
  * Main TreegeRenderer hook
@@ -67,8 +68,8 @@ export const useTreegeRenderer = ({
     () => ({
       components: {
         form: components?.form ?? globalConfig?.components?.form,
-        group: components?.group ?? globalConfig?.components?.group,
         inputs: { ...globalConfig?.components?.inputs, ...components?.inputs },
+        step: components?.step ?? globalConfig?.components?.step,
         submitButton: components?.submitButton ?? globalConfig?.components?.submitButton,
         submitButtonWrapper: components?.submitButtonWrapper ?? globalConfig?.components?.submitButtonWrapper,
         ui: { ...globalConfig?.components?.ui, ...components?.ui },
@@ -136,6 +137,30 @@ export const useTreegeRenderer = ({
     () => getFlowRenderState(nodes, edges, formValues),
     [nodes, edges, formValues],
   );
+
+  // ============================================
+  // STEP STATE (group → step navigation)
+  // ============================================
+
+  const steps = useMemo(() => computeSteps(visibleNodes), [visibleNodes]);
+
+  /** Resolve the (possibly hidden) group node corresponding to a step's groupId. */
+  const groupNodeMap = useMemo(() => {
+    const map = new Map<string, Node<GroupNodeData>>();
+    nodes.forEach((node) => {
+      if (isGroupNode(node)) {
+        map.set(node.id, node);
+      }
+    });
+    return map;
+  }, [nodes]);
+
+  const [currentStepIndex, setCurrentStepIndex] = useState(0);
+  const safeStepIndex = steps.length === 0 ? 0 : Math.min(currentStepIndex, steps.length - 1);
+  const currentStep = steps[safeStepIndex];
+  const currentStepGroupNode = currentStep?.groupId ? groupNodeMap.get(currentStep.groupId) : undefined;
+  const isFirstStep = safeStepIndex === 0;
+  const isLastStep = steps.length === 0 || safeStepIndex >= steps.length - 1;
 
   // ============================================
   // SUBMIT HANDLER
@@ -265,6 +290,24 @@ export const useTreegeRenderer = ({
   );
 
   /**
+   * Move forward in the step machine: advance the index, or trigger submit if
+   * we're already on the last step. Triggering Continue when `canContinueStep`
+   * is false is a no-op (the button should be disabled in the UI).
+   */
+  const goToNextStep = useCallback(() => {
+    setCurrentStepIndex((prev) => {
+      if (prev >= steps.length - 1) {
+        return prev;
+      }
+      return prev + 1;
+    });
+  }, [steps.length]);
+
+  const goToPreviousStep = useCallback(() => {
+    setCurrentStepIndex((prev) => Math.max(0, prev - 1));
+  }, []);
+
+  /**
    * Handle form submission
    * @returns {Promise<boolean>} Returns true if validation passed, false otherwise
    */
@@ -339,6 +382,31 @@ export const useTreegeRenderer = ({
   const hasSubmitInput = useMemo(() => visibleNodes.some((node) => isInputNode(node) && node.data.type === "submit"), [visibleNodes]);
 
   /**
+   * Whether the user can advance past the current step:
+   * every required input that is *currently visible inside the step* must be filled.
+   * Conditional edges that reveal new required fields inside the same step
+   * naturally flip this back to false, gating the Continue button.
+   */
+  const canContinueStep = useMemo(() => {
+    if (!currentStep) {
+      return false;
+    }
+    return currentStep.nodes.every((node) => {
+      if (!isInputNode(node)) {
+        return true;
+      }
+      if (!node.data.required) {
+        return true;
+      }
+      // Submit-type inputs handle their own action; don't gate Continue on them.
+      if (node.data.type === "submit") {
+        return true;
+      }
+      return !isFieldEmpty(formValues[node.id]);
+    });
+  }, [currentStep, formValues]);
+
+  /**
    * Get the first field with an error (for focus/scroll)
    * Returns the field ID or undefined if no errors
    */
@@ -350,6 +418,23 @@ export const useTreegeRenderer = ({
   // ============================================
   // SIDE EFFECTS
   // ============================================
+
+  /**
+   * Clamp the current step index against the (potentially shrinking) `steps`
+   * array — branching can collapse later steps when the user goes back and
+   * changes a value.
+   */
+  useEffect(() => {
+    if (steps.length === 0) {
+      if (currentStepIndex !== 0) {
+        setCurrentStepIndex(0);
+      }
+      return;
+    }
+    if (currentStepIndex > steps.length - 1) {
+      setCurrentStepIndex(steps.length - 1);
+    }
+  }, [steps.length, currentStepIndex]);
 
   /**
    * Mirror the latest `onChange` callback into a ref so the value-change
@@ -412,14 +497,23 @@ export const useTreegeRenderer = ({
   // ============================================
 
   return {
+    canContinueStep,
     canSubmit: !hasSubmitInput && endOfPathReached && nodes.length > 0,
     clearSubmitMessage,
     config,
+    currentStep,
+    currentStepGroupNode,
+    currentStepIndex: safeStepIndex,
     firstErrorFieldId,
     formErrors,
     formValues,
+    goToNextStep,
+    goToPreviousStep,
     handleSubmit,
+    hasSubmitInput,
     inputNodes,
+    isFirstStep,
+    isLastStep,
     isSubmitting,
     mergedFlow,
     missingRequiredFields,
@@ -427,6 +521,7 @@ export const useTreegeRenderer = ({
     setFieldErrors: setFormErrors,
     setFieldValue,
     setMultipleFieldValues,
+    steps,
     submitMessage,
     t,
     validateForm,

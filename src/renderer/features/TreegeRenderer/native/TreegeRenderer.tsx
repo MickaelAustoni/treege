@@ -1,9 +1,10 @@
+import { useCallback, useMemo } from "react";
 import { ScrollView, StyleSheet, Text, View, ViewStyle } from "react-native";
 import { TreegeRendererProvider } from "@/renderer/context/TreegeRendererContext";
 import DefaultFormWrapper from "@/renderer/features/TreegeRenderer/native/components/DefaultFormWrapper";
-import DefaultGroup from "@/renderer/features/TreegeRenderer/native/components/DefaultGroup";
 import { defaultInputRenderers } from "@/renderer/features/TreegeRenderer/native/components/DefaultInputs";
 import DefaultInputWrapper from "@/renderer/features/TreegeRenderer/native/components/DefaultInputWrapper";
+import DefaultStep from "@/renderer/features/TreegeRenderer/native/components/DefaultStep";
 import DefaultSubmitButton from "@/renderer/features/TreegeRenderer/native/components/DefaultSubmitButton";
 import DefaultSubmitButtonWrapper from "@/renderer/features/TreegeRenderer/native/components/DefaultSubmitButtonWrapper";
 import { defaultUI } from "@/renderer/features/TreegeRenderer/native/components/DefaultUI";
@@ -52,21 +53,28 @@ const TreegeRendererContent = ({
   const { colors } = useTheme();
 
   const {
+    canContinueStep,
     canSubmit,
     clearSubmitMessage,
     config,
+    currentStep,
+    currentStepGroupNode,
+    currentStepIndex,
     formErrors,
     formValues,
+    goToNextStep,
+    goToPreviousStep,
     handleSubmit,
     inputNodes,
+    isFirstStep,
+    isLastStep,
     isSubmitting,
     mergedFlow,
     missingRequiredFields,
     setFieldValue,
+    steps,
     submitMessage,
     t,
-    visibleNodes,
-    visibleRootNodes,
   } = useTreegeRenderer({
     components,
     flows,
@@ -81,10 +89,9 @@ const TreegeRendererContent = ({
     validationMode,
   });
 
-  const { FormWrapper, SubmitButton, SubmitButtonWrapper, renderNode } = useRenderNode({
+  const { FormWrapper, SubmitButtonWrapper, renderNode } = useRenderNode({
     config,
     DefaultFormWrapper,
-    DefaultGroup,
     DefaultInputWrapper,
     DefaultSubmitButton,
     DefaultSubmitButtonWrapper,
@@ -94,8 +101,19 @@ const TreegeRendererContent = ({
     formValues,
     missingRequiredFields,
     setFieldValue,
-    visibleNodes,
   });
+
+  const StepComponent = config.components.step ?? DefaultStep;
+
+  const handleContinue = useCallback(() => {
+    if (isLastStep) {
+      void handleSubmit();
+      return;
+    }
+    goToNextStep();
+  }, [isLastStep, handleSubmit, goToNextStep]);
+
+  const stepLabel = useMemo(() => t(currentStepGroupNode?.data?.label), [t, currentStepGroupNode]);
 
   return (
     <ScrollView
@@ -116,15 +134,23 @@ const TreegeRendererContent = ({
         }}
       >
         <FormWrapper onSubmit={handleSubmit}>
-          {/* Nodes */}
-          {visibleRootNodes.map((node) => renderNode(node))}
-
-          {/* Submit Button */}
-          {canSubmit && (
-            <SubmitButtonWrapper missingFields={missingRequiredFields}>
-              <SubmitButton onPress={handleSubmit} disabled={isSubmitting} isSubmitting={isSubmitting}>
-                {t("renderer.defaultSubmitButton.submit")}
-              </SubmitButton>
+          {currentStep && (
+            <SubmitButtonWrapper missingFields={isLastStep ? missingRequiredFields : undefined}>
+              <StepComponent
+                step={currentStep}
+                groupNode={currentStepGroupNode}
+                stepIndex={currentStepIndex}
+                totalSteps={steps.length}
+                isFirstStep={isFirstStep}
+                isLastStep={isLastStep}
+                canContinue={canContinueStep && (!isLastStep || canSubmit)}
+                isSubmitting={isSubmitting}
+                onBack={goToPreviousStep}
+                onContinue={handleContinue}
+                label={stepLabel}
+              >
+                {currentStep.nodes.map((node) => renderNode(node))}
+              </StepComponent>
             </SubmitButtonWrapper>
           )}
 
@@ -199,7 +225,7 @@ const styles = StyleSheet.create({
   poweredBy: {
     fontSize: 12,
     paddingVertical: 8,
-    textAlign: "center",
+    textAlign: "right",
   },
 });
 
