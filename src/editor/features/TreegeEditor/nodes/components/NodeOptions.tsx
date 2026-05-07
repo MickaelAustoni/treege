@@ -70,7 +70,7 @@ const NodeOptions = ({ nodeId, data, selected }: NodeOptionsProps) => {
   const handleSubmit = (event?: FormEvent<HTMLFormElement>) => {
     event?.preventDefault();
     const label = labelDraft.trim();
-    const value = valueDraft.trim() || label;
+    const value = valueDraft.trim();
 
     if (!(label || value)) {
       return;
@@ -152,35 +152,46 @@ const NodeOptions = ({ nodeId, data, selected }: NodeOptionsProps) => {
   return (
     <div className="nodrag nopan tg:my-1 tg:flex tg:flex-col tg:gap-0.5">
       {options.map((option, index) => {
-        const optionLabel = t(option.label) || option.value || "—";
+        const translatedLabel = t(option.label);
+        const optionLabel = translatedLabel || option.value || "—";
         const key = `${option.value || "opt"}-${index}`;
+        // Only worth showing the value column when there's a real label distinct
+        // from the value — otherwise the value already appears in the label slot.
+        const showValueColumn = Boolean(option.value) && Boolean(translatedLabel) && translatedLabel !== option.value;
 
         return (
-          <div key={key} className="tg:group tg:flex tg:items-center tg:gap-1 tg:text-muted-foreground tg:text-xs">
+          <div key={key} className="tg:group tg:flex tg:min-h-5 tg:items-center tg:gap-1 tg:text-muted-foreground tg:text-xs">
             <span className="tg:truncate">{optionLabel}</span>
             {selected && (
-              <div className="tg:ml-auto tg:flex tg:shrink-0 tg:gap-0.5 tg:opacity-0 tg:transition-opacity tg:group-hover:opacity-100">
-                <Button
-                  type="button"
-                  variant="icon"
-                  size="icon-sm"
-                  aria-label={t("editor.inputNodeForm.editOption")}
-                  className="tg:size-5"
-                  onClick={(event) => handleEditOption(index, event)}
-                >
-                  <Pencil />
-                </Button>
-                <Button
-                  type="button"
-                  variant="icon"
-                  size="icon-sm"
-                  aria-label={t("editor.inputNodeForm.deleteOption")}
-                  className="tg:size-5 tg:hover:text-destructive"
-                  onClick={(event) => handleDeleteOption(index, event)}
-                >
-                  <Trash2 />
-                </Button>
-              </div>
+              <>
+                {showValueColumn && (
+                  <span className="tg:ml-auto tg:max-w-[50%] tg:shrink-0 tg:truncate tg:text-[10px] tg:text-muted-foreground/60 tg:group-hover:hidden">
+                    {option.value}
+                  </span>
+                )}
+                <div className="tg:ml-auto tg:hidden tg:shrink-0 tg:gap-0.5 tg:group-hover:flex">
+                  <Button
+                    type="button"
+                    variant="icon"
+                    size="icon-sm"
+                    aria-label={t("editor.inputNodeForm.editOption")}
+                    className="tg:size-5"
+                    onClick={(event) => handleEditOption(index, event)}
+                  >
+                    <Pencil />
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="icon"
+                    size="icon-sm"
+                    aria-label={t("editor.inputNodeForm.deleteOption")}
+                    className="tg:size-5 tg:hover:text-destructive"
+                    onClick={(event) => handleDeleteOption(index, event)}
+                  >
+                    <Trash2 />
+                  </Button>
+                </div>
+              </>
             )}
           </div>
         );
