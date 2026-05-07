@@ -37,6 +37,7 @@ const Flow = ({
   return (
     <ReactFlow
       fitView
+      panOnScroll
       minZoom={0.1}
       fitViewOptions={{ maxZoom: isMobile ? 0.6 : 1 }}
       colorMode={theme}
