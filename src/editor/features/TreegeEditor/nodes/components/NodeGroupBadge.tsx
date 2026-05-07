@@ -8,15 +8,19 @@ import { TreegeNode } from "@/shared/types/node";
 import { isGroupNode } from "@/shared/utils/nodeTypeGuards";
 
 interface NodeGroupBadgeProps {
-  groupId: string;
+  groupId?: string;
 }
 
 const NodeGroupBadge = ({ groupId }: NodeGroupBadgeProps) => {
   const t = useTranslate();
   const nodes = useNodes<TreegeNode>();
-  const groupNode = useMemo(() => nodes.find((n) => n.id === groupId), [nodes, groupId]);
+  const groupNode = useMemo(() => (groupId ? nodes.find((n) => n.id === groupId) : undefined), [nodes, groupId]);
   const label = isGroupNode(groupNode) ? t(groupNode.data?.label) : "";
   const backgroundColor = getGroupColor(groupId);
+
+  if (!groupId) {
+    return null;
+  }
 
   return (
     <Badge

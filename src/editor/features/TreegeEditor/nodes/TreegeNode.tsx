@@ -61,7 +61,7 @@ const TreegeNode = (props: TreegeNodeProps) => {
           {/* Badges */}
           <div className="tg:mb-1 tg:flex tg:flex-wrap tg:gap-1">
             <NodeTypeBadge nodeId={id} nodeType={type} subType={subType} />
-            {parentId && <NodeGroupBadge groupId={parentId} />}
+            <NodeGroupBadge groupId={parentId} />
           </div>
 
           {/* Options */}
