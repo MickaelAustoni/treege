@@ -13,6 +13,7 @@ import AutoLayout from "@/editor/features/TreegeEditor/layout/AutoLayout";
 import ActionsPanel from "@/editor/features/TreegeEditor/panel/ActionsPanel";
 import NodeActionsSheet from "@/editor/features/TreegeEditor/sheets/NodeActionsSheet";
 import useFlowConnections from "@/editor/hooks/useFlowConnections";
+import useUndoRedo from "@/editor/hooks/useUndoRedo";
 import { TreegeEditorProps } from "@/editor/types/editor";
 import { Toaster } from "@/shared/components/ui/sonner";
 import { ThemeProvider } from "@/shared/context/ThemeContext";
@@ -32,6 +33,7 @@ const Flow = ({
 }: TreegeEditorProps) => {
   const [showMiniMap, setShowMiniMap] = useState(false);
   const { onConnect, onConnectEnd, onEdgesDelete, isValidConnection } = useFlowConnections();
+  const { onBeforeDelete, takeSnapshot } = useUndoRedo({ enableShortcuts: true });
   const isMobile = useMediaQuery("mobile");
 
   return (
@@ -50,6 +52,8 @@ const Flow = ({
       onConnect={onConnect}
       onConnectEnd={onConnectEnd}
       onEdgesDelete={onEdgesDelete}
+      onNodeDragStart={takeSnapshot}
+      onBeforeDelete={onBeforeDelete}
       isValidConnection={isValidConnection}
       className={cn(className, "treege")}
     >

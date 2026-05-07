@@ -3,6 +3,7 @@ import { nanoid } from "nanoid";
 import { useCallback } from "react";
 import { DEFAULT_NODE } from "@/editor/constants/defaultNode";
 import { HORIZONTAL_NODE_OFFSET, VERTICAL_NODE_SPACING } from "@/editor/constants/nodeSpacing";
+import useUndoRedo from "@/editor/hooks/useUndoRedo";
 import { normalizeConditionalEdges } from "@/editor/utils/edge";
 import { isInputNode } from "@/shared/utils/nodeTypeGuards";
 
@@ -12,6 +13,7 @@ import { isInputNode } from "@/shared/utils/nodeTypeGuards";
  */
 const useFlowConnections = () => {
   const { setNodes, setEdges, screenToFlowPosition, getNode, getNodes, getEdges } = useReactFlow();
+  const { takeSnapshot } = useUndoRedo();
 
   /**
    * Internal function to create a new node and connect it
@@ -34,6 +36,7 @@ const useFlowConnections = () => {
         return;
       }
 
+      takeSnapshot();
       const nodeId = nanoid();
 
       const newNode: Node = {
@@ -104,7 +107,7 @@ const useFlowConnections = () => {
         });
       }
     },
-    [getEdges, setNodes, setEdges],
+    [getEdges, setNodes, setEdges, takeSnapshot],
   );
 
   /**
@@ -112,6 +115,7 @@ const useFlowConnections = () => {
    */
   const onConnect: OnConnect = useCallback(
     (params) => {
+      takeSnapshot();
       setEdges((edgesSnapshot) => {
         const newEdges = addEdge(params, edgesSnapshot);
         const sourceId = params.source;
@@ -139,7 +143,7 @@ const useFlowConnections = () => {
         return newEdges;
       });
     },
-    [setEdges, getNode],
+    [setEdges, getNode, takeSnapshot],
   );
 
   /**

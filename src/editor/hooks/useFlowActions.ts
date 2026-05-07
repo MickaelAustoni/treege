@@ -1,6 +1,7 @@
 import { useReactFlow } from "@xyflow/react";
 import { nanoid } from "nanoid";
 import { useCallback } from "react";
+import useUndoRedo from "@/editor/hooks/useUndoRedo";
 import { normalizeConditionalEdges } from "@/editor/utils/edge";
 
 /**
@@ -9,6 +10,7 @@ import { normalizeConditionalEdges } from "@/editor/utils/edge";
  */
 const useFlowActions = () => {
   const { setNodes, setEdges, getNodes } = useReactFlow();
+  const { takeSnapshot } = useUndoRedo();
 
   /**
    * Clears the selection of all nodes and edges in the flow.
@@ -64,6 +66,7 @@ const useFlowActions = () => {
    */
   const updateNodeType = useCallback(
     (id: string, type: string, subType?: string) => {
+      takeSnapshot();
       setNodes((nds) =>
         nds.map((node) => {
           if (node.id !== id) {
@@ -81,7 +84,7 @@ const useFlowActions = () => {
         }),
       );
     },
-    [setNodes],
+    [setNodes, takeSnapshot],
   );
 
   /**
@@ -126,6 +129,7 @@ const useFlowActions = () => {
    */
   const deleteNode = useCallback(
     (id: string) => {
+      takeSnapshot();
       setNodes((nds) => nds.filter((node) => node.id !== id));
       setEdges((eds) => {
         const incomingEdges = eds.filter((edge) => edge.target === id);
@@ -152,7 +156,7 @@ const useFlowActions = () => {
         return normalizeConditionalEdges(remainingEdges, affectedParents);
       });
     },
-    [setNodes, setEdges],
+    [setNodes, setEdges, takeSnapshot],
   );
 
   /**
