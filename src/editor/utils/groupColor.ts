@@ -23,7 +23,11 @@ const hashString = (input: string): number => {
  * same readable, mid-contrast band on both light and dark themes — only the
  * hue varies between groups.
  */
-export const getGroupColor = (groupId: string): string => {
+export const getGroupColor = (groupId?: string): string => {
+  if (!groupId) {
+    return "";
+  }
+
   const hue = hashString(groupId) % 360;
   return `hsl(${hue} 65% 45%)`;
 };
