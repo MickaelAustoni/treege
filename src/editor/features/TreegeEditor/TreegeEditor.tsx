@@ -45,6 +45,7 @@ const Flow = ({
       fitViewOptions={{ maxZoom: isMobile ? 0.6 : 1 }}
       colorMode={theme}
       selectNodesOnDrag={false}
+      nodesDraggable={false}
       nodeTypes={NODE_TYPES}
       edgeTypes={EDGE_TYPES}
       defaultEdges={flow?.edges || []}
@@ -70,7 +71,7 @@ const Flow = ({
       />
       <Logo theme={theme} />
       {showMiniMap && <MiniMap />}
-      <Controls>
+      <Controls showInteractive={false}>
         <MiniMapControl show={showMiniMap} onToggle={() => setShowMiniMap((prev) => !prev)} />
       </Controls>
       <NodeActionsSheet />
