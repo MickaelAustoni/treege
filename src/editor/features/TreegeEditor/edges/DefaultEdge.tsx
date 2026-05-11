@@ -1,7 +1,22 @@
 import { BaseEdge, EdgeLabelRenderer, type EdgeProps, getBezierPath, useReactFlow } from "@xyflow/react";
 import { memo } from "react";
+import { useIsIntraChainEdge } from "@/editor/hooks/useChainPosition";
 
-const DefaultEdge = ({ id, sourceX, sourceY, targetX, targetY, sourcePosition, targetPosition, style, markerEnd, selected }: EdgeProps) => {
+const DefaultEdge = ({
+  id,
+  source,
+  target,
+  sourceX,
+  sourceY,
+  targetX,
+  targetY,
+  sourcePosition,
+  targetPosition,
+  style,
+  markerEnd,
+  selected,
+}: EdgeProps) => {
+  const isIntraChain = useIsIntraChainEdge(source, target);
   const [edgePath, labelX, labelY] = getBezierPath({
     sourcePosition,
     sourceX,
@@ -15,6 +30,10 @@ const DefaultEdge = ({ id, sourceX, sourceY, targetX, targetY, sourcePosition, t
   const onEdgeClick = () => {
     setEdges((edges) => edges.filter((edge) => edge.id !== id));
   };
+
+  if (isIntraChain) {
+    return null;
+  }
 
   return (
     <>

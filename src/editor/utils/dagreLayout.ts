@@ -91,6 +91,91 @@ const layoutSiblings = (siblings: Node[], edges: Edge[], config: Required<Layout
  * lay out every non-group node in a single Dagre pass without converting
  * coordinates.
  */
+/**
+ * After dagre runs, collapse every linear chain so its nodes touch border-to-border.
+ * A chain is a sequence where each parent has exactly one outgoing edge and each
+ * child has exactly one incoming edge — i.e. no fork, no join. The head of the
+ * chain keeps the position dagre computed; following nodes are stacked against it
+ * along the layout axis.
+ */
+const collapseChains = (
+  layoutable: Node[],
+  edges: Edge[],
+  positions: Map<string, { x: number; y: number }>,
+  direction: LayoutDirection,
+) => {
+  const childIdBySource = new Map<string, string>();
+  const parentIdByTarget = new Map<string, string>();
+  const outgoingCount = new Map<string, number>();
+  const incomingCount = new Map<string, number>();
+  edges.forEach((edge) => {
+    outgoingCount.set(edge.source, (outgoingCount.get(edge.source) ?? 0) + 1);
+    incomingCount.set(edge.target, (incomingCount.get(edge.target) ?? 0) + 1);
+    childIdBySource.set(edge.source, edge.target);
+    parentIdByTarget.set(edge.target, edge.source);
+  });
+
+  const nodeById = new Map(layoutable.map((node) => [node.id, node]));
+
+  const findLinearChild = (nodeId: string): Node | null => {
+    const childId = childIdBySource.get(nodeId);
+    if (!childId || outgoingCount.get(nodeId) !== 1 || incomingCount.get(childId) !== 1) {
+      return null;
+    }
+    return nodeById.get(childId) ?? null;
+  };
+
+  const findLinearParent = (nodeId: string): Node | null => {
+    const parentId = parentIdByTarget.get(nodeId);
+    if (!parentId || incomingCount.get(nodeId) !== 1 || outgoingCount.get(parentId) !== 1) {
+      return null;
+    }
+    return nodeById.get(parentId) ?? null;
+  };
+
+  const findChainHead = (node: Node): Node => {
+    const parent = findLinearParent(node.id);
+    return parent ? findChainHead(parent) : node;
+  };
+
+  const walkChain = (node: Node, acc: Node[] = []): Node[] => {
+    acc.push(node);
+    const child = findLinearChild(node.id);
+    return child ? walkChain(child, acc) : acc;
+  };
+
+  const advanceCursor = (cursor: { x: number; y: number }, previous: Node): { x: number; y: number } => {
+    const previousWidth = previous.measured?.width ?? FALLBACK_NODE_WIDTH;
+    const previousHeight = previous.measured?.height ?? FALLBACK_NODE_HEIGHT;
+    return direction === "TB" ? { x: cursor.x, y: cursor.y + previousHeight } : { x: cursor.x + previousWidth, y: cursor.y };
+  };
+
+  const visited = new Set<string>();
+
+  layoutable.forEach((node) => {
+    if (visited.has(node.id)) {
+      return;
+    }
+    const head = findChainHead(node);
+    const headPosition = positions.get(head.id);
+    if (!headPosition) {
+      return;
+    }
+    const chain = walkChain(head);
+    chain.forEach((chainNode) => {
+      visited.add(chainNode.id);
+    });
+    chain.reduce((cursor, currentNode, index) => {
+      if (index === 0) {
+        return cursor;
+      }
+      const nextPosition = advanceCursor(cursor, chain[index - 1]);
+      positions.set(currentNode.id, nextPosition);
+      return nextPosition;
+    }, headPosition);
+  });
+};
+
 export const getLayoutedElements = (nodes: Node[], edges: Edge[], options: LayoutOptions = {}): Node[] => {
   const config: Required<LayoutOptions> = {
     direction: options.direction ?? LAYOUT_DIRECTION,
@@ -105,6 +190,7 @@ export const getLayoutedElements = (nodes: Node[], edges: Edge[], options: Layou
   }
 
   const computedPositions = layoutSiblings(layoutable, edges, config);
+  collapseChains(layoutable, edges, computedPositions, config.direction);
 
   return nodes.map((node) => {
     const next = computedPositions.get(node.id);

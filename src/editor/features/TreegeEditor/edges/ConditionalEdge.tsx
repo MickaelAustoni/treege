@@ -3,6 +3,7 @@ import { BaseEdge, Edge, EdgeLabelRenderer, EdgeProps, getBezierPath, useReactFl
 import { Plus, Trash2, Waypoints, X } from "lucide-react";
 import { MouseEvent, memo, useState } from "react";
 import useAvailableParentFields from "@/editor/hooks/useAvailableParentFields";
+import { useIsIntraChainEdge } from "@/editor/hooks/useChainPosition";
 import useTranslate from "@/editor/hooks/useTranslate";
 import { Button } from "@/shared/components/ui/button";
 import { Checkbox } from "@/shared/components/ui/checkbox";
@@ -39,6 +40,7 @@ const isConditionDefined = (condition: EdgeCondition) =>
 
 const ConditionalEdge = ({
   id,
+  source,
   target,
   sourceX,
   sourceY,
@@ -50,6 +52,7 @@ const ConditionalEdge = ({
   style,
   data,
 }: ConditionalEdgeProps) => {
+  const isIntraChain = useIsIntraChainEdge(source, target);
   const [edgePath, labelX, labelY] = getBezierPath({
     sourcePosition,
     sourceX,
@@ -155,6 +158,10 @@ const ConditionalEdge = ({
     }
     return "var(--treege-chart-3)";
   };
+
+  if (isIntraChain) {
+    return null;
+  }
 
   return (
     <>

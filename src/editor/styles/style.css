@@ -28,55 +28,31 @@ div.react-flow__node.react-flow__node-input {
   border: 0;
 }
 
-/* Neon node */
+/* Card node */
 div.react-flow__node__wrapper {
-  @apply tg:flex tg:justify-center tg:flex-col tg:p-7;
+  @apply tg:flex tg:justify-center tg:flex-col tg:p-4 tg:bg-card tg:border tg:border-border;
   width: 270px;
-  min-height: 150px;
-  border-radius: 30px;
-  border: 3px solid transparent;
-  box-shadow:
-    0 0 20px 6px oklch(from var(--treege-color-primary) l c h / 10%),
-    0 0 20px oklch(from var(--treege-color-tertiary) l c h / 10%);
-  background:
-    linear-gradient(oklch(from var(--treege-card) l c h / 33%), oklch(from var(--treege-card) l c h / 33%)) padding-box,
-    linear-gradient(
-      145deg,
-      oklch(from var(--treege-color-primary) l c h / 40%),
-      oklch(0 0 0 / 0),
-      oklch(from var(--treege-color-secondary) l c h / 40%)
-    )
-    border-box;
+  min-height: 90px;
 }
 
-/* Neon node selected */
+/* Stacked chain node: hides top border so adjacent nodes visually merge */
+div.react-flow__node__wrapper.chain-stacked {
+  border-top-width: 0;
+}
+
+/* Selected node */
 div.react-flow__node.selected .react-flow__node__wrapper {
-  box-shadow:
-    0 0 20px 6px oklch(from var(--treege-color-primary) l c h / 30%),
-    0 0 20px oklch(from var(--treege-color-tertiary) l c h / 30%);
+  box-shadow: 0 0 0 2px oklch(from var(--treege-primary) l c h / 35%);
 }
 
 /* Submit type node */
 div.react-flow__node__wrapper.submit-type {
-  box-shadow:
-    0 0 20px 6px oklch(from var(--treege-color-submit-primary) l c h / 10%),
-    0 0 20px oklch(from var(--treege-color-submit-tertiary) l c h / 10%);
-  background:
-    linear-gradient(oklch(from var(--treege-card) l c h / 33%), oklch(from var(--treege-card) l c h / 33%)) padding-box,
-    linear-gradient(
-      145deg,
-      oklch(from var(--treege-color-submit-primary) l c h / 40%),
-      oklch(0 0 0 / 0),
-      oklch(from var(--treege-color-submit-secondary) l c h / 40%)
-    )
-    border-box;
+  border-color: var(--treege-color-submit-primary);
 }
 
 /* Submit type node selected */
 div.react-flow__node.selected .react-flow__node__wrapper.submit-type {
-  box-shadow:
-    0 0 20px 6px oklch(from var(--treege-color-submit-primary) l c h / 30%),
-    0 0 20px oklch(from var(--treege-color-submit-tertiary) l c h / 30%);
+  box-shadow: 0 0 0 2px oklch(from var(--treege-color-submit-primary) l c h / 45%);
 }
 
 

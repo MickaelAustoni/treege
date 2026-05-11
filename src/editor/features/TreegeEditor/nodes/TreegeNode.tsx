@@ -11,6 +11,7 @@ import NodeOptions from "@/editor/features/TreegeEditor/nodes/components/NodeOpt
 import NodeRequiredButton from "@/editor/features/TreegeEditor/nodes/components/NodeRequiredButton";
 import NodeTypeBadge from "@/editor/features/TreegeEditor/nodes/components/NodeTypeBadge";
 import NodeWrapper from "@/editor/features/TreegeEditor/nodes/layout/NodeWrapper";
+import { useChainPosition } from "@/editor/hooks/useChainPosition";
 import { cn } from "@/shared/lib/utils";
 import { FlowNodeData, InputNodeData, UINodeData } from "@/shared/types/node";
 
@@ -26,9 +27,13 @@ const TreegeNode = (props: TreegeNodeProps) => {
   const subType = inputData?.type ?? uiData?.type;
   const isSubmit = inputData?.type === "submit";
   const showPreview = !selected && !!inputData?.type;
+  const chainPosition = useChainPosition(id);
+  const isChainTail = chainPosition === "last" || chainPosition === "single";
+  const isChainHead = chainPosition === "first" || chainPosition === "single";
+  const showBottomHandle = isChainTail || selected;
 
   return (
-    <NodeWrapper isSubmit={isSubmit}>
+    <NodeWrapper isSubmit={isSubmit} chainPosition={chainPosition}>
       {/* Node actions */}
       <div className="tg:absolute tg:top-2 tg:right-2 tg:flex tg:items-center tg:gap-0.5">
         {selected && inputData && !isSubmit && (
@@ -41,7 +46,7 @@ const TreegeNode = (props: TreegeNodeProps) => {
       </div>
 
       {/* Top handle */}
-      <Handle type="target" position={Position.Top} isConnectable={isConnectable} isConnectableStart={type === "ui"} />
+      {isChainHead && <Handle type="target" position={Position.Top} isConnectable={isConnectable} isConnectableStart={type === "ui"} />}
 
       {/* Illustrative image */}
       <NodeImage image={inputData?.image} />
@@ -70,7 +75,7 @@ const TreegeNode = (props: TreegeNodeProps) => {
       )}
 
       {/* Bottom handle */}
-      <BottomHandleDropdown nodeId={id} isConnectable={isConnectable} />
+      {showBottomHandle && <BottomHandleDropdown nodeId={id} isConnectable={isConnectable} />}
     </NodeWrapper>
   );
 };
