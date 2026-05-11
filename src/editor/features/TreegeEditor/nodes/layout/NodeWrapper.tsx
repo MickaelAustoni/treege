@@ -1,5 +1,5 @@
 import { PropsWithChildren } from "react";
-import { ChainPosition } from "@/editor/utils/chainPosition";
+import { ChainPosition } from "@/editor/hooks/useChainPosition";
 import { cn } from "@/shared/lib/utils";
 
 interface NodeWrapperProps extends PropsWithChildren {
