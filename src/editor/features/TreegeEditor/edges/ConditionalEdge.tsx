@@ -53,7 +53,7 @@ const ConditionalEdge = ({
   data,
 }: ConditionalEdgeProps) => {
   const isIntraChain = useIsIntraChainEdge(source, target);
-  const [edgePath, labelX, labelY] = getBezierPath({
+  const [edgePath] = getBezierPath({
     sourcePosition,
     sourceX,
     sourceY,
@@ -181,7 +181,7 @@ const ConditionalEdge = ({
           className="nodrag nopan tg:absolute"
           style={{
             pointerEvents: "all",
-            transform: `translate(-50%, -50%) translate(${labelX}px,${labelY}px)`,
+            transform: `translate(-50%, calc(-100% - 8px)) translate(${targetX}px, ${targetY}px)`,
           }}
         >
           <Popover open={isOpen} onOpenChange={handleOpenChange}>
