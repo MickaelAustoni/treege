@@ -42,17 +42,17 @@ div.react-flow__node__wrapper.chain-stacked {
 
 /* Selected node */
 div.react-flow__node.selected .react-flow__node__wrapper {
-  box-shadow: 0 0 0 2px oklch(from var(--treege-primary) l c h / 35%);
+  border-color: oklch(from var(--treege-primary) l c h / 50%);
+}
+
+/* Selected node restores top border so all 4 sides are highlighted */
+div.react-flow__node.selected .react-flow__node__wrapper.chain-stacked {
+  border-top-width: 1px;
 }
 
 /* Submit type node */
 div.react-flow__node__wrapper.submit-type {
   border-color: var(--treege-color-submit-primary);
-}
-
-/* Submit type node selected */
-div.react-flow__node.selected .react-flow__node__wrapper.submit-type {
-  box-shadow: 0 0 0 2px oklch(from var(--treege-color-submit-primary) l c h / 45%);
 }
 
 
