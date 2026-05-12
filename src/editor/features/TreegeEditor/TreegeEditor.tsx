@@ -41,7 +41,6 @@ const Flow = ({
       fitView
       panOnScroll
       minZoom={0.1}
-      multiSelectionKeyCode={["Meta", "Shift", "Control"]}
       fitViewOptions={{ maxZoom: isMobile ? 0.6 : 1 }}
       colorMode={theme}
       selectNodesOnDrag={false}
