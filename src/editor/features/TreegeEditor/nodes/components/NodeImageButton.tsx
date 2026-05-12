@@ -97,6 +97,8 @@ const NodeImageButton = ({ nodeId, image }: NodeImageButtonProps) => {
     apply("");
   };
 
+  const stopPropagation = (event: MouseEvent) => event.stopPropagation();
+
   /**
    * Reset the URL draft to the persisted image whenever the popover closes,
    * so reopening shows the current state rather than a stale typed value.
@@ -127,7 +129,7 @@ const NodeImageButton = ({ nodeId, image }: NodeImageButtonProps) => {
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <PopoverTrigger asChild>
+              <PopoverTrigger asChild onClick={stopPropagation}>
                 <Button
                   type="button"
                   variant="icon"
@@ -144,7 +146,7 @@ const NodeImageButton = ({ nodeId, image }: NodeImageButtonProps) => {
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
-        <PopoverContent align="end" className="tg:w-64 tg:space-y-3 tg:p-3">
+        <PopoverContent align="end" className="tg:w-64 tg:space-y-3 tg:p-3" onClick={stopPropagation}>
           <Button type="button" variant="outline" size="sm" className="tg:w-full" onClick={() => fileInputRef.current?.click()}>
             <Upload className="tg:mr-2 tg:h-4 tg:w-4" />
             {t("editor.inputNodeForm.optionImageUpload")}
