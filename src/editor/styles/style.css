@@ -31,8 +31,13 @@ div.react-flow__node.react-flow__node-input {
 /* On hover, raise the node so its bottom handle ("+") can overflow onto the
    next stacked node without being clipped. React Flow elevates selected
    nodes to z-index 1000 inline, so we go well above that to also work when
-   hovering a selected node. */
-div.react-flow__node:hover {
+   hovering a selected node.
+   `:active` keeps the elevation between mousedown and mouseup, even when
+   the pointer leaves the node box during a connection drag — without it,
+   the handle drops behind the sibling mid-drag and React Flow's connection
+   tracking breaks. */
+div.react-flow__node:hover,
+div.react-flow__node:active {
   z-index: 9999 !important;
 }
 
