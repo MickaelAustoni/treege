@@ -1,4 +1,4 @@
-import { Handle, Node, NodeProps, Position } from "@xyflow/react";
+import { Handle, Node, NodeProps, Position, useStore } from "@xyflow/react";
 import { memo } from "react";
 import BottomHandleDropdown from "@/editor/features/TreegeEditor/nodes/components/BottomHandleDropdown";
 import NodeGroupBadge from "@/editor/features/TreegeEditor/nodes/components/NodeGroupBadge";
@@ -30,7 +30,8 @@ const TreegeNode = (props: TreegeNodeProps) => {
   const chainPosition = useChainPosition(id);
   const isChainTail = chainPosition === "last" || chainPosition === "single";
   const isChainHead = chainPosition === "first" || chainPosition === "single";
-  const showBottomHandle = !isSubmit && (isChainTail || selected);
+  const isMultiSelection = useStore((state) => state.nodes.filter((node) => node.selected).length > 1);
+  const showBottomHandle = !isSubmit && (isChainTail || (selected && !isMultiSelection));
 
   return (
     <NodeWrapper isSubmit={isSubmit} chainPosition={chainPosition}>
