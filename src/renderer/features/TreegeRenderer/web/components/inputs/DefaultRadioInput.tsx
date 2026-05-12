@@ -8,10 +8,21 @@ import { FormDescription, FormError, FormItem } from "@/shared/components/ui/for
 import { Label } from "@/shared/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/shared/components/ui/radio-group";
 
-const DefaultRadioInput = ({ node, value, setValue, error, label, helperText, id, name }: InputRenderProps<"radio">) => {
+const DefaultRadioInput = ({
+  node,
+  value,
+  setValue,
+  error,
+  label,
+  helperText,
+  id,
+  name,
+  renderOptionExtras,
+}: InputRenderProps<"radio">) => {
   const { options, isLoading, error: inputOptionsError } = useInputOptions(node);
   const { optionsDisplayLimit } = useTreegeRendererContext();
   const t = useTranslate();
+  const hasExtras = Boolean(renderOptionExtras);
   const normalizedValue = value ? String(value) : "";
   const isCard = node.data.variant !== "default";
   const labelId = `${id}-label`;
@@ -41,10 +52,11 @@ const DefaultRadioInput = ({ node, value, setValue, error, label, helperText, id
           const optionId = `${id}-${option.value}`;
           const optionLabel = t(option.label) || option.value;
           const optionDescription = t(option.description);
+          const optionValue = String(option.value);
 
           if (isCard) {
             return (
-              <FieldLabel key={option.value + index} htmlFor={optionId}>
+              <FieldLabel key={option.value + index} htmlFor={optionId} className="tg:group/option tg:pointer-events-auto tg:relative">
                 <Field orientation="horizontal" data-disabled={option.disabled || undefined}>
                   {option.image && (
                     <img src={option.image} alt="" className="tg:h-10 tg:w-10 tg:shrink-0 tg:self-center tg:rounded tg:object-cover" />
@@ -53,15 +65,24 @@ const DefaultRadioInput = ({ node, value, setValue, error, label, helperText, id
                     <FieldTitle>{optionLabel}</FieldTitle>
                     {optionDescription && <FieldDescription>{optionDescription}</FieldDescription>}
                   </FieldContent>
-                  <RadioGroupItem value={String(option.value)} id={optionId} disabled={option.disabled} />
+                  <RadioGroupItem
+                    value={optionValue}
+                    id={optionId}
+                    disabled={option.disabled}
+                    className={hasExtras ? "tg:group-hover/option:invisible" : undefined}
+                  />
                 </Field>
+                {renderOptionExtras?.({ index, option, variant: "card" })}
               </FieldLabel>
             );
           }
 
           return (
-            <div key={option.value + index} className="tg:flex tg:items-start tg:space-x-2">
-              <RadioGroupItem value={String(option.value)} id={optionId} disabled={option.disabled} className="tg:mt-0.5" />
+            <div
+              key={option.value + index}
+              className="tg:group/option tg:pointer-events-auto tg:relative tg:flex tg:items-start tg:space-x-2"
+            >
+              <RadioGroupItem value={optionValue} id={optionId} disabled={option.disabled} className="tg:mt-0.5" />
               {option.image && <img src={option.image} alt="" className="tg:h-8 tg:w-8 tg:rounded tg:object-cover" />}
               <div className="tg:flex tg:flex-col">
                 <Label htmlFor={optionId} className="tg:cursor-pointer tg:font-normal tg:text-sm">
@@ -69,6 +90,7 @@ const DefaultRadioInput = ({ node, value, setValue, error, label, helperText, id
                 </Label>
                 {optionDescription && <span className="tg:text-muted-foreground tg:text-xs">{optionDescription}</span>}
               </div>
+              {renderOptionExtras?.({ index, option, variant: "default" })}
             </div>
           );
         })}

@@ -7,7 +7,6 @@ import NodeImageButton from "@/editor/features/TreegeEditor/nodes/components/Nod
 import NodeInputPreview from "@/editor/features/TreegeEditor/nodes/components/NodeInputPreview";
 import NodeLabelInput from "@/editor/features/TreegeEditor/nodes/components/NodeLabelInput";
 import NodeMoreMenu from "@/editor/features/TreegeEditor/nodes/components/NodeMoreMenu";
-import NodeOptions from "@/editor/features/TreegeEditor/nodes/components/NodeOptions";
 import NodeRequiredButton from "@/editor/features/TreegeEditor/nodes/components/NodeRequiredButton";
 import NodeTypeBadge from "@/editor/features/TreegeEditor/nodes/components/NodeTypeBadge";
 import NodeWrapper from "@/editor/features/TreegeEditor/nodes/layout/NodeWrapper";
@@ -76,11 +75,8 @@ const TreegeNode = (props: TreegeNodeProps) => {
         className={cn("tg:py-1", type === "ui" && "tg:capitalize")}
       />
 
-      {/* Input preview (always visible — runtime rendering of the field) */}
-      {inputData && <NodeInputPreview nodeId={id} data={inputData} />}
-
-      {/* Options */}
-      <NodeOptions nodeId={id} data={inputData} selected={isInEditMode} />
+      {/* Input preview (runtime rendering + inline option edit). Returns null when data is not editable. */}
+      <NodeInputPreview nodeId={id} data={inputData} />
 
       {/* Bottom handle — always rendered so React Flow can resolve outgoing edges; hidden visually when not applicable. */}
       <BottomHandleDropdown nodeId={id} isConnectable={isConnectable} hoverOnly={isBottomHandleHoverOnly} hidden={!showBottomHandle} />

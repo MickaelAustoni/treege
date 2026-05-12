@@ -7,7 +7,17 @@ import { Checkbox } from "@/shared/components/ui/checkbox";
 import { FormDescription, FormError, FormItem } from "@/shared/components/ui/form";
 import { Label } from "@/shared/components/ui/label";
 
-const DefaultCheckboxInput = ({ node, value, setValue, error, label, helperText, id, name }: InputRenderProps<"checkbox">) => {
+const DefaultCheckboxInput = ({
+  node,
+  value,
+  setValue,
+  error,
+  label,
+  helperText,
+  id,
+  name,
+  renderOptionExtras,
+}: InputRenderProps<"checkbox">) => {
   const { options, isLoading, error: inputOptionsError } = useInputOptions(node);
   const { optionsDisplayLimit } = useTreegeRendererContext();
   const t = useTranslate();
@@ -39,7 +49,10 @@ const DefaultCheckboxInput = ({ node, value, setValue, error, label, helperText,
           {visibleOptions.map((option, index) => {
             const optionDescription = t(option.description);
             return (
-              <div key={option.value + index} className="tg:flex tg:items-start tg:gap-3">
+              <div
+                key={option.value + index}
+                className="tg:group/option tg:pointer-events-auto tg:relative tg:flex tg:items-start tg:gap-3"
+              >
                 <Checkbox
                   id={`${id}-${option.value}`}
                   name={name}
@@ -54,6 +67,7 @@ const DefaultCheckboxInput = ({ node, value, setValue, error, label, helperText,
                   </Label>
                   {optionDescription && <span className="tg:text-muted-foreground tg:text-xs">{optionDescription}</span>}
                 </div>
+                {renderOptionExtras?.({ index, option })}
               </div>
             );
           })}

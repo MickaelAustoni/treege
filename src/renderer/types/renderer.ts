@@ -2,7 +2,17 @@ import { Node } from "@xyflow/react";
 import { FormEvent, ReactNode } from "react";
 import { SerializableFile } from "@/renderer/utils/file";
 import { FlowStep } from "@/renderer/utils/step";
-import { Flow, GroupNodeData, HttpHeader, InputNodeData, InputType, TreegeNodeData, UINodeData, UIType } from "@/shared/types/node";
+import {
+  Flow,
+  GroupNodeData,
+  HttpHeader,
+  InputNodeData,
+  InputOption,
+  InputType,
+  TreegeNodeData,
+  UINodeData,
+  UIType,
+} from "@/shared/types/node";
 
 /**
  * Type mapping for input values based on input type
@@ -103,6 +113,15 @@ export type InputRenderProps<T extends InputType = InputType> = {
    * Whether the form is currently being submitted (for submit inputs)
    */
   isSubmitting?: boolean;
+  /**
+   * Editor-only extension slot: when provided, option-based renderers (radio,
+   * checkbox) call this for each option to paint inline extras next to it
+   * (e.g. value preview, edit / delete buttons). `variant` is a renderer-side
+   * layout hint (e.g. `"card"` for radio cards). Returning `null` skips the
+   * slot for that option. Left undefined in runtime so the renderers stay
+   * runtime-pure.
+   */
+  renderOptionExtras?: (option: { option: InputOption; index: number; variant?: string }) => ReactNode;
 };
 
 export type UiRenderProps = {
