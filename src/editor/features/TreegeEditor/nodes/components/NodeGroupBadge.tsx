@@ -11,6 +11,10 @@ interface NodeGroupBadgeProps {
   groupId?: string;
 }
 
+const MAX_LABEL_LENGTH = 10;
+
+const truncate = (value: string): string => (value.length > MAX_LABEL_LENGTH ? `${value.slice(0, MAX_LABEL_LENGTH)}…` : value);
+
 const NodeGroupBadge = ({ groupId }: NodeGroupBadgeProps) => {
   const t = useTranslate();
   const nodes = useNodes<TreegeNode>();
@@ -22,14 +26,17 @@ const NodeGroupBadge = ({ groupId }: NodeGroupBadgeProps) => {
     return null;
   }
 
+  const displayLabel = truncate(label || groupId);
+
   return (
     <Badge
       variant="default"
       className="tg:px-1.5 tg:py-0 tg:text-[10px] tg:text-white tg:capitalize tg:[&>svg]:size-2.5"
       style={{ backgroundColor }}
+      title={label || groupId}
     >
       <Boxes className="tg:mt-0.5" />
-      {label || groupId}
+      {displayLabel}
     </Badge>
   );
 };
