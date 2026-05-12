@@ -22,15 +22,16 @@ interface BottomHandleDropdownProps {
   nodeId: string;
   isConnectable?: boolean;
   hoverOnly?: boolean;
+  hidden?: boolean;
 }
 
-const BottomHandleDropdown = ({ nodeId, isConnectable, hoverOnly }: BottomHandleDropdownProps) => {
+const BottomHandleDropdown = ({ nodeId, isConnectable, hoverOnly, hidden }: BottomHandleDropdownProps) => {
   const { onAddFromHandle } = useFlowConnections();
   const t = useTranslate();
   const [open, setOpen] = useState(false);
 
   const handleClick = (event: MouseEvent) => {
-    if (event.defaultPrevented) {
+    if (event.defaultPrevented || hidden) {
       return;
     }
     setOpen(true);
@@ -41,14 +42,15 @@ const BottomHandleDropdown = ({ nodeId, isConnectable, hoverOnly }: BottomHandle
       <Handle
         type="source"
         position={Position.Bottom}
-        isConnectable={isConnectable}
+        isConnectable={isConnectable && !hidden}
         onClick={handleClick}
         className={cn(
           "tg:flex tg:h-6! tg:w-6! tg:cursor-pointer tg:items-center tg:justify-center tg:rounded-sm tg:transition tg:hover:bg-primary/80!",
-          hoverOnly && "tg:opacity-0 tg:group-hover:opacity-100",
+          hidden && "tg:pointer-events-none tg:opacity-0",
+          !hidden && hoverOnly && "tg:opacity-0 tg:group-hover:opacity-100",
         )}
       >
-        <Plus className="tg:h-4 tg:w-4 tg:text-primary-foreground" />
+        {!hidden && <Plus className="tg:h-4 tg:w-4 tg:text-primary-foreground" />}
       </Handle>
 
       <DropdownMenu open={open} onOpenChange={setOpen}>

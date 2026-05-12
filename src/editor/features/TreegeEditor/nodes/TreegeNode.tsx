@@ -82,8 +82,8 @@ const TreegeNode = (props: TreegeNodeProps) => {
       {/* Options */}
       <NodeOptions nodeId={id} data={inputData} selected={isInEditMode} />
 
-      {/* Bottom handle */}
-      {showBottomHandle && <BottomHandleDropdown nodeId={id} isConnectable={isConnectable} hoverOnly={isBottomHandleHoverOnly} />}
+      {/* Bottom handle — always rendered so React Flow can resolve outgoing edges; hidden visually when not applicable. */}
+      <BottomHandleDropdown nodeId={id} isConnectable={isConnectable} hoverOnly={isBottomHandleHoverOnly} hidden={!showBottomHandle} />
     </NodeWrapper>
   );
 };

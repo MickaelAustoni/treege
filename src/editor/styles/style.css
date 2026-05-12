@@ -41,6 +41,13 @@ div.react-flow__node:active {
   z-index: 9999 !important;
 }
 
+/* Keep the connection-line preview above the elevated node during a drag,
+   otherwise the line slides under the source node and disappears. */
+.react-flow__connectionline,
+.react-flow__connection {
+  z-index: 10000 !important;
+}
+
 /* Card node */
 div.react-flow__node__wrapper {
   @apply tg:flex tg:justify-center tg:flex-col tg:p-4 tg:bg-card tg:border tg:border-border;
