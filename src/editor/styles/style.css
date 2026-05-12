@@ -65,9 +65,12 @@ div.react-flow__node.selected .react-flow__node__wrapper {
   border-color: oklch(from var(--treege-primary) l c h / 50%);
 }
 
-/* Selected node restores top border so all 4 sides are highlighted */
+/* Selected node restores the top edge for stacked nodes via an inset shadow.
+   We can't bring the border back (border-top-width: 1px would shift the node
+   by 1px because the border participates in the box-model); an inset shadow
+   paints the line inside the box without changing its size. */
 div.react-flow__node.selected .react-flow__node__wrapper.stacked {
-  border-top-width: 1px;
+  box-shadow: inset 0 1px 0 oklch(from var(--treege-primary) l c h / 50%);
 }
 
 /* Handle */
