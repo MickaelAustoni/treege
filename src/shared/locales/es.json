@@ -239,6 +239,11 @@
       "variantCard": "Tarjeta",
       "variantDefault": "Predeterminado"
     },
+    "multiSelectionPanel": {
+      "clearSelection": "Borrar selección",
+      "deleteSelected": "Eliminar nodos seleccionados",
+      "nodesSelected": "nodos seleccionados"
+    },
     "nodeActionsSheet": {
       "deleteNode": "Eliminar nodo",
       "deleteNodeConfirm": "¿Estás seguro de que quieres eliminar este nodo?",
@@ -299,6 +304,7 @@
       "groupCreatedDesc": "El grupo \"{groupName}\" se ha creado correctamente.",
       "groupName": "Nombre del grupo",
       "groupNamePlaceholder": "Ej: Paso 1 - Información personal",
+      "mixed": "Grupos mixtos",
       "newGroup": "Nuevo grupo",
       "newGroupDescription": "El grupo se creará alrededor del nodo seleccionado.",
       "noGroup": "Sin grupo",

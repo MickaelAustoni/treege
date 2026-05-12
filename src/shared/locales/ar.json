@@ -239,6 +239,11 @@
       "variantCard": "بطاقة",
       "variantDefault": "افتراضي"
     },
+    "multiSelectionPanel": {
+      "clearSelection": "إلغاء التحديد",
+      "deleteSelected": "حذف العقد المحددة",
+      "nodesSelected": "عقدة محددة"
+    },
     "nodeActionsSheet": {
       "deleteNode": "حذف العقدة",
       "deleteNodeConfirm": "هل أنت متأكد من أنك تريد حذف هذه العقدة؟",
@@ -299,6 +304,7 @@
       "groupCreatedDesc": "تم إنشاء المجموعة \"{groupName}\" بنجاح.",
       "groupName": "اسم المجموعة",
       "groupNamePlaceholder": "مثال: الخطوة 1 - معلومات شخصية",
+      "mixed": "مجموعات مختلطة",
       "newGroup": "مجموعة جديدة",
       "newGroupDescription": "سيتم إنشاء المجموعة حول العقدة المحددة.",
       "noGroup": "بدون مجموعة",

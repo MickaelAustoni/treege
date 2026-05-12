@@ -1,7 +1,7 @@
 import { useReactFlow } from "@xyflow/react";
 import { Pencil, PlusCircle } from "lucide-react";
 import { nanoid } from "nanoid";
-import { useEffect, useId, useState } from "react";
+import { useEffect, useId, useMemo, useState } from "react";
 import { toast } from "sonner";
 import useNodesSelection from "@/editor/hooks/useNodesSelection";
 import useTranslate from "@/editor/hooks/useTranslate";
@@ -10,33 +10,56 @@ import { Input } from "@/shared/components/ui/input";
 import { Label } from "@/shared/components/ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "@/shared/components/ui/popover";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/shared/components/ui/select";
+import { TreegeNode } from "@/shared/types/node";
 import { isGroupNode } from "@/shared/utils/nodeTypeGuards";
 
-const SelectNodeGroup = () => {
+interface SelectNodeGroupProps {
+  /**
+   * Nodes to operate on. When omitted, falls back to the currently selected
+   * node from `useNodesSelection` (preserves the original Sheet behavior).
+   * Pass an array to drive the input from the multi-selection panel; all
+   * mutations (assign / create) are applied to every node in the list.
+   */
+  targetNodes?: TreegeNode[];
+  /**
+   * When true, hides the label above the Select (used by compact panels
+   * where a label would be redundant).
+   */
+  hideLabel?: boolean;
+}
+
+const SelectNodeGroup = ({ targetNodes, hideLabel }: SelectNodeGroupProps = {}) => {
   const [newGroupLabel, setNewGroupLabel] = useState("");
   const [renameLabel, setRenameLabel] = useState("");
   const [popoverOpen, setPopoverOpen] = useState(false);
   const [renameOpen, setRenameOpen] = useState(false);
   const { selectedNode, groupNodes } = useNodesSelection();
   const { setNodes } = useReactFlow();
-  const currentParentId = selectedNode?.parentId || "none";
-  const isGroup = isGroupNode(selectedNode);
   const t = useTranslate();
   const selectGroupId = useId();
   const inputGroupId = useId();
   const renameInputId = useId();
-  const currentParentGroup = currentParentId === "none" ? undefined : groupNodes.find((node) => node.id === currentParentId);
+  const nodes = useMemo<TreegeNode[]>(() => targetNodes ?? (selectedNode ? [selectedNode] : []), [targetNodes, selectedNode]);
+  const allAreGroups = nodes.length > 0 && nodes.every(isGroupNode);
+  const targetIds = useMemo(() => new Set(nodes.map((node) => node.id)), [nodes]);
+  // A "shared" parent exists only when every target points at the same group.
+  const distinctParentIds = useMemo(() => new Set(nodes.map((node) => node.parentId)), [nodes]);
+  const isMixed = distinctParentIds.size > 1;
+  const sharedParentId = !isMixed && nodes[0] ? nodes[0].parentId : undefined;
+  const currentParentGroup = sharedParentId ? groupNodes.find((node) => node.id === sharedParentId) : undefined;
   const currentParentLabel = currentParentGroup?.data?.label?.en ?? "";
+  const selectValue = isMixed ? "" : (sharedParentId ?? "none");
+  const placeholder = isMixed ? t("editor.selectNodeGroup.mixed") : t("editor.selectNodeGroup.noGroup");
 
   const handleGroupChange = (parentId: string) => {
-    if (!selectedNode) {
+    if (nodes.length === 0) {
       return;
     }
 
     setNodes((nds) => {
       if (parentId === "none") {
         return nds.map((node) => {
-          if (node.id === selectedNode.id) {
+          if (targetIds.has(node.id)) {
             const { parentId: parentIdDeleted, extent, ...rest } = node;
             return rest;
           }
@@ -44,18 +67,15 @@ const SelectNodeGroup = () => {
         });
       }
 
-      const groupNode = nds.find((n) => n.id === parentId);
+      const groupNode = nds.find((node) => node.id === parentId);
       if (!groupNode) {
         return nds;
       }
 
       return nds.map((node) => {
-        if (node.id === selectedNode.id) {
+        if (targetIds.has(node.id)) {
           const { extent, ...rest } = node;
-          return {
-            ...rest,
-            parentId,
-          };
+          return { ...rest, parentId };
         }
         return node;
       });
@@ -63,13 +83,14 @@ const SelectNodeGroup = () => {
   };
 
   const handleCreateGroup = () => {
-    if (!(newGroupLabel.trim() && selectedNode)) {
+    const label = newGroupLabel.trim();
+    if (!label || nodes.length === 0) {
       return;
     }
 
     const existingGroup = groupNodes.find((node) => {
-      const label = node.data?.label?.en || node.data?.label;
-      return String(label).toLowerCase() === newGroupLabel.trim().toLowerCase();
+      const groupLabel = node.data?.label?.en || node.data?.label;
+      return String(groupLabel).toLowerCase() === label.toLowerCase();
     });
 
     if (existingGroup) {
@@ -83,37 +104,30 @@ const SelectNodeGroup = () => {
 
     setNodes((nds) => {
       const newGroupNode = {
-        data: {
-          label: {
-            en: newGroupLabel.trim(),
-          },
-        },
+        data: { label: { en: label } },
         hidden: true,
         id: newGroupId,
         position: { x: 0, y: 0 },
         type: "group",
       };
 
-      // Parent nodes must be before their children in the nodes array
-      const updatedNodes = nds.map((node) => {
-        if (node.id === selectedNode.id) {
+      // Parent nodes must come before their children in the nodes array.
+      const updated = nds.map((node) => {
+        if (targetIds.has(node.id)) {
           const { extent, ...rest } = node;
-          return {
-            ...rest,
-            parentId: newGroupId,
-          };
+          return { ...rest, parentId: newGroupId };
         }
         return node;
       });
 
-      return [newGroupNode, ...updatedNodes];
+      return [newGroupNode, ...updated];
     });
 
     setNewGroupLabel("");
     setPopoverOpen(false);
 
     toast.success("Group created", {
-      description: `The group "${newGroupLabel.trim()}" has been created successfully.`,
+      description: `The group "${label}" has been created successfully.`,
     });
   };
 
@@ -163,17 +177,17 @@ const SelectNodeGroup = () => {
     }
   }, [renameOpen, currentParentLabel]);
 
-  if (isGroup) {
+  if (allAreGroups || nodes.length === 0) {
     return null;
   }
 
   return (
     <div className="tg:space-y-2">
-      <Label htmlFor={selectGroupId}>{t("editor.selectNodeGroup.group")}</Label>
+      {!hideLabel && <Label htmlFor={selectGroupId}>{t("editor.selectNodeGroup.group")}</Label>}
       <div className="tg:flex tg:gap-2">
-        <Select value={currentParentId} onValueChange={handleGroupChange}>
+        <Select value={selectValue} onValueChange={handleGroupChange}>
           <SelectTrigger id={selectGroupId} className="tg:flex-1">
-            <SelectValue placeholder={t("editor.selectNodeGroup.noGroup")} />
+            <SelectValue placeholder={placeholder} />
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>

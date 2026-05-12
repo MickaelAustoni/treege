@@ -239,6 +239,11 @@
       "variantCard": "Card",
       "variantDefault": "Default"
     },
+    "multiSelectionPanel": {
+      "clearSelection": "Clear selection",
+      "deleteSelected": "Delete selected nodes",
+      "nodesSelected": "nodes selected"
+    },
     "nodeActionsSheet": {
       "deleteNode": "Delete node",
       "deleteNodeConfirm": "Are you sure you want to delete this node?",
@@ -299,6 +304,7 @@
       "groupCreatedDesc": "The group \"{groupName}\" has been created successfully.",
       "groupName": "Group name",
       "groupNamePlaceholder": "Ex: Step 1 - Personal info",
+      "mixed": "Mixed groups",
       "newGroup": "New group",
       "newGroupDescription": "The group will be created around the selected node.",
       "noGroup": "No group",

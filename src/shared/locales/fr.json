@@ -239,6 +239,11 @@
       "variantCard": "Carte",
       "variantDefault": "Par défaut"
     },
+    "multiSelectionPanel": {
+      "clearSelection": "Effacer la sélection",
+      "deleteSelected": "Supprimer les nœuds sélectionnés",
+      "nodesSelected": "nœuds sélectionnés"
+    },
     "nodeActionsSheet": {
       "deleteNode": "Supprimer le nœud",
       "deleteNodeConfirm": "Êtes-vous sûr de vouloir supprimer ce nœud ?",
@@ -299,6 +304,7 @@
       "groupCreatedDesc": "Le groupe \"{groupName}\" a été créé avec succès.",
       "groupName": "Nom du groupe",
       "groupNamePlaceholder": "Ex : Étape 1 - Informations personnelles",
+      "mixed": "Groupes mixtes",
       "newGroup": "Nouveau groupe",
       "newGroupDescription": "Le groupe sera créé autour du nœud sélectionné.",
       "noGroup": "Aucun groupe",

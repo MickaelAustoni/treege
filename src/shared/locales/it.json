@@ -239,6 +239,11 @@
       "variantCard": "Scheda",
       "variantDefault": "Predefinito"
     },
+    "multiSelectionPanel": {
+      "clearSelection": "Cancella selezione",
+      "deleteSelected": "Elimina nodi selezionati",
+      "nodesSelected": "nodi selezionati"
+    },
     "nodeActionsSheet": {
       "deleteNode": "Elimina nodo",
       "deleteNodeConfirm": "Sei sicuro di voler eliminare questo nodo?",
@@ -299,6 +304,7 @@
       "groupCreatedDesc": "Il gruppo \"{groupName}\" è stato creato con successo.",
       "groupName": "Nome del gruppo",
       "groupNamePlaceholder": "Es: Passo 1 - Informazioni personali",
+      "mixed": "Gruppi misti",
       "newGroup": "Nuovo gruppo",
       "newGroupDescription": "Il gruppo verrà creato attorno al nodo selezionato.",
       "noGroup": "Nessun gruppo",

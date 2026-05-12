@@ -239,6 +239,11 @@
       "variantCard": "Cartão",
       "variantDefault": "Padrão"
     },
+    "multiSelectionPanel": {
+      "clearSelection": "Limpar seleção",
+      "deleteSelected": "Excluir nós selecionados",
+      "nodesSelected": "nós selecionados"
+    },
     "nodeActionsSheet": {
       "deleteNode": "Excluir nó",
       "deleteNodeConfirm": "Tem certeza de que deseja excluir este nó?",
@@ -299,6 +304,7 @@
       "groupCreatedDesc": "O grupo \"{groupName}\" foi criado com sucesso.",
       "groupName": "Nome do grupo",
       "groupNamePlaceholder": "Ex: Passo 1 - Informações pessoais",
+      "mixed": "Grupos mistos",
       "newGroup": "Novo grupo",
       "newGroupDescription": "O grupo será criado em torno do nó selecionado.",
       "noGroup": "Sem grupo",

@@ -239,6 +239,11 @@
       "variantCard": "Karte",
       "variantDefault": "Standard"
     },
+    "multiSelectionPanel": {
+      "clearSelection": "Auswahl aufheben",
+      "deleteSelected": "Ausgewählte Knoten löschen",
+      "nodesSelected": "Knoten ausgewählt"
+    },
     "nodeActionsSheet": {
       "deleteNode": "Knoten löschen",
       "deleteNodeConfirm": "Sind Sie sicher, dass Sie diesen Knoten löschen möchten?",
@@ -299,6 +304,7 @@
       "groupCreatedDesc": "Die Gruppe \"{groupName}\" wurde erfolgreich erstellt.",
       "groupName": "Gruppenname",
       "groupNamePlaceholder": "z.B.: Schritt 1 - Persönliche Informationen",
+      "mixed": "Gemischte Gruppen",
       "newGroup": "Neue Gruppe",
       "newGroupDescription": "Die Gruppe wird um den ausgewählten Knoten herum erstellt.",
       "noGroup": "Keine Gruppe",

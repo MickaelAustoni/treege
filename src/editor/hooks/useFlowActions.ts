@@ -172,9 +172,38 @@ const useFlowActions = () => {
     deleteNode(currentSelectedNode.id);
   }, [getNodes, deleteNode]);
 
+  /**
+   * Deletes a batch of nodes (and all edges touching them) in a single pass —
+   * one undo snapshot, one `setNodes`, one `setEdges`. Unlike `deleteNode`, no
+   * automatic parent→child bridging is attempted because the topology of a
+   * multi-node deletion is too ambiguous to bridge safely.
+   */
+  const deleteNodes = useCallback(
+    (ids: string[]) => {
+      if (ids.length === 0) {
+        return;
+      }
+      takeSnapshot();
+      const idSet = new Set(ids);
+      setNodes((nds) => nds.filter((node) => !idSet.has(node.id)));
+      setEdges((eds) => {
+        const affectedParents = new Set<string>();
+        eds.forEach((edge) => {
+          if (idSet.has(edge.target) && !idSet.has(edge.source)) {
+            affectedParents.add(edge.source);
+          }
+        });
+        const remaining = eds.filter((edge) => !idSet.has(edge.source) && !idSet.has(edge.target));
+        return normalizeConditionalEdges(remaining, affectedParents);
+      });
+    },
+    [setNodes, setEdges, takeSnapshot],
+  );
+
   return {
     clearSelection,
     deleteNode,
+    deleteNodes,
     deleteSelectedNode,
     selectNode,
     updateNodeData,

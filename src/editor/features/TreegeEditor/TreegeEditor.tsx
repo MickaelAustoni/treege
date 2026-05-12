@@ -11,6 +11,7 @@ import ChangeNodeTypeDialog from "@/editor/features/TreegeEditor/dialogs/ChangeN
 import DeleteNodeDialog from "@/editor/features/TreegeEditor/dialogs/DeleteNodeDialog";
 import AutoLayout from "@/editor/features/TreegeEditor/layout/AutoLayout";
 import ActionsPanel from "@/editor/features/TreegeEditor/panel/ActionsPanel";
+import MultiSelectionPanel from "@/editor/features/TreegeEditor/panel/MultiSelectionPanel";
 import NodeActionsSheet from "@/editor/features/TreegeEditor/sheets/NodeActionsSheet";
 import useFlowConnections from "@/editor/hooks/useFlowConnections";
 import useUndoRedo from "@/editor/hooks/useUndoRedo";
@@ -69,13 +70,14 @@ const Flow = ({
         onHeadersChange={onHeadersChange}
       />
       <Logo theme={theme} />
-      {showMiniMap && <MiniMap />}
+      <MultiSelectionPanel />
       <Controls showInteractive={false}>
         <MiniMapControl show={showMiniMap} onToggle={() => setShowMiniMap((prev) => !prev)} />
       </Controls>
       <NodeActionsSheet />
       <DeleteNodeDialog />
       <ChangeNodeTypeDialog />
+      {showMiniMap && <MiniMap />}
     </ReactFlow>
   );
 };
