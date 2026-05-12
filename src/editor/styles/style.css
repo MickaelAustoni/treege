@@ -50,12 +50,6 @@ div.react-flow__node.selected .react-flow__node__wrapper.chain-stacked {
   border-top-width: 1px;
 }
 
-/* Submit type node */
-div.react-flow__node__wrapper.submit-type {
-  border-color: var(--treege-color-submit-primary);
-}
-
-
 /* Handle */
 div.react-flow__handle {
   background-color: var(--treege-muted-foreground);
