@@ -2,6 +2,7 @@ import { useForm } from "@tanstack/react-form";
 import { BaseEdge, Edge, EdgeLabelRenderer, EdgeProps, getBezierPath, useReactFlow } from "@xyflow/react";
 import { Plus, Trash2, Waypoints, X } from "lucide-react";
 import { MouseEvent, memo, useState } from "react";
+import { useTreegeEditorContext } from "@/editor/context/TreegeEditorContext";
 import useAvailableParentFields from "@/editor/hooks/useAvailableParentFields";
 import { useIsIntraChainEdge } from "@/editor/hooks/useChainPosition";
 import useTranslate from "@/editor/hooks/useTranslate";
@@ -13,13 +14,17 @@ import { Label } from "@/shared/components/ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "@/shared/components/ui/popover";
 import { ScrollArea } from "@/shared/components/ui/scroll-area";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/components/ui/select";
+import { ToggleGroup, ToggleGroupItem } from "@/shared/components/ui/toggle-group";
 import { LOGICAL_OPERATOR } from "@/shared/constants/operator";
 import { cn } from "@/shared/lib/utils";
 import { ConditionalEdgeData, EdgeCondition } from "@/shared/types/edge";
 import { LogicalOperator, Operator } from "@/shared/types/operator";
+import { Translatable } from "@/shared/types/translate";
 
 export type ConditionalEdgeType = Edge<ConditionalEdgeData, "conditional">;
 export type ConditionalEdgeProps = EdgeProps<ConditionalEdgeType>;
+
+type EdgeMode = "basic" | "advanced";
 
 const OPERATOR_DISPLAY: Record<Operator, string> = {
   "!==": "≠",
@@ -37,6 +42,16 @@ const OPERATOR_DISPLAY: Record<Operator, string> = {
  */
 const isConditionDefined = (condition: EdgeCondition) =>
   Boolean(condition.field) && condition.value !== undefined && condition.value !== "";
+
+const resolveTranslatable = (label: Translatable | undefined, language: string): string => {
+  if (label === undefined) {
+    return "";
+  }
+  if (typeof label === "string") {
+    return label;
+  }
+  return label[language as keyof typeof label] ?? label.en ?? "";
+};
 
 const ConditionalEdge = ({
   id,
@@ -63,16 +78,19 @@ const ConditionalEdge = ({
   });
 
   const [isOpen, setIsOpen] = useState(false);
+  const [mode, setMode] = useState<EdgeMode>("basic");
   const { updateEdgeData, deleteElements } = useReactFlow();
   const availableParentFields = useAvailableParentFields(target);
+  const directParent = availableParentFields.find((field) => field.nodeId === source) ?? availableParentFields[0];
+  const { language } = useTreegeEditorContext();
   const t = useTranslate();
 
   const isConfigured =
     Boolean(data?.configured) || Boolean(data?.isFallback) || Boolean(data?.label) || (data?.conditions?.some(isConditionDefined) ?? false);
 
-  const { handleSubmit, reset, Field } = useForm({
+  const { handleSubmit, reset, setFieldValue, Field } = useForm({
     defaultValues: {
-      conditions: data?.conditions || [{ field: availableParentFields[0]?.nodeId ?? "", operator: "===", value: "" }],
+      conditions: data?.conditions || [{ field: directParent?.nodeId ?? "", operator: "===", value: "" }],
       isFallback: !!data?.isFallback,
       label: data?.label || "",
     },
@@ -110,6 +128,20 @@ const ConditionalEdge = ({
     if (hasContent) {
       updateEdgeData(id, { configured: true });
     }
+  };
+
+  const handleModeChange = (next: string) => {
+    if (next === "basic" || next === "advanced") {
+      setMode(next);
+    }
+  };
+
+  const handleBasicValueChange = (nextValue: string) => {
+    if (!directParent) {
+      return;
+    }
+    setFieldValue("conditions", [{ field: directParent.nodeId, operator: "===", value: nextValue }]);
+    setFieldValue("isFallback", false);
   };
 
   const getConditionSummary = () => {
@@ -213,195 +245,263 @@ const ConditionalEdge = ({
                       <p className="tg:text-muted-foreground tg:text-sm">{t("editor.conditionalEdge.displayConditionsDesc")}</p>
                     </div>
 
-                    <div className="tg:grid tg:gap-4">
-                      <Field name="label">
-                        {(field) => (
-                          <FormItem>
-                            <Label htmlFor={field.name}>{t("editor.conditionalEdge.labelOptional")}</Label>
-                            <Input
-                              id={field.name}
-                              placeholder={t("editor.conditionalEdge.labelPlaceholder")}
-                              value={field.state.value}
-                              onChange={(e) => field.handleChange(e.target.value)}
-                            />
-                            <FormDescription>{t("editor.conditionalEdge.labelDesc")}</FormDescription>
-                          </FormItem>
-                        )}
-                      </Field>
+                    <ToggleGroup type="single" variant="outline" size="sm" value={mode} onValueChange={handleModeChange}>
+                      <ToggleGroupItem value="basic" aria-label={t("editor.conditionalEdge.basic")}>
+                        {t("editor.conditionalEdge.basic")}
+                      </ToggleGroupItem>
+                      <ToggleGroupItem value="advanced" aria-label={t("editor.conditionalEdge.advanced")}>
+                        {t("editor.conditionalEdge.advanced")}
+                      </ToggleGroupItem>
+                    </ToggleGroup>
 
-                      <Field name="isFallback">
-                        {(field) => (
-                          <FormItem>
-                            <div className="tg:flex tg:items-center tg:gap-3 tg:rounded-lg tg:border tg:bg-muted/20 tg:p-3">
-                              <Checkbox
+                    {mode === "basic" ? (
+                      <div className="tg:grid tg:gap-4">
+                        <Field name="label">
+                          {(field) => (
+                            <FormItem>
+                              <Label htmlFor={field.name}>{t("editor.conditionalEdge.labelOptional")}</Label>
+                              <Input
                                 id={field.name}
-                                checked={field.state.value}
-                                onCheckedChange={(checked) => field.handleChange(checked as boolean)}
+                                placeholder={t("editor.conditionalEdge.labelPlaceholder")}
+                                value={field.state.value}
+                                onChange={(e) => field.handleChange(e.target.value)}
                               />
-                              <div className="tg:flex tg:flex-col tg:gap-1">
-                                <Label htmlFor={field.name} className="tg:cursor-pointer tg:font-medium">
-                                  {t("editor.conditionalEdge.fallbackPath")}
-                                </Label>
-                                <FormDescription className="tg:text-xs">{t("editor.conditionalEdge.fallbackPathDesc")}</FormDescription>
-                              </div>
-                            </div>
-                          </FormItem>
+                              <FormDescription>{t("editor.conditionalEdge.labelDesc")}</FormDescription>
+                            </FormItem>
+                          )}
+                        </Field>
+
+                        {directParent ? (
+                          <Field name="conditions">
+                            {(conditionsField) => {
+                              const currentValue = conditionsField.state.value?.[0]?.value ?? "";
+                              const options = directParent.options ?? [];
+                              const hasOptions = options.length > 0;
+
+                              return (
+                                <FormItem>
+                                  <Label>
+                                    {t("editor.conditionalEdge.value")} ({directParent.label})
+                                  </Label>
+                                  {hasOptions ? (
+                                    <Select value={currentValue} onValueChange={handleBasicValueChange}>
+                                      <SelectTrigger className="tg:w-full">
+                                        <SelectValue placeholder={t("editor.conditionalEdge.selectValue")} />
+                                      </SelectTrigger>
+                                      <SelectContent>
+                                        {options.map((option) => (
+                                          <SelectItem key={option.value} value={option.value}>
+                                            {resolveTranslatable(option.label, language) || option.value}
+                                          </SelectItem>
+                                        ))}
+                                      </SelectContent>
+                                    </Select>
+                                  ) : (
+                                    <Input
+                                      placeholder={t("editor.conditionalEdge.valuePlaceholder")}
+                                      value={currentValue}
+                                      onChange={(e) => handleBasicValueChange(e.target.value)}
+                                    />
+                                  )}
+                                </FormItem>
+                              );
+                            }}
+                          </Field>
+                        ) : (
+                          <p className="tg:text-muted-foreground tg:text-sm">{t("editor.conditionalEdge.noFieldsAvailable")}</p>
                         )}
-                      </Field>
+                      </div>
+                    ) : (
+                      <div className="tg:grid tg:gap-4">
+                        <Field name="label">
+                          {(field) => (
+                            <FormItem>
+                              <Label htmlFor={field.name}>{t("editor.conditionalEdge.labelOptional")}</Label>
+                              <Input
+                                id={field.name}
+                                placeholder={t("editor.conditionalEdge.labelPlaceholder")}
+                                value={field.state.value}
+                                onChange={(e) => field.handleChange(e.target.value)}
+                              />
+                              <FormDescription>{t("editor.conditionalEdge.labelDesc")}</FormDescription>
+                            </FormItem>
+                          )}
+                        </Field>
 
-                      <Field name="conditions" mode="array">
-                        {(conditionsField) => {
-                          const isFallback = conditionsField.form.getFieldValue("isFallback");
+                        <Field name="isFallback">
+                          {(field) => (
+                            <FormItem>
+                              <div className="tg:flex tg:items-center tg:gap-3 tg:rounded-lg tg:border tg:bg-muted/20 tg:p-3">
+                                <Checkbox
+                                  id={field.name}
+                                  checked={field.state.value}
+                                  onCheckedChange={(checked) => field.handleChange(checked as boolean)}
+                                />
+                                <div className="tg:flex tg:flex-col tg:gap-1">
+                                  <Label htmlFor={field.name} className="tg:cursor-pointer tg:font-medium">
+                                    {t("editor.conditionalEdge.fallbackPath")}
+                                  </Label>
+                                  <FormDescription className="tg:text-xs">{t("editor.conditionalEdge.fallbackPathDesc")}</FormDescription>
+                                </div>
+                              </div>
+                            </FormItem>
+                          )}
+                        </Field>
 
-                          return (
-                            <div className="tg:space-y-3">
-                              <Label className={isFallback ? "tg:text-muted-foreground" : ""}>
-                                {t("editor.conditionalEdge.conditions")}
-                              </Label>
+                        <Field name="conditions" mode="array">
+                          {(conditionsField) => {
+                            const isFallback = conditionsField.form.getFieldValue("isFallback");
 
-                              <div className="tg:space-y-2">
-                                {conditionsField.state.value?.map((_, index) => (
-                                  <div key={`condition-${index}`} className="tg:space-y-2">
-                                    <div className="tg:space-y-2 tg:rounded-lg tg:border tg:bg-muted/30 tg:p-3">
-                                      <Field name={`conditions[${index}].field`}>
-                                        {(fieldField) => (
-                                          <FormItem>
-                                            <Label htmlFor={`field-${index}`}>{t("editor.conditionalEdge.field")}</Label>
-                                            <Select
-                                              disabled={isFallback}
-                                              value={fieldField.state.value || ""}
-                                              onValueChange={(value: string) => fieldField.handleChange(value)}
-                                            >
-                                              <SelectTrigger id={`field-${index}`} className="tg:w-full">
-                                                <SelectValue placeholder={t("editor.conditionalEdge.selectField")} />
-                                              </SelectTrigger>
-                                              <SelectContent>
-                                                {availableParentFields.length === 0 ? (
-                                                  <SelectItem value="none" disabled>
-                                                    {t("editor.conditionalEdge.noFieldsAvailable")}
-                                                  </SelectItem>
-                                                ) : (
-                                                  availableParentFields.map((field) => (
-                                                    <SelectItem key={field.nodeId} value={field.nodeId}>
-                                                      {field.label} ({field.type})
-                                                    </SelectItem>
-                                                  ))
-                                                )}
-                                              </SelectContent>
-                                            </Select>
-                                          </FormItem>
-                                        )}
-                                      </Field>
+                            return (
+                              <div className="tg:space-y-3">
+                                <Label className={isFallback ? "tg:text-muted-foreground" : ""}>
+                                  {t("editor.conditionalEdge.conditions")}
+                                </Label>
 
-                                      <div className="tg:flex tg:gap-2">
-                                        <Field name={`conditions[${index}].operator`}>
-                                          {(operatorField) => (
+                                <div className="tg:space-y-2">
+                                  {conditionsField.state.value?.map((_, index) => (
+                                    <div key={`condition-${index}`} className="tg:space-y-2">
+                                      <div className="tg:space-y-2 tg:rounded-lg tg:border tg:bg-muted/30 tg:p-3">
+                                        <Field name={`conditions[${index}].field`}>
+                                          {(fieldField) => (
                                             <FormItem>
-                                              <Label htmlFor={`operator-${index}`}>{t("editor.conditionalEdge.operator")}</Label>
+                                              <Label htmlFor={`field-${index}`}>{t("editor.conditionalEdge.field")}</Label>
                                               <Select
                                                 disabled={isFallback}
-                                                value={operatorField.state.value || "==="}
-                                                onValueChange={(value: Operator) => operatorField.handleChange(value)}
+                                                value={fieldField.state.value || ""}
+                                                onValueChange={(value: string) => fieldField.handleChange(value)}
                                               >
-                                                <SelectTrigger id={`operator-${index}`}>
-                                                  <SelectValue />
+                                                <SelectTrigger id={`field-${index}`} className="tg:w-full">
+                                                  <SelectValue placeholder={t("editor.conditionalEdge.selectField")} />
                                                 </SelectTrigger>
                                                 <SelectContent>
-                                                  <SelectItem value="===">=</SelectItem>
-                                                  <SelectItem value="!==">≠</SelectItem>
-                                                  <SelectItem value=">">&gt;</SelectItem>
-                                                  <SelectItem value="<">&lt;</SelectItem>
-                                                  <SelectItem value=">=">&gt;=</SelectItem>
-                                                  <SelectItem value="<=">&lt;=</SelectItem>
+                                                  {availableParentFields.length === 0 ? (
+                                                    <SelectItem value="none" disabled>
+                                                      {t("editor.conditionalEdge.noFieldsAvailable")}
+                                                    </SelectItem>
+                                                  ) : (
+                                                    availableParentFields.map((field) => (
+                                                      <SelectItem key={field.nodeId} value={field.nodeId}>
+                                                        {field.label} ({field.type})
+                                                      </SelectItem>
+                                                    ))
+                                                  )}
                                                 </SelectContent>
                                               </Select>
                                             </FormItem>
                                           )}
                                         </Field>
 
-                                        <Field name={`conditions[${index}].value`}>
-                                          {(valueField) => (
-                                            <FormItem className="tg:w-full">
-                                              <Label htmlFor={`value-${index}`}>{t("editor.conditionalEdge.value")}</Label>
-                                              <Input
-                                                disabled={isFallback}
-                                                id={`value-${index}`}
-                                                placeholder={t("editor.conditionalEdge.valuePlaceholder")}
-                                                value={valueField.state.value || ""}
-                                                onChange={(e) => valueField.handleChange(e.target.value)}
-                                              />
-                                            </FormItem>
-                                          )}
-                                        </Field>
+                                        <div className="tg:flex tg:gap-2">
+                                          <Field name={`conditions[${index}].operator`}>
+                                            {(operatorField) => (
+                                              <FormItem>
+                                                <Label htmlFor={`operator-${index}`}>{t("editor.conditionalEdge.operator")}</Label>
+                                                <Select
+                                                  disabled={isFallback}
+                                                  value={operatorField.state.value || "==="}
+                                                  onValueChange={(value: Operator) => operatorField.handleChange(value)}
+                                                >
+                                                  <SelectTrigger id={`operator-${index}`}>
+                                                    <SelectValue />
+                                                  </SelectTrigger>
+                                                  <SelectContent>
+                                                    <SelectItem value="===">=</SelectItem>
+                                                    <SelectItem value="!==">≠</SelectItem>
+                                                    <SelectItem value=">">&gt;</SelectItem>
+                                                    <SelectItem value="<">&lt;</SelectItem>
+                                                    <SelectItem value=">=">&gt;=</SelectItem>
+                                                    <SelectItem value="<=">&lt;=</SelectItem>
+                                                  </SelectContent>
+                                                </Select>
+                                              </FormItem>
+                                            )}
+                                          </Field>
+
+                                          <Field name={`conditions[${index}].value`}>
+                                            {(valueField) => (
+                                              <FormItem className="tg:w-full">
+                                                <Label htmlFor={`value-${index}`}>{t("editor.conditionalEdge.value")}</Label>
+                                                <Input
+                                                  disabled={isFallback}
+                                                  id={`value-${index}`}
+                                                  placeholder={t("editor.conditionalEdge.valuePlaceholder")}
+                                                  value={valueField.state.value || ""}
+                                                  onChange={(e) => valueField.handleChange(e.target.value)}
+                                                />
+                                              </FormItem>
+                                            )}
+                                          </Field>
+                                        </div>
+
+                                        {conditionsField.state.value && conditionsField.state.value.length > 1 && (
+                                          <Button
+                                            disabled={isFallback}
+                                            type="button"
+                                            variant="ghost"
+                                            size="sm"
+                                            className="tg:w-full"
+                                            onClick={() => {
+                                              conditionsField.removeValue(index);
+                                              handleSubmit().then();
+                                            }}
+                                          >
+                                            <X className="tg:mr-1 tg:h-4 tg:w-4" />
+                                            {t("editor.conditionalEdge.removeCondition")}
+                                          </Button>
+                                        )}
                                       </div>
 
-                                      {conditionsField.state.value && conditionsField.state.value.length > 1 && (
-                                        <Button
-                                          disabled={isFallback}
-                                          type="button"
-                                          variant="ghost"
-                                          size="sm"
-                                          className="tg:w-full"
-                                          onClick={() => {
-                                            conditionsField.removeValue(index);
-                                            handleSubmit().then();
-                                          }}
-                                        >
-                                          <X className="tg:mr-1 tg:h-4 tg:w-4" />
-                                          {t("editor.conditionalEdge.removeCondition")}
-                                        </Button>
+                                      {conditionsField.state.value && index < conditionsField.state.value.length - 1 && (
+                                        <Field name={`conditions[${index}].logicalOperator`}>
+                                          {(logicalField) => (
+                                            <div className="tg:flex tg:justify-center">
+                                              <Select
+                                                disabled={isFallback}
+                                                value={logicalField.state.value || LOGICAL_OPERATOR.AND}
+                                                onValueChange={(value: LogicalOperator) => logicalField.handleChange(value)}
+                                              >
+                                                <SelectTrigger className="tg:h-9 tg:w-32 tg:font-semibold">
+                                                  <SelectValue />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                  <SelectItem value={LOGICAL_OPERATOR.AND}>AND</SelectItem>
+                                                  <SelectItem value={LOGICAL_OPERATOR.OR}>OR</SelectItem>
+                                                </SelectContent>
+                                              </Select>
+                                            </div>
+                                          )}
+                                        </Field>
                                       )}
                                     </div>
+                                  ))}
 
-                                    {conditionsField.state.value && index < conditionsField.state.value.length - 1 && (
-                                      <Field name={`conditions[${index}].logicalOperator`}>
-                                        {(logicalField) => (
-                                          <div className="tg:flex tg:justify-center">
-                                            <Select
-                                              disabled={isFallback}
-                                              value={logicalField.state.value || LOGICAL_OPERATOR.AND}
-                                              onValueChange={(value: LogicalOperator) => logicalField.handleChange(value)}
-                                            >
-                                              <SelectTrigger className="tg:h-9 tg:w-32 tg:font-semibold">
-                                                <SelectValue />
-                                              </SelectTrigger>
-                                              <SelectContent>
-                                                <SelectItem value={LOGICAL_OPERATOR.AND}>AND</SelectItem>
-                                                <SelectItem value={LOGICAL_OPERATOR.OR}>OR</SelectItem>
-                                              </SelectContent>
-                                            </Select>
-                                          </div>
-                                        )}
-                                      </Field>
-                                    )}
-                                  </div>
-                                ))}
-
-                                <Button
-                                  disabled={isFallback}
-                                  type="button"
-                                  variant="outline"
-                                  size="sm"
-                                  className="tg:w-full"
-                                  onClick={() => {
-                                    conditionsField.pushValue({
-                                      field: availableParentFields[0]?.nodeId ?? "",
-                                      logicalOperator: LOGICAL_OPERATOR.AND,
-                                      operator: "===",
-                                      value: "",
-                                    });
-                                    handleSubmit().then();
-                                  }}
-                                >
-                                  <Plus className="tg:mr-2 tg:h-4 tg:w-4" />
-                                  {t("editor.conditionalEdge.addCondition")}
-                                </Button>
+                                  <Button
+                                    disabled={isFallback}
+                                    type="button"
+                                    variant="outline"
+                                    size="sm"
+                                    className="tg:w-full"
+                                    onClick={() => {
+                                      conditionsField.pushValue({
+                                        field: availableParentFields[0]?.nodeId ?? "",
+                                        logicalOperator: LOGICAL_OPERATOR.AND,
+                                        operator: "===",
+                                        value: "",
+                                      });
+                                      handleSubmit().then();
+                                    }}
+                                  >
+                                    <Plus className="tg:mr-2 tg:h-4 tg:w-4" />
+                                    {t("editor.conditionalEdge.addCondition")}
+                                  </Button>
+                                </div>
                               </div>
-                            </div>
-                          );
-                        }}
-                      </Field>
-                    </div>
+                            );
+                          }}
+                        </Field>
+                      </div>
+                    )}
 
                     <div className="tg:flex tg:items-center tg:gap-2 tg:pt-2">
                       <Button

@@ -142,6 +142,21 @@ export const evaluateCondition = (
     }
   }
 
+  // Multi-value fields (checkbox group, multi-select autocomplete) store
+  // their value as an array. Match element-wise so a single condition like
+  // `field === "Value 1"` succeeds when the user checked that option. The
+  // whole-array compare is also kept as a fallback for callers that pass
+  // a JSON-stringified expected array.
+  if (Array.isArray(fieldValue)) {
+    if (operator === "===") {
+      return fieldValue.some((item) => compareValues(item, value, "===")) || compareValues(fieldValue, value, "===");
+    }
+    if (operator === "!==") {
+      return fieldValue.every((item) => compareValues(item, value, "!==")) && compareValues(fieldValue, value, "!==");
+    }
+    return fieldValue.some((item) => compareValues(item, value, operator));
+  }
+
   return compareValues(fieldValue, value, operator);
 };
 

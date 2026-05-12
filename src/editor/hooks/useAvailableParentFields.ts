@@ -3,6 +3,18 @@ import { useMemo } from "react";
 import { InputNodeData, TreegeNode } from "@/shared/types/node";
 import { isInputNode } from "@/shared/utils/nodeTypeGuards";
 
+/**
+ * Returns every Input ancestor reachable from the given node, traversing
+ * incoming edges depth-first. Cycle-safe (visited set). The result is the
+ * pool of fields that a downstream node — typically a conditional edge —
+ * may reference: each entry exposes the ancestor's `nodeId`, resolved
+ * display `label`, raw `name`, input `type`, and static `options` (when
+ * defined), so consumers can render a Select/Input bound to the right
+ * source value.
+ *
+ * Non-Input ancestors (UI nodes, flow nodes, groups) are excluded because
+ * they cannot supply a runtime value to evaluate a condition against.
+ */
 const useAvailableParentFields = (currentNodeId?: string) => {
   const nodes = useNodes() as TreegeNode[];
   const edges = useEdges();
@@ -38,6 +50,7 @@ const useAvailableParentFields = (currentNodeId?: string) => {
           label: label || data.name || node.id,
           name: data.name,
           nodeId: node.id,
+          options: data.options,
           type: data.type || "text",
         };
       });

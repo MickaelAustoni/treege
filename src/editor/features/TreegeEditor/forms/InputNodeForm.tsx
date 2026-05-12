@@ -21,12 +21,13 @@ import { Separator } from "@/shared/components/ui/separator";
 import { Switch } from "@/shared/components/ui/switch";
 import { Language } from "@/shared/types/languages";
 import { InputNodeData } from "@/shared/types/node";
+import { isOptionsInputData } from "@/shared/utils/inputTypeGuards";
 
 const InputNodeForm = () => {
   const [selectedLanguage, setSelectedLanguage] = useState<Language>("en");
   const { selectedNode } = useNodesSelection<InputNodeData>();
   const { updateSelectedNodeData } = useFlowActions();
-  const needsOptions = ["select", "radio", "autocomplete", "checkbox"].includes(selectedNode?.data?.type || "");
+  const needsOptions = isOptionsInputData(selectedNode?.data);
   const availableParentFields = useAvailableParentFields(selectedNode?.id);
   const t = useTranslate();
   const isSubmitType = selectedNode?.data?.type === "submit";

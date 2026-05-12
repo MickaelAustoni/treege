@@ -10,6 +10,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/shared/components/ui/
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/shared/components/ui/tooltip";
 import { Language } from "@/shared/types/languages";
 import { FlowNodeData, InputNodeData, InputOption, UINodeData } from "@/shared/types/node";
+import { isOptionsInputData } from "@/shared/utils/inputTypeGuards";
 
 interface NodeOptionsProps {
   nodeId: string;
@@ -20,14 +21,6 @@ interface NodeOptionsProps {
    */
   selected?: boolean;
 }
-
-/**
- * Type guard: narrows the node `data` to an `InputNodeData` whose type
- * supports an option list. Used so the rest of the component can access
- * `data.options`, `data.optionsSource`, etc. without casts.
- */
-const isOptionsInputData = (data: NodeOptionsProps["data"]): data is InputNodeData =>
-  Boolean(data && "type" in data && data.type && ["radio", "select", "checkbox", "autocomplete"].includes(data.type));
 
 /**
  * Returns a shortened URL suitable for inline display: just the path (and

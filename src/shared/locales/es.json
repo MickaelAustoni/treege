@@ -90,7 +90,9 @@
     },
     "conditionalEdge": {
       "addCondition": "Agregar condición",
+      "advanced": "Avanzado",
       "and": "Y",
+      "basic": "Básico",
       "condition": "Condición",
       "conditions": "Condiciones",
       "conditionsAnd": "condiciones (Y)",
@@ -111,6 +113,7 @@
       "or": "O",
       "removeCondition": "Eliminar condición",
       "selectField": "Seleccionar un campo",
+      "selectValue": "Seleccionar un valor",
       "value": "Valor",
       "valuePlaceholder": "Ej: 18"
     },

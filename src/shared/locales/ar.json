@@ -90,7 +90,9 @@
     },
     "conditionalEdge": {
       "addCondition": "إضافة شرط",
+      "advanced": "متقدم",
       "and": "و",
+      "basic": "أساسي",
       "condition": "شرط",
       "conditions": "الشروط",
       "conditionsAnd": "شروط (و)",
@@ -111,6 +113,7 @@
       "or": "أو",
       "removeCondition": "إزالة الشرط",
       "selectField": "اختر حقلاً",
+      "selectValue": "اختر قيمة",
       "value": "قيمة",
       "valuePlaceholder": "مثال: 18"
     },
