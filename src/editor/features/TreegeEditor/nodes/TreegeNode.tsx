@@ -30,7 +30,7 @@ const TreegeNode = (props: TreegeNodeProps) => {
   const chainPosition = useChainPosition(id);
   const isChainTail = chainPosition === "last" || chainPosition === "single";
   const isChainHead = chainPosition === "first" || chainPosition === "single";
-  const showBottomHandle = isChainTail || selected;
+  const showBottomHandle = !isSubmit && (isChainTail || selected);
 
   return (
     <NodeWrapper isSubmit={isSubmit} chainPosition={chainPosition}>
