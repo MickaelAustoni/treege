@@ -29,9 +29,6 @@ const TreegeNode = (props: TreegeNodeProps) => {
   const isInEditMode = selected && !isMultiSelection;
   const showBottomHandle = !(isSubmit || isMultiSelection);
   const isBottomHandleHoverOnly = !isStackTail;
-  // Action buttons in the top-right slot: hidden by default, revealed on
-  // hover or while editing. The required toggle is also always visible when
-  // the field is required, so the red asterisk acts as a permanent signal.
   const hoverActionVisibility = isInEditMode ? "tg:flex" : "tg:hidden tg:group-hover:flex";
   const requiredButtonVisibility = inputData?.required || isInEditMode ? "tg:flex" : "tg:hidden tg:group-hover:flex";
 
@@ -49,9 +46,7 @@ const TreegeNode = (props: TreegeNodeProps) => {
       {/* Illustrative image */}
       <NodeImage image={inputData?.image} />
 
-      {/* Badges (left) + actions (right) share a single row via
-          `justify-between`. Hidden actions collapse out of the flow so the
-          required toggle sticks against the right edge when alone. */}
+      {/* Badges (left) + actions (right) */}
       <div className="tg:mb-1 tg:flex tg:items-center tg:justify-between tg:gap-1">
         <div className="tg:flex tg:flex-wrap tg:gap-1">
           <NodeTypeBadge nodeId={id} nodeType={type} subType={subType} />
