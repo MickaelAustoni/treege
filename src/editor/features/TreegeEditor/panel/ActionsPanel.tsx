@@ -1,5 +1,5 @@
 import { type Edge, type Node, Panel, useEdges, useNodes, useReactFlow } from "@xyflow/react";
-import { ArrowRightFromLine, Copy, Download, EllipsisVertical, FileJson, KeyRound, Lock, Plus, Save, Trash2 } from "lucide-react";
+import { ArrowRightFromLine, Download, EllipsisVertical, FileJson, KeyRound, Lock, Plus, Save, Trash2 } from "lucide-react";
 import { nanoid } from "nanoid";
 import { ChangeEvent, useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
@@ -18,7 +18,6 @@ import {
   DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/shared/components/ui/dropdown-menu";
@@ -139,17 +138,6 @@ const ActionsPanel = ({ onExportJson, onSave, extraMenuItems, onAuthorize, heade
     onSave?.({ edges, id, nodes });
   }, [edges, flowId, id, nodes, onSave, setFlowId]);
 
-  const handleCopyId = async () => {
-    try {
-      await navigator.clipboard.writeText(id);
-      toast.success(t("editor.actionsPanel.idCopied"), {
-        description: id,
-      });
-    } catch {
-      toast.error(t("editor.actionsPanel.copyFailed"));
-    }
-  };
-
   const handleClear = () => {
     setNodes([]);
     setEdges([]);
@@ -220,22 +208,6 @@ const ActionsPanel = ({ onExportJson, onSave, extraMenuItems, onAuthorize, heade
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="start">
-          <DropdownMenuLabel className="tg:font-normal">
-            <div className="tg:flex tg:flex-col tg:gap-1">
-              <span className="tg:text-muted-foreground tg:text-xs">Flow ID</span>
-              <button
-                onClick={handleCopyId}
-                className="tg:flex tg:items-center tg:gap-2 tg:font-mono tg:text-muted-foreground tg:transition-colors tg:hover:text-primary"
-                type="button"
-              >
-                <Copy className="tg:h-3 tg:w-3" />
-                <span className="tg:truncate tg:text-xs">{id}</span>
-              </button>
-            </div>
-          </DropdownMenuLabel>
-
-          <DropdownMenuSeparator />
-
           <DropdownMenuGroup>
             <DropdownMenuItem onClick={() => inputFileRef?.current?.click()}>
               <Download /> {t("editor.actionsPanel.importJson")}
