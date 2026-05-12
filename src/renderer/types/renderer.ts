@@ -263,11 +263,9 @@ export interface TreegeRendererProps extends TreegeRendererConfig {
    */
   className?: string;
   /**
-   * Flow or array of flows
-   * - If a single Flow: renders that flow
-   * - If an array: first flow is the main flow, others are sub-flows available for FlowNodes
+   * Flow to render. `null` / `undefined` renders nothing.
    */
-  flows?: Flow | Flow[] | null;
+  flows?: Flow | null;
   /**
    * Initial form values
    */

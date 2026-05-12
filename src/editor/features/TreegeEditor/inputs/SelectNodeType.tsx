@@ -31,7 +31,6 @@ const SelectNodeType = () => {
   const isGroup = isGroupNode(selectedNode);
   const t = useTranslate();
   const id = useId();
-  const FlowIcon = getInputTypeIcon(NODE_TYPE.flow);
 
   const getValue = () => {
     if (!selectedNode) {
@@ -51,7 +50,7 @@ const SelectNodeType = () => {
     }
 
     const outgoingCount = getEdges().filter((edge) => edge.source === selectedNode.id).length;
-    const needsConfirmation = (type === NODE_TYPE.ui || type === NODE_TYPE.flow) && outgoingCount > 1;
+    const needsConfirmation = type === NODE_TYPE.ui && outgoingCount > 1;
 
     if (needsConfirmation) {
       openNodeTypeChangeConfirmation({ nodeId: selectedNode.id, subType, type });
@@ -115,14 +114,6 @@ const SelectNodeType = () => {
                     </SelectItem>
                   );
                 })}
-              </SelectGroup>
-              <SelectSeparator />
-              <SelectGroup>
-                <SelectLabel>{t("common.other")}</SelectLabel>
-                <SelectItem value={NODE_TYPE.flow}>
-                  <FlowIcon />
-                  {t("editor.selectNodeType.options.flow")}
-                </SelectItem>
               </SelectGroup>
             </>
           )}

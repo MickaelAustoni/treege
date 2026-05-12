@@ -118,11 +118,6 @@
       "value": "قيمة",
       "valuePlaceholder": "مثال: 18"
     },
-    "flowNodeForm": {
-      "label": "التسمية",
-      "targetId": "معرف الوجهة",
-      "targetIdDesc": "المعرف الفريد للتدفق المستهدف."
-    },
     "groupNodeForm": {
       "label": "التسمية"
     },
@@ -313,7 +308,6 @@
     "selectNodeType": {
       "nodeType": "نوع العقدة",
       "options": {
-        "flow": "تدفق خارجي",
         "group": "مجموعة",
         "input": "سؤال",
         "ui": "عنصر تصميم"

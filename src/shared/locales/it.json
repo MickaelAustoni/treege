@@ -118,11 +118,6 @@
       "value": "Valore",
       "valuePlaceholder": "Es: 18"
     },
-    "flowNodeForm": {
-      "label": "Etichetta",
-      "targetId": "ID di destinazione",
-      "targetIdDesc": "Identificatore univoco del flusso di destinazione."
-    },
     "groupNodeForm": {
       "label": "Etichetta"
     },
@@ -313,7 +308,6 @@
     "selectNodeType": {
       "nodeType": "Tipo di nodo",
       "options": {
-        "flow": "Flusso esterno",
         "group": "Gruppo",
         "input": "Domanda",
         "ui": "Elemento di design"

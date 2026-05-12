@@ -4,7 +4,7 @@ import { useTreegeConfig } from "@/renderer/context/TreegeConfigContext";
 import { useSubmitHandler } from "@/renderer/hooks/useSubmitHandler";
 import { useTranslate } from "@/renderer/hooks/useTranslate";
 import { FormValues, TreegeRendererProps } from "@/renderer/types/renderer";
-import { getFlowRenderState, mergeFlows } from "@/renderer/utils/flow";
+import { getFlowRenderState } from "@/renderer/utils/flow";
 import { calculateReferenceFieldUpdates, convertFormValuesToNamedFormat, isFieldEmpty } from "@/renderer/utils/form";
 import { mergeHttpHeaders } from "@/renderer/utils/http";
 import { getInputNodes } from "@/renderer/utils/node";
@@ -87,8 +87,8 @@ export const useTreegeRenderer = ({
   // FLOW AND NODE STATE
   // ============================================
 
-  const mergedFlow = useMemo(() => mergeFlows(flows), [flows]);
-  const { nodes, edges } = mergedFlow;
+  const nodes = useMemo(() => flows?.nodes ?? [], [flows]);
+  const edges = useMemo(() => flows?.edges ?? [], [flows]);
   const inputNodes = useMemo(() => getInputNodes(nodes), [nodes]);
   const t = useTranslate(config.language);
   const prevFormValuesRef = useRef<FormValues>({});
@@ -515,7 +515,6 @@ export const useTreegeRenderer = ({
     isFirstStep,
     isLastStep,
     isSubmitting,
-    mergedFlow,
     missingRequiredFields,
     prevFormValuesRef,
     setFieldErrors: setFormErrors,

@@ -1,6 +1,6 @@
 import { Node } from "@xyflow/react";
 import { TreegeNodeData } from "@/shared/types/node";
-import { isFlowNode, isGroupNode } from "@/shared/utils/nodeTypeGuards";
+import { isGroupNode } from "@/shared/utils/nodeTypeGuards";
 
 /**
  * A renderer step — a contiguous slice of visible nodes that share the same
@@ -25,11 +25,11 @@ export type FlowStep = {
  * time the `parentId` of the next renderable node changes (i.e. the flow
  * crosses a group boundary, or moves between an orphan and a grouped node).
  *
- * Group / flow nodes themselves are skipped — they're metadata only.
+ * Group nodes themselves are skipped — they're metadata only.
  */
 export const computeSteps = (visibleNodes: Node<TreegeNodeData>[]): FlowStep[] =>
   visibleNodes
-    .filter((node) => !(isGroupNode(node) || isFlowNode(node)))
+    .filter((node) => !isGroupNode(node))
     .reduce<FlowStep[]>((steps, node) => {
       const groupId = node.parentId ?? null;
       const last = steps.at(-1);

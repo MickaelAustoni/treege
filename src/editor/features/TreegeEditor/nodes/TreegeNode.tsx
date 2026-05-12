@@ -13,12 +13,9 @@ import NodeTypeBadge from "@/editor/features/TreegeEditor/nodes/components/NodeT
 import NodeWrapper from "@/editor/features/TreegeEditor/nodes/layout/NodeWrapper";
 import { useStackPosition } from "@/editor/hooks/useStackPosition";
 import { cn } from "@/shared/lib/utils";
-import { FlowNodeData, InputNodeData, UINodeData } from "@/shared/types/node";
+import { InputNodeData, UINodeData } from "@/shared/types/node";
 
-export type TreegeNodeProps =
-  | NodeProps<Node<FlowNodeData, "flow">>
-  | NodeProps<Node<InputNodeData, "input">>
-  | NodeProps<Node<UINodeData, "ui">>;
+export type TreegeNodeProps = NodeProps<Node<InputNodeData, "input">> | NodeProps<Node<UINodeData, "ui">>;
 
 const TreegeNode = (props: TreegeNodeProps) => {
   const { id, isConnectable, parentId, selected, type } = props;

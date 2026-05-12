@@ -1,7 +1,7 @@
 import { Node } from "@xyflow/react";
 import { describe, expect, it } from "vitest";
-import type { FlowNodeData, GroupNodeData, InputNodeData, TreegeNode, UINodeData } from "@/shared/types/node";
-import { isFlowNode, isGroupNode, isInputNode, isUINode } from "@/shared/utils/nodeTypeGuards";
+import type { GroupNodeData, InputNodeData, TreegeNode, UINodeData } from "@/shared/types/node";
+import { isGroupNode, isInputNode, isUINode } from "@/shared/utils/nodeTypeGuards";
 
 describe("Node Type Guards", () => {
   describe("isInputNode", () => {
@@ -21,14 +21,14 @@ describe("Node Type Guards", () => {
     });
 
     it("should return false for non-input nodes", () => {
-      const flowNode: TreegeNode = {
-        data: { label: { en: "Flow" } },
-        id: "flow-1",
+      const uiNode: TreegeNode = {
+        data: { label: { en: "Title" }, type: "title" },
+        id: "ui-1",
         position: { x: 0, y: 0 },
-        type: "flow",
-      } as Node<FlowNodeData, "flow">;
+        type: "ui",
+      } as Node<UINodeData, "ui">;
 
-      expect(isInputNode(flowNode)).toBe(false);
+      expect(isInputNode(uiNode)).toBe(false);
     });
 
     it("should return false for undefined node", () => {
@@ -107,58 +107,6 @@ describe("Node Type Guards", () => {
     });
   });
 
-  describe("isFlowNode", () => {
-    it("should return true for flow nodes", () => {
-      const node: TreegeNode = {
-        data: {
-          label: { en: "Navigate" },
-          targetId: "target-flow",
-        },
-        id: "flow-1",
-        position: { x: 0, y: 0 },
-        type: "flow",
-      } as Node<FlowNodeData, "flow">;
-
-      expect(isFlowNode(node)).toBe(true);
-    });
-
-    it("should return false for non-flow nodes", () => {
-      const inputNode: TreegeNode = {
-        data: {
-          label: { en: "Input" },
-          name: "input",
-        },
-        id: "input-1",
-        position: { x: 0, y: 0 },
-        type: "input",
-      } as Node<InputNodeData, "input">;
-
-      expect(isFlowNode(inputNode)).toBe(false);
-    });
-
-    it("should return false for undefined node", () => {
-      expect(isFlowNode(undefined)).toBe(false);
-    });
-
-    it("should narrow type correctly", () => {
-      const node: TreegeNode = {
-        data: {
-          label: { en: "Navigate" },
-          targetId: "flow-2",
-        },
-        id: "flow-1",
-        position: { x: 0, y: 0 },
-        type: "flow",
-      } as Node<FlowNodeData, "flow">;
-
-      if (isFlowNode(node)) {
-        // TypeScript should infer this as Node<FlowNodeData, "flow">
-        expect(node.data.targetId).toBeDefined();
-        expect(node.type).toBe("flow");
-      }
-    });
-  });
-
   describe("isGroupNode", () => {
     it("should return true for group nodes", () => {
       const node: TreegeNode = {
@@ -220,7 +168,6 @@ describe("Node Type Guards", () => {
 
       expect(isInputNode(node)).toBe(true);
       expect(isUINode(node)).toBe(false);
-      expect(isFlowNode(node)).toBe(false);
       expect(isGroupNode(node)).toBe(false);
     });
 
@@ -239,41 +186,26 @@ describe("Node Type Guards", () => {
         type: "ui",
       } as Node<UINodeData, "ui">;
 
-      const flowNode: TreegeNode = {
-        data: { targetId: "target" },
-        id: "3",
-        position: { x: 0, y: 0 },
-        type: "flow",
-      } as Node<FlowNodeData, "flow">;
-
       const groupNode: TreegeNode = {
         data: { label: { en: "Group" } },
-        id: "4",
+        id: "3",
         position: { x: 0, y: 0 },
         type: "group",
       } as Node<GroupNodeData, "group">;
 
       expect(isInputNode(inputNode)).toBe(true);
       expect(isUINode(uiNode)).toBe(true);
-      expect(isFlowNode(flowNode)).toBe(true);
       expect(isGroupNode(groupNode)).toBe(true);
 
       // Cross-check that types are mutually exclusive
       expect(isUINode(inputNode)).toBe(false);
-      expect(isFlowNode(inputNode)).toBe(false);
       expect(isGroupNode(inputNode)).toBe(false);
 
       expect(isInputNode(uiNode)).toBe(false);
-      expect(isFlowNode(uiNode)).toBe(false);
       expect(isGroupNode(uiNode)).toBe(false);
-
-      expect(isInputNode(flowNode)).toBe(false);
-      expect(isUINode(flowNode)).toBe(false);
-      expect(isGroupNode(flowNode)).toBe(false);
 
       expect(isInputNode(groupNode)).toBe(false);
       expect(isUINode(groupNode)).toBe(false);
-      expect(isFlowNode(groupNode)).toBe(false);
     });
   });
 });

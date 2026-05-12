@@ -118,11 +118,6 @@
       "value": "Valeur",
       "valuePlaceholder": "Ex : 18"
     },
-    "flowNodeForm": {
-      "label": "Libellé",
-      "targetId": "ID cible",
-      "targetIdDesc": "Identifiant unique du flux cible."
-    },
     "groupNodeForm": {
       "label": "Libellé"
     },
@@ -313,7 +308,6 @@
     "selectNodeType": {
       "nodeType": "Type de nœud",
       "options": {
-        "flow": "Flux externe",
         "group": "Groupe",
         "input": "Question",
         "ui": "Élément de design"

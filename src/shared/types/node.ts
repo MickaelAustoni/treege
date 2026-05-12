@@ -43,13 +43,6 @@ export type BaseNodeData = {
   label?: Translatable;
 };
 
-export type FlowNodeData = BaseNodeData & {
-  /**
-   * The ID of the target node to connect to
-   */
-  targetId?: string;
-};
-
 export type GroupNodeData = BaseNodeData & {
   /**
    * A label for the group node, which can be translated
@@ -286,7 +279,7 @@ export type UINodeData = BaseNodeData & {
 /**
  * Union type representing all possible node data types in the Treege system
  */
-export type TreegeNodeData = InputNodeData | UINodeData | FlowNodeData | GroupNodeData;
+export type TreegeNodeData = InputNodeData | UINodeData | GroupNodeData;
 
 /**
  * A TreegeNode represents a node in the flowchart with specific data and properties

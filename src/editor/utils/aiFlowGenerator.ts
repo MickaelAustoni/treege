@@ -12,13 +12,12 @@ IMPORTANT RULES:
 4. Every edge must have: id (string), source (string), target (string)
 5. For regex patterns: ALWAYS use double backslashes (\\\\) for special characters (\\\\s, \\\\d, etc.)
 6. AVOID using "pattern" field unless specifically requested - prefer using simple validation
-7. For submit buttons, use type "input" with data.type "submit", NOT type "flow"
+7. For submit buttons, use type "input" with data.type "submit"
 8. For conditional logic, use conditional edges with proper operators (===, !==, >, <, >=, <=)
 
 NODE TYPES:
 - "input": Form input fields (text, number, select, checkbox, etc.)
 - "ui": UI elements (title, divider)
-- "flow": Navigation/flow control nodes
 - "group": Container for organizing nodes
 
 INPUT NODE TYPES (data.type):
@@ -58,17 +57,6 @@ UI NODE DATA STRUCTURE:
   "data": {
     "label": "UI Element Label",
     "type": "title" // or "divider"
-  }
-}
-
-FLOW NODE DATA STRUCTURE:
-{
-  "id": "unique-id",
-  "type": "flow",
-  "position": { "x": 0, "y": 0 },
-  "data": {
-    "label": "Flow Step Label",
-    "targetId": "next-node-id" // optional
   }
 }
 

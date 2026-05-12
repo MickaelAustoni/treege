@@ -118,11 +118,6 @@
       "value": "Wert",
       "valuePlaceholder": "z.B.: 18"
     },
-    "flowNodeForm": {
-      "label": "Bezeichnung",
-      "targetId": "Ziel-ID",
-      "targetIdDesc": "Eindeutige Kennung des Zielablaufs."
-    },
     "groupNodeForm": {
       "label": "Bezeichnung"
     },
@@ -313,7 +308,6 @@
     "selectNodeType": {
       "nodeType": "Knotentyp",
       "options": {
-        "flow": "Externer Ablauf",
         "group": "Gruppe",
         "input": "Frage",
         "ui": "Designelement"

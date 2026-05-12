@@ -21,11 +21,6 @@ import { cn } from "@/shared/lib/utils";
 interface BottomHandleDropdownProps {
   nodeId: string;
   isConnectable?: boolean;
-  /**
-   * When true, the handle stays invisible until the parent node is hovered.
-   * Used on `first`/`middle` stack positions to keep the visual chain clean
-   * while still letting the user reveal the "+" insert affordance on demand.
-   */
   hoverOnly?: boolean;
 }
 
@@ -33,7 +28,6 @@ const BottomHandleDropdown = ({ nodeId, isConnectable, hoverOnly }: BottomHandle
   const { onAddFromHandle } = useFlowConnections();
   const t = useTranslate();
   const [open, setOpen] = useState(false);
-  const FlowIcon = getInputTypeIcon(NODE_TYPE.flow);
 
   const handleClick = (event: MouseEvent) => {
     if (event.defaultPrevented) {
@@ -96,14 +90,6 @@ const BottomHandleDropdown = ({ nodeId, isConnectable, hoverOnly }: BottomHandle
                 </DropdownMenuItem>
               );
             })}
-          </DropdownMenuGroup>
-          <DropdownMenuSeparator />
-          <DropdownMenuGroup>
-            <DropdownMenuLabel>{t("common.other")}</DropdownMenuLabel>
-            <DropdownMenuItem onClick={() => onAddFromHandle(nodeId, { data: {}, type: NODE_TYPE.flow })}>
-              <FlowIcon />
-              {t("editor.selectNodeType.options.flow")}
-            </DropdownMenuItem>
           </DropdownMenuGroup>
         </DropdownMenuContent>
       </DropdownMenu>

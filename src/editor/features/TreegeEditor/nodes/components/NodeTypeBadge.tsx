@@ -36,13 +36,12 @@ const NodeTypeBadge = ({ nodeId, nodeType, subType }: NodeTypeBadgeProps) => {
   const t = useTranslate();
   const stopPropagation = (event: MouseEvent) => event.stopPropagation();
   const currentValue = subType || nodeType;
-  const label = nodeType === NODE_TYPE.flow ? t("editor.selectNodeType.options.flow") : currentValue;
+  const label = currentValue;
   const Icon = getInputTypeIcon(currentValue);
-  const FlowIcon = getInputTypeIcon(NODE_TYPE.flow);
 
   const handleTypeChange = (type: string, nextSubType?: string) => {
     const outgoingCount = getEdges().filter((edge) => edge.source === nodeId).length;
-    const needsConfirmation = (type === NODE_TYPE.ui || type === NODE_TYPE.flow) && outgoingCount > 1;
+    const needsConfirmation = type === NODE_TYPE.ui && outgoingCount > 1;
 
     if (needsConfirmation) {
       openNodeTypeChangeConfirmation({ nodeId, subType: nextSubType, type });
@@ -99,14 +98,6 @@ const NodeTypeBadge = ({ nodeId, nodeType, subType }: NodeTypeBadgeProps) => {
               </DropdownMenuItem>
             );
           })}
-        </DropdownMenuGroup>
-        <DropdownMenuSeparator />
-        <DropdownMenuGroup>
-          <DropdownMenuLabel>{t("common.other")}</DropdownMenuLabel>
-          <DropdownMenuItem onClick={() => handleTypeChange(NODE_TYPE.flow)} className={cn(nodeType === NODE_TYPE.flow && "tg:bg-accent")}>
-            <FlowIcon />
-            {t("editor.selectNodeType.options.flow")}
-          </DropdownMenuItem>
         </DropdownMenuGroup>
       </DropdownMenuContent>
     </DropdownMenu>

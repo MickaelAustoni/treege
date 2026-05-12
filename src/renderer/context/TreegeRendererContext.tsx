@@ -1,13 +1,11 @@
 import { Node } from "@xyflow/react";
 import { createContext, PropsWithChildren, useContext, useMemo } from "react";
 import { FormValues } from "@/renderer/types/renderer";
-import { mergeFlows } from "@/renderer/utils/flow";
 import { Flow, HttpHeader, InputNodeData } from "@/shared/types/node";
 
 export interface TreegeRendererContextValue {
   /**
-   * The flow currently being rendered (already merged when several flows
-   * are linked through `FlowNode`s). `null` when the renderer has no flow
+   * The flow currently being rendered. `null` when the renderer has no flow
    * to display yet.
    */
   flows?: Flow | null;
@@ -97,15 +95,7 @@ export const TreegeRendererProvider = ({ children, value }: TreegeRendererProvid
 export const useTreegeRendererContext = () => {
   const context = useContext(TreegeRendererContext);
   const baseContext = context ?? DEFAULT_CONTEXT_VALUE;
-
-  // Compute edges from flows for convenience (cached with useMemo)
-  const edges = useMemo(() => {
-    if (!baseContext.flows) {
-      return [];
-    }
-
-    return mergeFlows(baseContext.flows).edges;
-  }, [baseContext.flows]);
+  const edges = useMemo(() => baseContext.flows?.edges ?? [], [baseContext.flows]); // Convenience accessor (kept memoized for stable identity).
 
   return {
     ...baseContext,

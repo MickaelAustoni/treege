@@ -118,11 +118,6 @@
       "value": "Value",
       "valuePlaceholder": "Ex: 18"
     },
-    "flowNodeForm": {
-      "label": "Label",
-      "targetId": "Target id",
-      "targetIdDesc": "Unique identifier of the target flow."
-    },
     "groupNodeForm": {
       "label": "Label"
     },
@@ -313,7 +308,6 @@
     "selectNodeType": {
       "nodeType": "Node Type",
       "options": {
-        "flow": "External Flow",
         "group": "Group",
         "input": "Question",
         "ui": "Design Element"

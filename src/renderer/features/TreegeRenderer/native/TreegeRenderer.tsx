@@ -69,7 +69,6 @@ const TreegeRendererContent = ({
     isFirstStep,
     isLastStep,
     isSubmitting,
-    mergedFlow,
     missingRequiredFields,
     setFieldValue,
     steps,
@@ -104,6 +103,7 @@ const TreegeRendererContent = ({
   });
 
   const StepComponent = config.components.step ?? DefaultStep;
+  const stepLabel = useMemo(() => t(currentStepGroupNode?.data?.label), [t, currentStepGroupNode]);
 
   const handleContinue = useCallback(() => {
     if (isLastStep) {
@@ -113,8 +113,6 @@ const TreegeRendererContent = ({
     goToNextStep();
   }, [isLastStep, handleSubmit, goToNextStep]);
 
-  const stepLabel = useMemo(() => t(currentStepGroupNode?.data?.label), [t, currentStepGroupNode]);
-
   return (
     <ScrollView
       nestedScrollEnabled
@@ -123,7 +121,7 @@ const TreegeRendererContent = ({
     >
       <TreegeRendererProvider
         value={{
-          flows: mergedFlow,
+          flows,
           formErrors,
           formValues,
           googleApiKey: config.googleApiKey,

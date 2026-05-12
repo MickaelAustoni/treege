@@ -46,7 +46,6 @@ const TreegeRenderer = ({
     isFirstStep,
     isLastStep,
     isSubmitting,
-    mergedFlow,
     missingRequiredFields,
     setFieldValue,
     steps,
@@ -81,6 +80,7 @@ const TreegeRenderer = ({
   });
 
   const StepComponent = config.components.step ?? DefaultStep;
+  const stepLabel = useMemo(() => t(currentStepGroupNode?.data?.label), [t, currentStepGroupNode]);
 
   /**
    * Web-specific form submission handler with focus logic
@@ -115,15 +115,13 @@ const TreegeRenderer = ({
     goToNextStep();
   }, [isLastStep, handleSubmit, goToNextStep]);
 
-  const stepLabel = useMemo(() => t(currentStepGroupNode?.data?.label), [t, currentStepGroupNode]);
-
   return (
     <div className={cn("treege", className)}>
       <RendererStyles />
       <ThemeProvider theme={config.theme} storageKey="treege-renderer-theme">
         <TreegeRendererProvider
           value={{
-            flows: mergedFlow,
+            flows,
             formErrors,
             formValues,
             googleApiKey: config.googleApiKey,

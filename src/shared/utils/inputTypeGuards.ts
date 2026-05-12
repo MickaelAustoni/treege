@@ -1,5 +1,5 @@
 import { INPUT_TYPE } from "@/shared/constants/inputType";
-import { FlowNodeData, InputNodeData, UINodeData } from "@/shared/types/node";
+import { InputNodeData, TreegeNodeData } from "@/shared/types/node";
 
 /**
  * Input types that carry a static option list (`data.options`) or can use a
@@ -12,5 +12,5 @@ const OPTIONS_INPUT_TYPES: readonly string[] = [INPUT_TYPE.radio, INPUT_TYPE.sel
  * supports an option list. After a truthy check, `data.options`,
  * `data.optionsSource`, etc. are accessible without casts.
  */
-export const isOptionsInputData = (data: FlowNodeData | InputNodeData | UINodeData | undefined): data is InputNodeData =>
+export const isOptionsInputData = (data: TreegeNodeData | undefined): data is InputNodeData =>
   Boolean(data && "type" in data && data.type && OPTIONS_INPUT_TYPES.includes(data.type));

@@ -9,16 +9,12 @@ import { Input } from "@/shared/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/shared/components/ui/popover";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/shared/components/ui/tooltip";
 import { Language } from "@/shared/types/languages";
-import { FlowNodeData, InputNodeData, InputOption, UINodeData } from "@/shared/types/node";
+import { InputNodeData, InputOption, UINodeData } from "@/shared/types/node";
 import { isOptionsInputData } from "@/shared/utils/inputTypeGuards";
 
 interface NodeOptionsProps {
   nodeId: string;
-  data?: FlowNodeData | InputNodeData | UINodeData;
-  /**
-   * When true, hovering an option row reveals edit/delete icons. We gate the
-   * icons on selection so unselected nodes stay visually clean.
-   */
+  data?: InputNodeData | UINodeData;
   selected?: boolean;
 }
 

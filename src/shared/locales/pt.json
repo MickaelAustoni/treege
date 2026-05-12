@@ -118,11 +118,6 @@
       "value": "Valor",
       "valuePlaceholder": "Ex: 18"
     },
-    "flowNodeForm": {
-      "label": "Rótulo",
-      "targetId": "ID de destino",
-      "targetIdDesc": "Identificador único do fluxo de destino."
-    },
     "groupNodeForm": {
       "label": "Rótulo"
     },
@@ -313,7 +308,6 @@
     "selectNodeType": {
       "nodeType": "Tipo de nó",
       "options": {
-        "flow": "Fluxo externo",
         "group": "Grupo",
         "input": "Pergunta",
         "ui": "Elemento de design"

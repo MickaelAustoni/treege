@@ -136,12 +136,6 @@ export const useRenderNode = ({
           return <Renderer key={node.id} node={node} />;
         }
 
-        case NODE_TYPE.flow: {
-          // FlowNodes are already merged in the pre-processing step
-          // So we should never reach here, but just in case, return null
-          return null;
-        }
-
         default:
           console.warn("Unknown node type:", type);
           return null;

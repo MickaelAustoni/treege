@@ -1,6 +1,5 @@
 import { Trash2 } from "lucide-react";
 import { useTreegeEditorContext } from "@/editor/context/TreegeEditorContext";
-import FlowNodeForm from "@/editor/features/TreegeEditor/forms/FlowNodeForm";
 import GroupNodeForm from "@/editor/features/TreegeEditor/forms/GroupNodeForm";
 import InputNodeForm from "@/editor/features/TreegeEditor/forms/InputNodeForm";
 import UINodeForm from "@/editor/features/TreegeEditor/forms/UINodeForm";
@@ -14,7 +13,7 @@ import { ScrollArea } from "@/shared/components/ui/scroll-area";
 import { Separator } from "@/shared/components/ui/separator";
 import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle } from "@/shared/components/ui/sheet";
 import { TreegeNodeData } from "@/shared/types/node";
-import { isFlowNode, isGroupNode, isInputNode, isUINode } from "@/shared/utils/nodeTypeGuards";
+import { isGroupNode, isInputNode, isUINode } from "@/shared/utils/nodeTypeGuards";
 
 const NodeActionsSheet = () => {
   const { selectedNode } = useNodesSelection<TreegeNodeData>();
@@ -60,7 +59,6 @@ const NodeActionsSheet = () => {
 
             {isInputNode(selectedNode) && <InputNodeForm />}
             {isUINode(selectedNode) && <UINodeForm />}
-            {isFlowNode(selectedNode) && <FlowNodeForm />}
             {isGroupNode(selectedNode) && <GroupNodeForm />}
           </div>
         </ScrollArea>
