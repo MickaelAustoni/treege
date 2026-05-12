@@ -26,11 +26,12 @@ const TreegeNode = (props: TreegeNodeProps) => {
   const uiData = props.type === "ui" ? props.data : undefined;
   const subType = inputData?.type ?? uiData?.type;
   const isSubmit = inputData?.type === "submit";
-  const showPreview = !selected && !!inputData?.type;
   const stackPosition = useStackPosition(id);
   const isStackTail = stackPosition === "last" || stackPosition === "single";
   const isStackHead = stackPosition === "first" || stackPosition === "single";
   const isMultiSelection = useStore((state) => state.nodes.filter((node) => node.selected).length > 1);
+  const isInEditMode = selected && !isMultiSelection;
+  const showPreview = !isInEditMode && !!inputData?.type;
   const showBottomHandle = !(isSubmit || isMultiSelection);
   const isBottomHandleHoverOnly = !isStackTail;
 
@@ -38,7 +39,7 @@ const TreegeNode = (props: TreegeNodeProps) => {
     <NodeWrapper isSubmit={isSubmit} stackPosition={stackPosition}>
       {/* Node actions */}
       <div className="tg:absolute tg:top-2 tg:right-2 tg:flex tg:items-center tg:gap-0.5">
-        {selected && inputData && !isSubmit && (
+        {isInEditMode && inputData && !isSubmit && (
           <>
             <NodeRequiredButton nodeId={id} required={inputData.required} />
             <NodeImageButton nodeId={id} image={inputData.image} />
@@ -72,7 +73,7 @@ const TreegeNode = (props: TreegeNodeProps) => {
           </div>
 
           {/* Options */}
-          <NodeOptions nodeId={id} data={inputData} selected={selected} />
+          <NodeOptions nodeId={id} data={inputData} selected={isInEditMode} />
         </>
       )}
 
