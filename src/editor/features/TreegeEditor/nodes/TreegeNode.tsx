@@ -67,10 +67,10 @@ const TreegeNode = (props: TreegeNodeProps) => {
       {/* Badges */}
       <div className="tg:mb-1 tg:flex tg:flex-wrap tg:gap-1">
         <NodeTypeBadge nodeId={id} nodeType={type} subType={subType} />
-        <NodeGroupBadge groupId={parentId} />
+        <NodeGroupBadge nodeId={id} groupId={parentId} />
       </div>
 
-      {/* Label (always rendered; auto-focused on entering edit mode) */}
+      {/* Label (always rendered; autofocused on entering edit mode) */}
       <NodeLabelInput
         nodeId={id}
         label={props.data?.label}
