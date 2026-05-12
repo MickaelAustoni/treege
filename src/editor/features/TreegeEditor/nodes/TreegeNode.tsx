@@ -31,7 +31,8 @@ const TreegeNode = (props: TreegeNodeProps) => {
   const isStackTail = stackPosition === "last" || stackPosition === "single";
   const isStackHead = stackPosition === "first" || stackPosition === "single";
   const isMultiSelection = useStore((state) => state.nodes.filter((node) => node.selected).length > 1);
-  const showBottomHandle = !isSubmit && (isStackTail || (selected && !isMultiSelection));
+  const showBottomHandle = !(isSubmit || isMultiSelection);
+  const isBottomHandleHoverOnly = !isStackTail;
 
   return (
     <NodeWrapper isSubmit={isSubmit} stackPosition={stackPosition}>
@@ -76,7 +77,7 @@ const TreegeNode = (props: TreegeNodeProps) => {
       )}
 
       {/* Bottom handle */}
-      {showBottomHandle && <BottomHandleDropdown nodeId={id} isConnectable={isConnectable} />}
+      {showBottomHandle && <BottomHandleDropdown nodeId={id} isConnectable={isConnectable} hoverOnly={isBottomHandleHoverOnly} />}
     </NodeWrapper>
   );
 };

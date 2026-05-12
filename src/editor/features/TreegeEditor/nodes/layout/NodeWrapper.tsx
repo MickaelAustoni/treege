@@ -20,7 +20,7 @@ const NodeWrapper = ({ children, isSubmit, stackPosition = "single" }: NodeWrapp
   return (
     <div
       className={cn(
-        "react-flow__node__wrapper tg:relative",
+        "react-flow__node__wrapper tg:group tg:relative",
         RADIUS_BY_POSITION[stackPosition],
         hidesTopBorder && "stacked",
         isSubmit && "submit-type",

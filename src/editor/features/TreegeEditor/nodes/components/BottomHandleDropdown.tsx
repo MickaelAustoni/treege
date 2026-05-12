@@ -16,13 +16,20 @@ import {
 import { INPUT_TYPE } from "@/shared/constants/inputType";
 import { NODE_TYPE } from "@/shared/constants/node";
 import { UI_TYPE } from "@/shared/constants/uiType";
+import { cn } from "@/shared/lib/utils";
 
 interface BottomHandleDropdownProps {
   nodeId: string;
   isConnectable?: boolean;
+  /**
+   * When true, the handle stays invisible until the parent node is hovered.
+   * Used on `first`/`middle` stack positions to keep the visual chain clean
+   * while still letting the user reveal the "+" insert affordance on demand.
+   */
+  hoverOnly?: boolean;
 }
 
-const BottomHandleDropdown = ({ nodeId, isConnectable }: BottomHandleDropdownProps) => {
+const BottomHandleDropdown = ({ nodeId, isConnectable, hoverOnly }: BottomHandleDropdownProps) => {
   const { onAddFromHandle } = useFlowConnections();
   const t = useTranslate();
   const [open, setOpen] = useState(false);
@@ -42,7 +49,10 @@ const BottomHandleDropdown = ({ nodeId, isConnectable }: BottomHandleDropdownPro
         position={Position.Bottom}
         isConnectable={isConnectable}
         onClick={handleClick}
-        className="tg:flex tg:h-6! tg:w-6! tg:cursor-pointer tg:items-center tg:justify-center tg:rounded-sm tg:transition-colors tg:hover:bg-primary/80!"
+        className={cn(
+          "tg:flex tg:h-6! tg:w-6! tg:cursor-pointer tg:items-center tg:justify-center tg:rounded-sm tg:transition tg:hover:bg-primary/80!",
+          hoverOnly && "tg:opacity-0 tg:group-hover:opacity-100",
+        )}
       >
         <Plus className="tg:h-4 tg:w-4 tg:text-primary-foreground" />
       </Handle>

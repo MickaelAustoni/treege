@@ -28,6 +28,14 @@ div.react-flow__node.react-flow__node-input {
   border: 0;
 }
 
+/* On hover, raise the node so its bottom handle ("+") can overflow onto the
+   next stacked node without being clipped. React Flow elevates selected
+   nodes to z-index 1000 inline, so we go well above that to also work when
+   hovering a selected node. */
+div.react-flow__node:hover {
+  z-index: 9999 !important;
+}
+
 /* Card node */
 div.react-flow__node__wrapper {
   @apply tg:flex tg:justify-center tg:flex-col tg:p-4 tg:bg-card tg:border tg:border-border;
