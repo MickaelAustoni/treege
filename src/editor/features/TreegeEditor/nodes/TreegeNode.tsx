@@ -52,7 +52,7 @@ const TreegeNode = (props: TreegeNodeProps) => {
           <NodeTypeBadge nodeId={id} nodeType={type} subType={subType} />
           <NodeGroupBadge nodeId={id} groupId={parentId} />
         </div>
-        <div className="tg:flex tg:items-center tg:gap-0.5">
+        <div className="tg:flex tg:min-h-6 tg:items-center tg:gap-0.5">
           {inputData && !isSubmit && (
             <>
               <span className={requiredButtonVisibility}>
