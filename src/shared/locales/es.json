@@ -93,6 +93,7 @@
       "advanced": "Avanzado",
       "and": "Y",
       "basic": "Básico",
+      "basicConditionLabel": "Si \"{name}\" es",
       "condition": "Condición",
       "conditions": "Condiciones",
       "conditionsAnd": "condiciones (Y)",

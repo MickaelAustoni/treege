@@ -93,6 +93,7 @@
       "advanced": "متقدم",
       "and": "و",
       "basic": "أساسي",
+      "basicConditionLabel": "إذا كان \"{name}\" يساوي",
       "condition": "شرط",
       "conditions": "الشروط",
       "conditionsAnd": "شروط (و)",

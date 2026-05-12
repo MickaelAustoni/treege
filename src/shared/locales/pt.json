@@ -93,6 +93,7 @@
       "advanced": "Avançado",
       "and": "E",
       "basic": "Básico",
+      "basicConditionLabel": "Se \"{name}\" for igual a",
       "condition": "Condição",
       "conditions": "Condições",
       "conditionsAnd": "condições (E)",

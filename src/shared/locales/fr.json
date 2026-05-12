@@ -93,6 +93,7 @@
       "advanced": "Avancé",
       "and": "ET",
       "basic": "Simple",
+      "basicConditionLabel": "Si \"{name}\" vaut",
       "condition": "Condition",
       "conditions": "Conditions",
       "conditionsAnd": "conditions (ET)",

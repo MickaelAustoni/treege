@@ -1,7 +1,7 @@
 import { useForm } from "@tanstack/react-form";
-import { BaseEdge, Edge, EdgeLabelRenderer, EdgeProps, getBezierPath, useReactFlow } from "@xyflow/react";
+import { BaseEdge, Edge, EdgeLabelRenderer, EdgeProps, getBezierPath, useEdges, useReactFlow } from "@xyflow/react";
 import { Plus, Trash2, Waypoints, X } from "lucide-react";
-import { MouseEvent, memo, useState } from "react";
+import { MouseEvent, memo, useMemo, useState } from "react";
 import { useTreegeEditorContext } from "@/editor/context/TreegeEditorContext";
 import useAvailableParentFields from "@/editor/hooks/useAvailableParentFields";
 import { useIsIntraChainEdge } from "@/editor/hooks/useChainPosition";
@@ -84,6 +84,31 @@ const ConditionalEdge = ({
   const directParent = availableParentFields.find((field) => field.nodeId === source) ?? availableParentFields[0];
   const { language } = useTreegeEditorContext();
   const t = useTranslate();
+  const allEdges = useEdges();
+
+  /**
+   * Values already used by sibling edges (same `source`, different edge id)
+   * for the direct parent's field. Used in Basic mode to disable options that
+   * are already routed by another branch, preventing duplicate decisions.
+   */
+  const siblingValues = useMemo(() => {
+    const present = new Set<string>();
+    if (!directParent) {
+      return present;
+    }
+    allEdges.forEach((edge) => {
+      if (edge.id === id || edge.source !== source) {
+        return;
+      }
+      const conditionalData = edge.data as ConditionalEdgeData | undefined;
+      conditionalData?.conditions?.forEach((condition) => {
+        if (condition.field === directParent.nodeId && condition.value) {
+          present.add(condition.value);
+        }
+      });
+    });
+    return present;
+  }, [allEdges, id, source, directParent]);
 
   const isConfigured =
     Boolean(data?.configured) || Boolean(data?.isFallback) || Boolean(data?.label) || (data?.conditions?.some(isConditionDefined) ?? false);
@@ -280,20 +305,25 @@ const ConditionalEdge = ({
 
                               return (
                                 <FormItem>
-                                  <Label>
-                                    {t("editor.conditionalEdge.value")} ({directParent.label})
-                                  </Label>
+                                  <Label>{t("editor.conditionalEdge.basicConditionLabel").replace("{name}", directParent.label)}</Label>
                                   {hasOptions ? (
                                     <Select value={currentValue} onValueChange={handleBasicValueChange}>
                                       <SelectTrigger className="tg:w-full">
                                         <SelectValue placeholder={t("editor.conditionalEdge.selectValue")} />
                                       </SelectTrigger>
                                       <SelectContent>
-                                        {options.map((option) => (
-                                          <SelectItem key={option.value} value={option.value}>
-                                            {resolveTranslatable(option.label, language) || option.value}
-                                          </SelectItem>
-                                        ))}
+                                        {options.map((option) => {
+                                          const isAlreadyPresent = siblingValues.has(option.value) && option.value !== currentValue;
+                                          const labelText = resolveTranslatable(option.label, language);
+                                          const displayLabel =
+                                            labelText && labelText !== option.value ? `${labelText} (${option.value})` : option.value;
+
+                                          return (
+                                            <SelectItem key={option.value} value={option.value} disabled={isAlreadyPresent}>
+                                              {displayLabel}
+                                            </SelectItem>
+                                          );
+                                        })}
                                       </SelectContent>
                                     </Select>
                                   ) : (

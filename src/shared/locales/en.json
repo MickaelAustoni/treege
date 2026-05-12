@@ -93,6 +93,7 @@
       "advanced": "Advanced",
       "and": "AND",
       "basic": "Basic",
+      "basicConditionLabel": "If \"{name}\" equals",
       "condition": "Condition",
       "conditions": "Conditions",
       "conditionsAnd": "conditions (AND)",
