@@ -29,6 +29,11 @@ const TreegeNode = (props: TreegeNodeProps) => {
   const isInEditMode = selected && !isMultiSelection;
   const showBottomHandle = !(isSubmit || isMultiSelection);
   const isBottomHandleHoverOnly = !isStackTail;
+  // Action buttons in the top-right slot: hidden by default, revealed on
+  // hover or while editing. The required toggle is also always visible when
+  // the field is required, so the red asterisk acts as a permanent signal.
+  const hoverActionVisibility = isInEditMode ? "tg:flex" : "tg:hidden tg:group-hover:flex";
+  const requiredButtonVisibility = inputData?.required || isInEditMode ? "tg:flex" : "tg:hidden tg:group-hover:flex";
 
   return (
     <NodeWrapper isSubmit={isSubmit} stackPosition={stackPosition}>
@@ -41,29 +46,32 @@ const TreegeNode = (props: TreegeNodeProps) => {
         className={cn(!isStackHead && "tg:pointer-events-none tg:opacity-0")}
       />
 
-      {/* Node actions: visible on hover, or while editing */}
-      <div
-        className={cn(
-          "tg:absolute tg:top-2 tg:right-2 tg:flex tg:items-center tg:gap-0.5 tg:transition-opacity",
-          isInEditMode ? "tg:opacity-100" : "tg:opacity-0 tg:group-hover:opacity-100",
-        )}
-      >
-        {inputData && !isSubmit && (
-          <>
-            <NodeRequiredButton nodeId={id} required={inputData.required} />
-            <NodeImageButton nodeId={id} image={inputData.image} />
-          </>
-        )}
-        <NodeMoreMenu nodeId={id} />
-      </div>
-
       {/* Illustrative image */}
       <NodeImage image={inputData?.image} />
 
-      {/* Badges */}
-      <div className="tg:mb-1 tg:flex tg:flex-wrap tg:gap-1">
-        <NodeTypeBadge nodeId={id} nodeType={type} subType={subType} />
-        <NodeGroupBadge nodeId={id} groupId={parentId} />
+      {/* Badges (left) + actions (right) share a single row via
+          `justify-between`. Hidden actions collapse out of the flow so the
+          required toggle sticks against the right edge when alone. */}
+      <div className="tg:mb-1 tg:flex tg:items-center tg:justify-between tg:gap-1">
+        <div className="tg:flex tg:flex-wrap tg:gap-1">
+          <NodeTypeBadge nodeId={id} nodeType={type} subType={subType} />
+          <NodeGroupBadge nodeId={id} groupId={parentId} />
+        </div>
+        <div className="tg:flex tg:items-center tg:gap-0.5">
+          {inputData && !isSubmit && (
+            <>
+              <span className={requiredButtonVisibility}>
+                <NodeRequiredButton nodeId={id} required={inputData.required} />
+              </span>
+              <span className={hoverActionVisibility}>
+                <NodeImageButton nodeId={id} image={inputData.image} />
+              </span>
+            </>
+          )}
+          <span className={hoverActionVisibility}>
+            <NodeMoreMenu nodeId={id} />
+          </span>
+        </div>
       </div>
 
       {/* Label (always rendered; autofocused on entering edit mode) */}
