@@ -58,7 +58,7 @@ const NodeTypeBadge = ({ nodeId, nodeType, subType }: NodeTypeBadgeProps) => {
           variant="secondary"
           className="nodrag nopan tg:cursor-pointer tg:px-1.5 tg:py-0 tg:text-[10px] tg:capitalize tg:[&>svg]:size-2.5"
         >
-          <Icon className="tg:mt-0.5" />
+          <Icon />
           {label || t("editor.selectNodeType.nodeType")}
           <ChevronDown />
         </Badge>

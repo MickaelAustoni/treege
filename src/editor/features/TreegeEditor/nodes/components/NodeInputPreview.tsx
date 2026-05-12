@@ -66,19 +66,15 @@ const shortenUrl = (url: string): string => {
 };
 
 const NodeInputPreview = ({ nodeId, data }: NodeInputPreviewProps) => {
-  const { language, headers } = useTreegeEditorContext();
-  const { updateNodeData } = useFlowActions();
-  const t = useTranslate();
-
-  // Popover state shared between the "+ Add option" trigger and the inline
-  // edit invocations coming from the rendered options' hover overlay.
   const [open, setOpen] = useState(false);
   const [labelDraft, setLabelDraft] = useState("");
   const [valueDraft, setValueDraft] = useState("");
   const [imageDraft, setImageDraft] = useState("");
   const [descriptionDraft, setDescriptionDraft] = useState("");
   const [editingIndex, setEditingIndex] = useState<number | null>(null); // null = creating; number = editing the option at that index.
-
+  const { language, headers } = useTreegeEditorContext();
+  const { updateNodeData } = useFlowActions();
+  const t = useTranslate();
   const inputType = data?.type;
 
   if (!inputType) {
@@ -233,7 +229,7 @@ const NodeInputPreview = ({ nodeId, data }: NodeInputPreviewProps) => {
     return (
       <>
         {showValue && (
-          <span className="tg:pointer-events-none tg:absolute tg:top-1/2 tg:right-2 tg:max-w-[40%] tg:-translate-y-1/2 tg:truncate tg:text-[10px] tg:text-muted-foreground/60 tg:group-hover/option:hidden">
+          <span className="tg:pointer-events-none tg:absolute tg:top-1/2 tg:right-2 tg:max-w-18 tg:-translate-y-1/2 tg:truncate tg:text-[10px] tg:text-muted-foreground/60 tg:group-hover/option:hidden">
             {value}
           </span>
         )}
@@ -287,6 +283,7 @@ const NodeInputPreview = ({ nodeId, data }: NodeInputPreviewProps) => {
         */}
         <TreegeRendererProvider value={{ headers, language, optionsDisplayLimit: 10 }}>
           <Renderer
+            compactOptions
             node={previewNode}
             value={defaultValueForType(inputType) as never}
             setValue={() => {}}

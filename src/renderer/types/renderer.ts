@@ -122,6 +122,13 @@ export type InputRenderProps<T extends InputType = InputType> = {
    * runtime-pure.
    */
   renderOptionExtras?: (option: { option: InputOption; index: number; variant?: string }) => ReactNode;
+  /**
+   * Editor-only layout flag. When `true`, option-based renderers force their
+   * option labels to a single truncated line (block + max-w-full + truncate)
+   * and reserve room on the right for the `renderOptionExtras` overlay.
+   * Defaults to `false` (multi-line, runtime-pure).
+   */
+  compactOptions?: boolean;
 };
 
 export type UiRenderProps = {

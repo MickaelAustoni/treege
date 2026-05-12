@@ -6,6 +6,7 @@ import { InputRenderProps } from "@/renderer/types/renderer";
 import { Checkbox } from "@/shared/components/ui/checkbox";
 import { FormDescription, FormError, FormItem } from "@/shared/components/ui/form";
 import { Label } from "@/shared/components/ui/label";
+import { cn } from "@/shared/lib/utils";
 
 const DefaultCheckboxInput = ({
   node,
@@ -17,6 +18,7 @@ const DefaultCheckboxInput = ({
   id,
   name,
   renderOptionExtras,
+  compactOptions,
 }: InputRenderProps<"checkbox">) => {
   const { options, isLoading, error: inputOptionsError } = useInputOptions(node);
   const { optionsDisplayLimit } = useTreegeRendererContext();
@@ -45,13 +47,16 @@ const DefaultCheckboxInput = ({
             <span>{t("renderer.defaultCheckboxInput.loadingOptions")}</span>
           </div>
         )}
-        <div className="tg:space-y-2">
+        <div className="tg:min-w-0 tg:space-y-2">
           {visibleOptions.map((option, index) => {
             const optionDescription = t(option.description);
             return (
               <div
                 key={option.value + index}
-                className="tg:group/option tg:pointer-events-auto tg:relative tg:flex tg:items-start tg:gap-3"
+                className={cn(
+                  "tg:group/option tg:pointer-events-auto tg:relative tg:flex tg:items-start tg:gap-3",
+                  compactOptions && "tg:pr-22",
+                )}
               >
                 <Checkbox
                   id={`${id}-${option.value}`}
@@ -61,11 +66,18 @@ const DefaultCheckboxInput = ({
                   disabled={option.disabled}
                   className="tg:mt-0.5"
                 />
-                <div className="tg:flex tg:flex-col">
-                  <Label htmlFor={`${id}-${option.value}`} className="tg:cursor-pointer tg:font-normal tg:text-sm">
+                <div className={cn("tg:flex tg:flex-col", compactOptions && "tg:min-w-0 tg:flex-1 tg:overflow-hidden")}>
+                  <Label
+                    htmlFor={`${id}-${option.value}`}
+                    className={cn("tg:cursor-pointer tg:font-normal tg:text-sm", compactOptions && "tg:block tg:max-w-full tg:truncate")}
+                  >
                     {t(option.label) ? t(option.label) : option.value}
                   </Label>
-                  {optionDescription && <span className="tg:text-muted-foreground tg:text-xs">{optionDescription}</span>}
+                  {optionDescription && (
+                    <span className={cn("tg:text-muted-foreground tg:text-xs", compactOptions && "tg:block tg:max-w-full tg:truncate")}>
+                      {optionDescription}
+                    </span>
+                  )}
                 </div>
                 {renderOptionExtras?.({ index, option })}
               </div>
