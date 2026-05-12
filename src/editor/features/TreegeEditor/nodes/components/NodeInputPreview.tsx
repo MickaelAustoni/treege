@@ -39,25 +39,32 @@ const NodeInputPreview = ({ nodeId, data }: NodeInputPreviewProps) => {
     return null;
   }
 
-  const node: Node<InputNodeData> = {
+  // Resolve the form name BEFORE stripping the data so the runtime renderer
+  // still receives a meaningful `name` prop (used for input `name=` attribute).
+  const name = resolveNodeKey({
     data,
+    id: nodeId,
+    position: { x: 0, y: 0 },
+    type: "input",
+  });
+
+  // For the preview we strip:
+  // - `required` so the renderer doesn't paint its red asterisk (already shown
+  //   by `NodeRequiredButton` in the top-right actions),
+  // - `name` so the renderer's `label || node.data.name` fallback yields an
+  //   empty <label/>. Combined with the `[&_label:empty]:hidden` wrapper, this
+  //   removes the duplicate label rendered above the preview's input.
+  const node: Node<InputNodeData> = {
+    data: { ...data, name: undefined, required: undefined },
     id: nodeId,
     position: { x: 0, y: 0 },
     type: "input",
   };
 
-  const label = getTranslatedText(data.label, language);
-  const name = resolveNodeKey(node);
-  const SubTypeIcon = getInputTypeIcon(inputType);
-  const subTypeHint = (
-    <div className="tg:flex tg:items-center tg:gap-1 tg:text-[10px] tg:text-muted-foreground tg:capitalize tg:[&>svg]:size-3">
-      <SubTypeIcon />
-      {inputType}
-    </div>
-  );
-
-  // Hidden inputs render nothing at runtime — show a readable summary instead so the node is not blank in the editor
+  // Hidden inputs render nothing at runtime — show a readable summary instead
+  // (with the type icon since there's no rendered field to identify it visually).
   if (inputType === "hidden") {
+    const SubTypeIcon = getInputTypeIcon(inputType);
     const staticValue = data.defaultValue?.type === "static" ? data.defaultValue.staticValue : undefined;
     const referenceField = data.defaultValue?.type === "reference" ? data.defaultValue.referenceField : undefined;
     const displayValue = Array.isArray(staticValue)
@@ -65,12 +72,13 @@ const NodeInputPreview = ({ nodeId, data }: NodeInputPreviewProps) => {
       : typeof staticValue === "boolean"
         ? String(staticValue)
         : (staticValue ?? (referenceField ? `→ ${referenceField}` : ""));
-    const displayKey = label || name;
 
     return (
       <div className="tg:pointer-events-none tg:flex tg:select-none tg:flex-col tg:gap-1 tg:text-sm">
-        {subTypeHint}
-        <span className="tg:truncate tg:font-medium">{displayKey}</span>
+        <div className="tg:flex tg:items-center tg:gap-1 tg:text-[10px] tg:text-muted-foreground tg:capitalize tg:[&>svg]:size-3">
+          <SubTypeIcon />
+          {inputType}
+        </div>
         <span className="tg:truncate tg:text-muted-foreground tg:text-xs">{displayValue || "—"}</span>
       </div>
     );
@@ -86,13 +94,19 @@ const NodeInputPreview = ({ nodeId, data }: NodeInputPreviewProps) => {
   const placeholder = resolveInputPlaceholder(data, language);
 
   return (
-    <div className={cn("tg:pointer-events-none tg:flex tg:select-none tg:flex-col tg:gap-1", inputType === "submit" && "tg:items-center")}>
-      {subTypeHint}
+    <div
+      className={cn(
+        "tg:pointer-events-none tg:flex tg:select-none tg:flex-col tg:gap-1 tg:[&_label:empty]:hidden",
+        inputType === "submit" && "tg:items-center",
+      )}
+    >
       {/*
         Wrap the runtime renderer in a minimal `TreegeRendererProvider` so it
         picks up the editor's `headers` (e.g. for `useInputOptions`'s fetch).
         The provider merges with sensible defaults — other fields stay no-op
-        since the preview is non-interactive.
+        since the preview is non-interactive. `label` is intentionally omitted
+        so the editor's `NodeLabelInput` is the single source of truth visually
+        and avoids rendering the same text twice.
       */}
       <TreegeRendererProvider value={{ headers, language, optionsDisplayLimit: 10 }}>
         <Renderer
@@ -101,7 +115,6 @@ const NodeInputPreview = ({ nodeId, data }: NodeInputPreviewProps) => {
           setValue={() => {}}
           id={nodeId}
           name={name}
-          label={label || undefined}
           placeholder={placeholder || undefined}
           helperText={helperText || undefined}
         />

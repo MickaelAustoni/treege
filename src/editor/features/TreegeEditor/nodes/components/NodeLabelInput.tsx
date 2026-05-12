@@ -1,4 +1,4 @@
-import { ChangeEvent, KeyboardEvent, MouseEvent, PointerEvent, useEffect, useRef } from "react";
+import { ChangeEvent, KeyboardEvent, useEffect, useRef } from "react";
 import { useTreegeEditorContext } from "@/editor/context/TreegeEditorContext";
 import useFlowActions from "@/editor/hooks/useFlowActions";
 import useTranslate from "@/editor/hooks/useTranslate";
@@ -10,27 +10,16 @@ interface NodeLabelInputProps {
   label?: Translatable;
   placeholder?: string;
   className?: string;
+  autoFocus?: boolean;
 }
 
-const NodeLabelInput = ({ nodeId, label, placeholder, className }: NodeLabelInputProps) => {
+const NodeLabelInput = ({ nodeId, label, placeholder, className, autoFocus }: NodeLabelInputProps) => {
   const { language } = useTreegeEditorContext();
   const { updateNodeData, clearSelection } = useFlowActions();
   const t = useTranslate();
   const inputRef = useRef<HTMLInputElement>(null);
   const value = label?.[language] ?? "";
   const resolvedPlaceholder = placeholder || t("editor.treegeNode.labelPlaceholder");
-
-  const stopPropagation = (event: MouseEvent | PointerEvent) => event.stopPropagation();
-
-  /**
-   * Autofocus input
-   */
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      inputRef.current?.focus();
-    }, 300);
-    return () => clearTimeout(timeout);
-  }, []);
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     updateNodeData(nodeId, {
@@ -46,6 +35,19 @@ const NodeLabelInput = ({ nodeId, label, placeholder, className }: NodeLabelInpu
     }
   };
 
+  /**
+   * Autofocus input
+   */
+  useEffect(() => {
+    if (!autoFocus) {
+      return;
+    }
+    const timeout = setTimeout(() => {
+      inputRef.current?.focus();
+    }, 300);
+    return () => clearTimeout(timeout);
+  }, [autoFocus]);
+
   return (
     <input
       ref={inputRef}
@@ -54,9 +56,6 @@ const NodeLabelInput = ({ nodeId, label, placeholder, className }: NodeLabelInpu
       placeholder={resolvedPlaceholder}
       onChange={handleChange}
       onKeyDown={handleKeyDown}
-      onClick={stopPropagation}
-      onMouseDown={stopPropagation}
-      onPointerDown={stopPropagation}
       className={cn(
         "nodrag nopan tg:w-full tg:truncate tg:bg-transparent tg:outline-none tg:placeholder:text-muted-foreground/40",
         className,
