@@ -11,7 +11,7 @@ import NodeOptions from "@/editor/features/TreegeEditor/nodes/components/NodeOpt
 import NodeRequiredButton from "@/editor/features/TreegeEditor/nodes/components/NodeRequiredButton";
 import NodeTypeBadge from "@/editor/features/TreegeEditor/nodes/components/NodeTypeBadge";
 import NodeWrapper from "@/editor/features/TreegeEditor/nodes/layout/NodeWrapper";
-import { useChainPosition } from "@/editor/hooks/useChainPosition";
+import { useStackPosition } from "@/editor/hooks/useStackPosition";
 import { cn } from "@/shared/lib/utils";
 import { FlowNodeData, InputNodeData, UINodeData } from "@/shared/types/node";
 
@@ -27,14 +27,14 @@ const TreegeNode = (props: TreegeNodeProps) => {
   const subType = inputData?.type ?? uiData?.type;
   const isSubmit = inputData?.type === "submit";
   const showPreview = !selected && !!inputData?.type;
-  const chainPosition = useChainPosition(id);
-  const isChainTail = chainPosition === "last" || chainPosition === "single";
-  const isChainHead = chainPosition === "first" || chainPosition === "single";
+  const stackPosition = useStackPosition(id);
+  const isStackTail = stackPosition === "last" || stackPosition === "single";
+  const isStackHead = stackPosition === "first" || stackPosition === "single";
   const isMultiSelection = useStore((state) => state.nodes.filter((node) => node.selected).length > 1);
-  const showBottomHandle = !isSubmit && (isChainTail || (selected && !isMultiSelection));
+  const showBottomHandle = !isSubmit && (isStackTail || (selected && !isMultiSelection));
 
   return (
-    <NodeWrapper isSubmit={isSubmit} chainPosition={chainPosition}>
+    <NodeWrapper isSubmit={isSubmit} stackPosition={stackPosition}>
       {/* Node actions */}
       <div className="tg:absolute tg:top-2 tg:right-2 tg:flex tg:items-center tg:gap-0.5">
         {selected && inputData && !isSubmit && (
@@ -47,7 +47,7 @@ const TreegeNode = (props: TreegeNodeProps) => {
       </div>
 
       {/* Top handle */}
-      {isChainHead && <Handle type="target" position={Position.Top} isConnectable={isConnectable} isConnectableStart={type === "ui"} />}
+      {isStackHead && <Handle type="target" position={Position.Top} isConnectable={isConnectable} isConnectableStart={type === "ui"} />}
 
       {/* Illustrative image */}
       <NodeImage image={inputData?.image} />

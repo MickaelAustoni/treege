@@ -4,7 +4,7 @@ import { Plus, Trash2, Waypoints, X } from "lucide-react";
 import { MouseEvent, memo, useMemo, useState } from "react";
 import { useTreegeEditorContext } from "@/editor/context/TreegeEditorContext";
 import useAvailableParentFields from "@/editor/hooks/useAvailableParentFields";
-import { useIsIntraChainEdge } from "@/editor/hooks/useChainPosition";
+import { useIsStackedEdge } from "@/editor/hooks/useIsStackedEdge";
 import useTranslate from "@/editor/hooks/useTranslate";
 import { Button } from "@/shared/components/ui/button";
 import { Checkbox } from "@/shared/components/ui/checkbox";
@@ -67,7 +67,6 @@ const ConditionalEdge = ({
   style,
   data,
 }: ConditionalEdgeProps) => {
-  const isIntraChain = useIsIntraChainEdge(source, target);
   const [edgePath] = getBezierPath({
     sourcePosition,
     sourceX,
@@ -80,9 +79,10 @@ const ConditionalEdge = ({
   const [isOpen, setIsOpen] = useState(false);
   const [mode, setMode] = useState<EdgeMode>("basic");
   const { updateEdgeData, deleteElements } = useReactFlow();
+  const { language } = useTreegeEditorContext();
+  const isStacked = useIsStackedEdge(source, target);
   const availableParentFields = useAvailableParentFields(target);
   const directParent = availableParentFields.find((field) => field.nodeId === source) ?? availableParentFields[0];
-  const { language } = useTreegeEditorContext();
   const t = useTranslate();
   const allEdges = useEdges();
 
@@ -216,7 +216,7 @@ const ConditionalEdge = ({
     return "var(--treege-chart-3)";
   };
 
-  if (isIntraChain) {
+  if (isStacked) {
     return null;
   }
 

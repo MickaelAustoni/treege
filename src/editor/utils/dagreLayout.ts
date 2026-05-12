@@ -92,13 +92,13 @@ const layoutSiblings = (siblings: Node[], edges: Edge[], config: Required<Layout
  * coordinates.
  */
 /**
- * After dagre runs, collapse every linear chain so its nodes touch border-to-border.
- * A chain is a sequence where each parent has exactly one outgoing edge and each
+ * After dagre runs, collapse every linear stack so its nodes touch border-to-border.
+ * A stack is a sequence where each parent has exactly one outgoing edge and each
  * child has exactly one incoming edge — i.e. no fork, no join. The head of the
- * chain keeps the position dagre computed; following nodes are stacked against it
+ * stack keeps the position dagre computed; following nodes are stacked against it
  * along the layout axis.
  */
-const collapseChains = (
+const collapseStacks = (
   layoutable: Node[],
   edges: Edge[],
   positions: Map<string, { x: number; y: number }>,
@@ -133,15 +133,15 @@ const collapseChains = (
     return nodeById.get(parentId) ?? null;
   };
 
-  const findChainHead = (node: Node): Node => {
+  const findStackHead = (node: Node): Node => {
     const parent = findLinearParent(node.id);
-    return parent ? findChainHead(parent) : node;
+    return parent ? findStackHead(parent) : node;
   };
 
-  const walkChain = (node: Node, acc: Node[] = []): Node[] => {
+  const walkStack = (node: Node, acc: Node[] = []): Node[] => {
     acc.push(node);
     const child = findLinearChild(node.id);
-    return child ? walkChain(child, acc) : acc;
+    return child ? walkStack(child, acc) : acc;
   };
 
   const advanceCursor = (cursor: { x: number; y: number }, previous: Node): { x: number; y: number } => {
@@ -156,20 +156,20 @@ const collapseChains = (
     if (visited.has(node.id)) {
       return;
     }
-    const head = findChainHead(node);
+    const head = findStackHead(node);
     const headPosition = positions.get(head.id);
     if (!headPosition) {
       return;
     }
-    const chain = walkChain(head);
-    chain.forEach((chainNode) => {
-      visited.add(chainNode.id);
+    const stack = walkStack(head);
+    stack.forEach((stackNode) => {
+      visited.add(stackNode.id);
     });
-    chain.reduce((cursor, currentNode, index) => {
+    stack.reduce((cursor, currentNode, index) => {
       if (index === 0) {
         return cursor;
       }
-      const nextPosition = advanceCursor(cursor, chain[index - 1]);
+      const nextPosition = advanceCursor(cursor, stack[index - 1]);
       positions.set(currentNode.id, nextPosition);
       return nextPosition;
     }, headPosition);
@@ -190,7 +190,7 @@ export const getLayoutedElements = (nodes: Node[], edges: Edge[], options: Layou
   }
 
   const computedPositions = layoutSiblings(layoutable, edges, config);
-  collapseChains(layoutable, edges, computedPositions, config.direction);
+  collapseStacks(layoutable, edges, computedPositions, config.direction);
 
   return nodes.map((node) => {
     const next = computedPositions.get(node.id);

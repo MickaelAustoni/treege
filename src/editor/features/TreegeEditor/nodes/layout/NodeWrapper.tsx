@@ -1,28 +1,28 @@
 import { PropsWithChildren } from "react";
-import { ChainPosition } from "@/editor/hooks/useChainPosition";
+import { StackPosition } from "@/editor/utils/stackPositionIndex";
 import { cn } from "@/shared/lib/utils";
 
 interface NodeWrapperProps extends PropsWithChildren {
   isSubmit?: boolean;
-  chainPosition?: ChainPosition;
+  stackPosition?: StackPosition;
 }
 
-const RADIUS_BY_POSITION: Record<ChainPosition, string> = {
+const RADIUS_BY_POSITION: Record<StackPosition, string> = {
   first: "tg:rounded-t-lg tg:rounded-b-none",
   last: "tg:rounded-b-lg tg:rounded-t-none",
   middle: "tg:rounded-none",
   single: "tg:rounded-lg",
 };
 
-const NodeWrapper = ({ children, isSubmit, chainPosition = "single" }: NodeWrapperProps) => {
-  const hidesTopBorder = chainPosition === "middle" || chainPosition === "last";
+const NodeWrapper = ({ children, isSubmit, stackPosition = "single" }: NodeWrapperProps) => {
+  const hidesTopBorder = stackPosition === "middle" || stackPosition === "last";
 
   return (
     <div
       className={cn(
         "react-flow__node__wrapper tg:relative",
-        RADIUS_BY_POSITION[chainPosition],
-        hidesTopBorder && "chain-stacked",
+        RADIUS_BY_POSITION[stackPosition],
+        hidesTopBorder && "stacked",
         isSubmit && "submit-type",
       )}
     >

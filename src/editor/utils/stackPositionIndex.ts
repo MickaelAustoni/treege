@@ -1,10 +1,10 @@
-import { Edge, useStore } from "@xyflow/react";
+import { Edge } from "@xyflow/react";
 
-export type ChainPosition = "single" | "first" | "middle" | "last";
+export type StackPosition = "single" | "first" | "middle" | "last";
 
-const positionsByEdges = new WeakMap<Edge[], Map<string, ChainPosition>>();
+const positionsByEdges = new WeakMap<Edge[], Map<string, StackPosition>>();
 
-const resolveChainPosition = (stackWithParent: boolean, stackWithChild: boolean): ChainPosition => {
+const resolvePosition = (stackWithParent: boolean, stackWithChild: boolean): StackPosition => {
   if (stackWithParent && stackWithChild) {
     return "middle";
   }
@@ -18,18 +18,18 @@ const resolveChainPosition = (stackWithParent: boolean, stackWithChild: boolean)
 };
 
 /**
- * Builds the chain positions in a single pass over the edges.
+ * Builds the stack positions in a single pass over the edges.
  *
  * - O(E) construction of the in/out adjacency Maps.
  * - O(N) classification of every connected node (N = distinct node ids in edges).
  */
-const buildPositions = (edges: Edge[]): Map<string, ChainPosition> => {
+const buildPositions = (edges: Edge[]): Map<string, StackPosition> => {
   const outgoingCount = new Map<string, number>();
   const incomingCount = new Map<string, number>();
   const childOf = new Map<string, string>();
   const parentOf = new Map<string, string>();
   const connectedNodeIds = new Set<string>();
-  const positions = new Map<string, ChainPosition>();
+  const positions = new Map<string, StackPosition>();
 
   edges.forEach((edge) => {
     outgoingCount.set(edge.source, (outgoingCount.get(edge.source) ?? 0) + 1);
@@ -45,7 +45,7 @@ const buildPositions = (edges: Edge[]): Map<string, ChainPosition> => {
     const childId = outgoingCount.get(nodeId) === 1 ? childOf.get(nodeId) : undefined;
     const stackWithParent = parentId !== undefined && outgoingCount.get(parentId) === 1;
     const stackWithChild = childId !== undefined && incomingCount.get(childId) === 1;
-    positions.set(nodeId, resolveChainPosition(stackWithParent, stackWithChild));
+    positions.set(nodeId, resolvePosition(stackWithParent, stackWithChild));
   });
 
   return positions;
@@ -54,9 +54,10 @@ const buildPositions = (edges: Edge[]): Map<string, ChainPosition> => {
 /**
  * Memoizes the positions map keyed by the edges array reference. React Flow
  * keeps that reference stable between unrelated updates (drag, selection, …),
- * so the selector becomes a simple Map lookup outside of edge mutations.
+ * so selectors that read from this map effectively perform a Map lookup
+ * outside of edge mutations.
  */
-const getPositions = (edges: Edge[]): Map<string, ChainPosition> => {
+export const getPositions = (edges: Edge[]): Map<string, StackPosition> => {
   const cached = positionsByEdges.get(edges);
 
   if (cached) {
@@ -68,19 +69,3 @@ const getPositions = (edges: Edge[]): Map<string, ChainPosition> => {
   positionsByEdges.set(edges, positions);
   return positions;
 };
-
-export const useChainPosition = (nodeId: string): ChainPosition => useStore((state) => getPositions(state.edges).get(nodeId) ?? "single");
-
-/**
- * Source→target is intra-chain iff source has a linear child (position
- * "first"/"middle") and target has a linear parent (position "middle"/"last").
- */
-export const useIsIntraChainEdge = (source: string, target: string): boolean =>
-  useStore((state) => {
-    const positions = getPositions(state.edges);
-    const sourcePosition = positions.get(source);
-    const targetPosition = positions.get(target);
-    const sourceHasLinearChild = sourcePosition === "first" || sourcePosition === "middle";
-    const targetHasLinearParent = targetPosition === "middle" || targetPosition === "last";
-    return sourceHasLinearChild && targetHasLinearParent;
-  });

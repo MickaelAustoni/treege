@@ -35,8 +35,8 @@ div.react-flow__node__wrapper {
   min-height: 90px;
 }
 
-/* Stacked chain node: hides top border so adjacent nodes visually merge */
-div.react-flow__node__wrapper.chain-stacked {
+/* Stacked node: hides top border so adjacent nodes visually merge */
+div.react-flow__node__wrapper.stacked {
   border-top-width: 0;
 }
 
@@ -46,7 +46,7 @@ div.react-flow__node.selected .react-flow__node__wrapper {
 }
 
 /* Selected node restores top border so all 4 sides are highlighted */
-div.react-flow__node.selected .react-flow__node__wrapper.chain-stacked {
+div.react-flow__node.selected .react-flow__node__wrapper.stacked {
   border-top-width: 1px;
 }
 
