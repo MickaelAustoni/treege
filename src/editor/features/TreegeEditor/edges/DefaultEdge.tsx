@@ -57,7 +57,7 @@ const StackedEdgeActions = ({ sourceId, labelX, labelY }: StackedEdgeActionsProp
     <div
       className="nodrag nopan tg:group tg:pointer-events-auto tg:absolute tg:z-[10000] tg:flex tg:items-center tg:justify-center"
       style={{
-        height: "40px",
+        height: "24px",
         transform: `translate(-50%, -50%) translate(${labelX}px, ${labelY}px)`,
         width: "var(--node-width, 280px)",
       }}
