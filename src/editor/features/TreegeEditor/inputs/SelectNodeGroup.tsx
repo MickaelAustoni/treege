@@ -26,9 +26,15 @@ interface SelectNodeGroupProps {
    * where a label would be redundant).
    */
   hideLabel?: boolean;
+  /**
+   * Fired after a successful group assignment or creation. Lets the parent
+   * dismiss its surrounding surface (e.g. the badge popover) on commit.
+   * Rename is intentionally excluded — it keeps the surface open.
+   */
+  onChange?: () => void;
 }
 
-const SelectNodeGroup = ({ targetNodes, hideLabel }: SelectNodeGroupProps = {}) => {
+const SelectNodeGroup = ({ targetNodes, hideLabel, onChange }: SelectNodeGroupProps = {}) => {
   const [newGroupLabel, setNewGroupLabel] = useState("");
   const [renameLabel, setRenameLabel] = useState("");
   const [popoverOpen, setPopoverOpen] = useState(false);
@@ -80,6 +86,8 @@ const SelectNodeGroup = ({ targetNodes, hideLabel }: SelectNodeGroupProps = {}) 
         return node;
       });
     });
+
+    onChange?.();
   };
 
   const handleCreateGroup = () => {
@@ -129,6 +137,8 @@ const SelectNodeGroup = ({ targetNodes, hideLabel }: SelectNodeGroupProps = {}) 
     toast.success("Group created", {
       description: `The group "${label}" has been created successfully.`,
     });
+
+    onChange?.();
   };
 
   const handleRenameGroup = () => {
