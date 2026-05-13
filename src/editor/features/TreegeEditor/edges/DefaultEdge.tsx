@@ -14,6 +14,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/shared/components/ui/dropdown-menu";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/shared/components/ui/tooltip";
 import { INPUT_TYPE } from "@/shared/constants/inputType";
 import { NODE_TYPE } from "@/shared/constants/node";
 import { UI_TYPE } from "@/shared/constants/uiType";
@@ -61,24 +62,36 @@ const StackedEdgeActions = ({ sourceId, labelX, labelY }: StackedEdgeActionsProp
         width: "var(--node-width, 280px)",
       }}
     >
-      <div className="tg:flex tg:gap-2 tg:opacity-0 tg:transition-opacity tg:focus-within:opacity-100 tg:group-hover:opacity-100">
-        <button
-          type="button"
-          aria-label="Insert a node here"
-          onClick={(event) => handleClick(event, "insert")}
-          className="tg:flex tg:h-6 tg:w-6 tg:cursor-pointer tg:items-center tg:justify-center tg:rounded-sm tg:bg-muted-foreground tg:transition-colors tg:hover:bg-primary/80"
-        >
-          <BetweenHorizontalEnd className="tg:h-4 tg:w-4 tg:text-primary-foreground" />
-        </button>
-        <button
-          type="button"
-          aria-label="Create a branch"
-          onClick={(event) => handleClick(event, "branch")}
-          className="tg:flex tg:h-6 tg:w-6 tg:cursor-pointer tg:items-center tg:justify-center tg:rounded-sm tg:bg-muted-foreground tg:transition-colors tg:hover:bg-primary/80"
-        >
-          <GitBranch className="tg:h-4 tg:w-4 tg:text-primary-foreground" />
-        </button>
-      </div>
+      <TooltipProvider delayDuration={300}>
+        <div className="tg:flex tg:gap-2 tg:opacity-0 tg:transition-opacity tg:focus-within:opacity-100 tg:group-hover:opacity-100">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                type="button"
+                aria-label={t("editor.stackedEdge.insertNode")}
+                onClick={(event) => handleClick(event, "insert")}
+                className="tg:flex tg:h-6 tg:w-6 tg:cursor-pointer tg:items-center tg:justify-center tg:rounded-sm tg:bg-muted-foreground tg:transition-colors tg:hover:bg-primary/80"
+              >
+                <BetweenHorizontalEnd className="tg:h-4 tg:w-4 tg:text-primary-foreground" />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent side="bottom">{t("editor.stackedEdge.insertNode")}</TooltipContent>
+          </Tooltip>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                type="button"
+                aria-label={t("editor.stackedEdge.createBranch")}
+                onClick={(event) => handleClick(event, "branch")}
+                className="tg:flex tg:h-6 tg:w-6 tg:cursor-pointer tg:items-center tg:justify-center tg:rounded-sm tg:bg-muted-foreground tg:transition-colors tg:hover:bg-primary/80"
+              >
+                <GitBranch className="tg:h-4 tg:w-4 tg:text-primary-foreground" />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent side="bottom">{t("editor.stackedEdge.createBranch")}</TooltipContent>
+          </Tooltip>
+        </div>
+      </TooltipProvider>
 
       <DropdownMenu open={open} onOpenChange={setOpen}>
         <DropdownMenuTrigger asChild>

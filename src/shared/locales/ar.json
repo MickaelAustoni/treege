@@ -311,6 +311,10 @@
         "ui": "عنصر تصميم"
       }
     },
+    "stackedEdge": {
+      "createBranch": "إنشاء فرع",
+      "insertNode": "إدراج عقدة هنا"
+    },
     "submitConfigForm": {
       "addHeader": "إضافة رأس",
       "apiUrl": "رابط API",

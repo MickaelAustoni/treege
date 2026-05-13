@@ -311,6 +311,10 @@
         "ui": "Designelement"
       }
     },
+    "stackedEdge": {
+      "createBranch": "Verzweigung erstellen",
+      "insertNode": "Knoten hier einfügen"
+    },
     "submitConfigForm": {
       "addHeader": "Header hinzufügen",
       "apiUrl": "API-URL",

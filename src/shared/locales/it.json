@@ -311,6 +311,10 @@
         "ui": "Elemento di design"
       }
     },
+    "stackedEdge": {
+      "createBranch": "Crea un ramo",
+      "insertNode": "Inserisci un nodo qui"
+    },
     "submitConfigForm": {
       "addHeader": "Aggiungi intestazione",
       "apiUrl": "URL dell'API",
