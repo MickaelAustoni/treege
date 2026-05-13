@@ -18,14 +18,12 @@ export type TreegeNodeProps = NodeProps<Node<InputNodeData, "input">> | NodeProp
 
 const TreegeNode = (props: TreegeNodeProps) => {
   const { id, isConnectable, parentId, selected, type } = props;
+  const { position: stackPosition, isStackHead, isStackTail } = useStackPosition(id);
+  const isMultiSelection = useStore((state) => state.nodes.filter((node) => node.selected).length > 1);
   const inputData = props.type === "input" ? props.data : undefined;
   const uiData = props.type === "ui" ? props.data : undefined;
   const subType = inputData?.type ?? uiData?.type;
   const isSubmit = inputData?.type === "submit";
-  const stackPosition = useStackPosition(id);
-  const isStackTail = stackPosition === "last" || stackPosition === "single";
-  const isStackHead = stackPosition === "first" || stackPosition === "single";
-  const isMultiSelection = useStore((state) => state.nodes.filter((node) => node.selected).length > 1);
   const isInEditMode = selected && !isMultiSelection;
   const hideBottomHandle = isSubmit || isMultiSelection || !isStackTail;
 
