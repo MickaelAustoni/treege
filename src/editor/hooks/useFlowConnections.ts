@@ -8,6 +8,16 @@ import { normalizeConditionalEdges } from "@/editor/utils/edge";
 import { isInputNode } from "@/shared/utils/nodeTypeGuards";
 
 /**
+ * Shape passed to the node-creating actions (`onAddFromHandle`, `onInsertAfter`,
+ * and the internal `createNodeAndConnect`). Lets callers seed the new node's
+ * `type` and `data` while React Flow handles position, id, etc.
+ */
+export type NodeInit = {
+  type: string;
+  data?: Record<string, unknown>;
+};
+
+/**
  * Custom hook to manage flow connections, including connecting nodes,
  * handling connection ends, and deleting edges with conditional logic.
  */
@@ -20,12 +30,7 @@ const useFlowConnections = () => {
    * Used by both onConnectEnd (drag) and onAddFromHandle (click "+")
    */
   const createNodeAndConnect = useCallback(
-    (
-      sourceNode: Node,
-      position: { x: number; y: number },
-      shouldSelectNode = false,
-      nodeInit?: { type: string; data?: Record<string, unknown> },
-    ) => {
+    (sourceNode: Node, position: { x: number; y: number }, shouldSelectNode = false, nodeInit?: NodeInit) => {
       const sourceId = sourceNode.id;
       const edges = getEdges();
       const existingEdgesFromSource = edges.filter((edge) => edge.source === sourceId);
@@ -151,7 +156,7 @@ const useFlowConnections = () => {
    * This is used when clicking the "+" handle button
    */
   const onAddFromHandle = useCallback(
-    (sourceNodeId: string, nodeInit?: { type: string; data?: Record<string, unknown> }) => {
+    (sourceNodeId: string, nodeInit?: NodeInit) => {
       const sourceNode = getNode(sourceNodeId);
       if (!sourceNode) {
         return;
@@ -194,7 +199,7 @@ const useFlowConnections = () => {
    * source has exactly one outgoing edge (i.e. it is part of a vertical stack).
    */
   const onInsertAfter = useCallback(
-    (sourceNodeId: string, nodeInit?: { type: string; data?: Record<string, unknown> }) => {
+    (sourceNodeId: string, nodeInit?: NodeInit) => {
       const sourceNode = getNode(sourceNodeId);
       if (!sourceNode) {
         return;

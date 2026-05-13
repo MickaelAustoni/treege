@@ -1,7 +1,7 @@
 import { BaseEdge, EdgeLabelRenderer, type EdgeProps, getBezierPath, useReactFlow } from "@xyflow/react";
 import { BetweenHorizontalEnd, GitBranch } from "lucide-react";
 import { MouseEvent, memo, useState } from "react";
-import useFlowConnections from "@/editor/hooks/useFlowConnections";
+import useFlowConnections, { type NodeInit } from "@/editor/hooks/useFlowConnections";
 import { useIsStackedEdge } from "@/editor/hooks/useIsStackedEdge";
 import useTranslate from "@/editor/hooks/useTranslate";
 import { getInputTypeIcon } from "@/editor/utils/inputTypeIcon";
@@ -44,7 +44,7 @@ const StackedEdgeActions = ({ sourceId, labelX, labelY }: StackedEdgeActionsProp
     setOpen(true);
   };
 
-  const runAction = (nodeInit: { type: string; data: Record<string, unknown> }) => {
+  const runAction = (nodeInit: NodeInit) => {
     if (action === "insert") {
       onInsertAfter(sourceId, nodeInit);
     } else {
@@ -61,7 +61,7 @@ const StackedEdgeActions = ({ sourceId, labelX, labelY }: StackedEdgeActionsProp
         width: "var(--node-width, 280px)",
       }}
     >
-      <div className="tg:flex tg:gap-2 tg:opacity-0 tg:transition-opacity tg:group-hover:opacity-100">
+      <div className="tg:flex tg:gap-2 tg:opacity-0 tg:transition-opacity tg:focus-within:opacity-100 tg:group-hover:opacity-100">
         <button
           type="button"
           aria-label="Insert a node here"
