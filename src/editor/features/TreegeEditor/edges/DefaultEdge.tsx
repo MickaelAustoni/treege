@@ -84,7 +84,7 @@ const StackedEdgeActions = ({ sourceId, labelX, labelY }: StackedEdgeActionsProp
         <DropdownMenuTrigger asChild>
           <span
             aria-hidden
-            className="tg:pointer-events-none tg:absolute tg:top-1/2 tg:left-1/2 tg:h-0 tg:w-0 tg:-translate-x-1/2 tg:-translate-y-1/2"
+            className="tg:topon -1/2 tg:pointer-events-none tg:absolute tg:left-1/2 tg:h-0 tg:w-0 tg:-translate-x-1/2 tg:-translate-y-1/2"
           />
         </DropdownMenuTrigger>
         <DropdownMenuContent align="center" side="bottom" className="treege-scrollbar tg:max-h-80">
