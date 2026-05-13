@@ -29,8 +29,6 @@ const TreegeNode = (props: TreegeNodeProps) => {
   const isInEditMode = selected && !isMultiSelection;
   const showBottomHandle = !(isSubmit || isMultiSelection);
   const isBottomHandleHoverOnly = !isStackTail;
-  const hoverActionVisibility = isInEditMode ? "tg:flex" : "tg:hidden tg:group-hover:flex";
-  const requiredButtonVisibility = inputData?.required || isInEditMode ? "tg:flex" : "tg:hidden tg:group-hover:flex";
 
   return (
     <NodeWrapper isSubmit={isSubmit} stackPosition={stackPosition}>
@@ -55,17 +53,11 @@ const TreegeNode = (props: TreegeNodeProps) => {
         <div className="tg:flex tg:min-h-6 tg:items-center tg:gap-0.5">
           {inputData && !isSubmit && (
             <>
-              <span className={requiredButtonVisibility}>
-                <NodeRequiredButton nodeId={id} required={inputData.required} />
-              </span>
-              <span className={hoverActionVisibility}>
-                <NodeImageButton nodeId={id} image={inputData.image} />
-              </span>
+              <NodeRequiredButton nodeId={id} required={inputData.required} />
+              <NodeImageButton nodeId={id} image={inputData.image} />
             </>
           )}
-          <span className={hoverActionVisibility}>
-            <NodeMoreMenu nodeId={id} />
-          </span>
+          <NodeMoreMenu nodeId={id} />
         </div>
       </div>
 
