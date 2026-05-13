@@ -27,8 +27,7 @@ const TreegeNode = (props: TreegeNodeProps) => {
   const isStackHead = stackPosition === "first" || stackPosition === "single";
   const isMultiSelection = useStore((state) => state.nodes.filter((node) => node.selected).length > 1);
   const isInEditMode = selected && !isMultiSelection;
-  const showBottomHandle = !(isSubmit || isMultiSelection);
-  const isBottomHandleHoverOnly = !isStackTail;
+  const hideBottomHandle = isSubmit || isMultiSelection || !isStackTail;
 
   return (
     <NodeWrapper isSubmit={isSubmit} stackPosition={stackPosition}>
@@ -74,7 +73,7 @@ const TreegeNode = (props: TreegeNodeProps) => {
       <NodeInputPreview nodeId={id} data={inputData} />
 
       {/* Bottom handle — always rendered so React Flow can resolve outgoing edges; hidden visually when not applicable. */}
-      <BottomHandleDropdown nodeId={id} isConnectable={isConnectable} hoverOnly={isBottomHandleHoverOnly} hidden={!showBottomHandle} />
+      <BottomHandleDropdown nodeId={id} isConnectable={isConnectable} hidden={hideBottomHandle} />
     </NodeWrapper>
   );
 };

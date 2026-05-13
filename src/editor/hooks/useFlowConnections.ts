@@ -188,6 +188,101 @@ const useFlowConnections = () => {
   );
 
   /**
+   * Inserts a new node between `sourceNodeId` and its sole successor. Re-routes
+   * the existing outgoing edge to start from the new node and shifts the whole
+   * descendant sub-graph down by one row to make room. Only valid when the
+   * source has exactly one outgoing edge (i.e. it is part of a vertical stack).
+   */
+  const onInsertAfter = useCallback(
+    (sourceNodeId: string, nodeInit?: { type: string; data?: Record<string, unknown> }) => {
+      const sourceNode = getNode(sourceNodeId);
+      if (!sourceNode) {
+        return;
+      }
+
+      const allEdges = getEdges();
+      const outgoingEdges = allEdges.filter((edge) => edge.source === sourceNodeId);
+      if (outgoingEdges.length !== 1) {
+        return;
+      }
+
+      const outgoingEdge = outgoingEdges[0];
+      const successorNode = getNode(outgoingEdge.target);
+      if (!successorNode) {
+        return;
+      }
+
+      takeSnapshot();
+
+      const rawNodeHeight = getComputedStyle(document.documentElement).getPropertyValue("--node-height");
+      const nodeHeight = parseFloat(rawNodeHeight) || 100;
+      const deltaY = nodeHeight + VERTICAL_NODE_SPACING;
+
+      // BFS through the successor's descendants so we shift the whole sub-graph
+      // (including branches that hang off the stack) by the same delta.
+      const descendantIds = new Set<string>([successorNode.id]);
+      const queue: string[] = [successorNode.id];
+      while (queue.length > 0) {
+        const current = queue.shift() as string;
+        allEdges
+          .filter((edge) => edge.source === current)
+          .forEach((edge) => {
+            if (!descendantIds.has(edge.target)) {
+              descendantIds.add(edge.target);
+              queue.push(edge.target);
+            }
+          });
+      }
+
+      const newNodeId = nanoid();
+      const newNode: Node = {
+        ...DEFAULT_NODE,
+        ...(nodeInit && { data: nodeInit.data ?? {}, type: nodeInit.type }),
+        id: newNodeId,
+        position: { x: successorNode.position.x, y: successorNode.position.y },
+        selected: true,
+      };
+
+      if (sourceNode.parentId) {
+        newNode.parentId = sourceNode.parentId;
+      }
+
+      setNodes((nodes) =>
+        nodes
+          .map((node) => {
+            if (descendantIds.has(node.id)) {
+              return {
+                ...node,
+                position: { x: node.position.x, y: node.position.y + deltaY },
+              };
+            }
+            return node;
+          })
+          .concat(newNode),
+      );
+
+      setEdges((edges) =>
+        edges
+          .map((edge) => (edge.id === outgoingEdge.id ? { ...edge, source: newNodeId } : edge))
+          .concat({
+            id: nanoid(),
+            source: sourceNodeId,
+            target: newNodeId,
+            type: "default",
+          }),
+      );
+
+      // Mirror `createNodeAndConnect`: defer the explicit deselect-all-then-select
+      // pass to the next frame so it overrides ReactFlow's own selection handlers.
+      requestAnimationFrame(() => {
+        setNodes((nodes) => nodes.map((node) => ({ ...node, selected: node.id === newNodeId })));
+        setEdges((edges) => edges.map((edge) => ({ ...edge, selected: false })));
+      });
+    },
+    [getNode, getEdges, setNodes, setEdges, takeSnapshot],
+  );
+
+  /**
    * Handles the end of a connection attempt in the flow.
    */
   const onConnectEnd: OnConnectEnd = useCallback(
@@ -261,6 +356,7 @@ const useFlowConnections = () => {
     onConnect,
     onConnectEnd,
     onEdgesDelete,
+    onInsertAfter,
   };
 };
 

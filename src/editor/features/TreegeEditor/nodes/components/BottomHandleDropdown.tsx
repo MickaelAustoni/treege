@@ -21,14 +21,13 @@ import { cn } from "@/shared/lib/utils";
 interface BottomHandleDropdownProps {
   nodeId: string;
   isConnectable?: boolean;
-  hoverOnly?: boolean;
   hidden?: boolean;
 }
 
-const BottomHandleDropdown = ({ nodeId, isConnectable, hoverOnly, hidden }: BottomHandleDropdownProps) => {
+const BottomHandleDropdown = ({ nodeId, isConnectable, hidden }: BottomHandleDropdownProps) => {
+  const [open, setOpen] = useState(false);
   const { onAddFromHandle } = useFlowConnections();
   const t = useTranslate();
-  const [open, setOpen] = useState(false);
 
   const handleClick = (event: MouseEvent) => {
     if (event.defaultPrevented || hidden) {
@@ -47,7 +46,6 @@ const BottomHandleDropdown = ({ nodeId, isConnectable, hoverOnly, hidden }: Bott
         className={cn(
           "tg:flex tg:h-6! tg:w-6! tg:cursor-pointer tg:items-center tg:justify-center tg:rounded-sm tg:transition tg:hover:bg-primary/80!",
           hidden && "tg:pointer-events-none tg:opacity-0",
-          !hidden && hoverOnly && "tg:opacity-0 tg:group-hover:opacity-100",
         )}
       >
         {!hidden && <Plus className="tg:h-4 tg:w-4 tg:text-primary-foreground" />}
