@@ -315,6 +315,10 @@
       "createBranch": "Verzweigung erstellen",
       "insertNode": "Knoten hier einfügen"
     },
+    "stackOrder": {
+      "moveDown": "Nach unten verschieben",
+      "moveUp": "Nach oben verschieben"
+    },
     "submitConfigForm": {
       "addHeader": "Header hinzufügen",
       "apiUrl": "API-URL",

@@ -315,6 +315,10 @@
       "createBranch": "Créer une branche",
       "insertNode": "Insérer un nœud ici"
     },
+    "stackOrder": {
+      "moveDown": "Déplacer vers le bas",
+      "moveUp": "Déplacer vers le haut"
+    },
     "submitConfigForm": {
       "addHeader": "Ajouter un en-tête",
       "apiUrl": "URL de l'API",

@@ -315,6 +315,10 @@
       "createBranch": "Crea un ramo",
       "insertNode": "Inserisci un nodo qui"
     },
+    "stackOrder": {
+      "moveDown": "Sposta giù",
+      "moveUp": "Sposta su"
+    },
     "submitConfigForm": {
       "addHeader": "Aggiungi intestazione",
       "apiUrl": "URL dell'API",

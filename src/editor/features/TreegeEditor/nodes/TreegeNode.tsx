@@ -8,6 +8,7 @@ import NodeInputPreview from "@/editor/features/TreegeEditor/nodes/components/No
 import NodeLabelInput from "@/editor/features/TreegeEditor/nodes/components/NodeLabelInput";
 import NodeMoreMenu from "@/editor/features/TreegeEditor/nodes/components/NodeMoreMenu";
 import NodeRequiredButton from "@/editor/features/TreegeEditor/nodes/components/NodeRequiredButton";
+import NodeStackOrderButtons from "@/editor/features/TreegeEditor/nodes/components/NodeStackOrderButtons";
 import NodeTypeBadge from "@/editor/features/TreegeEditor/nodes/components/NodeTypeBadge";
 import NodeWrapper from "@/editor/features/TreegeEditor/nodes/layout/NodeWrapper";
 import { useStackPosition } from "@/editor/hooks/useStackPosition";
@@ -72,6 +73,9 @@ const TreegeNode = (props: TreegeNodeProps) => {
 
       {/* Bottom handle — always rendered so React Flow can resolve outgoing edges; hidden visually when not applicable. */}
       <BottomHandleDropdown nodeId={id} isConnectable={isConnectable} hidden={hideBottomHandle} />
+
+      {/* Stack-order arrows — floats to the right of stacked nodes on hover, always visible when selected. */}
+      <NodeStackOrderButtons nodeId={id} selected={selected} />
     </NodeWrapper>
   );
 };

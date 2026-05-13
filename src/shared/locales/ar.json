@@ -315,6 +315,10 @@
       "createBranch": "إنشاء فرع",
       "insertNode": "إدراج عقدة هنا"
     },
+    "stackOrder": {
+      "moveDown": "نقل لأسفل",
+      "moveUp": "نقل لأعلى"
+    },
     "submitConfigForm": {
       "addHeader": "إضافة رأس",
       "apiUrl": "رابط API",

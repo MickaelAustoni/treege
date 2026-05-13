@@ -315,6 +315,10 @@
       "createBranch": "Crear una rama",
       "insertNode": "Insertar un nodo aquí"
     },
+    "stackOrder": {
+      "moveDown": "Mover abajo",
+      "moveUp": "Mover arriba"
+    },
     "submitConfigForm": {
       "addHeader": "Agregar encabezado",
       "apiUrl": "URL de la API",

@@ -288,6 +288,108 @@ const useFlowConnections = () => {
   );
 
   /**
+   * Swaps two adjacent stacked nodes, where `upperId` is the current predecessor
+   * in the stack and `lowerId` its sole stack successor. Reverses the stack edge
+   * between them, re-targets any incoming edges of `upperId` onto `lowerId`,
+   * re-sources any outgoing edges of `lowerId` from `upperId`, and swaps their
+   * Y positions so the visual order matches the new chain.
+   */
+  const swapAdjacentStacked = useCallback(
+    (upperId: string, lowerId: string) => {
+      const upperNode = getNode(upperId);
+      const lowerNode = getNode(lowerId);
+      if (!upperNode || !lowerNode) {
+        return;
+      }
+
+      takeSnapshot();
+
+      setEdges((edges) =>
+        edges.map((edge) => {
+          if (edge.source === upperId && edge.target === lowerId) {
+            return { ...edge, source: lowerId, target: upperId };
+          }
+          if (edge.target === upperId) {
+            return { ...edge, target: lowerId };
+          }
+          if (edge.source === lowerId) {
+            return { ...edge, source: upperId };
+          }
+          return edge;
+        }),
+      );
+
+      setNodes((nodes) =>
+        nodes.map((node) => {
+          if (node.id === upperId) {
+            return { ...node, position: { x: node.position.x, y: lowerNode.position.y } };
+          }
+          if (node.id === lowerId) {
+            return { ...node, position: { x: node.position.x, y: upperNode.position.y } };
+          }
+          return node;
+        }),
+      );
+    },
+    [getNode, setNodes, setEdges, takeSnapshot],
+  );
+
+  /**
+   * Moves a stacked node one slot up by swapping it with its sole stack
+   * predecessor. No-op when the node is the stack head, not stacked, or itself
+   * a decision node — swapping a node whose outgoing edges carry conditions
+   * referencing its own id would push that id downstream and break the gate.
+   */
+  const moveStackNodeUp = useCallback(
+    (nodeId: string) => {
+      const allEdges = getEdges();
+      const incoming = allEdges.filter((edge) => edge.target === nodeId);
+      if (incoming.length !== 1) {
+        return;
+      }
+      // Safety: bail out if the moved node has multiple outgoing edges (decision node).
+      const ownOutgoingCount = allEdges.filter((edge) => edge.source === nodeId).length;
+      if (ownOutgoingCount > 1) {
+        return;
+      }
+      const predecessorId = incoming[0].source;
+      const predecessorOutgoingCount = allEdges.filter((edge) => edge.source === predecessorId).length;
+      if (predecessorOutgoingCount !== 1) {
+        return;
+      }
+      swapAdjacentStacked(predecessorId, nodeId);
+    },
+    [getEdges, swapAdjacentStacked],
+  );
+
+  /**
+   * Moves a stacked node one slot down by swapping it with its sole stack
+   * successor. No-op when the node is the stack tail, not stacked, or the
+   * successor is a decision node — see `moveStackNodeUp` for the rationale.
+   */
+  const moveStackNodeDown = useCallback(
+    (nodeId: string) => {
+      const allEdges = getEdges();
+      const outgoing = allEdges.filter((edge) => edge.source === nodeId);
+      if (outgoing.length !== 1) {
+        return;
+      }
+      const successorId = outgoing[0].target;
+      const successorIncomingCount = allEdges.filter((edge) => edge.target === successorId).length;
+      if (successorIncomingCount !== 1) {
+        return;
+      }
+      // Safety: bail out if the successor is a decision node (multiple outgoing).
+      const successorOutgoingCount = allEdges.filter((edge) => edge.source === successorId).length;
+      if (successorOutgoingCount > 1) {
+        return;
+      }
+      swapAdjacentStacked(nodeId, successorId);
+    },
+    [getEdges, swapAdjacentStacked],
+  );
+
+  /**
    * Handles the end of a connection attempt in the flow.
    */
   const onConnectEnd: OnConnectEnd = useCallback(
@@ -357,6 +459,8 @@ const useFlowConnections = () => {
 
   return {
     isValidConnection,
+    moveStackNodeDown,
+    moveStackNodeUp,
     onAddFromHandle,
     onConnect,
     onConnectEnd,
