@@ -9,6 +9,7 @@ import { Input } from "@/shared/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/shared/components/ui/popover";
 import { Separator } from "@/shared/components/ui/separator";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/shared/components/ui/tooltip";
+import { cn } from "@/shared/lib/utils";
 
 interface NodeImageButtonProps {
   nodeId: string;
@@ -134,7 +135,7 @@ const NodeImageButton = ({ nodeId, image }: NodeImageButtonProps) => {
                   type="button"
                   variant="icon"
                   size="icon-sm"
-                  className="nodrag nopan tg:size-6"
+                  className={cn("nodrag nopan tg:size-6", image && "tg:text-sky-400/90")}
                   aria-label={t(image ? "editor.inputNodeForm.optionImageReplace" : "editor.inputNodeForm.optionImageAdd")}
                 >
                   <Image />
