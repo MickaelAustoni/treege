@@ -60,12 +60,38 @@ const layoutSiblings = (siblings: Node[], edges: Edge[], config: Required<Layout
 
   Dagre.layout(graph);
 
+  /**
+   * Dagre centers every node on its rank's centerline, which visually centers
+   * siblings of different sizes against each other. We instead align them to
+   * the rank's leading edge (top for "TB", left for "LR") by referencing the
+   * largest node of the rank along the cross axis. Nodes sharing a rank get the
+   * same Dagre coordinate on that axis, so we group them by that value.
+   */
+  const crossAxis = config.direction === "TB" ? "y" : "x";
+  const crossExtent = (node: Node) =>
+    config.direction === "TB" ? (node.measured?.height ?? FALLBACK_NODE_HEIGHT) : (node.measured?.width ?? FALLBACK_NODE_WIDTH);
+
+  const rankMaxExtent = new Map<number, number>();
+  siblings.forEach((node) => {
+    const rankKey = Math.round(graph.node(node.id)[crossAxis]);
+    rankMaxExtent.set(rankKey, Math.max(rankMaxExtent.get(rankKey) ?? 0, crossExtent(node)));
+  });
+
+  /** Top-left coordinate on the cross axis, aligning the node to its rank's leading edge. */
+  const alignedCrossCoord = (node: Node) => {
+    const center = graph.node(node.id)[crossAxis];
+    const maxExtent = rankMaxExtent.get(Math.round(center)) ?? crossExtent(node);
+    return center - maxExtent / 2;
+  };
+
   const anchor = findAnchor(siblings, graph, config.direction);
   const anchorWidth = anchor.measured?.width ?? FALLBACK_NODE_WIDTH;
   const anchorHeight = anchor.measured?.height ?? FALLBACK_NODE_HEIGHT;
   const anchorComputed = graph.node(anchor.id);
-  const offsetX = anchor.position.x - (anchorComputed.x - anchorWidth / 2);
-  const offsetY = anchor.position.y - (anchorComputed.y - anchorHeight / 2);
+  const offsetX =
+    config.direction === "LR" ? anchor.position.x - alignedCrossCoord(anchor) : anchor.position.x - (anchorComputed.x - anchorWidth / 2);
+  const offsetY =
+    config.direction === "TB" ? anchor.position.y - alignedCrossCoord(anchor) : anchor.position.y - (anchorComputed.y - anchorHeight / 2);
 
   const positions = new Map<string, { x: number; y: number }>();
 
@@ -73,7 +99,10 @@ const layoutSiblings = (siblings: Node[], edges: Edge[], config: Required<Layout
     const { x, y } = graph.node(node.id);
     const width = node.measured?.width ?? FALLBACK_NODE_WIDTH;
     const height = node.measured?.height ?? FALLBACK_NODE_HEIGHT;
-    positions.set(node.id, { x: x - width / 2 + offsetX, y: y - height / 2 + offsetY });
+    positions.set(node.id, {
+      x: config.direction === "LR" ? alignedCrossCoord(node) + offsetX : x - width / 2 + offsetX,
+      y: config.direction === "TB" ? alignedCrossCoord(node) + offsetY : y - height / 2 + offsetY,
+    });
   });
 
   return positions;
