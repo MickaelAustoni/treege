@@ -312,8 +312,9 @@
       }
     },
     "stackedEdge": {
+      "addNode": "Element hinzufügen",
       "createBranch": "Verzweigung erstellen",
-      "insertNode": "Knoten hier einfügen"
+      "insertNode": "Element hier einfügen"
     },
     "stackOrder": {
       "moveDown": "Nach unten verschieben",

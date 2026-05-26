@@ -312,8 +312,9 @@
       }
     },
     "stackedEdge": {
+      "addNode": "إضافة عنصر",
       "createBranch": "إنشاء فرع",
-      "insertNode": "إدراج عقدة هنا"
+      "insertNode": "إدراج عنصر هنا"
     },
     "stackOrder": {
       "moveDown": "نقل لأسفل",

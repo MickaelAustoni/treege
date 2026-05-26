@@ -193,6 +193,81 @@ const useFlowConnections = () => {
   );
 
   /**
+   * Creates a branch from `sourceNodeId` by adding two child nodes at once,
+   * placed symmetrically below the source. Both connecting edges are made
+   * "conditional" (and any pre-existing edge from the source is upgraded too),
+   * since a fork is only meaningful for input nodes that gate on their value.
+   * No-op when the source is not an input node.
+   */
+  const onCreateBranch = useCallback(
+    (sourceNodeId: string, nodeInit?: NodeInit) => {
+      const sourceNode = getNode(sourceNodeId);
+      if (!sourceNode || !isInputNode(sourceNode)) {
+        return;
+      }
+
+      takeSnapshot();
+
+      const rawNodeHeight = getComputedStyle(document.documentElement).getPropertyValue("--node-height");
+      const rawNodeWidth = getComputedStyle(document.documentElement).getPropertyValue("--node-width");
+      const nodeHeight = parseFloat(rawNodeHeight) || 100;
+      const nodeWidth = parseFloat(rawNodeWidth) || 100;
+
+      const newY = sourceNode.position.y + nodeHeight + VERTICAL_NODE_SPACING;
+      const halfSpan = nodeWidth / 2 + HORIZONTAL_NODE_OFFSET / 2;
+
+      const makeNode = (x: number, selected: boolean): Node => {
+        const node: Node = {
+          ...DEFAULT_NODE,
+          ...(nodeInit ? { type: nodeInit.type } : {}),
+          data: { ...(nodeInit?.data ?? DEFAULT_NODE.data) },
+          id: nanoid(),
+          position: { x, y: newY },
+          selected,
+        };
+        if (sourceNode.parentId) {
+          node.parentId = sourceNode.parentId;
+        }
+        return node;
+      };
+
+      const leftNode = makeNode(sourceNode.position.x - halfSpan, true);
+      const rightNode = makeNode(sourceNode.position.x + halfSpan, false);
+
+      setNodes((nodes) => nodes.concat(leftNode, rightNode));
+
+      setEdges((edgesSnapshot) => {
+        const makeConditions = () => [{ field: sourceNodeId, operator: "===", value: "" }];
+
+        const branchEdges = [leftNode, rightNode].map((node) => ({
+          data: { conditions: makeConditions() },
+          id: nanoid(),
+          source: sourceNodeId,
+          target: node.id,
+          type: "conditional",
+        }));
+
+        // Upgrade any edge already leaving the source so the whole fork stays conditional.
+        const upgraded = edgesSnapshot.map((edge) =>
+          edge.source === sourceNodeId
+            ? { ...edge, data: { ...edge.data, conditions: edge.data?.conditions || makeConditions() }, type: "conditional" }
+            : edge,
+        );
+
+        return upgraded.concat(branchEdges);
+      });
+
+      // Defer the explicit selection pass to the next frame so it overrides
+      // ReactFlow's own selection handlers (mirrors `createNodeAndConnect`).
+      requestAnimationFrame(() => {
+        setNodes((nodes) => nodes.map((node) => ({ ...node, selected: node.id === leftNode.id })));
+        setEdges((edges) => edges.map((edge) => ({ ...edge, selected: false })));
+      });
+    },
+    [getNode, setNodes, setEdges, takeSnapshot],
+  );
+
+  /**
    * Inserts a new node between `sourceNodeId` and its sole successor. Re-routes
    * the existing outgoing edge to start from the new node and shifts the whole
    * descendant sub-graph down by one row to make room. Only valid when the
@@ -464,6 +539,7 @@ const useFlowConnections = () => {
     onAddFromHandle,
     onConnect,
     onConnectEnd,
+    onCreateBranch,
     onEdgesDelete,
     onInsertAfter,
   };

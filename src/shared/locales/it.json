@@ -312,8 +312,9 @@
       }
     },
     "stackedEdge": {
+      "addNode": "Aggiungi un elemento",
       "createBranch": "Crea un ramo",
-      "insertNode": "Inserisci un nodo qui"
+      "insertNode": "Inserisci un elemento qui"
     },
     "stackOrder": {
       "moveDown": "Sposta giù",

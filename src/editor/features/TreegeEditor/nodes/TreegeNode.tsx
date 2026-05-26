@@ -72,7 +72,12 @@ const TreegeNode = (props: TreegeNodeProps) => {
       <NodeInputPreview nodeId={id} data={inputData} />
 
       {/* Bottom handle — always rendered so React Flow can resolve outgoing edges; hidden visually when not applicable. */}
-      <BottomHandleDropdown nodeId={id} isConnectable={isConnectable} hidden={hideBottomHandle} />
+      <BottomHandleDropdown
+        nodeId={id}
+        isConnectable={isConnectable}
+        hidden={hideBottomHandle}
+        canBranch={Boolean(inputData) && !isSubmit}
+      />
 
       {/* Stack-order arrows — floats to the right of stacked nodes on hover, always visible when selected. */}
       <NodeStackOrderButtons nodeId={id} selected={selected} />
