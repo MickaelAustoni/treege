@@ -235,7 +235,7 @@ const ConditionalEdge = ({
 
       <EdgeLabelRenderer>
         <div
-          className="nodrag nopan tg:absolute"
+          className="nodrag nopan tg:absolute tg:z-10000"
           style={{
             pointerEvents: "all",
             transform: `translate(-50%, calc(-100% - 8px)) translate(${targetX}px, ${targetY}px)`,
