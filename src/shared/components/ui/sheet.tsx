@@ -25,7 +25,7 @@ function SheetOverlay({ className, ...props }: React.ComponentProps<typeof Sheet
     <SheetPrimitive.Overlay
       data-slot="sheet-overlay"
       className={cn(
-        "tg:data-[state=closed]:fade-out-0 tg:data-[state=open]:fade-in-0 tg:fixed tg:inset-0 tg:z-50 tg:bg-black/50 tg:data-[state=closed]:animate-out tg:data-[state=open]:animate-in",
+        "tg:data-[state=closed]:fade-out-0 tg:data-[state=open]:fade-in-0 tg:fixed tg:inset-0 tg:z-[2000] tg:bg-black/50 tg:data-[state=closed]:animate-out tg:data-[state=open]:animate-in",
         className,
       )}
       {...props}
@@ -47,7 +47,7 @@ function SheetContent({
       <SheetPrimitive.Content
         data-slot="sheet-content"
         className={cn(
-          "tg:fixed tg:z-50 tg:flex tg:flex-col tg:gap-4 tg:bg-background tg:shadow-lg tg:transition tg:ease-in-out tg:data-[state=closed]:animate-out tg:data-[state=open]:animate-in tg:data-[state=closed]:duration-300 tg:data-[state=open]:duration-500",
+          "tg:fixed tg:z-[2000] tg:flex tg:flex-col tg:gap-4 tg:bg-background tg:shadow-lg tg:transition tg:ease-in-out tg:data-[state=closed]:animate-out tg:data-[state=open]:animate-in tg:data-[state=closed]:duration-300 tg:data-[state=open]:duration-500",
           side === "right" &&
             "tg:data-[state=closed]:slide-out-to-right tg:data-[state=open]:slide-in-from-right tg:inset-y-0 tg:right-0 tg:h-full tg:w-3/4 tg:border-l tg:sm:max-w-sm",
           side === "left" &&

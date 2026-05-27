@@ -25,7 +25,7 @@ function DialogOverlay({ className, ...props }: React.ComponentProps<typeof Dial
     <DialogPrimitive.Overlay
       data-slot="dialog-overlay"
       className={cn(
-        "tg:data-[state=closed]:fade-out-0 tg:data-[state=open]:fade-in-0 tg:fixed tg:inset-0 tg:z-50 tg:bg-black/50 tg:data-[state=closed]:animate-out tg:data-[state=open]:animate-in",
+        "tg:data-[state=closed]:fade-out-0 tg:data-[state=open]:fade-in-0 tg:fixed tg:inset-0 tg:z-[2000] tg:bg-black/50 tg:data-[state=closed]:animate-out tg:data-[state=open]:animate-in",
         className,
       )}
       {...props}
@@ -47,7 +47,7 @@ function DialogContent({
       <DialogPrimitive.Content
         data-slot="dialog-content"
         className={cn(
-          "tg:data-[state=closed]:fade-out-0 tg:data-[state=open]:fade-in-0 tg:data-[state=closed]:zoom-out-95 tg:data-[state=open]:zoom-in-95 tg:fixed tg:top-[50%] tg:left-[50%] tg:z-50 tg:grid tg:w-full tg:max-w-[calc(100%-2rem)] tg:translate-x-[-50%] tg:translate-y-[-50%] tg:gap-4 tg:rounded-lg tg:border tg:bg-background tg:p-6 tg:shadow-lg tg:duration-200 tg:data-[state=closed]:animate-out tg:data-[state=open]:animate-in tg:sm:max-w-lg",
+          "tg:data-[state=closed]:fade-out-0 tg:data-[state=open]:fade-in-0 tg:data-[state=closed]:zoom-out-95 tg:data-[state=open]:zoom-in-95 tg:fixed tg:top-[50%] tg:left-[50%] tg:z-[2000] tg:grid tg:w-full tg:max-w-[calc(100%-2rem)] tg:translate-x-[-50%] tg:translate-y-[-50%] tg:gap-4 tg:rounded-lg tg:border tg:bg-background tg:p-6 tg:shadow-lg tg:duration-200 tg:data-[state=closed]:animate-out tg:data-[state=open]:animate-in tg:sm:max-w-lg",
           className,
         )}
         {...props}

@@ -23,7 +23,7 @@ function DropdownMenuContent({ className, sideOffset = 4, ...props }: React.Comp
         data-slot="dropdown-menu-content"
         sideOffset={sideOffset}
         className={cn(
-          "tg:data-[state=closed]:fade-out-0 tg:data-[state=open]:fade-in-0 tg:data-[state=closed]:zoom-out-95 tg:data-[state=open]:zoom-in-95 tg:data-[side=bottom]:slide-in-from-top-2 tg:data-[side=left]:slide-in-from-right-2 tg:data-[side=right]:slide-in-from-left-2 tg:data-[side=top]:slide-in-from-bottom-2 tg:z-50 tg:max-h-(--radix-dropdown-menu-content-available-height) tg:min-w-[8rem] tg:origin-(--radix-dropdown-menu-content-transform-origin) tg:overflow-y-auto tg:overflow-x-hidden tg:rounded-md tg:border tg:bg-popover tg:p-1 tg:text-popover-foreground tg:shadow-md tg:data-[state=closed]:animate-out tg:data-[state=open]:animate-in",
+          "tg:data-[state=closed]:fade-out-0 tg:data-[state=open]:fade-in-0 tg:data-[state=closed]:zoom-out-95 tg:data-[state=open]:zoom-in-95 tg:data-[side=bottom]:slide-in-from-top-2 tg:data-[side=left]:slide-in-from-right-2 tg:data-[side=right]:slide-in-from-left-2 tg:data-[side=top]:slide-in-from-bottom-2 tg:z-[2000] tg:max-h-(--radix-dropdown-menu-content-available-height) tg:min-w-[8rem] tg:origin-(--radix-dropdown-menu-content-transform-origin) tg:overflow-y-auto tg:overflow-x-hidden tg:rounded-md tg:border tg:bg-popover tg:p-1 tg:text-popover-foreground tg:shadow-md tg:data-[state=closed]:animate-out tg:data-[state=open]:animate-in",
           className,
         )}
         {...props}
@@ -179,7 +179,7 @@ function DropdownMenuSubContent({ className, ...props }: React.ComponentProps<ty
     <DropdownMenuPrimitive.SubContent
       data-slot="dropdown-menu-sub-content"
       className={cn(
-        "tg:data-[state=closed]:fade-out-0 tg:data-[state=open]:fade-in-0 tg:data-[state=closed]:zoom-out-95 tg:data-[state=open]:zoom-in-95 tg:data-[side=bottom]:slide-in-from-top-2 tg:data-[side=left]:slide-in-from-right-2 tg:data-[side=right]:slide-in-from-left-2 tg:data-[side=top]:slide-in-from-bottom-2 tg:z-50 tg:min-w-[8rem] tg:origin-(--radix-dropdown-menu-content-transform-origin) tg:overflow-hidden tg:rounded-md tg:border tg:bg-popover tg:p-1 tg:text-popover-foreground tg:shadow-lg tg:data-[state=closed]:animate-out tg:data-[state=open]:animate-in",
+        "tg:data-[state=closed]:fade-out-0 tg:data-[state=open]:fade-in-0 tg:data-[state=closed]:zoom-out-95 tg:data-[state=open]:zoom-in-95 tg:data-[side=bottom]:slide-in-from-top-2 tg:data-[side=left]:slide-in-from-right-2 tg:data-[side=right]:slide-in-from-left-2 tg:data-[side=top]:slide-in-from-bottom-2 tg:z-[2000] tg:min-w-[8rem] tg:origin-(--radix-dropdown-menu-content-transform-origin) tg:overflow-hidden tg:rounded-md tg:border tg:bg-popover tg:p-1 tg:text-popover-foreground tg:shadow-lg tg:data-[state=closed]:animate-out tg:data-[state=open]:animate-in",
         className,
       )}
       {...props}
