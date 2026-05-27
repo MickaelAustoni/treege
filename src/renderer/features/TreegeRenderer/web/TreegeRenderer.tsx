@@ -65,7 +65,7 @@ const TreegeRenderer = ({
     validationMode,
   });
 
-  const { FormWrapper, SubmitButtonWrapper, renderNode } = useRenderNode({
+  const { FormWrapper, renderNode } = useRenderNode({
     config,
     DefaultFormWrapper,
     DefaultInputWrapper,
@@ -133,23 +133,22 @@ const TreegeRenderer = ({
         >
           <FormWrapper onSubmit={handleFormSubmit}>
             {currentStep && (
-              <SubmitButtonWrapper missingFields={isLastStep ? missingRequiredFields : undefined}>
-                <StepComponent
-                  step={currentStep}
-                  groupNode={currentStepGroupNode}
-                  stepIndex={currentStepIndex}
-                  totalSteps={steps.length}
-                  isFirstStep={isFirstStep}
-                  isLastStep={isLastStep}
-                  canContinue={canContinueStep && (!isLastStep || canSubmit)}
-                  isSubmitting={isSubmitting}
-                  onBack={goToPreviousStep}
-                  onContinue={handleContinue}
-                  label={stepLabel}
-                >
-                  {currentStep.nodes.map((node) => renderNode(node))}
-                </StepComponent>
-              </SubmitButtonWrapper>
+              <StepComponent
+                step={currentStep}
+                groupNode={currentStepGroupNode}
+                stepIndex={currentStepIndex}
+                totalSteps={steps.length}
+                isFirstStep={isFirstStep}
+                isLastStep={isLastStep}
+                canContinue={canContinueStep && (!isLastStep || canSubmit)}
+                isSubmitting={isSubmitting}
+                onBack={goToPreviousStep}
+                onContinue={handleContinue}
+                label={stepLabel}
+                missingFields={isLastStep ? missingRequiredFields : undefined}
+              >
+                {currentStep.nodes.map((node) => renderNode(node))}
+              </StepComponent>
             )}
 
             {/* Powered by Treege */}

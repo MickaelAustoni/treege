@@ -173,6 +173,11 @@ export type StepRenderProps = {
   isLastStep: boolean;
   /** Whether all required visible inputs of the step are filled. */
   canContinue: boolean;
+  /**
+   * Translated labels of required fields still empty. Only populated on the
+   * last step so the step can show a tooltip explaining why submit is disabled.
+   */
+  missingFields?: string[];
   /** Submission in progress (passed through from `useTreegeRenderer`). */
   isSubmitting?: boolean;
   /** Advance to the previous step. No-op on the first step. */

@@ -21,7 +21,9 @@ const DefaultSubmitButtonWrapper = ({ children, missingFields = [] }: SubmitButt
   return (
     <TooltipProvider>
       <Tooltip>
-        <TooltipTrigger asChild>{children}</TooltipTrigger>
+        <TooltipTrigger asChild>
+          <span className="tg:inline-flex">{children}</span>
+        </TooltipTrigger>
         <TooltipContent>
           <div className="tg:space-y-1">
             <p className="tg:font-semibold">{t("renderer.defaultSubmitButton.requiredFieldsMissing")}:</p>
