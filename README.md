@@ -28,7 +28,7 @@ Treege is a modern React library for creating and rendering interactive decision
 
 ### Visual Editor (`treege/editor`)
 - **Node-based Interface**: Drag-and-drop editor powered by ReactFlow
-- **4 Node Types**: Flow, Group, Input, and UI nodes
+- **3 Node Types**: Input, UI, and Group nodes
 - **Conditional Edges**: Advanced logic with AND/OR operators (`===`, `!==`, `>`, `<`, `>=`, `<=`)
 - **AI-Powered Generation**: Generate decision trees from natural language descriptions using Gemini, OpenAI, DeepSeek, or Claude ([Learn more](./AI_GENERATION.md))
 - **Multi-language Support**: Built-in translation system for all labels
@@ -45,7 +45,9 @@ Treege is a modern React library for creating and rendering interactive decision
 - **Security**: Built-in input sanitization to prevent XSS attacks
 - **Enhanced Error Messages**: Clear, user-friendly error messages for HTTP inputs and validation
 - **Conditional Logic**: Dynamic field visibility based on user input and conditional edges
-- **Fully Customizable**: Override any component (FormWrapper, Group, Inputs, SubmitButton, UI elements)
+- **Multi-Step Forms**: Group nodes are automatically turned into navigable steps with Back/Continue controls
+- **Loading State**: Built-in `isLoading` prop renders a customizable skeleton while the flow is being fetched
+- **Fully Customizable**: Override any component (form, inputs, ui, step, submitButton, submitButtonWrapper, loadingSkeleton)
 - **Optional Dependencies**: Graceful degradation when optional packages like `react-native-document-picker` aren't installed
 - **Theme Support**: Dark/light mode out of the box
 - **Google API Integration**: Address autocomplete support
@@ -59,6 +61,9 @@ Treege is a modern React library for creating and rendering interactive decision
 ## Installation
 
 ```bash
+# bun
+bun add treege
+
 # npm
 npm install treege
 
@@ -67,9 +72,6 @@ pnpm add treege
 
 # yarn
 yarn add treege
-
-# bun
-bun add treege
 ```
 
 ## Quick Start
@@ -324,7 +326,7 @@ The React Native renderer shares the same API as the web renderer, with some pla
 
 | Prop                    | Type                                        | Default      | Description                                                |
 |-------------------------|---------------------------------------------|--------------|------------------------------------------------------------|
-| `flows`                 | `Flow \| Flow[] \| null`                    | -            | Decision tree to render (single Flow or array of Flows)    |
+| `flows`                 | `Flow \| null`                              | -            | Decision tree to render                                    |
 | `onSubmit`              | `(values: FormValues, meta?: Meta) => void` | -            | Form submission handler (meta includes HTTP response data) |
 | `onChange`              | `(values: FormValues) => void`              | -            | Form change handler                                        |
 | `validate`              | `(values, nodes) => Record<string, string>` | -            | Custom validation function                                 |
@@ -332,24 +334,16 @@ The React Native renderer shares the same API as the web renderer, with some pla
 | `components`            | `TreegeRendererComponents`                  | -            | Custom component overrides                                 |
 | `language`              | `string`                                    | `"en"`       | UI language                                                |
 | `validationMode`        | `"onSubmit" \| "onChange"`                  | `"onSubmit"` | When to validate                                           |
+| `theme`                 | `"light" \| "dark"`                         | `"dark"`     | Renderer theme                                             |
 | `googleApiKey`          | `string`                                    | -            | API key for address input                                  |
+| `headers`               | `HttpHeader[]`                              | -            | HTTP headers applied to every request (field-level wins)   |
+| `isLoading`             | `boolean`                                   | `false`      | Render a loading skeleton instead of the form              |
 | `style`                 | `ViewStyle`                                 | -            | ScrollView style (RN only)                                 |
 | `contentContainerStyle` | `ViewStyle`                                 | -            | Content container style (RN)                               |
 
 ## Node Types
 
-### Flow Node
-Navigation node that controls the flow between different parts of the tree.
-
-```tsx
-{
-  type: "flow",
-  data: {
-    targetId: "next-node-id",
-    label: "Continue"
-  }
-}
-```
+Treege has three node types: `input`, `ui`, and `group`. Navigation is automatic — group nodes drive step navigation and conditional edges drive branching.
 
 ### Input Node
 Form input with validation, patterns, and conditional logic.
@@ -371,7 +365,7 @@ Form input with validation, patterns, and conditional logic.
 Supported input types: `text`, `number`, `textarea`, `password`, `select`, `radio`, `checkbox`, `switch`, `autocomplete`, `date`, `daterange`, `time`, `timerange`, `file`, `address`, `http`, `hidden`
 
 ### Group Node
-Container for organizing multiple nodes together.
+Container for organizing multiple nodes together. Groups also drive **multi-step forms**: at runtime each group of visible nodes becomes a navigable step (Back/Continue). Child nodes belong to a group via their `parentId`.
 
 ```tsx
 {
@@ -547,35 +541,103 @@ function App() {
 }
 ```
 
-### Programmatic Control
+### Loading State
 
-Use the `useTreegeRenderer` hook for programmatic control:
+When the flow is being fetched asynchronously, pass `isLoading` to render a skeleton in place of the form:
+
+```tsx
+function App() {
+  const { data: flow, isPending } = useQuery(/* ... */);
+
+  return <TreegeRenderer flows={flow ?? null} isLoading={isPending} onSubmit={console.log} />;
+}
+```
+
+Customize the skeleton via `components.loadingSkeleton`:
+
+```tsx
+<TreegeRenderer
+  flows={flow}
+  isLoading={isPending}
+  components={{
+    loadingSkeleton: () => <MyCustomSkeleton />,
+  }}
+/>
+```
+
+### Multi-Step Forms
+
+When a flow contains **Group** nodes, the renderer automatically splits the form into navigable steps — each contiguous slice of visible nodes sharing the same group becomes one step, with built-in Back/Continue controls (Continue turns into Submit on the last step). Branching via conditional edges recomputes the steps on the fly.
+
+Override the default step layout via `components.step`:
+
+```tsx
+<TreegeRenderer
+  flows={flow}
+  components={{
+    step: ({ label, children, isFirstStep, isLastStep, canContinue, onBack, onContinue }) => (
+      <section>
+        <h2>{label}</h2>
+        {children}
+        {!isFirstStep && <button onClick={onBack}>Back</button>}
+        <button disabled={!canContinue} onClick={onContinue}>
+          {isLastStep ? "Submit" : "Continue"}
+        </button>
+      </section>
+    ),
+  }}
+/>
+```
+
+### Headless / Programmatic Control
+
+Use the `useTreegeRenderer` hook to drive the form yourself (headless mode). It takes the same configuration as `TreegeRenderer` and returns the full form state and control methods:
 
 ```tsx
 import { useTreegeRenderer } from "treege/renderer";
 
-function CustomForm() {
-  const { values, setFieldValue, submit, reset } = useTreegeRenderer();
+function CustomForm({ flow }) {
+  const {
+    formValues,
+    setFieldValue,
+    handleSubmit,
+    formErrors,
+    visibleNodes,
+    isSubmitting,
+    // step navigation
+    currentStep,
+    goToNextStep,
+    goToPreviousStep,
+  } = useTreegeRenderer({
+    flows: flow,
+    onSubmit: (values) => console.log("Submitted:", values),
+  });
 
   return (
     <div>
       <button onClick={() => setFieldValue("email", "test@example.com")}>
         Prefill Email
       </button>
-      <button onClick={submit}>Submit</button>
-      <button onClick={reset}>Reset</button>
+      <button onClick={handleSubmit} disabled={isSubmitting}>
+        Submit
+      </button>
     </div>
   );
 }
 ```
+
+> The `useTreegeRenderer` return type is exported as `UseTreegeRendererReturn` for TypeScript consumers building custom components.
 
 ## Examples
 
 Check out the `/example` directory for complete examples:
 
 ```bash
-# Run the example app
-bun example
+# Run the web example app (Vite, opens /example)
+bun run example
+
+# Run the React Native example app (Expo)
+bun run example:native
 ```
 
 ### Available Example URLs
@@ -621,7 +683,7 @@ Once the development server is running, you can access these examples:
 
 | Prop             | Type                                        | Default      | Description                                                |
 |------------------|---------------------------------------------|--------------|------------------------------------------------------------|
-| `flows`          | `Flow \| Flow[] \| null`                    | -            | Decision tree to render (single Flow or array of Flows)    |
+| `flows`          | `Flow \| null`                              | -            | Decision tree to render                                    |
 | `onSubmit`       | `(values: FormValues, meta?: Meta) => void` | -            | Form submission handler (meta includes HTTP response data) |
 | `onChange`       | `(values: FormValues) => void`              | -            | Form change handler                                        |
 | `validate`       | `(values, nodes) => Record<string, string>` | -            | Custom validation function                                 |
@@ -632,25 +694,26 @@ Once the development server is running, you can access these examples:
 | `theme`          | `"light" \| "dark"`                         | `"dark"`     | Renderer theme                                             |
 | `googleApiKey`   | `string`                                    | -            | API key for address input                                  |
 | `headers`        | `HttpHeader[]`                              | -            | HTTP headers applied to every request (field-level wins)   |
+| `isLoading`      | `boolean`                                   | `false`      | Render a loading skeleton instead of the form (see below)  |
 | `className`      | `string`                                    | -            | Additional CSS class names for custom styling              |
 
 ## Development
 
 ```bash
 # Install dependencies
-yarn install
+bun install
 
 # Start dev server
-yarn dev
+bun run dev
 
 # Build library
-yarn build
+bun run build
 
 # Run linter and type check
-yarn lint
+bun run lint
 
 # Preview build
-yarn preview
+bun run preview
 ```
 
 ## Tech Stack
@@ -675,5 +738,5 @@ Created and maintained by [Mickaël Austoni](https://github.com/MickaelAustoni)
 
 ## Support
 
-- [GitHub Issues](https://github.com/Tracktor/treege/issues)
-- [Repository](https://github.com/Tracktor/treege)
+- [GitHub Issues](https://github.com/MickaelAustoni/treege/issues)
+- [Repository](https://github.com/MickaelAustoni/treege)

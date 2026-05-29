@@ -194,12 +194,12 @@ Common errors:
 
 Based on average usage (1600 tokens per generation):
 
-| Provider | Cost per generation | 1000 generations |
-|----------|--------------------:|------------------:|
-| Gemini Flash | $0.0006 | $0.60 |
-| DeepSeek | $0.0010 | $1.00 |
-| GPT-4o-mini | $0.0010 | $1.00 |
-| Claude Haiku | $0.0060 | $6.00 |
+| Provider     | Cost per generation | 1000 generations |
+|--------------|--------------------:|-----------------:|
+| Gemini Flash |             $0.0006 |            $0.60 |
+| DeepSeek     |             $0.0010 |            $1.00 |
+| GPT-4o-mini  |             $0.0010 |            $1.00 |
+| Claude Haiku |             $0.0060 |            $6.00 |
 
 **Note**: Gemini offers 1,500 free requests per day, making it essentially free for most use cases.
 
@@ -320,7 +320,7 @@ To add a new AI provider:
 
 Found a bug or want to improve AI generation?
 
-1. Open an issue: [GitHub Issues](https://github.com/your-repo/treege/issues)
+1. Open an issue: [GitHub Issues](https://github.com/MickaelAustoni/treege/issues)
 2. Submit a PR with improvements to prompts or error handling
 3. Share example prompts that work well
 

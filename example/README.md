@@ -25,7 +25,7 @@ example/
 From the root of the repository:
 
 ```bash
-yarn example
+bun run example
 ```
 
 This will start the Vite dev server and open the web example at `/example`.
@@ -35,7 +35,7 @@ This will start the Vite dev server and open the web example at `/example`.
 From the root of the repository:
 
 ```bash
-yarn example:native
+bun run example:native
 ```
 
 This will start the Expo dev server. Then:
