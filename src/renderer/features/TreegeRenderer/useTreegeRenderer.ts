@@ -69,6 +69,7 @@ export const useTreegeRenderer = ({
       components: {
         form: components?.form ?? globalConfig?.components?.form,
         inputs: { ...globalConfig?.components?.inputs, ...components?.inputs },
+        loadingSkeleton: components?.loadingSkeleton ?? globalConfig?.components?.loadingSkeleton,
         step: components?.step ?? globalConfig?.components?.step,
         submitButton: components?.submitButton ?? globalConfig?.components?.submitButton,
         submitButtonWrapper: components?.submitButtonWrapper ?? globalConfig?.components?.submitButtonWrapper,

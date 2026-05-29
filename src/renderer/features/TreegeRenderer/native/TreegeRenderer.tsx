@@ -4,6 +4,7 @@ import { TreegeRendererProvider } from "@/renderer/context/TreegeRendererContext
 import DefaultFormWrapper from "@/renderer/features/TreegeRenderer/native/components/DefaultFormWrapper";
 import { defaultInputRenderers } from "@/renderer/features/TreegeRenderer/native/components/DefaultInputs";
 import DefaultInputWrapper from "@/renderer/features/TreegeRenderer/native/components/DefaultInputWrapper";
+import DefaultLoadingSkeleton from "@/renderer/features/TreegeRenderer/native/components/DefaultLoadingSkeleton";
 import DefaultStep from "@/renderer/features/TreegeRenderer/native/components/DefaultStep";
 import DefaultSubmitButton from "@/renderer/features/TreegeRenderer/native/components/DefaultSubmitButton";
 import DefaultSubmitButtonWrapper from "@/renderer/features/TreegeRenderer/native/components/DefaultSubmitButtonWrapper";
@@ -42,6 +43,7 @@ const TreegeRendererContent = ({
   googleApiKey,
   headers,
   initialValues,
+  isLoading = false,
   language,
   onChange,
   onSubmit,
@@ -103,6 +105,7 @@ const TreegeRendererContent = ({
   });
 
   const StepComponent = config.components.step ?? DefaultStep;
+  const LoadingSkeleton = config.components.loadingSkeleton ?? DefaultLoadingSkeleton;
   const stepLabel = useMemo(() => t(currentStepGroupNode?.data?.label), [t, currentStepGroupNode]);
 
   const handleContinue = useCallback(() => {
@@ -119,77 +122,81 @@ const TreegeRendererContent = ({
       style={[styles.container, { backgroundColor: colors.background }, style]}
       contentContainerStyle={contentContainerStyle}
     >
-      <TreegeRendererProvider
-        value={{
-          flows,
-          formErrors,
-          formValues,
-          googleApiKey: config.googleApiKey,
-          headers: config.headers,
-          inputNodes,
-          language: config.language,
-          setFieldValue,
-        }}
-      >
-        <FormWrapper onSubmit={handleSubmit}>
-          {currentStep && (
-            <SubmitButtonWrapper missingFields={isLastStep ? missingRequiredFields : undefined}>
-              <StepComponent
-                step={currentStep}
-                groupNode={currentStepGroupNode}
-                stepIndex={currentStepIndex}
-                totalSteps={steps.length}
-                isFirstStep={isFirstStep}
-                isLastStep={isLastStep}
-                canContinue={canContinueStep && (!isLastStep || canSubmit)}
-                isSubmitting={isSubmitting}
-                onBack={goToPreviousStep}
-                onContinue={handleContinue}
-                label={stepLabel}
+      {isLoading ? (
+        <LoadingSkeleton />
+      ) : (
+        <TreegeRendererProvider
+          value={{
+            flows,
+            formErrors,
+            formValues,
+            googleApiKey: config.googleApiKey,
+            headers: config.headers,
+            inputNodes,
+            language: config.language,
+            setFieldValue,
+          }}
+        >
+          <FormWrapper onSubmit={handleSubmit}>
+            {currentStep && (
+              <SubmitButtonWrapper missingFields={isLastStep ? missingRequiredFields : undefined}>
+                <StepComponent
+                  step={currentStep}
+                  groupNode={currentStepGroupNode}
+                  stepIndex={currentStepIndex}
+                  totalSteps={steps.length}
+                  isFirstStep={isFirstStep}
+                  isLastStep={isLastStep}
+                  canContinue={canContinueStep && (!isLastStep || canSubmit)}
+                  isSubmitting={isSubmitting}
+                  onBack={goToPreviousStep}
+                  onContinue={handleContinue}
+                  label={stepLabel}
+                >
+                  {currentStep.nodes.map((node) => renderNode(node))}
+                </StepComponent>
+              </SubmitButtonWrapper>
+            )}
+
+            {/* Powered by Treege */}
+            <Text style={[styles.poweredBy, { color: colors.textMuted }]}>Powered by Treege</Text>
+          </FormWrapper>
+
+          {/* Submit message (success/error) */}
+          {submitMessage && (
+            <View
+              style={[
+                styles.message,
+                {
+                  backgroundColor: submitMessage.type === "success" ? colors.successBg : colors.errorBg,
+                },
+              ]}
+            >
+              <Text
+                style={[
+                  styles.messageText,
+                  {
+                    color: submitMessage.type === "success" ? colors.success : colors.error,
+                  },
+                ]}
               >
-                {currentStep.nodes.map((node) => renderNode(node))}
-              </StepComponent>
-            </SubmitButtonWrapper>
+                {submitMessage.message}
+              </Text>
+              <Text
+                style={[
+                  styles.messageClose,
+                  {
+                    color: submitMessage.type === "success" ? colors.success : colors.error,
+                  },
+                ]}
+                onPress={clearSubmitMessage}
+              >
+                {t("common.close")}
+              </Text>
+            </View>
           )}
-
-          {/* Powered by Treege */}
-          <Text style={[styles.poweredBy, { color: colors.textMuted }]}>Powered by Treege</Text>
-        </FormWrapper>
-
-        {/* Submit message (success/error) */}
-        {submitMessage && (
-          <View
-            style={[
-              styles.message,
-              {
-                backgroundColor: submitMessage.type === "success" ? colors.successBg : colors.errorBg,
-              },
-            ]}
-          >
-            <Text
-              style={[
-                styles.messageText,
-                {
-                  color: submitMessage.type === "success" ? colors.success : colors.error,
-                },
-              ]}
-            >
-              {submitMessage.message}
-            </Text>
-            <Text
-              style={[
-                styles.messageClose,
-                {
-                  color: submitMessage.type === "success" ? colors.success : colors.error,
-                },
-              ]}
-              onPress={clearSubmitMessage}
-            >
-              {t("common.close")}
-            </Text>
-          </View>
-        )}
-      </TreegeRendererProvider>
+        </TreegeRendererProvider>
+      )}
     </ScrollView>
   );
 };

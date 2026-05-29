@@ -242,6 +242,11 @@ export type TreegeRendererComponents = {
    * Custom submit button wrapper (e.g., for tooltip with missing fields)
    */
   submitButtonWrapper?: (props: { children: ReactNode; missingFields?: string[] }) => ReactNode;
+  /**
+   * Custom loading skeleton, rendered in place of the form while the
+   * `isLoading` prop is true. Defaults to `DefaultLoadingSkeleton` (web).
+   */
+  loadingSkeleton?: () => ReactNode;
 };
 
 /**
@@ -301,6 +306,11 @@ export interface TreegeRendererProps extends TreegeRendererConfig {
    * Initial form values
    */
   initialValues?: FormValues;
+  /**
+   * When true, renders a loading skeleton instead of the form. Useful while
+   * the flow is being fetched. Customizable via `components.loadingSkeleton`.
+   */
+  isLoading?: boolean;
   /**
    * Callback when form values change
    */

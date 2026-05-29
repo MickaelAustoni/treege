@@ -4,6 +4,7 @@ import { useTreegeRenderer } from "@/renderer/features/TreegeRenderer/useTreegeR
 import DefaultFormWrapper from "@/renderer/features/TreegeRenderer/web/components/DefaultFormWrapper";
 import { defaultInputRenderers } from "@/renderer/features/TreegeRenderer/web/components/DefaultInputs";
 import DefaultInputWrapper from "@/renderer/features/TreegeRenderer/web/components/DefaultInputWrapper";
+import DefaultLoadingSkeleton from "@/renderer/features/TreegeRenderer/web/components/DefaultLoadingSkeleton";
 import DefaultStep from "@/renderer/features/TreegeRenderer/web/components/DefaultStep";
 import DefaultSubmitButton from "@/renderer/features/TreegeRenderer/web/components/DefaultSubmitButton";
 import DefaultSubmitButtonWrapper from "@/renderer/features/TreegeRenderer/web/components/DefaultSubmitButtonWrapper";
@@ -27,6 +28,7 @@ const TreegeRenderer = ({
   validate,
   validationMode,
   initialValues = {},
+  isLoading = false,
 }: TreegeRendererProps) => {
   const {
     canContinueStep,
@@ -80,6 +82,7 @@ const TreegeRenderer = ({
   });
 
   const StepComponent = config.components.step ?? DefaultStep;
+  const LoadingSkeleton = config.components.loadingSkeleton ?? DefaultLoadingSkeleton;
   const stepLabel = useMemo(() => t(currentStepGroupNode?.data?.label), [t, currentStepGroupNode]);
 
   /**
@@ -119,65 +122,69 @@ const TreegeRenderer = ({
     <div className={cn("treege", className)}>
       <RendererStyles />
       <ThemeProvider theme={config.theme} storageKey="treege-renderer-theme">
-        <TreegeRendererProvider
-          value={{
-            flows,
-            formErrors,
-            formValues,
-            googleApiKey: config.googleApiKey,
-            headers: config.headers,
-            inputNodes,
-            language: config.language,
-            setFieldValue,
-          }}
-        >
-          <FormWrapper onSubmit={handleFormSubmit}>
-            {currentStep && (
-              <StepComponent
-                step={currentStep}
-                groupNode={currentStepGroupNode}
-                stepIndex={currentStepIndex}
-                totalSteps={steps.length}
-                isFirstStep={isFirstStep}
-                isLastStep={isLastStep}
-                canContinue={canContinueStep && (!isLastStep || canSubmit)}
-                isSubmitting={isSubmitting}
-                onBack={goToPreviousStep}
-                onContinue={handleContinue}
-                label={stepLabel}
-                missingFields={isLastStep ? missingRequiredFields : undefined}
-              >
-                {currentStep.nodes.map((node) => renderNode(node))}
-              </StepComponent>
-            )}
-
-            {/* Powered by Treege */}
-            <p className="tg:py-2 tg:text-right tg:text-muted-foreground tg:text-xs">Powered by Treege</p>
-          </FormWrapper>
-
-          {/* Submit message (success/error) */}
-          {submitMessage && (
-            <div
-              className={`tg:my-4 tg:rounded-md tg:p-4 ${
-                submitMessage.type === "success"
-                  ? "bg-green-50 text-green-800 dark:bg-green-900/20 dark:text-green-300"
-                  : "bg-red-50 text-red-800 dark:bg-red-900/20 dark:text-red-300"
-              }`}
-              role="alert"
-            >
-              <div className="tg:flex tg:items-center tg:justify-between">
-                <p className="tg:font-medium tg:text-sm">{submitMessage.message}</p>
-                <button
-                  type="button"
-                  onClick={clearSubmitMessage}
-                  className="tg:ml-4 tg:font-medium tg:text-sm tg:underline tg:hover:no-underline tg:focus:outline-none"
+        {isLoading ? (
+          <LoadingSkeleton />
+        ) : (
+          <TreegeRendererProvider
+            value={{
+              flows,
+              formErrors,
+              formValues,
+              googleApiKey: config.googleApiKey,
+              headers: config.headers,
+              inputNodes,
+              language: config.language,
+              setFieldValue,
+            }}
+          >
+            <FormWrapper onSubmit={handleFormSubmit}>
+              {currentStep && (
+                <StepComponent
+                  step={currentStep}
+                  groupNode={currentStepGroupNode}
+                  stepIndex={currentStepIndex}
+                  totalSteps={steps.length}
+                  isFirstStep={isFirstStep}
+                  isLastStep={isLastStep}
+                  canContinue={canContinueStep && (!isLastStep || canSubmit)}
+                  isSubmitting={isSubmitting}
+                  onBack={goToPreviousStep}
+                  onContinue={handleContinue}
+                  label={stepLabel}
+                  missingFields={isLastStep ? missingRequiredFields : undefined}
                 >
-                  {t("common.close")}
-                </button>
+                  {currentStep.nodes.map((node) => renderNode(node))}
+                </StepComponent>
+              )}
+
+              {/* Powered by Treege */}
+              <p className="tg:py-2 tg:text-right tg:text-muted-foreground tg:text-xs">Powered by Treege</p>
+            </FormWrapper>
+
+            {/* Submit message (success/error) */}
+            {submitMessage && (
+              <div
+                className={`tg:my-4 tg:rounded-md tg:p-4 ${
+                  submitMessage.type === "success"
+                    ? "bg-green-50 text-green-800 dark:bg-green-900/20 dark:text-green-300"
+                    : "bg-red-50 text-red-800 dark:bg-red-900/20 dark:text-red-300"
+                }`}
+                role="alert"
+              >
+                <div className="tg:flex tg:items-center tg:justify-between">
+                  <p className="tg:font-medium tg:text-sm">{submitMessage.message}</p>
+                  <button
+                    type="button"
+                    onClick={clearSubmitMessage}
+                    className="tg:ml-4 tg:font-medium tg:text-sm tg:underline tg:hover:no-underline tg:focus:outline-none"
+                  >
+                    {t("common.close")}
+                  </button>
+                </div>
               </div>
-            </div>
-          )}
-        </TreegeRendererProvider>
+            )}
+          </TreegeRendererProvider>
+        )}
       </ThemeProvider>
     </div>
   );
