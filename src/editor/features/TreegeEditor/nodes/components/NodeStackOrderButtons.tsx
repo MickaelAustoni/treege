@@ -61,7 +61,7 @@ const NodeStackOrderButtons = ({ nodeId, selected }: NodeStackOrderButtonsProps)
         style={{ left: "calc(100% + 8px)", top: "50%", transform: "translateY(-50%)" }}
       >
         {canMoveUp && (
-          <Tooltip>
+          <Tooltip disableHoverableContent>
             <TooltipTrigger asChild>
               <Button
                 type="button"
@@ -78,7 +78,7 @@ const NodeStackOrderButtons = ({ nodeId, selected }: NodeStackOrderButtonsProps)
           </Tooltip>
         )}
         {canMoveDown && (
-          <Tooltip>
+          <Tooltip disableHoverableContent>
             <TooltipTrigger asChild>
               <Button
                 type="button"

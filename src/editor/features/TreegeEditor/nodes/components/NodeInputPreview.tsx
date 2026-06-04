@@ -298,7 +298,7 @@ const NodeInputPreview = ({ nodeId, data }: NodeInputPreviewProps) => {
 
       {hasOptions && optionsSourceUrl && (
         <TooltipProvider>
-          <Tooltip>
+          <Tooltip disableHoverableContent>
             <TooltipTrigger asChild>
               <div className="nodrag nopan tg:my-1 tg:flex tg:items-center tg:gap-1 tg:text-muted-foreground tg:text-xs">
                 <Globe className="tg:size-3 tg:shrink-0" />

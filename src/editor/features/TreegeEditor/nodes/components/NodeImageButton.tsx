@@ -128,7 +128,7 @@ const NodeImageButton = ({ nodeId, image }: NodeImageButtonProps) => {
       <input ref={fileInputRef} type="file" accept="image/*" className="tg:hidden" onChange={handleFileChange} />
       <Popover open={open} onOpenChange={setOpen}>
         <TooltipProvider>
-          <Tooltip>
+          <Tooltip disableHoverableContent>
             <TooltipTrigger asChild>
               <PopoverTrigger asChild onClick={stopPropagation}>
                 <Button

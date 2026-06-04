@@ -242,31 +242,6 @@ const useFlowConnections = () => {
   );
 
   /**
-   * Creates a branch from `sourceNodeId` and drops the new node at an explicit
-   * screen position (used when the user drags the "create a branch" button and
-   * releases it on the canvas). Mirrors `onConnectEnd`'s position handling: the
-   * drop point is converted to flow coordinates and made parent-relative when
-   * the source belongs to a group. Conditional-edge upgrade and input-only
-   * guarding are handled by `createNodeAndConnect`.
-   */
-  const createBranchAtPosition = useCallback(
-    (sourceNodeId: string, screenPosition: { x: number; y: number }, nodeInit?: NodeInit) => {
-      const sourceNode = getNode(sourceNodeId);
-      if (!sourceNode) {
-        return;
-      }
-
-      const flowPosition = screenToFlowPosition({ x: screenPosition.x, y: screenPosition.y });
-      const parentNode = sourceNode.parentId ? getNode(sourceNode.parentId) : undefined;
-      const parentPosition = parentNode?.position ?? { x: 0, y: 0 };
-      const position = parentNode ? { x: flowPosition.x - parentPosition.x, y: flowPosition.y - parentPosition.y } : flowPosition;
-
-      createNodeAndConnect(sourceNode, position, true, nodeInit);
-    },
-    [getNode, screenToFlowPosition, createNodeAndConnect],
-  );
-
-  /**
    * Creates a branch from `sourceNodeId` by adding two child nodes at once,
    * placed symmetrically below the source. Both connecting edges are made
    * "conditional" (and any pre-existing edge from the source is upgraded too),
@@ -636,7 +611,6 @@ const useFlowConnections = () => {
   );
 
   return {
-    createBranchAtPosition,
     isValidConnection,
     moveStackNodeDown,
     moveStackNodeUp,

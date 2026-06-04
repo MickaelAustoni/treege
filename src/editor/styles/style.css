@@ -73,6 +73,12 @@ div.react-flow__node.selected .react-flow__node__wrapper.stacked {
   box-shadow: inset 0 1px 0 oklch(from var(--treege-primary) l c h / 50%);
 }
 
+/* Hovered node floats above its neighbours so its bottom controls (insert/branch),
+   which overflow onto the adjacent stacked node, stay fully visible and clickable. */
+div.react-flow__node:hover {
+  z-index: 1000 !important;
+}
+
 /* Handle */
 div.react-flow__handle {
   background-color: var(--treege-muted-foreground);

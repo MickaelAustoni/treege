@@ -27,7 +27,8 @@ const TreegeNode = (props: TreegeNodeProps) => {
   const subType = inputData?.type ?? uiData?.type;
   const isSubmit = inputData?.type === "submit";
   const isInEditMode = selected && !isMultiSelection;
-  const hideBottomHandle = isSubmit || isMultiSelection || !isStackTail;
+  const bottomHandleDisabled = isSubmit || isMultiSelection;
+  const isJunction = !isStackTail; // First/middle stacked nodes sit before a linear successor: their bottom controls branch (input) and insert-between.
 
   return (
     <NodeWrapper isSubmit={isSubmit} stackPosition={stackPosition}>
@@ -75,12 +76,13 @@ const TreegeNode = (props: TreegeNodeProps) => {
       {/* Input preview (runtime rendering + inline option edit). Returns null when data is not editable. */}
       <NodeInputPreview nodeId={id} data={inputData} />
 
-      {/* Bottom handle — always rendered so React Flow can resolve outgoing edges; hidden visually when not applicable. */}
+      {/* Bottom controls — always rendered so React Flow can resolve outgoing edges; inert when disabled. */}
       <BottomHandleDropdown
         nodeId={id}
         isConnectable={isConnectable}
-        hidden={hideBottomHandle}
+        hidden={bottomHandleDisabled}
         canBranch={Boolean(inputData) && !isSubmit}
+        isJunction={isJunction}
       />
 
       {/* Stack-order arrows — floats to the right of stacked nodes on hover, always visible when selected. */}

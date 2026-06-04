@@ -22,7 +22,7 @@ const NodeRequiredButton = ({ nodeId, required }: NodeRequiredButtonProps) => {
 
   return (
     <TooltipProvider>
-      <Tooltip>
+      <Tooltip disableHoverableContent>
         <TooltipTrigger asChild>
           <Button
             type="button"
