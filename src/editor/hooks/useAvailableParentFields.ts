@@ -1,7 +1,9 @@
 import { useEdges, useNodes } from "@xyflow/react";
 import { useMemo } from "react";
+import { useTreegeEditorContext } from "@/editor/context/TreegeEditorContext";
 import { InputNodeData, TreegeNode } from "@/shared/types/node";
 import { isInputNode } from "@/shared/utils/nodeTypeGuards";
+import { getTranslatedText } from "@/shared/utils/translations";
 
 /**
  * Returns every Input ancestor reachable from the given node, traversing
@@ -18,6 +20,7 @@ import { isInputNode } from "@/shared/utils/nodeTypeGuards";
 const useAvailableParentFields = (currentNodeId?: string) => {
   const nodes = useNodes() as TreegeNode[];
   const edges = useEdges();
+  const { language } = useTreegeEditorContext();
 
   return useMemo(() => {
     if (!currentNodeId) {
@@ -44,7 +47,9 @@ const useAvailableParentFields = (currentNodeId?: string) => {
       })
       .map((node) => {
         const data = node.data as InputNodeData;
-        const label = typeof data.label === "object" ? data.label.en : data.label;
+        // Resolve the label in the editor's current language (falls back to
+        // English, then any available translation) instead of always `en`.
+        const label = getTranslatedText(data.label, language);
 
         return {
           label: label || data.name || node.id,
@@ -54,7 +59,7 @@ const useAvailableParentFields = (currentNodeId?: string) => {
           type: data.type || "text",
         };
       });
-  }, [currentNodeId, nodes, edges]);
+  }, [currentNodeId, nodes, edges, language]);
 };
 
 export default useAvailableParentFields;
