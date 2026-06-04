@@ -1,4 +1,4 @@
-import { Handle, Node, NodeProps, Position, useStore } from "@xyflow/react";
+import { Handle, Node, NodeProps, Position, useConnection, useStore } from "@xyflow/react";
 import { memo } from "react";
 import BottomHandleDropdown from "@/editor/features/TreegeEditor/nodes/components/BottomHandleDropdown";
 import NodeGroupBadge from "@/editor/features/TreegeEditor/nodes/components/NodeGroupBadge";
@@ -20,6 +20,7 @@ export type TreegeNodeProps = NodeProps<Node<InputNodeData, "input">> | NodeProp
 const TreegeNode = (props: TreegeNodeProps) => {
   const { id, isConnectable, parentId, selected, type } = props;
   const { position: stackPosition, isStackHead, isStackTail } = useStackPosition(id);
+  const isConnecting = useConnection((connection) => connection.inProgress);
   const isMultiSelection = useStore((state) => state.nodes.filter((node) => node.selected).length > 1);
   const inputData = props.type === "input" ? props.data : undefined;
   const uiData = props.type === "ui" ? props.data : undefined;
@@ -30,13 +31,16 @@ const TreegeNode = (props: TreegeNodeProps) => {
 
   return (
     <NodeWrapper isSubmit={isSubmit} stackPosition={stackPosition}>
-      {/* Top handle */}
+      {/* Top handle — target. Connectable on stack heads (normal) and on stack
+          tails (leaves), so a connection drag can converge two leaves into a
+          common node. On a tail it stays visually hidden and only becomes a
+          drop target while a connection is in progress. */}
       <Handle
         type="target"
         position={Position.Top}
-        isConnectable={isConnectable && isStackHead}
+        isConnectable={isConnectable && (isStackHead || isStackTail)}
         isConnectableStart={type === "ui"}
-        className={cn(!isStackHead && "tg:pointer-events-none tg:opacity-0")}
+        className={cn(!isStackHead && "tg:opacity-0", !(isStackHead || (isStackTail && isConnecting)) && "tg:pointer-events-none")}
       />
 
       {/* Illustrative image */}

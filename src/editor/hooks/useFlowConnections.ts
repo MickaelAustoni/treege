@@ -4,7 +4,7 @@ import { useCallback } from "react";
 import { DEFAULT_NODE } from "@/editor/constants/defaultNode";
 import { HORIZONTAL_NODE_OFFSET, VERTICAL_NODE_SPACING } from "@/editor/constants/nodeSpacing";
 import useUndoRedo from "@/editor/hooks/useUndoRedo";
-import { normalizeConditionalEdges } from "@/editor/utils/edge";
+import { buildConvergence, edgeExists, normalizeConditionalEdges, wouldCreateCycle } from "@/editor/utils/edge";
 import { isInputNode } from "@/shared/utils/nodeTypeGuards";
 
 /**
@@ -116,15 +116,64 @@ const useFlowConnections = () => {
   );
 
   /**
-   * Handles the connection of two nodes in the flow.
+   * Converge two leaf nodes (ends of different branches) into a brand-new
+   * common child node, wiring `sourceNode` → common and `targetNode` → common.
+   * The two leaves keep their own parents; the new node becomes their shared
+   * continuation. Triggered from `onConnectEnd` when a leaf's connection is
+   * released over another leaf.
+   */
+  const createCommonNode = useCallback(
+    (sourceNode: Node, targetNode: Node) => {
+      takeSnapshot();
+
+      const rawNodeHeight = getComputedStyle(document.documentElement).getPropertyValue("--node-height");
+      const nodeHeight = parseFloat(rawNodeHeight) || 100;
+
+      const { node: commonNode, edges: commonEdges } = buildConvergence(sourceNode, targetNode, {
+        baseNode: DEFAULT_NODE,
+        commonNodeId: nanoid(),
+        nodeHeight,
+        verticalSpacing: VERTICAL_NODE_SPACING,
+      });
+
+      setNodes((nodes) => nodes.concat(commonNode));
+      setEdges((edgesSnapshot) => edgesSnapshot.concat(...commonEdges));
+
+      // Defer the explicit selection pass to the next frame so it overrides
+      // React Flow's own selection handlers (mirrors `createNodeAndConnect`).
+      requestAnimationFrame(() => {
+        setNodes((nodes) => nodes.map((node) => ({ ...node, selected: node.id === commonNode.id })));
+        setEdges((edges) => edges.map((edge) => ({ ...edge, selected: false })));
+      });
+    },
+    [setNodes, setEdges, takeSnapshot],
+  );
+
+  /**
+   * Handles the connection of two nodes in the flow. Leaf → leaf drops are
+   * delegated to `onConnectEnd` (they converge into a common node); everything
+   * else creates the edge here, upgrading the source's edges to conditional
+   * when an input node ends up with multiple children.
    */
   const onConnect: OnConnect = useCallback(
     (params) => {
+      const sourceId = params.source;
+      const sourceNode = getNode(sourceId);
+      const currentEdges = getEdges();
+
+      const sourceIsLeaf = !currentEdges.some((edge) => edge.source === sourceId);
+      const targetIsLeaf = !currentEdges.some((edge) => edge.source === params.target);
+
+      // Leaf → leaf convergence is handled in onConnectEnd (so it works when the
+      // pointer is released anywhere over the target node, not only on its small
+      // handle). Skip here to avoid creating a direct source → target edge.
+      if (sourceIsLeaf && targetIsLeaf) {
+        return;
+      }
+
       takeSnapshot();
       setEdges((edgesSnapshot) => {
         const newEdges = addEdge(params, edgesSnapshot);
-        const sourceId = params.source;
-        const sourceNode = getNode(sourceId);
         const childrenEdges = newEdges.filter((edge) => edge.source === sourceId);
 
         // If parent has more than one child, set all its edges to be "conditional"
@@ -148,7 +197,7 @@ const useFlowConnections = () => {
         return newEdges;
       });
     },
-    [setEdges, getNode, takeSnapshot],
+    [setEdges, getNode, getEdges, takeSnapshot],
   );
 
   /**
@@ -190,6 +239,31 @@ const useFlowConnections = () => {
       createNodeAndConnect(sourceNode, { x: newX, y: newY }, true, nodeInit);
     },
     [getNode, getNodes, getEdges, createNodeAndConnect],
+  );
+
+  /**
+   * Creates a branch from `sourceNodeId` and drops the new node at an explicit
+   * screen position (used when the user drags the "create a branch" button and
+   * releases it on the canvas). Mirrors `onConnectEnd`'s position handling: the
+   * drop point is converted to flow coordinates and made parent-relative when
+   * the source belongs to a group. Conditional-edge upgrade and input-only
+   * guarding are handled by `createNodeAndConnect`.
+   */
+  const createBranchAtPosition = useCallback(
+    (sourceNodeId: string, screenPosition: { x: number; y: number }, nodeInit?: NodeInit) => {
+      const sourceNode = getNode(sourceNodeId);
+      if (!sourceNode) {
+        return;
+      }
+
+      const flowPosition = screenToFlowPosition({ x: screenPosition.x, y: screenPosition.y });
+      const parentNode = sourceNode.parentId ? getNode(sourceNode.parentId) : undefined;
+      const parentPosition = parentNode?.position ?? { x: 0, y: 0 };
+      const position = parentNode ? { x: flowPosition.x - parentPosition.x, y: flowPosition.y - parentPosition.y } : flowPosition;
+
+      createNodeAndConnect(sourceNode, position, true, nodeInit);
+    },
+    [getNode, screenToFlowPosition, createNodeAndConnect],
   );
 
   /**
@@ -469,15 +543,39 @@ const useFlowConnections = () => {
    */
   const onConnectEnd: OnConnectEnd = useCallback(
     (event, connectionState) => {
-      if (!connectionState.isValid) {
-        const { clientX, clientY } = "changedTouches" in event ? event.changedTouches[0] : event;
-        const sourceNode = connectionState.fromNode;
+      const sourceNode = connectionState.fromNode;
+      if (!sourceNode) {
+        return; // no valid start node, abort
+      }
 
-        if (!sourceNode) {
-          return; // no valid start node, abort
+      const { clientX, clientY } = "changedTouches" in event ? event.changedTouches[0] : event;
+
+      // Find the node under the pointer at release. `connectionState.toNode` is
+      // only populated when a handle sits within the connection radius, so fall
+      // back to a DOM hit-test against the node element — this lets the user
+      // drop anywhere over the target node, not only on its small top handle.
+      const elementNodeId =
+        (document.elementFromPoint(clientX, clientY) as HTMLElement | null)?.closest?.(".react-flow__node")?.getAttribute("data-id") ??
+        null;
+      const droppedOnNodeId = elementNodeId ?? connectionState.toNode?.id ?? null;
+
+      if (droppedOnNodeId && droppedOnNodeId !== sourceNode.id) {
+        const targetNode = getNode(droppedOnNodeId);
+        const edges = getEdges();
+        const sourceIsLeaf = !edges.some((edge) => edge.source === sourceNode.id);
+        const targetIsLeaf = !edges.some((edge) => edge.source === droppedOnNodeId);
+
+        // Released over another leaf: converge both into a new common node.
+        if (targetNode && sourceIsLeaf && targetIsLeaf) {
+          createCommonNode(sourceNode, targetNode);
         }
 
-        // Convert screen coordinates to flow position
+        // Released over an existing node: never drop an overlapping stray node.
+        return;
+      }
+
+      // Released on empty canvas: create a new node connected to the source.
+      if (!connectionState.isValid) {
         const flowPosition = screenToFlowPosition({ x: clientX, y: clientY });
 
         // If the source node is in a group, convert to parent-relative coordinates
@@ -485,11 +583,10 @@ const useFlowConnections = () => {
         const parentPosition = parentNode?.position ?? { x: 0, y: 0 };
         const position = parentNode ? { x: flowPosition.x - parentPosition.x, y: flowPosition.y - parentPosition.y } : flowPosition;
 
-        // Use the shared function to create node and connect
         createNodeAndConnect(sourceNode, position, true);
       }
     },
-    [createNodeAndConnect, getNode, screenToFlowPosition],
+    [createCommonNode, createNodeAndConnect, getNode, getEdges, screenToFlowPosition],
   );
 
   /**
@@ -524,6 +621,12 @@ const useFlowConnections = () => {
       }
 
       const edges = getEdges();
+
+      // Reject duplicate edges and any connection that would close a cycle.
+      if (edgeExists(edges, connection.source, connection.target) || wouldCreateCycle(edges, connection.source, connection.target)) {
+        return false;
+      }
+
       const existingEdgesFromSource = edges.filter((edge) => edge.source === connection.source);
 
       // If source already has at least one edge and is NOT an input node, block the connection
@@ -533,6 +636,7 @@ const useFlowConnections = () => {
   );
 
   return {
+    createBranchAtPosition,
     isValidConnection,
     moveStackNodeDown,
     moveStackNodeUp,
