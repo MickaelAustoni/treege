@@ -443,10 +443,19 @@ const useFlowConnections = () => {
         }),
       );
 
+      // Keep the pair border-to-border after the swap. Naively exchanging the two
+      // Y values only works when both nodes share the same height; otherwise the
+      // gap/overlap equals their height difference. Instead, pin the new top node
+      // (lower) to the old top Y and place the new bottom node (upper) right below
+      // it, so the pair's outer bounds — and every downstream node — stay put.
+      const upperHeight = upperNode.measured?.height;
+      const lowerHeight = lowerNode.measured?.height;
+      const heightDelta = upperHeight != null && lowerHeight != null ? lowerHeight - upperHeight : 0;
+
       setNodes((nodes) =>
         nodes.map((node) => {
           if (node.id === upperId) {
-            return { ...node, position: { x: node.position.x, y: lowerNode.position.y } };
+            return { ...node, position: { x: node.position.x, y: lowerNode.position.y + heightDelta } };
           }
           if (node.id === lowerId) {
             return { ...node, position: { x: node.position.x, y: upperNode.position.y } };
