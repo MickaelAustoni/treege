@@ -385,7 +385,7 @@ const DefaultHttpInput = ({ node, value, setValue, error, label, placeholder, he
                 <ChevronsUpDown className="tg:ml-2 tg:h-4 tg:w-4 tg:shrink-0 tg:opacity-50" />
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="tg:w-[300px] tg:p-0" align="start">
+            <PopoverContent className="tg:w-[var(--radix-popover-trigger-width)] tg:p-0" align="start">
               <Command shouldFilter={false}>
                 <CommandInput
                   placeholder={t("renderer.defaultHttpInput.search")}

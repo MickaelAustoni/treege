@@ -56,7 +56,7 @@ const DefaultAutocompleteInput = ({
             <ChevronsUpDown className="tg:ml-2 tg:size-4 tg:shrink-0 tg:opacity-50" />
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="tg:w-full tg:p-0" align="start">
+        <PopoverContent className="tg:w-[var(--radix-popover-trigger-width)] tg:p-0" align="start">
           <Command>
             <CommandInput placeholder={placeholder || t("renderer.defaultAutocompleteInput.search")} />
             <CommandList>
