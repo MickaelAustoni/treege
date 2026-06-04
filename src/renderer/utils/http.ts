@@ -1,6 +1,6 @@
 import { FormValues } from "@/renderer/types/renderer";
 import { sanitize } from "@/renderer/utils/sanitize";
-import { HttpHeader, InputOption, OptionsSourceMapping } from "@/shared/types/node";
+import { HttpHeader, InputOption, OptionsSourceMapping, QueryParam } from "@/shared/types/node";
 
 /**
  * Merge multiple lists of HTTP headers. Later sources override earlier ones
@@ -21,6 +21,29 @@ export const mergeHttpHeaders = (...sources: (HttpHeader[] | undefined)[]): Http
   });
 
   return Array.from(byLowerKey.values());
+};
+
+/**
+ * Append query parameters to a URL. Entries with an empty key are skipped,
+ * keys and values are URL-encoded, and `?` or `&` is chosen automatically
+ * based on whether the URL already has a query string. Values are expected
+ * to already have their template variables resolved.
+ */
+export const appendQueryParams = (url: string, params?: QueryParam[]): string => {
+  if (!params?.length) {
+    return url;
+  }
+
+  const query = params
+    .filter((param) => param.key)
+    .map((param) => `${encodeURIComponent(param.key)}=${encodeURIComponent(param.value ?? "")}`)
+    .join("&");
+
+  if (!query) {
+    return url;
+  }
+
+  return `${url}${url.includes("?") ? "&" : "?"}${query}`;
 };
 
 /**
@@ -66,6 +89,11 @@ export interface HttpRequestOptions {
    */
   headers?: HttpHeader[];
   /**
+   * Query parameters appended to the URL (values should already have their
+   * template variables resolved; keys/values are URL-encoded here)
+   */
+  queryParams?: QueryParam[];
+  /**
    * Request body (for POST/PUT/PATCH)
    */
   body?: string;
@@ -86,7 +114,7 @@ export interface HttpRequestOptions {
  */
 export const makeHttpRequest = async (options: HttpRequestOptions): Promise<HttpRequestResult> => {
   try {
-    const { url, method = "GET", headers: customHeaders = [], body, signal } = options;
+    const { url, method = "GET", headers: customHeaders = [], queryParams, body, signal } = options;
 
     // Validate URL
     if (!url || url.trim() === "") {
@@ -95,6 +123,9 @@ export const makeHttpRequest = async (options: HttpRequestOptions): Promise<Http
         success: false,
       };
     }
+
+    // Append query parameters (e.g. ?limit=10) to the URL
+    const finalUrl = appendQueryParams(url, queryParams);
 
     // Default Content-Type has the lowest priority — caller-provided headers
     // (global or field-level) win when they specify the same key.
@@ -114,7 +145,7 @@ export const makeHttpRequest = async (options: HttpRequestOptions): Promise<Http
     }
 
     // Make the HTTP request
-    const response = await fetch(url, requestOptions);
+    const response = await fetch(finalUrl, requestOptions);
 
     // Parse response
     let responseData: unknown;

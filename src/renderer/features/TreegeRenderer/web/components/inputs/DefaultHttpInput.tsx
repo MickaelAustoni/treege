@@ -4,7 +4,7 @@ import { useTreegeRendererContext } from "@/renderer/context/TreegeRendererConte
 import { useTranslate } from "@/renderer/hooks/useTranslate";
 import { InputRenderProps } from "@/renderer/types/renderer";
 import { convertFormValuesToNamedFormat } from "@/renderer/utils/form";
-import { getValueByPath, mergeHttpHeaders } from "@/renderer/utils/http";
+import { appendQueryParams, getValueByPath, mergeHttpHeaders } from "@/renderer/utils/http";
 import { getFieldNameFromNodeId } from "@/renderer/utils/node";
 import { sanitizeHttpResponse } from "@/renderer/utils/sanitize";
 import { Button } from "@/shared/components/ui/button";
@@ -146,10 +146,19 @@ const DefaultHttpInput = ({ node, value, setValue, error, label, placeholder, he
         // Replace template variables in URL and add search param if configured
         const baseUrl = replaceTemplateVars(currentHttpConfig.url, currentFormValues, true);
 
-        const url =
+        const urlWithSearch =
           currentHttpConfig.searchParam && search
             ? `${baseUrl}${baseUrl.includes("?") ? "&" : "?"}${currentHttpConfig.searchParam}=${encodeURIComponent(search)}`
             : baseUrl;
+
+        // Append configured query params (e.g. ?limit=10), resolving template variables in their values
+        const url = appendQueryParams(
+          urlWithSearch,
+          currentHttpConfig.queryParams?.map((param) => ({
+            key: param.key,
+            value: replaceTemplateVars(param.value, currentFormValues),
+          })),
+        );
 
         // Replace template variables in headers, merge with global ones
         // (field-level headers override globals on key collision).
@@ -251,6 +260,11 @@ const DefaultHttpInput = ({ node, value, setValue, error, label, placeholder, he
       if (abortControllerRef.current) {
         abortControllerRef.current.abort();
       }
+      // Allow the mount fetch to run again if the component remounts. Without
+      // this, React StrictMode (dev) aborts the first fetch on its simulated
+      // unmount, then the remount skips the fetch because the guard is still
+      // set — leaving the field empty ("No data available").
+      hasFetchedOnMount.current = false;
     };
   }, []);
 

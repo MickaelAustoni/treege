@@ -35,6 +35,7 @@ const SubmitConfigForm = ({ value, onChange }: SubmitConfigFormProps) => {
       errorMessage: value?.errorMessage || { en: "" },
       headers: value?.headers || [],
       method: value?.method || "POST",
+      queryParams: value?.queryParams || [],
       redirectUrl: value?.redirectUrl || "",
       sendAllFormValues: !!value?.sendAllFormValues,
       showLoading: value?.showLoading !== false,
@@ -181,6 +182,66 @@ const SubmitConfigForm = ({ value, onChange }: SubmitConfigFormProps) => {
                 >
                   <Plus className="tg:mr-2 tg:h-4 tg:w-4" />
                   {t("editor.submitConfigForm.addHeader")}
+                </Button>
+              </div>
+            )}
+          </Field>
+        </div>
+
+        <div className="tg:space-y-4">
+          <h4 className="tg:font-semibold tg:text-sm">{t("editor.submitConfigForm.queryParams")}</h4>
+          <Field name="queryParams" mode="array">
+            {(field) => (
+              <div className="tg:space-y-2">
+                {field.state.value?.map((_, index) => {
+                  const key = `queryParams[${index}]`;
+
+                  return (
+                    <div key={key} className="tg:flex tg:items-start tg:gap-2">
+                      <Field name={`queryParams[${index}].key`}>
+                        {(subField) => (
+                          <Input
+                            placeholder={t("editor.submitConfigForm.queryParamName")}
+                            value={subField.state.value || ""}
+                            onChange={({ target }) => subField.handleChange(target.value)}
+                          />
+                        )}
+                      </Field>
+
+                      <Field name={`queryParams[${index}].value`}>
+                        {(subField) => (
+                          <Input
+                            placeholder={t("editor.submitConfigForm.queryParamValue")}
+                            value={subField.state.value || ""}
+                            onChange={({ target }) => subField.handleChange(target.value)}
+                          />
+                        )}
+                      </Field>
+
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => {
+                          field.removeValue(index);
+                        }}
+                      >
+                        <X className="tg:h-4 tg:w-4" />
+                      </Button>
+                    </div>
+                  );
+                })}
+
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    field.pushValue({ key: "", value: "" });
+                  }}
+                >
+                  <Plus className="tg:mr-2 tg:h-4 tg:w-4" />
+                  {t("editor.submitConfigForm.addQueryParam")}
                 </Button>
               </div>
             )}

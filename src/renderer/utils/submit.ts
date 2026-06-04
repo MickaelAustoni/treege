@@ -2,7 +2,7 @@ import { Node } from "@xyflow/react";
 import { FormValues } from "@/renderer/types/renderer";
 import { convertFormValuesToNamedFormat } from "@/renderer/utils/form";
 import { makeHttpRequest, mergeHttpHeaders, replaceResponseVariables, replaceTemplateVariables } from "@/renderer/utils/http";
-import { HttpHeader, InputNodeData, SubmitConfig } from "@/shared/types/node";
+import { HttpHeader, InputNodeData, QueryParam, SubmitConfig } from "@/shared/types/node";
 
 /**
  * Result of a form submission
@@ -72,6 +72,12 @@ export const submitFormData = async (
     value: replaceTemplateVariables(header.value, formValues),
   });
 
+  // Resolve template variables in query parameter values
+  const replaceParamVars = (param: QueryParam): QueryParam => ({
+    key: param.key,
+    value: replaceTemplateVariables(param.value, formValues),
+  });
+
   // Prepare body: use all form data if sendAllFormValues is true, otherwise use custom body
   const body = config.sendAllFormValues
     ? JSON.stringify(convertFormValuesToNamedFormat(formValues, inputNodes))
@@ -84,6 +90,7 @@ export const submitFormData = async (
     body,
     headers: mergeHttpHeaders(headers?.map(replaceVars), config.headers?.map(replaceVars)),
     method: config.method || "POST",
+    queryParams: config.queryParams?.map(replaceParamVars),
     url,
   });
 

@@ -60,6 +60,7 @@ const OptionsSourceForm = ({ value, onChange }: OptionsSourceFormProps) => {
   const url = value?.url ?? "";
   const method = value?.method ?? "GET";
   const headers = value?.headers ?? [];
+  const queryParams = value?.queryParams ?? [];
   const body = value?.body ?? "";
   const responsePath = value?.responsePath ?? "";
   const mapping = value?.mapping;
@@ -263,6 +264,50 @@ const OptionsSourceForm = ({ value, onChange }: OptionsSourceFormProps) => {
             >
               <Plus className="tg:mr-2 tg:h-4 tg:w-4" />
               {t("editor.httpConfigForm.addHeader")}
+            </Button>
+          </div>
+
+          <div className="tg:flex tg:flex-col tg:gap-2">
+            <Label className="tg:text-xs">{t("editor.httpConfigForm.queryParams")}</Label>
+            {queryParams.map((param, index) => (
+              <div key={index} className="tg:flex tg:items-center tg:gap-2">
+                <Input
+                  value={param.key}
+                  placeholder={t("editor.httpConfigForm.queryParamName")}
+                  onChange={({ target }) => {
+                    const next = [...queryParams];
+                    next[index] = { ...next[index], key: target.value };
+                    update({ queryParams: next });
+                  }}
+                />
+                <Input
+                  value={param.value}
+                  placeholder={t("editor.httpConfigForm.queryParamValue")}
+                  onChange={({ target }) => {
+                    const next = [...queryParams];
+                    next[index] = { ...next[index], value: target.value };
+                    update({ queryParams: next });
+                  }}
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => update({ queryParams: queryParams.filter((_, i) => i !== index) })}
+                >
+                  <X className="tg:h-4 tg:w-4" />
+                </Button>
+              </div>
+            ))}
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="tg:w-fit"
+              onClick={() => update({ queryParams: [...queryParams, { key: "", value: "" }] })}
+            >
+              <Plus className="tg:mr-2 tg:h-4 tg:w-4" />
+              {t("editor.httpConfigForm.addQueryParam")}
             </Button>
           </div>
 

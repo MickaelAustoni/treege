@@ -29,9 +29,10 @@ const HttpConfigForm = ({ value, onChange }: HttpConfigFormProps) => {
   const { handleSubmit, Field, Subscribe, setFieldValue } = useForm({
     defaultValues: {
       body: value?.body || "",
-      fetchOnMount: value?.fetchOnMount ?? !value?.searchParam,
+      fetchOnMount: value?.fetchOnMount ?? false,
       headers: value?.headers || [],
       method: value?.method || "GET",
+      queryParams: value?.queryParams || [],
       responseMapping: value?.responseMapping || {
         labelField: "",
         valueField: "",
@@ -192,6 +193,66 @@ const HttpConfigForm = ({ value, onChange }: HttpConfigFormProps) => {
           </Field>
         </div>
 
+        <div className="tg:space-y-4">
+          <h4 className="tg:font-semibold tg:text-sm">{t("editor.httpConfigForm.queryParams")}</h4>
+          <Field name="queryParams" mode="array">
+            {(field) => (
+              <div className="tg:space-y-2">
+                {field.state.value?.map((_, index) => {
+                  const key = `queryParams[${index}]`;
+
+                  return (
+                    <div key={key} className="tg:flex tg:items-start tg:gap-2">
+                      <Field name={`queryParams[${index}].key`}>
+                        {(subField) => (
+                          <Input
+                            placeholder={t("editor.httpConfigForm.queryParamName")}
+                            value={subField.state.value || ""}
+                            onChange={({ target }) => subField.handleChange(target.value)}
+                          />
+                        )}
+                      </Field>
+
+                      <Field name={`queryParams[${index}].value`}>
+                        {(subField) => (
+                          <Input
+                            placeholder={t("editor.httpConfigForm.queryParamValue")}
+                            value={subField.state.value || ""}
+                            onChange={({ target }) => subField.handleChange(target.value)}
+                          />
+                        )}
+                      </Field>
+
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => {
+                          field.removeValue(index);
+                        }}
+                      >
+                        <X className="tg:h-4 tg:w-4" />
+                      </Button>
+                    </div>
+                  );
+                })}
+
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    field.pushValue({ key: "", value: "" });
+                  }}
+                >
+                  <Plus className="tg:mr-2 tg:h-4 tg:w-4" />
+                  {t("editor.httpConfigForm.addQueryParam")}
+                </Button>
+              </div>
+            )}
+          </Field>
+        </div>
+
         <Subscribe selector={(state) => ({ method: state.values.method, sendAllFormValues: state.values.sendAllFormValues })}>
           {({ method, sendAllFormValues }) =>
             METHODS_NEEDING_BODY.includes(method || "") && (
@@ -346,35 +407,15 @@ const HttpConfigForm = ({ value, onChange }: HttpConfigFormProps) => {
         <div className="tg:space-y-4">
           <h4 className="tg:font-semibold tg:text-sm">{t("editor.httpConfigForm.behavior")}</h4>
 
-          <Subscribe selector={(state) => state.values.searchParam}>
-            {(searchParam) => (
-              <Field name="fetchOnMount">
-                {(field) => {
-                  const hasSearchParam = Boolean(searchParam?.trim());
-                  const isChecked = hasSearchParam ? field.state.value : true;
-
-                  // Auto-set fetchOnMount to true when searchParam is empty
-                  if (!hasSearchParam && field.state.value !== true) {
-                    field.handleChange(true);
-                  }
-
-                  return (
-                    <div className="tg:flex tg:items-center tg:space-x-2">
-                      <Switch
-                        id={field.name}
-                        checked={isChecked}
-                        disabled={!hasSearchParam}
-                        onCheckedChange={(newValue) => field.handleChange(newValue)}
-                      />
-                      <Label htmlFor={field.name} className={hasSearchParam ? "" : "tg:text-muted-foreground"}>
-                        {t("editor.httpConfigForm.fetchOnMount")}
-                      </Label>
-                    </div>
-                  );
-                }}
-              </Field>
+          <Field
+            name="fetchOnMount"
+            children={(field) => (
+              <div className="tg:flex tg:items-center tg:space-x-2">
+                <Switch id={field.name} checked={field.state.value} onCheckedChange={(newValue) => field.handleChange(newValue)} />
+                <Label htmlFor={field.name}>{t("editor.httpConfigForm.fetchOnMount")}</Label>
+              </div>
             )}
-          </Subscribe>
+          />
 
           <Field
             name="showLoading"

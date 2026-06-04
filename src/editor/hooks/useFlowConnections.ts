@@ -202,7 +202,7 @@ const useFlowConnections = () => {
   const onCreateBranch = useCallback(
     (sourceNodeId: string, nodeInit?: NodeInit) => {
       const sourceNode = getNode(sourceNodeId);
-      if (!sourceNode || !isInputNode(sourceNode)) {
+      if (!(sourceNode && isInputNode(sourceNode))) {
         return;
       }
 
@@ -373,7 +373,7 @@ const useFlowConnections = () => {
     (upperId: string, lowerId: string) => {
       const upperNode = getNode(upperId);
       const lowerNode = getNode(lowerId);
-      if (!upperNode || !lowerNode) {
+      if (!(upperNode && lowerNode)) {
         return;
       }
 

@@ -193,7 +193,7 @@ const useFlowActions = () => {
             affectedParents.add(edge.source);
           }
         });
-        const remaining = eds.filter((edge) => !idSet.has(edge.source) && !idSet.has(edge.target));
+        const remaining = eds.filter((edge) => !(idSet.has(edge.source) || idSet.has(edge.target)));
         return normalizeConditionalEdges(remaining, affectedParents);
       });
     },

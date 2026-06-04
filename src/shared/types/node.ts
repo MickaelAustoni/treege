@@ -61,6 +61,17 @@ export type HttpHeader = {
   value: string;
 };
 
+export type QueryParam = {
+  /**
+   * The query parameter key (e.g., "limit", "page", "sort")
+   */
+  key: string;
+  /**
+   * The query parameter value (supports template variables like {{fieldId}})
+   */
+  value: string;
+};
+
 export type HttpConfig = {
   /**
    * The HTTP method to use
@@ -74,6 +85,10 @@ export type HttpConfig = {
    * Custom headers for the HTTP request
    */
   headers?: HttpHeader[];
+  /**
+   * Query parameters appended to the URL (supports template variables like {{fieldId}})
+   */
+  queryParams?: QueryParam[];
   /**
    * Request body (for POST/PUT/PATCH methods)
    */
@@ -142,6 +157,8 @@ export type OptionsSource = {
   method?: "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
   /** Custom headers (merged with global headers; field-level wins) */
   headers?: HttpHeader[];
+  /** Query parameters appended to the URL (supports template variables like {{fieldId}}) */
+  queryParams?: QueryParam[];
   /** Request body (for POST/PUT/PATCH; supports template variables) */
   body?: string;
   /** JSONPath to extract the array from the response (e.g., "data.users") */
@@ -163,6 +180,10 @@ export type SubmitConfig = {
    * Custom headers for the HTTP request
    */
   headers?: HttpHeader[];
+  /**
+   * Query parameters appended to the URL (supports template variables like {{fieldId}})
+   */
+  queryParams?: QueryParam[];
   /**
    * Request body (for POST/PUT/PATCH methods, supports template variables like {{fieldId}})
    * Strings are automatically quoted, use: {"name": {{userName}}}

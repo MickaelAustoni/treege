@@ -2,7 +2,7 @@ import { Node } from "@xyflow/react";
 import { useEffect, useMemo, useState } from "react";
 import { useTreegeRendererContext } from "@/renderer/context/TreegeRendererContext";
 import { extractOptionsFromResponse, makeHttpRequest, mergeHttpHeaders, replaceTemplateVariables } from "@/renderer/utils/http";
-import { HttpHeader, InputNodeData, InputOption, OptionsSourceMapping } from "@/shared/types/node";
+import { HttpHeader, InputNodeData, InputOption, OptionsSourceMapping, QueryParam } from "@/shared/types/node";
 
 const TEMPLATE_VAR_REGEX = /\{\{([\w-]+)}}/g;
 
@@ -30,6 +30,7 @@ interface ResolvedOptionsSource {
   url: string;
   method: HttpMethod;
   headers: HttpHeader[];
+  queryParams: QueryParam[];
   body: string | undefined;
   responsePath: string | undefined;
   mapping: OptionsSourceMapping;
@@ -83,6 +84,11 @@ export const useInputOptions = (node: Node<InputNodeData>): UseInputOptionsResul
       value: replaceTemplateVariables(header.value, formValues),
     });
 
+    const replaceParamVars = (param: QueryParam): QueryParam => ({
+      key: param.key,
+      value: replaceTemplateVariables(param.value, formValues),
+    });
+
     const method = source.method ?? "GET";
     const resolved: ResolvedOptionsSource = {
       body:
@@ -92,6 +98,7 @@ export const useInputOptions = (node: Node<InputNodeData>): UseInputOptionsResul
       headers: mergeHttpHeaders(globalHeaders?.map(replaceHeaderVars), source.headers?.map(replaceHeaderVars)),
       mapping: source.mapping,
       method,
+      queryParams: source.queryParams?.map(replaceParamVars) ?? [],
       responsePath: source.responsePath,
       url: replaceTemplateVariables(source.url, formValues, { encode: true }),
     };
@@ -119,6 +126,7 @@ export const useInputOptions = (node: Node<InputNodeData>): UseInputOptionsResul
         body: resolved.body,
         headers: resolved.headers,
         method: resolved.method,
+        queryParams: resolved.queryParams,
         signal: controller.signal,
         url: resolved.url,
       });
