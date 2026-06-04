@@ -1,5 +1,6 @@
 import { useForm } from "@tanstack/react-form";
 import { Plus, Variable, X } from "lucide-react";
+import OptionsMappingFields from "@/editor/features/TreegeEditor/forms/OptionsMappingFields";
 import ApiUrlCombobox from "@/editor/features/TreegeEditor/inputs/ApiUrlCombobox";
 import useAvailableParentFields from "@/editor/hooks/useAvailableParentFields";
 import useNodesSelection from "@/editor/hooks/useNodesSelection";
@@ -348,41 +349,25 @@ const HttpConfigForm = ({ value, onChange }: HttpConfigFormProps) => {
           <div className="tg:space-y-4">
             <h5 className="tg:font-medium tg:text-sm">{t("editor.httpConfigForm.mapToOptions")}</h5>
 
-            <Field
-              name="responseMapping.valueField"
-              children={(field) => (
-                <FormItem>
-                  <Label htmlFor={field.name}>{t("editor.httpConfigForm.valueField")}</Label>
-                  <Input
-                    id={field.name}
-                    name={field.name}
-                    value={field.state.value}
-                    onBlur={field.handleBlur}
-                    onChange={({ target }) => field.handleChange(target.value)}
-                    placeholder={t("editor.httpConfigForm.valueFieldPlaceholder")}
-                  />
-                  <FormDescription>{t("editor.httpConfigForm.valueFieldDesc")}</FormDescription>
-                </FormItem>
+            <Subscribe
+              selector={(state) => ({
+                body: state.values.body,
+                headers: state.values.headers,
+                method: state.values.method,
+                queryParams: state.values.queryParams,
+                responseMapping: state.values.responseMapping,
+                responsePath: state.values.responsePath,
+                url: state.values.url,
+              })}
+            >
+              {({ body, headers, method, queryParams, responseMapping, responsePath, url }) => (
+                <OptionsMappingFields
+                  request={{ body, headers, method, queryParams, responsePath, url }}
+                  mapping={responseMapping ?? {}}
+                  onMappingChange={(patch) => setFieldValue("responseMapping", { ...(responseMapping ?? {}), ...patch })}
+                />
               )}
-            />
-
-            <Field
-              name="responseMapping.labelField"
-              children={(field) => (
-                <FormItem>
-                  <Label htmlFor={field.name}>{t("editor.httpConfigForm.labelField")}</Label>
-                  <Input
-                    id={field.name}
-                    name={field.name}
-                    value={field.state.value}
-                    onBlur={field.handleBlur}
-                    onChange={({ target }) => field.handleChange(target.value)}
-                    placeholder={t("editor.httpConfigForm.labelFieldPlaceholder")}
-                  />
-                  <FormDescription>{t("editor.httpConfigForm.labelFieldDesc")}</FormDescription>
-                </FormItem>
-              )}
-            />
+            </Subscribe>
           </div>
 
           <Field
