@@ -1,4 +1,4 @@
-import { Loader2, Sparkles } from "lucide-react";
+import { Info, Loader2, Sparkles } from "lucide-react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import { useTreegeEditorContext } from "@/editor/context/TreegeEditorContext";
@@ -71,15 +71,31 @@ export const detectFieldPaths = (response: unknown, responsePath: string): strin
  * the HTTP input config and the dynamic options source so they stay identical.
  */
 const OptionsMappingFields = ({ request, mapping, onMappingChange, showOptionalFields = false }: OptionsMappingFieldsProps) => {
-  const t = useTranslate();
-  const { headers: globalHeaders } = useTreegeEditorContext();
   const [isDetecting, setIsDetecting] = useState(false);
   const [detectedPaths, setDetectedPaths] = useState<string[]>([]);
   const [previewCount, setPreviewCount] = useState<number | null>(null);
-
+  const { headers: globalHeaders } = useTreegeEditorContext();
+  const { url, method = "GET", headers, queryParams, body, responsePath = "" } = request;
+  const t = useTranslate();
   const fieldOptions = useMemo(() => detectedPaths.map((path) => ({ label: path, value: path })), [detectedPaths]);
 
-  const { url, method = "GET", headers, queryParams, body, responsePath = "" } = request;
+  // Dynamic `{{nodeId}}` variables in the URL / query params / body have no value
+  // in the editor, so the probe request fires them literally and usually fails.
+  // Surface them so the user knows to swap in a static example value to detect.
+  const templateVars = useMemo(() => {
+    const found = new Set<string>();
+    for (const source of [url, body, ...(queryParams?.map((param) => param.value) ?? [])]) {
+      if (!source) {
+        continue;
+      }
+      for (const match of source.matchAll(/\{\{([\w-]+)}}/g)) {
+        found.add(match[1]);
+      }
+    }
+    return Array.from(found);
+  }, [url, body, queryParams]);
+  const hasTemplateVars = templateVars.length > 0;
+  const dynamicHint = hasTemplateVars ? { description: t("editor.optionsSourceForm.detectDynamicHint") } : undefined;
 
   const handleDetect = async () => {
     if (!url) {
@@ -99,13 +115,13 @@ const OptionsMappingFields = ({ request, mapping, onMappingChange, showOptionalF
       });
 
       if (!result.success) {
-        toast.error(result.error || t("editor.optionsSourceForm.detectFailed"));
+        toast.error(result.error || t("editor.optionsSourceForm.detectFailed"), dynamicHint);
         return;
       }
 
       const paths = detectFieldPaths(result.data, responsePath);
       if (paths.length === 0) {
-        toast.error(t("editor.optionsSourceForm.noFieldsDetected"));
+        toast.error(t("editor.optionsSourceForm.noFieldsDetected"), dynamicHint);
         setDetectedPaths([]);
         setPreviewCount(null);
         return;
@@ -122,7 +138,7 @@ const OptionsMappingFields = ({ request, mapping, onMappingChange, showOptionalF
       }
       toast.success(t("editor.optionsSourceForm.detectSuccess"));
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : t("editor.optionsSourceForm.detectFailed"));
+      toast.error(error instanceof Error ? error.message : t("editor.optionsSourceForm.detectFailed"), dynamicHint);
     } finally {
       setIsDetecting(false);
     }
@@ -174,6 +190,17 @@ const OptionsMappingFields = ({ request, mapping, onMappingChange, showOptionalF
 
   return (
     <div className="tg:flex tg:flex-col tg:gap-4">
+      {hasTemplateVars && (
+        <div
+          role="note"
+          className="tg:flex tg:items-start tg:gap-2 tg:rounded-md tg:border tg:border-amber-500/40 tg:bg-amber-500/10 tg:p-2 tg:text-amber-600 tg:text-xs"
+        >
+          <Info className="tg:mt-0.5 tg:h-4 tg:w-4 tg:shrink-0" />
+          <span>
+            {t("editor.optionsSourceForm.dynamicVarsWarning").replace("{vars}", templateVars.map((name) => `{{${name}}}`).join(", "))}
+          </span>
+        </div>
+      )}
       <div className="tg:flex tg:items-center tg:justify-between">
         <Button type="button" variant="outline" size="sm" onClick={handleDetect} disabled={isDetecting || !url}>
           {isDetecting ? <Loader2 className="tg:mr-2 tg:h-4 tg:w-4 tg:animate-spin" /> : <Sparkles className="tg:mr-2 tg:h-4 tg:w-4" />}
