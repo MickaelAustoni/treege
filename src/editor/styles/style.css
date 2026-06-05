@@ -2,6 +2,8 @@
 @import "@/shared/styles/style.css";
 
 :root {
+  --treege-font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial,
+    "Noto Sans", sans-serif;
   --node-width: 280px;
   --node-height: 150px;
   --node-border-radius: 40px;
@@ -11,6 +13,19 @@
   --treege-color-submit-primary: #ff4757;
   --treege-color-submit-secondary: #ff6b81;
   --treege-color-submit-tertiary: #ee5a6f;
+}
+
+/* Self-contained typography: stop the host app's font (e.g. MUI's Roboto set on
+   `body` via CssBaseline) from cascading into the editor. We target descendants
+   explicitly with `*` because form controls (button/input/select) don't inherit
+   `font-family`. The `[data-slot$="-content"]` selectors cover the Radix overlays
+   (popover/select/dropdown/dialog/tooltip/sheet content) which render into
+   `document.body`, outside `.treege`. Override `--treege-font-sans` to rebrand. */
+.treege,
+.treege *,
+[data-slot$="-content"],
+[data-slot$="-content"] * {
+  font-family: var(--treege-font-sans), sans-serif;
 }
 
 button {
