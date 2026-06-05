@@ -64,6 +64,7 @@ const DefaultHttpInput = (field: InputFieldProps<"http">, extra: InputExtraProps
   const { formValues, inputNodes, headers, baseUrl } = useTreegeRendererContext();
   const { httpConfig } = node.data;
   const hasFetchedOnMount = useRef(false);
+  const isConfigInitialized = useRef(false);
   const lastFetchedTemplateValues = useRef<string>("");
   const t = useTranslate();
 
@@ -268,8 +269,11 @@ const DefaultHttpInput = (field: InputFieldProps<"http">, extra: InputExtraProps
       // Allow the mount fetch to run again if the component remounts. Without
       // this, React StrictMode (dev) aborts the first fetch on its simulated
       // unmount, then the remount skips the fetch because the guard is still
-      // set — leaving the field empty ("No data available").
+      // set — leaving the field empty ("No data available"). Reset the config
+      // guard too so the remount is treated as a fresh mount (no spurious
+      // config-change refetch).
       hasFetchedOnMount.current = false;
+      isConfigInitialized.current = false;
     };
   }, []);
 
@@ -342,6 +346,59 @@ const DefaultHttpInput = (field: InputFieldProps<"http">, extra: InputExtraProps
 
     return () => clearTimeout(timer);
   }, [templateVarValuesKey, hasTemplateVars, canFetch, fetchData]);
+
+  /**
+   * Fingerprint of the fetch-relevant HTTP config. Excludes form values
+   * (template-variable changes are handled by the watcher above), so it only
+   * changes when the configuration itself does — e.g. the editor re-saves the
+   * tree with a new url/mapping or flips `fetchOnMount` on.
+   */
+  const httpConfigKey = useMemo(
+    () =>
+      JSON.stringify({
+        body: httpConfig?.body,
+        fetchOnMount: httpConfig?.fetchOnMount,
+        headers: httpConfig?.headers,
+        method: httpConfig?.method,
+        queryParams: httpConfig?.queryParams,
+        responseMapping: httpConfig?.responseMapping,
+        responsePath: httpConfig?.responsePath,
+        searchParam: httpConfig?.searchParam,
+        sendAllFormValues: httpConfig?.sendAllFormValues,
+        url: httpConfig?.url,
+      }),
+    [httpConfig],
+  );
+
+  /**
+   * Re-fetch when the HTTP configuration changes after the initial mount. The
+   * mount fetch only runs once, so without this the field keeps showing stale
+   * options/data when the tree is re-saved with an updated config. Gated on
+   * `fetchOnMount` so manual fetch-on-demand fields aren't auto-refreshed.
+   */
+  useEffect(() => {
+    // The mount effect owns the initial fetch; only react to later changes.
+    if (!isConfigInitialized.current) {
+      isConfigInitialized.current = true;
+      return;
+    }
+
+    const currentHttpConfig = httpConfigRef.current;
+    const currentFormValues = formValuesRef.current;
+    const currentFetchData = fetchDataRef.current;
+
+    const canFetchNow = currentHttpConfig?.url && areTemplateVarsFilled(currentHttpConfig.url, currentFormValues);
+
+    if (currentHttpConfig?.fetchOnMount && canFetchNow && currentFetchData) {
+      void currentFetchData();
+      if (currentHttpConfig.url) {
+        lastFetchedTemplateValues.current = extractTemplateVars(currentHttpConfig.url)
+          .map((varName) => `${varName}:${String(currentFormValues[varName] ?? "")}`)
+          .join("|");
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [httpConfigKey]);
 
   /**
    * Debounce combobox search-as-you-type: refetch with the current query

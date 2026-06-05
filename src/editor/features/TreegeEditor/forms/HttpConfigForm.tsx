@@ -31,7 +31,7 @@ const HttpConfigForm = ({ value, onChange }: HttpConfigFormProps) => {
   const { handleSubmit, Field, Subscribe, setFieldValue } = useForm({
     defaultValues: {
       body: value?.body || "",
-      fetchOnMount: value?.fetchOnMount ?? false,
+      fetchOnMount: value?.fetchOnMount ?? true,
       headers: value?.headers || [],
       method: value?.method || "GET",
       queryParams: value?.queryParams || [],

@@ -99,4 +99,41 @@ describe("DefaultHttpInput (web)", () => {
 
     expect(fetch).toHaveBeenCalled();
   });
+
+  // Regression: editing an HTTP field in the editor and re-saving pushes a new
+  // tree (new `httpConfig`) without remounting the input. The mount fetch only
+  // runs once, so the field used to keep showing stale data. It must re-fetch
+  // when the config changes (e.g. a new url).
+  it("re-fetches when the HTTP config changes after mount (tree re-saved)", async () => {
+    const node = buildNode();
+    const { rerender } = renderHttpInput(node);
+
+    await waitFor(() => {
+      expect((screen.getByRole("combobox") as HTMLButtonElement).disabled).toBe(false);
+    });
+
+    const callsAfterMount = vi.mocked(fetch).mock.calls.length;
+
+    const updated = buildNode();
+    updated.data.httpConfig = {
+      ...updated.data.httpConfig,
+      url: "https://jsonplaceholder.typicode.com/people",
+    } as InputNodeData["httpConfig"];
+    const field: InputFieldProps<"http"> = { id: updated.id, name: "users", value: "" };
+    const extra: InputExtraProps<"http"> = { missingDependencies: [], node: updated, setValue: vi.fn() };
+
+    rerender(
+      <StrictMode>
+        <TreegeRendererProvider value={{ formValues: {}, inputNodes: [updated], language: "en" }}>
+          <InputRendererHost render={DefaultHttpInput} field={field} extra={extra} />
+        </TreegeRendererProvider>
+      </StrictMode>,
+    );
+
+    await waitFor(() => {
+      expect(vi.mocked(fetch).mock.calls.length).toBeGreaterThan(callsAfterMount);
+    });
+
+    expect(vi.mocked(fetch).mock.calls.some(([url]) => String(url).includes("/people"))).toBe(true);
+  });
 });
