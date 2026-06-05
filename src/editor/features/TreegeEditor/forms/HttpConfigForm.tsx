@@ -352,25 +352,31 @@ const HttpConfigForm = ({ value, onChange }: HttpConfigFormProps) => {
           <div className="tg:space-y-4">
             <h5 className="tg:font-medium tg:text-sm">{t("editor.httpConfigForm.mapToOptions")}</h5>
 
-            <Subscribe
-              selector={(state) => ({
-                body: state.values.body,
-                headers: state.values.headers,
-                method: state.values.method,
-                queryParams: state.values.queryParams,
-                responseMapping: state.values.responseMapping,
-                responsePath: state.values.responsePath,
-                url: state.values.url,
-              })}
-            >
-              {({ body, headers, method, queryParams, responseMapping, responsePath, url }) => (
-                <OptionsMappingFields
-                  request={{ body, headers, method, queryParams, responsePath, url }}
-                  mapping={responseMapping ?? {}}
-                  onMappingChange={(patch) => setFieldValue("responseMapping", { ...(responseMapping ?? {}), ...patch })}
-                />
+            {/* `responseMapping` must be a mounted Field (not setFieldValue): the form-level
+                onChange listener that drives auto-save only fires through a field instance's
+                handleChange. Without a Field here, mapping edits never propagate and are lost. */}
+            <Field name="responseMapping">
+              {(mappingField) => (
+                <Subscribe
+                  selector={(state) => ({
+                    body: state.values.body,
+                    headers: state.values.headers,
+                    method: state.values.method,
+                    queryParams: state.values.queryParams,
+                    responsePath: state.values.responsePath,
+                    url: state.values.url,
+                  })}
+                >
+                  {({ body, headers, method, queryParams, responsePath, url }) => (
+                    <OptionsMappingFields
+                      request={{ body, headers, method, queryParams, responsePath, url }}
+                      mapping={mappingField.state.value ?? {}}
+                      onMappingChange={(patch) => mappingField.handleChange({ ...(mappingField.state.value ?? {}), ...patch })}
+                    />
+                  )}
+                </Subscribe>
               )}
-            </Subscribe>
+            </Field>
           </div>
 
           <Field
