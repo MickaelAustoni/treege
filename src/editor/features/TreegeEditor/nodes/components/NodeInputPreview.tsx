@@ -84,6 +84,7 @@ const NodeInputPreview = ({ nodeId, data }: NodeInputPreviewProps) => {
 
   const hasOptions = isOptionsInputData(data);
   const optionsSourceUrl = hasOptions ? data.optionsSource?.url : undefined;
+  const previewUrl = optionsSourceUrl ?? (inputType === "http" ? data.httpConfig?.url : undefined);
   const options = hasOptions ? (data.options ?? []) : [];
   const supportsImage = inputType === "radio";
   const supportsDescription = inputType === "radio" || inputType === "checkbox";
@@ -304,16 +305,16 @@ const NodeInputPreview = ({ nodeId, data }: NodeInputPreviewProps) => {
         </TreegeRendererProvider>
       </div>
 
-      {hasOptions && optionsSourceUrl && (
+      {previewUrl && (
         <TooltipProvider>
           <Tooltip disableHoverableContent>
             <TooltipTrigger asChild>
               <div className="nodrag nopan tg:my-1 tg:flex tg:items-center tg:gap-1 tg:text-muted-foreground tg:text-xs">
                 <Globe className="tg:size-3 tg:shrink-0" />
-                <span className="tg:truncate">{shortenUrl(optionsSourceUrl)}</span>
+                <span className="tg:truncate">{shortenUrl(previewUrl)}</span>
               </div>
             </TooltipTrigger>
-            <TooltipContent side="bottom">{optionsSourceUrl}</TooltipContent>
+            <TooltipContent side="bottom">{previewUrl}</TooltipContent>
           </Tooltip>
         </TooltipProvider>
       )}
