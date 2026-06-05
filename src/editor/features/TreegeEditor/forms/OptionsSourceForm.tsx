@@ -1,5 +1,6 @@
 import { Plus, X } from "lucide-react";
 import OptionsMappingFields from "@/editor/features/TreegeEditor/forms/OptionsMappingFields";
+import SensitiveHeaderWarning from "@/editor/features/TreegeEditor/forms/SensitiveHeaderWarning";
 import ApiUrlCombobox from "@/editor/features/TreegeEditor/inputs/ApiUrlCombobox";
 import useTranslate from "@/editor/hooks/useTranslate";
 import { Button } from "@/shared/components/ui/button";
@@ -137,6 +138,7 @@ const OptionsSourceForm = ({ value, onChange }: OptionsSourceFormProps) => {
               <Plus className="tg:mr-2 tg:h-4 tg:w-4" />
               {t("editor.httpConfigForm.addHeader")}
             </Button>
+            <SensitiveHeaderWarning headers={headers} />
           </div>
 
           <div className="tg:flex tg:flex-col tg:gap-2">

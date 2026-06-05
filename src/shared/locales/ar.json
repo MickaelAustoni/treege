@@ -31,7 +31,9 @@
       "language": "اللغة",
       "openApi": "OpenAPI",
       "parseError": "خطأ في تحليل ملف JSON.",
-      "parseErrorDesc": "حاول إصلاح الملف واستيراده مرة أخرى."
+      "parseErrorDesc": "حاول إصلاح الملف واستيراده مرة أخرى.",
+      "sensitiveHeadersStripped": "تمت إزالة الترويسات الحساسة",
+      "sensitiveHeadersStrippedDesc": "تمت إزالة ترويسات بيانات الاعتماد لتجنّب تسريب الأسرار."
     },
     "aiGenerator": {
       "aiNotConfigured": "الذكاء الاصطناعي غير مُهيأ",
@@ -315,6 +317,9 @@
         "input": "سؤال",
         "ui": "عنصر تصميم"
       }
+    },
+    "sensitiveHeaderWarning": {
+      "message": "تجنّب وضع بيانات الاعتماد (Authorization، مفاتيح API) في ترويسات الحقل، فهي تُحفظ في الشجرة المُصدَّرة. استخدم الترويسات العامة (تفويض) للمصادقة بدلاً من ذلك."
     },
     "stackedEdge": {
       "addNode": "إضافة عنصر",

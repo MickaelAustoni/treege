@@ -31,7 +31,9 @@
       "language": "Idioma",
       "openApi": "OpenAPI",
       "parseError": "Erro ao analisar o arquivo JSON.",
-      "parseErrorDesc": "Tente corrigir o arquivo e importá-lo novamente."
+      "parseErrorDesc": "Tente corrigir o arquivo e importá-lo novamente.",
+      "sensitiveHeadersStripped": "Cabeçalhos sensíveis removidos",
+      "sensitiveHeadersStrippedDesc": "Os cabeçalhos de credenciais foram removidos para evitar o vazamento de segredos."
     },
     "aiGenerator": {
       "aiNotConfigured": "IA não configurada",
@@ -315,6 +317,9 @@
         "input": "Pergunta",
         "ui": "Elemento de design"
       }
+    },
+    "sensitiveHeaderWarning": {
+      "message": "Evite armazenar credenciais (Authorization, chaves de API) nos cabeçalhos do campo: elas são salvas na árvore exportada. Use cabeçalhos globais (Autorizar) para autenticação."
     },
     "stackedEdge": {
       "addNode": "Adicionar um elemento",

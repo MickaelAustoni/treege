@@ -1,6 +1,7 @@
 import { useForm } from "@tanstack/react-form";
 import { Plus, Variable, X } from "lucide-react";
 import OptionsMappingFields from "@/editor/features/TreegeEditor/forms/OptionsMappingFields";
+import SensitiveHeaderWarning from "@/editor/features/TreegeEditor/forms/SensitiveHeaderWarning";
 import ApiUrlCombobox from "@/editor/features/TreegeEditor/inputs/ApiUrlCombobox";
 import useAvailableParentFields from "@/editor/hooks/useAvailableParentFields";
 import useNodesSelection from "@/editor/hooks/useNodesSelection";
@@ -189,6 +190,8 @@ const HttpConfigForm = ({ value, onChange }: HttpConfigFormProps) => {
                   <Plus className="tg:mr-2 tg:h-4 tg:w-4" />
                   {t("editor.httpConfigForm.addHeader")}
                 </Button>
+
+                <SensitiveHeaderWarning headers={field.state.value} />
               </div>
             )}
           </Field>

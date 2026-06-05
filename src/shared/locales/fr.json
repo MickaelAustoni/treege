@@ -31,7 +31,9 @@
       "language": "Langue",
       "openApi": "OpenAPI",
       "parseError": "Erreur d'analyse du fichier JSON.",
-      "parseErrorDesc": "Essayez de corriger le fichier et de l'importer à nouveau."
+      "parseErrorDesc": "Essayez de corriger le fichier et de l'importer à nouveau.",
+      "sensitiveHeadersStripped": "En-têtes sensibles supprimés",
+      "sensitiveHeadersStrippedDesc": "Les en-têtes d'identification ont été retirés pour éviter toute fuite de secrets."
     },
     "aiGenerator": {
       "aiNotConfigured": "IA non configurée",
@@ -315,6 +317,9 @@
         "input": "Question",
         "ui": "Élément de design"
       }
+    },
+    "sensitiveHeaderWarning": {
+      "message": "Évitez de mettre des identifiants (Authorization, clés d'API) dans les en-têtes du champ : ils sont enregistrés dans l'arbre exporté. Utilisez plutôt les en-têtes globaux (Autoriser) pour l'authentification."
     },
     "stackedEdge": {
       "addNode": "Ajouter un élément",

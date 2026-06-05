@@ -31,7 +31,9 @@
       "language": "Sprache",
       "openApi": "OpenAPI",
       "parseError": "Fehler beim Parsen der JSON-Datei.",
-      "parseErrorDesc": "Versuchen Sie, die Datei zu korrigieren und erneut zu importieren."
+      "parseErrorDesc": "Versuchen Sie, die Datei zu korrigieren und erneut zu importieren.",
+      "sensitiveHeadersStripped": "Sensible Header entfernt",
+      "sensitiveHeadersStrippedDesc": "Anmelde-Header wurden entfernt, um das Offenlegen von Geheimnissen zu vermeiden."
     },
     "aiGenerator": {
       "aiNotConfigured": "KI nicht konfiguriert",
@@ -315,6 +317,9 @@
         "input": "Frage",
         "ui": "Designelement"
       }
+    },
+    "sensitiveHeaderWarning": {
+      "message": "Speichern Sie keine Anmeldedaten (Authorization, API-Schlüssel) in Feld-Headern – sie werden im exportierten Baum gespeichert. Verwenden Sie stattdessen globale Header (Autorisieren) zur Authentifizierung."
     },
     "stackedEdge": {
       "addNode": "Element hinzufügen",

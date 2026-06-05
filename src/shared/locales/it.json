@@ -31,7 +31,9 @@
       "language": "Lingua",
       "openApi": "OpenAPI",
       "parseError": "Errore nell'analisi del file JSON.",
-      "parseErrorDesc": "Prova a correggere il file e importarlo di nuovo."
+      "parseErrorDesc": "Prova a correggere il file e importarlo di nuovo.",
+      "sensitiveHeadersStripped": "Header sensibili rimossi",
+      "sensitiveHeadersStrippedDesc": "Gli header con credenziali sono stati rimossi per evitare di esporre segreti."
     },
     "aiGenerator": {
       "aiNotConfigured": "IA non configurata",
@@ -315,6 +317,9 @@
         "input": "Domanda",
         "ui": "Elemento di design"
       }
+    },
+    "sensitiveHeaderWarning": {
+      "message": "Evita di inserire credenziali (Authorization, chiavi API) negli header del campo: vengono salvate nell'albero esportato. Usa invece gli header globali (Autorizza) per l'autenticazione."
     },
     "stackedEdge": {
       "addNode": "Aggiungi un elemento",

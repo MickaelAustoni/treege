@@ -31,7 +31,9 @@
       "language": "Language",
       "openApi": "OpenAPI",
       "parseError": "Error parsing JSON file.",
-      "parseErrorDesc": "Try to fix the file and import it again."
+      "parseErrorDesc": "Try to fix the file and import it again.",
+      "sensitiveHeadersStripped": "Sensitive headers removed",
+      "sensitiveHeadersStrippedDesc": "Credential headers were stripped to avoid leaking secrets."
     },
     "aiGenerator": {
       "aiNotConfigured": "AI not configured",
@@ -315,6 +317,9 @@
         "input": "Question",
         "ui": "Design Element"
       }
+    },
+    "sensitiveHeaderWarning": {
+      "message": "Avoid storing credentials (Authorization, API keys) in field headers — they are saved into the exported tree. Use global headers (Authorize) for authentication instead."
     },
     "stackedEdge": {
       "addNode": "Add an element",

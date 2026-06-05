@@ -31,7 +31,9 @@
       "language": "Idioma",
       "openApi": "OpenAPI",
       "parseError": "Error al analizar el archivo JSON.",
-      "parseErrorDesc": "Intenta corregir el archivo e importarlo nuevamente."
+      "parseErrorDesc": "Intenta corregir el archivo e importarlo nuevamente.",
+      "sensitiveHeadersStripped": "Encabezados sensibles eliminados",
+      "sensitiveHeadersStrippedDesc": "Se eliminaron los encabezados de credenciales para evitar filtrar secretos."
     },
     "aiGenerator": {
       "aiNotConfigured": "IA no configurada",
@@ -315,6 +317,9 @@
         "input": "Pregunta",
         "ui": "Elemento de diseño"
       }
+    },
+    "sensitiveHeaderWarning": {
+      "message": "Evite almacenar credenciales (Authorization, claves de API) en los encabezados del campo: se guardan en el árbol exportado. Use encabezados globales (Autorizar) para la autenticación."
     },
     "stackedEdge": {
       "addNode": "Añadir un elemento",

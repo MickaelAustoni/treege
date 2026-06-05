@@ -12,6 +12,7 @@ import OpenApiDialog from "@/editor/features/TreegeEditor/dialogs/OpenApiDialog"
 import { AIGeneratorDialog } from "@/editor/features/TreegeEditor/panel/AIGeneratorDialog";
 import useTranslate from "@/editor/hooks/useTranslate";
 import { ExtraMenuItem } from "@/editor/types/editor";
+import { stripSensitiveHeadersFromFlow } from "@/editor/utils/sensitiveHeaders";
 import { Button } from "@/shared/components/ui/button";
 import {
   DropdownMenu,
@@ -112,8 +113,26 @@ const ActionsPanel = ({ onExportJson, onSave, extraMenuItems, onAuthorize, heade
     reader.readAsText(file);
   };
 
+  /**
+   * Strip credential-bearing field-level headers before the tree leaves the
+   * editor, and warn when something was removed. Authentication is meant to
+   * live in the non-persisted global headers (Authorize), so secrets pasted
+   * into a field's headers should never reach an export or backend save.
+   */
+  const sanitizeForPersist = () => {
+    const { flow, strippedCount } = stripSensitiveHeadersFromFlow({ edges, id, nodes });
+
+    if (strippedCount > 0) {
+      toast.warning(t("editor.actionsPanel.sensitiveHeadersStripped"), {
+        description: t("editor.actionsPanel.sensitiveHeadersStrippedDesc"),
+      });
+    }
+
+    return flow;
+  };
+
   const handleExport = () => {
-    const data = { edges, id, nodes };
+    const data = sanitizeForPersist();
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -141,8 +160,16 @@ const ActionsPanel = ({ onExportJson, onSave, extraMenuItems, onAuthorize, heade
       setFlowId?.(id);
     }
 
-    onSave?.({ edges, id, nodes });
-  }, [edges, flowId, id, nodes, onSave, setFlowId]);
+    const { flow, strippedCount } = stripSensitiveHeadersFromFlow({ edges, id, nodes });
+
+    if (strippedCount > 0) {
+      toast.warning(t("editor.actionsPanel.sensitiveHeadersStripped"), {
+        description: t("editor.actionsPanel.sensitiveHeadersStrippedDesc"),
+      });
+    }
+
+    onSave?.(flow);
+  }, [edges, flowId, id, nodes, onSave, setFlowId, t]);
 
   const handleClear = () => {
     setNodes([]);
