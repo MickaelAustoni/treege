@@ -1,4 +1,4 @@
-import { Globe } from "lucide-react";
+import { Globe, Link2, Link2Off } from "lucide-react";
 import { ComponentProps, ReactNode, useState } from "react";
 import { useOpenApi } from "@/editor/context/OpenApiContext";
 import useTranslate from "@/editor/hooks/useTranslate";
@@ -34,32 +34,76 @@ const METHOD_BADGE_COLOR: Record<ApiRouteMethod, string> = {
 
 /**
  * URL field that augments a regular `<Input>` with a Popover suggesting
- * routes from the editor-loaded OpenAPI document. The user can either type
- * a custom URL freely (current behavior preserved) or click the Globe icon
- * to pick a route — selecting one resolves the URL with the document's
- * server and emits the route's HTTP method back to the caller.
+ * routes from the editor-loaded OpenAPI document. The user can type any url
+ * freely — absolute (`https://other-api.com/x`) or relative — and it is stored
+ * verbatim. Picking a route from the Globe popover instead inserts the route's
+ * **relative** path (the host is supplied to the renderer via its `baseUrl`),
+ * so OpenAPI-sourced trees stay environment-agnostic while manual urls keep
+ * full control.
  *
  * When no OpenAPI document is loaded, the Globe trigger is hidden and the
  * component is functionally identical to a plain `<Input>`.
  */
+const ABSOLUTE_URL = /^(https?:)?\/\//i;
+
 const ApiUrlCombobox = ({ value, onChange, placeholder, children, ...inputProps }: ApiUrlComboboxProps) => {
   const [open, setOpen] = useState(false);
   const { baseUrl, routes } = useOpenApi();
   const t = useTranslate();
 
+  // A route picked from the OpenAPI document is stored relative to the base:
+  // the base is environment-specific (dev/staging/prod) and supplied to the
+  // renderer via its `baseUrl` prop, so baking it in would couple the tree to a
+  // single environment. Manually typed urls are left untouched (see onChange).
   const handleSelectRoute = (path: string, method: ApiRouteMethod) => {
     const cleanPath = path.startsWith("/") ? path : `/${path}`;
-    onChange(`${baseUrl}${cleanPath}`, method);
+    onChange(cleanPath, method);
     setOpen(false);
+  };
+
+  // Whether the current value already carries the configured base as its prefix.
+  const baseApplied = Boolean(baseUrl) && value.startsWith(baseUrl);
+  // Offer the toggle only when there is a base AND the value is something we can
+  // round-trip: a relative path (→ prepend) or our own base (→ strip back).
+  // Absolute urls to a different host are left alone — nothing to toggle.
+  const canToggleBase = Boolean(baseUrl) && (baseApplied || !ABSOLUTE_URL.test(value));
+
+  // One-click switch between "relative path" and "base + path" (absolute),
+  // reusing the same slash-join rules as the renderer's `resolveUrl`.
+  const handleToggleBase = () => {
+    if (baseApplied) {
+      const relative = value.slice(baseUrl.length);
+      onChange(relative.startsWith("/") ? relative : `/${relative}`);
+      return;
+    }
+    onChange(value ? `${baseUrl.replace(/\/+$/, "")}/${value.replace(/^\/+/, "")}` : baseUrl);
   };
 
   return (
     <div className="tg:flex tg:gap-2">
       <Input className="tg:flex-1" value={value} placeholder={placeholder} onChange={(e) => onChange(e.target.value)} {...inputProps} />
+      {canToggleBase && (
+        <Button
+          type="button"
+          variant="outline"
+          size="icon"
+          aria-label={baseApplied ? t("editor.apiUrlCombobox.useRelativePath") : t("editor.apiUrlCombobox.applyBaseUrl")}
+          title={baseApplied ? t("editor.apiUrlCombobox.useRelativePath") : t("editor.apiUrlCombobox.applyBaseUrl")}
+          onClick={handleToggleBase}
+        >
+          {baseApplied ? <Link2Off className="tg:h-4 tg:w-4" /> : <Link2 className="tg:h-4 tg:w-4" />}
+        </Button>
+      )}
       {routes.length > 0 && (
         <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
-            <Button type="button" variant="outline" size="icon" aria-label={t("editor.apiUrlCombobox.browseRoutes")}>
+            <Button
+              type="button"
+              variant="outline"
+              size="icon"
+              aria-label={t("editor.apiUrlCombobox.browseRoutes")}
+              title={t("editor.apiUrlCombobox.browseRoutes")}
+            >
               <Globe className="tg:h-4 tg:w-4" />
             </Button>
           </PopoverTrigger>

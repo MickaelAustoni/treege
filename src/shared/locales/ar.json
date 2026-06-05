@@ -56,9 +56,11 @@
       "unknownError": "حدث خطأ غير معروف"
     },
     "apiUrlCombobox": {
+      "applyBaseUrl": "إضافة عنوان URL الأساسي",
       "browseRoutes": "Browse OpenAPI routes",
       "noRoutes": "No matching route",
-      "searchRoutes": "Search by method, path, or summary"
+      "searchRoutes": "Search by method, path, or summary",
+      "useRelativePath": "استخدام مسار نسبي"
     },
     "authorizeDialog": {
       "apiKeyLabel": "API key",

@@ -86,9 +86,22 @@ export interface TreegeEditorProps {
    */
   openApi?: OpenApiDocument | string;
   /**
-   * Base URL used for OpenAPI route resolution. When set, it takes precedence
-   * over the document's `servers[0].url` — useful when the spec points at a
-   * different environment than the one to call (e.g. staging vs prod).
+   * Base URL the produced tree is meant to run against. Pass the same value you
+   * give to `TreegeRenderer`'s `baseUrl`. It drives two things in the editor:
+   * - HTTP/Options-source urls are stored **relative** to it (route picker emits
+   *   relative paths), so the exported JSON stays environment-agnostic.
+   * - it is shown as a read-only prefix on URL fields and used to resolve the
+   *   "Detect fields" probe, so editor-time previews hit a real host.
+   *
+   * Works with or without OpenAPI. When an OpenAPI document is loaded, its
+   * `servers[0].url` (or the Authorize dialog override) takes precedence for
+   * route resolution; otherwise this value is the base.
+   */
+  baseUrl?: string;
+  /**
+   * @deprecated Use `baseUrl` instead — it now covers OpenAPI route resolution
+   * and the general runtime base. Kept as an alias for backward compatibility;
+   * `baseUrl` wins when both are set.
    */
   openApiBaseUrl?: string;
   /**

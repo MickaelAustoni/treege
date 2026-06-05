@@ -56,9 +56,11 @@
       "unknownError": "Unbekannter Fehler aufgetreten"
     },
     "apiUrlCombobox": {
+      "applyBaseUrl": "Basis-URL voranstellen",
       "browseRoutes": "Browse OpenAPI routes",
       "noRoutes": "No matching route",
-      "searchRoutes": "Search by method, path, or summary"
+      "searchRoutes": "Search by method, path, or summary",
+      "useRelativePath": "Relativen Pfad verwenden"
     },
     "authorizeDialog": {
       "apiKeyLabel": "API key",

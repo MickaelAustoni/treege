@@ -56,9 +56,11 @@
       "unknownError": "Erreur inconnue"
     },
     "apiUrlCombobox": {
+      "applyBaseUrl": "Préfixer avec l'URL de base",
       "browseRoutes": "Parcourir les routes OpenAPI",
       "noRoutes": "Aucune route correspondante",
-      "searchRoutes": "Rechercher par méthode, chemin ou résumé"
+      "searchRoutes": "Rechercher par méthode, chemin ou résumé",
+      "useRelativePath": "Utiliser un chemin relatif"
     },
     "authorizeDialog": {
       "apiKeyLabel": "Clé d'API",

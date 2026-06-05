@@ -79,7 +79,13 @@ const HttpConfigForm = ({ value, onChange }: HttpConfigFormProps) => {
               >
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button type="button" variant="outline" size="icon">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="icon"
+                      aria-label={t("editor.httpConfigForm.insertVariable")}
+                      title={t("editor.httpConfigForm.insertVariable")}
+                    >
                       <Variable className="tg:h-4 tg:w-4" />
                     </Button>
                   </DropdownMenuTrigger>

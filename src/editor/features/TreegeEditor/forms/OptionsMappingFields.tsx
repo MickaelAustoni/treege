@@ -1,9 +1,10 @@
 import { Info, Loader2, Sparkles } from "lucide-react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
+import { useOpenApi } from "@/editor/context/OpenApiContext";
 import { useTreegeEditorContext } from "@/editor/context/TreegeEditorContext";
 import useTranslate from "@/editor/hooks/useTranslate";
-import { extractOptionsFromResponse, getValueByPath, makeHttpRequest, mergeHttpHeaders } from "@/renderer/utils/http";
+import { extractOptionsFromResponse, getValueByPath, makeHttpRequest, mergeHttpHeaders, resolveUrl } from "@/renderer/utils/http";
 import { Button } from "@/shared/components/ui/button";
 import { FormItem } from "@/shared/components/ui/form";
 import { Input } from "@/shared/components/ui/input";
@@ -75,6 +76,7 @@ const OptionsMappingFields = ({ request, mapping, onMappingChange, showOptionalF
   const [detectedPaths, setDetectedPaths] = useState<string[]>([]);
   const [previewCount, setPreviewCount] = useState<number | null>(null);
   const { headers: globalHeaders } = useTreegeEditorContext();
+  const { baseUrl } = useOpenApi();
   const { url, method = "GET", headers, queryParams, body, responsePath = "" } = request;
   const t = useTranslate();
   const fieldOptions = useMemo(() => detectedPaths.map((path) => ({ label: path, value: path })), [detectedPaths]);
@@ -111,7 +113,9 @@ const OptionsMappingFields = ({ request, mapping, onMappingChange, showOptionalF
         headers: mergeHttpHeaders(globalHeaders, headers),
         method,
         queryParams,
-        url,
+        // URLs are stored relative to the editor base; resolve against it so the
+        // probe hits a real host (mirrors what the renderer does at runtime).
+        url: resolveUrl(url, baseUrl),
       });
 
       if (!result.success) {

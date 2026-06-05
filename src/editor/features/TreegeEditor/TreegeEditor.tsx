@@ -93,6 +93,7 @@ const TreegeEditor = ({
   aiConfig,
   extraMenuItems,
   openApi,
+  baseUrl,
   openApiBaseUrl,
   onAuthorize,
   headers,
@@ -120,7 +121,7 @@ const TreegeEditor = ({
       <ThemeProvider defaultTheme={theme} storageKey="treege-editor-theme" theme={theme}>
         <Toaster position="bottom-center" />
         <TreegeEditorProvider value={{ aiConfig, flowId: flow?.id, headers, language, setLanguage: handleLanguageChange }}>
-          <OpenApiProvider initialDocument={openApi} initialBaseUrl={openApiBaseUrl}>
+          <OpenApiProvider initialDocument={openApi} initialBaseUrl={baseUrl ?? openApiBaseUrl}>
             <ReactFlowProvider>
               <Flow
                 onExportJson={onExportJson}

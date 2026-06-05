@@ -11,6 +11,8 @@ import { Flow, HttpHeader } from "@/shared/types/node";
 import flows from "~/example/json/treege.json";
 import flowsComplex from "~/example/json/treege-all-inputs.json";
 
+const baseUrl = import.meta.env.VITE_BASE_URL || import.meta.env.VITE_OPENAPI_BASE_URL || undefined;
+
 const EditorPanel = ({
   flow,
   onSave,
@@ -31,7 +33,7 @@ const EditorPanel = ({
 }) => {
   const apiKey = import.meta.env.VITE_AI_API_KEY ?? "";
   const openApiUrl = import.meta.env.VITE_OPENAPI_URL || undefined;
-  const openApiBaseUrl = import.meta.env.VITE_OPENAPI_BASE_URL || undefined;
+
 
   return (
     <div className="tg:h-full tg:flex tg:flex-col">
@@ -44,7 +46,7 @@ const EditorPanel = ({
           headers={headers}
           onHeadersChange={onHeadersChange}
           openApi={openApiUrl}
-          openApiBaseUrl={openApiBaseUrl}
+          baseUrl={baseUrl}
           aiConfig={{
             apiKey,
           }}
@@ -133,6 +135,7 @@ const RendererPanel = ({
         {hasNodes && flow ? (
           <>
             <TreegeRenderer
+              baseUrl={baseUrl}
               flows={flow}
               language={language}
               theme={theme}
