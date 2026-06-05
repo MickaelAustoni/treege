@@ -1,7 +1,7 @@
 import { Node } from "@xyflow/react";
 import { FormValues } from "@/renderer/types/renderer";
 import { convertFormValuesToNamedFormat } from "@/renderer/utils/form";
-import { makeHttpRequest, mergeHttpHeaders, replaceResponseVariables, replaceTemplateVariables } from "@/renderer/utils/http";
+import { makeHttpRequest, mergeHttpHeaders, replaceResponseVariables, replaceTemplateVariables, resolveUrl } from "@/renderer/utils/http";
 import { HttpHeader, InputNodeData, QueryParam, SubmitConfig } from "@/shared/types/node";
 
 /**
@@ -39,6 +39,7 @@ export interface SubmitResult {
  * @param formValues - Current form values
  * @param inputNodes - All input nodes (required when sendAllFormValues is true)
  * @param headers
+ * @param baseUrl - Base URL prepended to a relative submit url
  * @returns Promise with submission result
  */
 export const submitFormData = async (
@@ -46,6 +47,7 @@ export const submitFormData = async (
   formValues: FormValues,
   inputNodes: Node<InputNodeData>[],
   headers?: HttpHeader[],
+  baseUrl?: string,
 ): Promise<SubmitResult> => {
   // Validate configuration
   if (!config.url || config.url.trim() === "") {
@@ -55,8 +57,9 @@ export const submitFormData = async (
     };
   }
 
-  // Replace template variables in URL (with encoding)
-  const url = replaceTemplateVariables(config.url, formValues, { encode: true });
+  // Replace template variables in URL (with encoding), then prepend the base
+  // URL when the result is relative.
+  const url = resolveUrl(replaceTemplateVariables(config.url, formValues, { encode: true }), baseUrl);
 
   if (!url || url.trim() === "") {
     return {

@@ -5,7 +5,7 @@ import DependencyHint from "@/renderer/features/TreegeRenderer/web/components/De
 import { useTranslate } from "@/renderer/hooks/useTranslate";
 import { InputExtraProps, InputFieldProps } from "@/renderer/types/renderer";
 import { convertFormValuesToNamedFormat } from "@/renderer/utils/form";
-import { appendQueryParams, getValueByPath, mergeHttpHeaders } from "@/renderer/utils/http";
+import { appendQueryParams, getValueByPath, mergeHttpHeaders, resolveUrl } from "@/renderer/utils/http";
 import { sanitizeHttpResponse } from "@/renderer/utils/sanitize";
 import { Button } from "@/shared/components/ui/button";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/shared/components/ui/command";
@@ -61,7 +61,7 @@ const DefaultHttpInput = (field: InputFieldProps<"http">, extra: InputExtraProps
   const [comboboxOpen, setComboboxOpen] = useState(false);
   const { id, name, value, placeholder } = field;
   const { node, setValue, error, label, helperText, missingDependencies: missing } = extra;
-  const { formValues, inputNodes, headers } = useTreegeRendererContext();
+  const { formValues, inputNodes, headers, baseUrl } = useTreegeRendererContext();
   const { httpConfig } = node.data;
   const hasFetchedOnMount = useRef(false);
   const lastFetchedTemplateValues = useRef<string>("");
@@ -72,6 +72,7 @@ const DefaultHttpInput = (field: InputFieldProps<"http">, extra: InputExtraProps
   const formValuesRef = useRef(formValues);
   const inputNodesRef = useRef(inputNodes);
   const headersRef = useRef(headers);
+  const baseUrlRef = useRef(baseUrl);
   const setValueRef = useRef(setValue);
   const fetchDataRef = useRef<((search?: string) => Promise<void>) | null>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
@@ -145,13 +146,14 @@ const DefaultHttpInput = (field: InputFieldProps<"http">, extra: InputExtraProps
       setFetchError(null);
 
       try {
-        // Replace template variables in URL and add search param if configured
-        const baseUrl = replaceTemplateVars(currentHttpConfig.url, currentFormValues, true);
+        // Replace template variables in URL, prepend the configured base URL
+        // when relative, then add the search param if configured
+        const resolvedUrl = resolveUrl(replaceTemplateVars(currentHttpConfig.url, currentFormValues, true), baseUrlRef.current);
 
         const urlWithSearch =
           currentHttpConfig.searchParam && search
-            ? `${baseUrl}${baseUrl.includes("?") ? "&" : "?"}${currentHttpConfig.searchParam}=${encodeURIComponent(search)}`
-            : baseUrl;
+            ? `${resolvedUrl}${resolvedUrl.includes("?") ? "&" : "?"}${currentHttpConfig.searchParam}=${encodeURIComponent(search)}`
+            : resolvedUrl;
 
         // Append configured query params (e.g. ?limit=10), resolving template variables in their values
         const url = appendQueryParams(
@@ -249,9 +251,10 @@ const DefaultHttpInput = (field: InputFieldProps<"http">, extra: InputExtraProps
     formValuesRef.current = formValues;
     inputNodesRef.current = inputNodes;
     headersRef.current = headers;
+    baseUrlRef.current = baseUrl;
     setValueRef.current = setValue;
     fetchDataRef.current = fetchData;
-  }, [httpConfig, formValues, inputNodes, headers, setValue, fetchData]);
+  }, [httpConfig, formValues, inputNodes, headers, baseUrl, setValue, fetchData]);
 
   /**
    * Abort any in-flight request when the component unmounts so we don't

@@ -21,6 +21,7 @@ import { getTranslatedText } from "@/shared/utils/translations";
  * @param language - Current language for translations
  * @param inputNodes - All input nodes for form data conversion
  * @param headers
+ * @param baseUrl - Base URL prepended to a relative submit url
  * @returns Submit handler state and functions
  */
 export const useSubmitHandler = (
@@ -29,6 +30,7 @@ export const useSubmitHandler = (
   language: string,
   inputNodes: Node<InputNodeData>[],
   headers?: HttpHeader[],
+  baseUrl?: string,
 ) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitMessage, setSubmitMessage] = useState<{ type: "success" | "error"; message: string } | null>(null);
@@ -71,7 +73,7 @@ export const useSubmitHandler = (
 
       try {
         // Perform the HTTP submission
-        const result = await submitFormData(config, formValues, inputNodes, headers);
+        const result = await submitFormData(config, formValues, inputNodes, headers, baseUrl);
 
         if (result.success) {
           // Show success message if configured
@@ -111,7 +113,7 @@ export const useSubmitHandler = (
         setIsSubmitting(false);
       }
     },
-    [submitButtonNode, formValues, language, inputNodes, headers],
+    [submitButtonNode, formValues, language, inputNodes, headers, baseUrl],
   );
 
   /**

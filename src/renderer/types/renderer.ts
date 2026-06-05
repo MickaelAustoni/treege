@@ -326,6 +326,21 @@ export type TreegeRendererConfig = {
    * @default "onSubmit"
    */
   validationMode?: "onChange" | "onSubmit";
+  /**
+   * Base URL prepended to every **relative** HTTP url issued by the renderer
+   * (HTTP inputs, dynamic options, and submit). Use this to keep the tree
+   * JSON environment-agnostic — store relative paths in the tree and supply
+   * the host here per environment:
+   *
+   * @example
+   * // In the tree: "url": "/v2/entities/{{nodeId}}/sub-entities"
+   * <TreegeRenderer flows={tree} baseUrl={import.meta.env.VITE_API_URL} />
+   *
+   * Absolute urls (starting with `http://` or `https://`) are left untouched,
+   * so a field can still point at an external API. Template variables are
+   * resolved first, then the base URL is applied to the result.
+   */
+  baseUrl?: string;
 };
 
 /**

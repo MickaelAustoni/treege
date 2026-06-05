@@ -5,6 +5,12 @@ import { Flow, HttpHeader, InputNodeData } from "@/shared/types/node";
 
 export interface TreegeRendererContextValue {
   /**
+   * Base URL prepended to every relative HTTP url issued by inputs. Absolute
+   * urls are left untouched. Resolved from the renderer config and applied
+   * after template-variable substitution.
+   */
+  baseUrl?: string;
+  /**
    * The flow currently being rendered. `null` when the renderer has no flow
    * to display yet.
    */
@@ -65,6 +71,7 @@ export interface TreegeRendererContextValue {
  * can supply just `{ headers, language }` and let the rest stay no-op).
  */
 const DEFAULT_CONTEXT_VALUE: TreegeRendererContextValue = {
+  baseUrl: undefined,
   flows: null,
   formErrors: {},
   formValues: {},

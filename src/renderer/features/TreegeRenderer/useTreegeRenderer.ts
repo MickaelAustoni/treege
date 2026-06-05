@@ -31,6 +31,7 @@ import { isGroupNode, isInputNode } from "@/shared/utils/nodeTypeGuards";
  * @returns Complete form state and control methods
  */
 export const useTreegeRenderer = ({
+  baseUrl,
   components,
   flows,
   googleApiKey,
@@ -44,6 +45,7 @@ export const useTreegeRenderer = ({
   validationMode,
 }: Pick<
   TreegeRendererProps,
+  | "baseUrl"
   | "components"
   | "flows"
   | "googleApiKey"
@@ -66,6 +68,7 @@ export const useTreegeRenderer = ({
   // Merge props with global config (props take precedence)
   const config = useMemo(
     () => ({
+      baseUrl: baseUrl ?? globalConfig?.baseUrl,
       components: {
         form: components?.form ?? globalConfig?.components?.form,
         inputs: { ...globalConfig?.components?.inputs, ...components?.inputs },
@@ -81,7 +84,7 @@ export const useTreegeRenderer = ({
       theme: theme ?? globalConfig?.theme ?? "dark",
       validationMode: validationMode ?? globalConfig?.validationMode ?? "onSubmit",
     }),
-    [components, globalConfig, googleApiKey, headers, language, theme, validationMode],
+    [baseUrl, components, globalConfig, googleApiKey, headers, language, theme, validationMode],
   );
 
   // ============================================
@@ -174,6 +177,7 @@ export const useTreegeRenderer = ({
     config.language,
     inputNodes,
     config.headers,
+    config.baseUrl,
   );
 
   // ============================================

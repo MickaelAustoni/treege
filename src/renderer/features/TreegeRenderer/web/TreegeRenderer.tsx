@@ -16,6 +16,7 @@ import { ThemeProvider } from "@/shared/context/ThemeContext";
 import { cn } from "@/shared/lib/utils";
 
 const TreegeRenderer = ({
+  baseUrl,
   components,
   className,
   flows,
@@ -54,6 +55,7 @@ const TreegeRenderer = ({
     submitMessage,
     t,
   } = useTreegeRenderer({
+    baseUrl,
     components,
     flows,
     googleApiKey,
@@ -128,6 +130,7 @@ const TreegeRenderer = ({
         ) : (
           <TreegeRendererProvider
             value={{
+              baseUrl: config.baseUrl,
               flows,
               formErrors,
               formValues,

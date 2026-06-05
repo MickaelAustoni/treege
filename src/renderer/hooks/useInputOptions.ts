@@ -1,7 +1,7 @@
 import { Node } from "@xyflow/react";
 import { useEffect, useMemo, useState } from "react";
 import { useTreegeRendererContext } from "@/renderer/context/TreegeRendererContext";
-import { extractOptionsFromResponse, makeHttpRequest, mergeHttpHeaders, replaceTemplateVariables } from "@/renderer/utils/http";
+import { extractOptionsFromResponse, makeHttpRequest, mergeHttpHeaders, replaceTemplateVariables, resolveUrl } from "@/renderer/utils/http";
 import { HttpHeader, InputNodeData, InputOption, OptionsSourceMapping, QueryParam } from "@/shared/types/node";
 
 const TEMPLATE_VAR_REGEX = /\{\{([\w-]+)}}/g;
@@ -55,7 +55,7 @@ export const useInputOptions = (node: Node<InputNodeData>): UseInputOptionsResul
     isLoading: false,
   });
 
-  const { formValues, headers: globalHeaders } = useTreegeRendererContext();
+  const { baseUrl, formValues, headers: globalHeaders } = useTreegeRendererContext();
   const source = node.data.optionsSource;
   const staticOptions = node.data.options;
 
@@ -100,11 +100,11 @@ export const useInputOptions = (node: Node<InputNodeData>): UseInputOptionsResul
       method,
       queryParams: source.queryParams?.map(replaceParamVars) ?? [],
       responsePath: source.responsePath,
-      url: replaceTemplateVariables(source.url, formValues, { encode: true }),
+      url: resolveUrl(replaceTemplateVariables(source.url, formValues, { encode: true }), baseUrl),
     };
 
     return JSON.stringify(resolved);
-  }, [source, formValues, globalHeaders]);
+  }, [baseUrl, source, formValues, globalHeaders]);
 
   /**
    * Fetch options whenever the plan's content changes. Aborts any in-flight

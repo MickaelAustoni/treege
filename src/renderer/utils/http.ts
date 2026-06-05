@@ -47,6 +47,29 @@ export const appendQueryParams = (url: string, params?: QueryParam[]): string =>
 };
 
 /**
+ * Prepend a base URL to a relative URL. Absolute urls (starting with
+ * `http://` or `https://`, case-insensitive) and protocol-relative urls
+ * (`//host/...`) are returned untouched, so individual fields can still
+ * target an external API. A single slash is enforced at the join so a
+ * trailing slash on the base and/or a leading slash on the path don't
+ * produce `//`. When no base URL is configured, the url is returned as-is.
+ *
+ * Expects the url to already have its template variables resolved.
+ */
+export const resolveUrl = (url: string, baseUrl?: string): string => {
+  if (!(baseUrl && url)) {
+    return url;
+  }
+
+  // Already absolute (or protocol-relative) — leave it alone.
+  if (/^(https?:)?\/\//i.test(url)) {
+    return url;
+  }
+
+  return `${baseUrl.replace(/\/+$/, "")}/${url.replace(/^\/+/, "")}`;
+};
+
+/**
  * Result of an HTTP request
  */
 export interface HttpRequestResult {

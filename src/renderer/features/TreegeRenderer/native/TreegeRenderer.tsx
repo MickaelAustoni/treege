@@ -37,6 +37,7 @@ export type TreegeRendererNativeProps = Omit<TreegeRendererProps, "className"> &
  * Must be inside ThemeProvider to access useTheme
  */
 const TreegeRendererContent = ({
+  baseUrl,
   components,
   contentContainerStyle,
   flows,
@@ -77,6 +78,7 @@ const TreegeRendererContent = ({
     submitMessage,
     t,
   } = useTreegeRenderer({
+    baseUrl,
     components,
     flows,
     googleApiKey,
@@ -128,6 +130,7 @@ const TreegeRendererContent = ({
       ) : (
         <TreegeRendererProvider
           value={{
+            baseUrl: config.baseUrl,
             flows,
             formErrors,
             formValues,
