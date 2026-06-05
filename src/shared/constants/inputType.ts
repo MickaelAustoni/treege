@@ -18,3 +18,9 @@ export const INPUT_TYPE = {
   time: "time",
   timerange: "timerange",
 } as const;
+
+/**
+ * Input types that carry a static option list (`data.options`) or can use a
+ * remote `data.optionsSource`. Anything else is treated as a free-form input.
+ */
+export const OPTIONS_INPUT_TYPES: readonly string[] = [INPUT_TYPE.radio, INPUT_TYPE.select, INPUT_TYPE.checkbox, INPUT_TYPE.autocomplete];

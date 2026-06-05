@@ -2,6 +2,7 @@ import { useReactFlow } from "@xyflow/react";
 import { nanoid } from "nanoid";
 import { useCallback } from "react";
 import useUndoRedo from "@/editor/hooks/useUndoRedo";
+import { cleanConfigForSubType } from "@/editor/utils/cleanNodeConfig";
 import { normalizeConditionalEdges } from "@/editor/utils/edge";
 
 /**
@@ -59,7 +60,10 @@ const useFlowActions = () => {
 
   /**
    * Updates a node's type by ID, optionally setting a variant in `data.type`.
-   * When the node type changes, the previous data is discarded; otherwise it is preserved.
+   * When the node type changes, the previous data is discarded; otherwise it is
+   * preserved, minus any subtype-specific config blocks that no longer apply
+   * (e.g. an `optionsSource` left over after switching to `http`) so stale
+   * config — and any secret it holds — can't linger as invisible data.
    * @param id - The ID of the node to update.
    * @param type - The new node type (e.g. "input", "ui", "flow").
    * @param subType - Optional variant stored in `data.type` (e.g. "text", "title").
@@ -78,7 +82,7 @@ const useFlowActions = () => {
 
           return {
             ...node,
-            data: subType === undefined ? baseData : { ...baseData, type: subType },
+            data: subType === undefined ? baseData : cleanConfigForSubType({ ...baseData, type: subType }, subType),
             type,
           };
         }),

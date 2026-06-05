@@ -1,11 +1,5 @@
-import { INPUT_TYPE } from "@/shared/constants/inputType";
+import { OPTIONS_INPUT_TYPES } from "@/shared/constants/inputType";
 import { InputNodeData, TreegeNodeData } from "@/shared/types/node";
-
-/**
- * Input types that carry a static option list (`data.options`) or can use a
- * remote `optionsSource`. Anything else is treated as a free-form input.
- */
-const OPTIONS_INPUT_TYPES: readonly string[] = [INPUT_TYPE.radio, INPUT_TYPE.select, INPUT_TYPE.checkbox, INPUT_TYPE.autocomplete];
 
 /**
  * Type guard: narrows the node `data` to an `InputNodeData` whose type
