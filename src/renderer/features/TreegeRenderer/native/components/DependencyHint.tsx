@@ -1,11 +1,11 @@
 import { ReactNode } from "react";
 import { StyleSheet, Text, View } from "react-native";
-import { MissingDependency } from "@/renderer/hooks/useMissingDependencies";
 import { useTranslate } from "@/renderer/hooks/useTranslate";
+import { MissingDependency } from "@/renderer/types/renderer";
 import { useTheme } from "@/shared/context/ThemeContext";
 
 interface DependencyHintProps {
-  /** Unfilled fields the input depends on (from `useMissingDependencies`). */
+  /** Unfilled fields the input depends on (from `extra.missingDependencies`). */
   missing: MissingDependency[];
   children: ReactNode;
 }

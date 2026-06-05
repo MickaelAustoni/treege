@@ -45,9 +45,8 @@ export const getTemplateDependencyIds = (node: Node<InputNodeData>): string[] =>
 
 /**
  * The input's template dependencies that are not yet filled, paired with the
- * referenced field's translated label. Pure counterpart of
- * `useMissingDependencies` — used where hooks can't run (e.g. the render loop
- * in `useRenderNode`).
+ * referenced field's translated label. Computed centrally in `useRenderNode`
+ * and passed to every input renderer as `extra.missingDependencies`.
  */
 export const getMissingDependencies = (
   node: Node<InputNodeData>,

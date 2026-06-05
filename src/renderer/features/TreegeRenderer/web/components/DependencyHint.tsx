@@ -1,10 +1,10 @@
 import { ReactNode } from "react";
-import { MissingDependency } from "@/renderer/hooks/useMissingDependencies";
 import { useTranslate } from "@/renderer/hooks/useTranslate";
+import { MissingDependency } from "@/renderer/types/renderer";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/shared/components/ui/tooltip";
 
 interface MissingProps {
-  /** Unfilled fields the input depends on (from `useMissingDependencies`). */
+  /** Unfilled fields the input depends on (from `extra.missingDependencies`). */
   missing: MissingDependency[];
 }
 
