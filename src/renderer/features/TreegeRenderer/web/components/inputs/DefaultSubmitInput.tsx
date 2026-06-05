@@ -1,9 +1,10 @@
 import { useTreegeConfig } from "@/renderer";
 import DefaultSubmitButton from "@/renderer/features/TreegeRenderer/web/components/DefaultSubmitButton";
 import DefaultSubmitButtonWrapper from "@/renderer/features/TreegeRenderer/web/components/DefaultSubmitButtonWrapper";
-import { InputRenderProps } from "@/renderer/types/renderer";
+import { InputExtraProps, InputFieldProps } from "@/renderer/types/renderer";
 
-const DefaultSubmitInput = ({ missingRequiredFields, isSubmitting, label }: InputRenderProps<"submit">) => {
+const DefaultSubmitInput = (_field: InputFieldProps<"submit">, extra: InputExtraProps<"submit">) => {
+  const { missingRequiredFields, isSubmitting, label } = extra;
   const config = useTreegeConfig();
   const submitButton = config?.components?.submitButton;
   const submitButtonWrapper = config?.components?.submitButtonWrapper;

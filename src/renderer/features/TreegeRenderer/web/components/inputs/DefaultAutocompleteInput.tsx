@@ -2,9 +2,8 @@ import { Check, ChevronsUpDown, Loader2 } from "lucide-react";
 import { useState } from "react";
 import DependencyHint from "@/renderer/features/TreegeRenderer/web/components/DependencyHint";
 import { useInputOptions } from "@/renderer/hooks/useInputOptions";
-import { useMissingDependencies } from "@/renderer/hooks/useMissingDependencies";
 import { useTranslate } from "@/renderer/hooks/useTranslate";
-import { InputRenderProps } from "@/renderer/types/renderer";
+import { InputExtraProps, InputFieldProps } from "@/renderer/types/renderer";
 import { Button } from "@/shared/components/ui/button";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/shared/components/ui/command";
 import { FormDescription, FormError, FormItem } from "@/shared/components/ui/form";
@@ -12,20 +11,12 @@ import { Label } from "@/shared/components/ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "@/shared/components/ui/popover";
 import { cn } from "@/shared/lib/utils";
 
-const DefaultAutocompleteInput = ({
-  node,
-  value,
-  setValue,
-  error,
-  label,
-  placeholder,
-  helperText,
-  id,
-}: InputRenderProps<"autocomplete">) => {
-  const t = useTranslate();
+const DefaultAutocompleteInput = (field: InputFieldProps<"autocomplete">, extra: InputExtraProps<"autocomplete">) => {
   const [open, setOpen] = useState(false);
+  const { id, value, placeholder } = field;
+  const { node, setValue, error, label, helperText, missingDependencies: missing } = extra;
   const { options, isLoading, error: inputOptionsError } = useInputOptions(node);
-  const missing = useMissingDependencies(node);
+  const t = useTranslate();
   const triggerId = `${id}-trigger`;
   const errorId = `${id}-error`;
   const selectedOption = options.find((option) => option.value === value);

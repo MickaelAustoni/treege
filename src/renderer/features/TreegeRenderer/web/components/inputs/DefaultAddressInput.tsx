@@ -2,7 +2,7 @@ import { MapPin } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { useTreegeRendererContext } from "@/renderer/context/TreegeRendererContext";
 import { useTranslate } from "@/renderer/hooks/useTranslate";
-import { InputRenderProps } from "@/renderer/types/renderer";
+import { InputExtraProps, InputFieldProps } from "@/renderer/types/renderer";
 import { Command, CommandEmpty, CommandGroup, CommandItem, CommandList } from "@/shared/components/ui/command";
 import { FormDescription, FormError, FormItem } from "@/shared/components/ui/form";
 import { Input } from "@/shared/components/ui/input";
@@ -82,10 +82,12 @@ const fetchGooglePlacesSuggestions = (query: string): Promise<AddressSuggestion[
   });
 };
 
-const DefaultAddressInput = ({ node, value, setValue, error, label, placeholder, helperText, id, name }: InputRenderProps<"address">) => {
+const DefaultAddressInput = (field: InputFieldProps<"address">, extra: InputExtraProps<"address">) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [suggestions, setSuggestions] = useState<AddressSuggestion[]>([]);
   const [popoverOpen, setPopoverOpen] = useState(false);
+  const { id, name, value, placeholder } = field;
+  const { node, setValue, error, label, helperText } = extra;
   const { googleApiKey, language } = useTreegeRendererContext();
   const t = useTranslate();
 

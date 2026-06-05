@@ -1,9 +1,12 @@
-import { InputRenderProps } from "@/renderer/types/renderer";
+import { InputExtraProps, InputFieldProps } from "@/renderer/types/renderer";
 import { FormDescription, FormError, FormItem } from "@/shared/components/ui/form";
 import { Label } from "@/shared/components/ui/label";
 import { Switch } from "@/shared/components/ui/switch";
 
-const DefaultSwitchInput = ({ node, value, setValue, error, label, helperText, name, id }: InputRenderProps<"switch">) => {
+const DefaultSwitchInput = (field: InputFieldProps<"switch">, extra: InputExtraProps<"switch">) => {
+  const { id, name, value } = field;
+  const { node, setValue, error, label, helperText } = extra;
+
   return (
     <FormItem className="tg:mb-4">
       <Label htmlFor={id}>

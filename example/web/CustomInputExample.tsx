@@ -1,103 +1,101 @@
 /**
  * Example: Custom Input Components with TreegeRenderer
  *
- * This example demonstrates how to create custom input components
- * using the simplified API that provides value, setValue, and error as props.
+ * Custom input renderers receive TWO arguments:
+ *   1. `field` — DOM-safe props you can spread straight onto an element:
+ *      `<input {...field} />` (id, name, value, placeholder, required, aria-invalid).
+ *   2. `extra` — Treege-specific props: setValue, error, label, helperText,
+ *      missingDependencies, node, etc. (NOT DOM attributes).
  */
 
-import type { InputRenderProps } from "@/renderer/types/renderer";
-import { TreegeRenderer } from "@/renderer";
-import flows from "~/example/json/treege.json";
-import { Flow } from "@/shared/types/node";
 import { ChangeEvent } from "react";
+import { TreegeRenderer } from "@/renderer";
+import type { InputExtraProps, InputFieldProps } from "@/renderer/types/renderer";
+import { Flow, InputOption } from "@/shared/types/node";
+import flows from "~/example/json/treege.json";
 
 // ✅ Example 1: Simple custom text input (recommended approach)
-// Define your component OUTSIDE the render function to avoid re-creation and focus loss
-// Notice how value and setValue are now properly typed as string!
-// Also notice how label, placeholder, and helperText are already translated!
-const CustomTextInput = ({ node, value, setValue, error, label, placeholder, helperText, id, name }: InputRenderProps<"text">) => {
+// Define your component OUTSIDE the render function to avoid re-creation and focus loss.
+// `field` is spreadable onto the input; `extra` carries setValue + translated label/helperText.
+const CustomTextInput = (field: InputFieldProps<"text">, extra: InputExtraProps<"text">) => {
   return (
     <div className="tg:mb-4">
-      <label className="tg:block tg:text-sm tg:font-medium tg:mb-1" htmlFor={id}>
-        {label} {/* ✅ Already translated based on current language! */}
-        {node.data.required && <span className="tg:text-red-500 tg:ml-1">*</span>}
+      <label className="tg:block tg:text-sm tg:font-medium tg:mb-1" htmlFor={field.id}>
+        {extra.label} {/* ✅ Already translated based on current language! */}
+        {extra.node.data.required && <span className="tg:text-red-500 tg:ml-1">*</span>}
       </label>
       <input
-        id={id}
-        name={name}
+        {...field} // ✅ id, name, value, placeholder, required, aria-invalid — all DOM-safe
         type="text"
-        value={value} // ✅ TypeScript knows this is a string
-        onChange={(e) => setValue(e.target.value)} // ✅ TypeScript knows setValue accepts a string
-        placeholder={placeholder} // ✅ Already translated!
+        onChange={(e) => extra.setValue(e.target.value)} // ✅ setValue is typed as (value: string) => void
         className="tg:w-full tg:border tg:border-gray-300 tg:rounded tg:px-3 tg:py-2 tg:focus:outline-none tg:focus:ring-2 tg:focus:ring-blue-500"
       />
-      {error && <p className="tg:text-red-500 tg:text-sm tg:mt-1">{error}</p>}
-      {helperText && !error && (
-        <p className="tg:text-gray-500 tg:text-sm tg:mt-1">
-          {helperText} {/* ✅ Already translated! */}
-        </p>
-      )}
+      {extra.error && <p className="tg:text-red-500 tg:text-sm tg:mt-1">{extra.error}</p>}
+      {extra.helperText && !extra.error && <p className="tg:text-gray-500 tg:text-sm tg:mt-1">{extra.helperText}</p>}
     </div>
   );
 };
 
-// ✅ Example 2: Custom number input with validation
-// Notice how value is properly typed as number | null
-const CustomNumberInput = ({ node, value, setValue, error, label, id, name, placeholder }: InputRenderProps<"number">) => {
+// ✅ Example 2: Custom number input — spread `field`, then override `value` for the null case.
+const CustomNumberInput = (field: InputFieldProps<"number">, extra: InputExtraProps<"number">) => {
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const numValue = e.target.value === "" ? null : Number(e.target.value);
-    setValue(numValue); // ✅ TypeScript knows setValue accepts number | null
+    extra.setValue(numValue); // ✅ setValue is typed as (value: number | null) => void
   };
 
   return (
     <div className="tg:mb-4">
-      <label className="tg:block tg:text-sm tg:font-medium tg:mb-1" htmlFor={id}>
-        {label} {/* ✅ Already translated! */}
-        {node.data.required && <span className="tg:text-red-500 tg:ml-1">*</span>}
+      <label className="tg:block tg:text-sm tg:font-medium tg:mb-1" htmlFor={field.id}>
+        {extra.label}
+        {extra.node.data.required && <span className="tg:text-red-500 tg:ml-1">*</span>}
       </label>
       <input
-        id={id}
-        name={name}
-        placeholder={placeholder}
+        {...field}
         type="number"
-        value={value ?? ""} // ✅ TypeScript knows value is number | null
+        value={field.value ?? ""} // override: <input> can't take `null`
         onChange={handleChange}
         className="tg:w-full tg:border tg:border-gray-300 tg:rounded tg:px-3 tg:py-2 tg:focus:outline-none tg:focus:ring-2 tg:focus:ring-blue-500"
       />
-      {error && <p className="tg:text-red-500 tg:text-sm tg:mt-1">{error}</p>}
+      {extra.error && <p className="tg:text-red-500 tg:text-sm tg:mt-1">{extra.error}</p>}
     </div>
   );
 };
 
-// ✅ Example 3: Custom select input with styling
-// Notice how value is properly typed as string | string[]
-// Note: option labels still need manual translation as they're not in InputRenderProps
-const CustomSelectInput = ({ node, value, setValue, error, label, id, name }: InputRenderProps<"select">) => {
-  // Extract string value from union type
-  const selectValue = Array.isArray(value) ? value[0] ?? "" : value;
+// ✅ Example 3: Custom select — also shows `missingDependencies`.
+// When this field's options come from an API whose URL references another field
+// (e.g. `.../entities/{{plan_de_compte}}/sub-entities`), `extra.missingDependencies`
+// lists the fields the user must fill first.
+const CustomSelectInput = (field: InputFieldProps<"select">, extra: InputExtraProps<"select">) => {
+  const selectValue = Array.isArray(field.value) ? (field.value[0] ?? "") : field.value;
+  const blocked = extra.missingDependencies.length > 0;
 
   return (
     <div className="tg:mb-4">
-      <label className="tg:block tg:text-sm tg:font-medium tg:mb-1" htmlFor={id}>
-        {label} {/* ✅ Already translated! */}
-        {node.data.required && <span className="tg:text-red-500 tg:ml-1">*</span>}
+      <label className="tg:block tg:text-sm tg:font-medium tg:mb-1" htmlFor={field.id}>
+        {extra.label}
+        {extra.node.data.required && <span className="tg:text-red-500 tg:ml-1">*</span>}
       </label>
       <select
-        id={id}
-        name={name}
+        id={field.id}
+        name={field.name}
         value={selectValue}
-        onChange={(e) => setValue(e.target.value)}
+        disabled={blocked}
+        onChange={(e) => extra.setValue(e.target.value)}
         className="tg:w-full tg:border tg:border-gray-300 tg:rounded tg:px-3 tg:py-2 tg:focus:outline-none tg:focus:ring-2 tg:focus:ring-blue-500"
       >
         <option value="">-- Select --</option>
-        {node.data.options?.map((option) => (
+        {extra.node.data.options?.map((option: InputOption) => (
           <option key={option.value} value={option.value}>
-            {/* Note: Options still need manual translation */}
             {typeof option.label === "string" ? option.label : option.label?.en}
           </option>
         ))}
       </select>
-      {error && <p className="tg:text-red-500 tg:text-sm tg:mt-1">{error}</p>}
+      {blocked && (
+        <p className="tg:text-amber-600 tg:text-sm tg:mt-1">
+          Please fill in first: {extra.missingDependencies.map((dependency) => dependency.label).join(", ")}
+        </p>
+      )}
+      {extra.error && <p className="tg:text-red-500 tg:text-sm tg:mt-1">{extra.error}</p>}
     </div>
   );
 };
@@ -109,19 +107,19 @@ const CustomInputsExample = () => {
   };
 
   return (
-      <div className={"tg:p-6"}>
-        <TreegeRenderer
-          flows={flows as Flow}
-          onSubmit={handleSubmit}
-          components={{
-            inputs: {
-              text: CustomTextInput,
-              number: CustomNumberInput,
-              select: CustomSelectInput,
-            },
-          }}
-        />
-      </div>
+    <div className={"tg:p-6"}>
+      <TreegeRenderer
+        flows={flows as Flow}
+        onSubmit={handleSubmit}
+        components={{
+          inputs: {
+            number: CustomNumberInput,
+            select: CustomSelectInput,
+            text: CustomTextInput,
+          },
+        }}
+      />
+    </div>
   );
 };
 
@@ -134,9 +132,7 @@ export const WrongExample = () => {
       components={{
         inputs: {
           // ❌ Don't do this - function is recreated on every render
-          text: (props: InputRenderProps<"text">) => {
-            return <input value={props.value} onChange={(e) => props.setValue(e.target.value)} />;
-          },
+          text: (field, extra) => <input {...field} onChange={(e) => extra.setValue(e.target.value)} />,
         },
       }}
     />

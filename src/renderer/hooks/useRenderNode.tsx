@@ -1,8 +1,18 @@
 import { Node } from "@xyflow/react";
 import { ComponentType, Fragment, ReactNode, useCallback, useMemo } from "react";
-import { FormValues, InputRenderers, InputRenderProps, InputValue, TreegeRendererComponents } from "@/renderer/types/renderer";
+import InputRendererHost from "@/renderer/features/TreegeRenderer/InputRendererHost";
+import {
+  FormValues,
+  InputExtraProps,
+  InputFieldProps,
+  InputRenderer,
+  InputRenderers,
+  InputValue,
+  TreegeRendererComponents,
+} from "@/renderer/types/renderer";
 import { resolveInputPlaceholder, resolveNodeKey } from "@/renderer/utils/node";
 import { sanitize } from "@/renderer/utils/sanitize";
+import { getMissingDependencies } from "@/renderer/utils/templateDependencies";
 import { NODE_TYPE } from "@/shared/constants/node";
 import { InputNodeData, TreegeNodeData, UINodeData } from "@/shared/types/node";
 import { isInputNode, isUINode } from "@/shared/utils/nodeTypeGuards";
@@ -23,6 +33,7 @@ type UseRenderNodeParams = {
   defaultUI: Record<string, AnyComponent>;
   formErrors: Record<string, string>;
   formValues: FormValues;
+  inputNodes: Node<InputNodeData>[];
   missingRequiredFields: string[];
   setFieldValue: (fieldId: string, value: unknown) => void;
 };
@@ -47,6 +58,7 @@ export const useRenderNode = ({
   defaultUI,
   formErrors,
   formValues,
+  inputNodes,
   missingRequiredFields,
   setFieldValue,
 }: UseRenderNodeParams) => {
@@ -75,7 +87,7 @@ export const useRenderNode = ({
           const inputType = inputData.type || "text";
           const CustomRenderer = config.components.inputs?.[inputType];
           const DefaultRenderer = defaultInputRenderers[inputType as keyof typeof defaultInputRenderers];
-          const Renderer = (CustomRenderer || DefaultRenderer) as ((props: InputRenderProps) => ReactNode) | undefined;
+          const Renderer = (CustomRenderer || DefaultRenderer) as InputRenderer | undefined;
           const fieldId = node.id;
           const setValue = (newValue: InputValue) => setFieldValue(fieldId, newValue);
           const value = formValues[fieldId];
@@ -93,20 +105,27 @@ export const useRenderNode = ({
             return null;
           }
 
+          const field: InputFieldProps = {
+            "aria-invalid": error ? true : undefined,
+            id: node.id,
+            name,
+            placeholder: safePlaceholder,
+            required: inputData.required,
+            value,
+          };
+          const extra: InputExtraProps = {
+            error,
+            helperText: safeHelperText,
+            label: safeLabel,
+            missingDependencies: getMissingDependencies(node, formValues, inputNodes, config.language),
+            missingRequiredFields,
+            node,
+            setValue,
+          };
+
           return (
             <DefaultInputWrapper key={node.id} node={node}>
-              <Renderer
-                id={node.id}
-                node={node}
-                value={value}
-                error={error}
-                label={safeLabel}
-                placeholder={safePlaceholder}
-                helperText={safeHelperText}
-                name={name}
-                setValue={setValue}
-                missingRequiredFields={missingRequiredFields}
-              />
+              <InputRendererHost key={inputType} render={Renderer} field={field} extra={extra} />
             </DefaultInputWrapper>
           );
         }
@@ -141,7 +160,17 @@ export const useRenderNode = ({
           return null;
       }
     },
-    [config, formValues, formErrors, setFieldValue, missingRequiredFields, defaultInputRenderers, defaultUI, DefaultInputWrapper],
+    [
+      config,
+      formValues,
+      formErrors,
+      setFieldValue,
+      missingRequiredFields,
+      inputNodes,
+      defaultInputRenderers,
+      defaultUI,
+      DefaultInputWrapper,
+    ],
   );
 
   return {

@@ -1,8 +1,10 @@
 import { StyleSheet, Text, TextInput, View } from "react-native";
-import { InputRenderProps } from "@/renderer/types/renderer";
+import { InputExtraProps, InputFieldProps } from "@/renderer/types/renderer";
 import { useTheme } from "@/shared/context/ThemeContext";
 
-const DefaultTextInput = ({ node, value, setValue, error, label, placeholder, helperText, name }: InputRenderProps<"text">) => {
+const DefaultTextInput = (field: InputFieldProps<"text">, extra: InputExtraProps<"text">) => {
+  const { value, placeholder, name } = field;
+  const { node, setValue, error, label, helperText } = extra;
   const { colors } = useTheme();
 
   return (

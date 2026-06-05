@@ -100,6 +100,7 @@ const TreegeRendererContent = ({
     defaultUI,
     formErrors,
     formValues,
+    inputNodes,
     missingRequiredFields,
     setFieldValue,
   });

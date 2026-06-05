@@ -1,16 +1,16 @@
 import { Loader2 } from "lucide-react";
 import DependencyHint from "@/renderer/features/TreegeRenderer/web/components/DependencyHint";
 import { useInputOptions } from "@/renderer/hooks/useInputOptions";
-import { useMissingDependencies } from "@/renderer/hooks/useMissingDependencies";
 import { useTranslate } from "@/renderer/hooks/useTranslate";
-import { InputRenderProps } from "@/renderer/types/renderer";
+import { InputExtraProps, InputFieldProps } from "@/renderer/types/renderer";
 import { FormDescription, FormError, FormItem } from "@/shared/components/ui/form";
 import { Label } from "@/shared/components/ui/label";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/shared/components/ui/select";
 
-const DefaultSelectInput = ({ node, value, setValue, error, label, placeholder, helperText, name, id }: InputRenderProps<"select">) => {
+const DefaultSelectInput = (field: InputFieldProps<"select">, extra: InputExtraProps<"select">) => {
+  const { id, name, value, placeholder } = field;
+  const { node, setValue, error, label, helperText, missingDependencies: missing } = extra;
   const { options, isLoading, error: inputOptionsError } = useInputOptions(node);
-  const missing = useMissingDependencies(node);
   const t = useTranslate();
   const normalizedValue = value ? String(value) : "";
 

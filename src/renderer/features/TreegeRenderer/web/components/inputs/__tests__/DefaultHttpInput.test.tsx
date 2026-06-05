@@ -3,7 +3,8 @@ import { Node } from "@xyflow/react";
 import { StrictMode } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { TreegeRendererProvider } from "@/renderer/context/TreegeRendererContext";
-import { InputRenderProps } from "@/renderer/types/renderer";
+import InputRendererHost from "@/renderer/features/TreegeRenderer/InputRendererHost";
+import { InputExtraProps, InputFieldProps } from "@/renderer/types/renderer";
 import { InputNodeData } from "@/shared/types/node";
 import DefaultHttpInput from "../DefaultHttpInput";
 
@@ -59,18 +60,13 @@ const buildNode = (): Node<InputNodeData> => ({
 });
 
 const renderHttpInput = (node: Node<InputNodeData>) => {
-  const props: InputRenderProps<"http"> = {
-    id: node.id,
-    name: "users",
-    node,
-    setValue: vi.fn(),
-    value: "",
-  };
+  const field: InputFieldProps<"http"> = { id: node.id, name: "users", value: "" };
+  const extra: InputExtraProps<"http"> = { missingDependencies: [], node, setValue: vi.fn() };
 
   return render(
     <StrictMode>
       <TreegeRendererProvider value={{ formValues: {}, inputNodes: [node], language: "en" }}>
-        <DefaultHttpInput {...props} />
+        <InputRendererHost render={DefaultHttpInput} field={field} extra={extra} />
       </TreegeRendererProvider>
     </StrictMode>,
   );

@@ -1,25 +1,23 @@
 import { useCallback, useRef, useState } from "react";
 import { Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { InputRenderProps } from "@/renderer/types/renderer";
+import { InputExtraProps, InputFieldProps } from "@/renderer/types/renderer";
 import { useTheme } from "@/shared/context/ThemeContext";
 
-const DefaultTimeInput = ({ node, value, setValue, error, label, placeholder, helperText }: InputRenderProps<"time">) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const { colors } = useTheme();
-
+const DefaultTimeInput = (field: InputFieldProps<"time">, extra: InputExtraProps<"time">) => {
+  const { value, placeholder } = field;
   const timeValue = value || "";
   const parts = timeValue.split(":");
   const parsedHours = Number.parseInt(parts[0], 10);
   const parsedMinutes = Number.parseInt(parts[1], 10);
   const hours = Number.isNaN(parsedHours) ? 0 : parsedHours;
   const minutes = Number.isNaN(parsedMinutes) ? 0 : parsedMinutes;
-
   const [selectedHours, setSelectedHours] = useState(hours || 0);
   const [selectedMinutes, setSelectedMinutes] = useState(minutes || 0);
-
+  const [isOpen, setIsOpen] = useState(false);
+  const { node, setValue, error, label, helperText } = extra;
+  const { colors } = useTheme();
   const hoursScrollRef = useRef<ScrollView>(null);
   const minutesScrollRef = useRef<ScrollView>(null);
-
   const hoursList = Array.from({ length: 24 }, (_, i) => i);
   const minutesList = Array.from({ length: 60 }, (_, i) => i);
 

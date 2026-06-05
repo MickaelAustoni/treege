@@ -1,10 +1,12 @@
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useTranslate } from "@/renderer/hooks/useTranslate";
-import { InputRenderProps } from "@/renderer/types/renderer";
+import { InputExtraProps, InputFieldProps } from "@/renderer/types/renderer";
 import { useTheme } from "@/shared/context/ThemeContext";
 
-const DefaultCheckboxInput = ({ node, value, setValue, error, label, helperText }: InputRenderProps<"checkbox">) => {
+const DefaultCheckboxInput = (field: InputFieldProps<"checkbox">, extra: InputExtraProps<"checkbox">) => {
   const t = useTranslate();
+  const { value } = field;
+  const { node, setValue, error, label, helperText } = extra;
   const { colors } = useTheme();
   const options = node.data.options || [];
   const hasOptions = options.length > 0;

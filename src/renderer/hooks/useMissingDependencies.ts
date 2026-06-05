@@ -1,18 +1,11 @@
 import { Node } from "@xyflow/react";
 import { useMemo } from "react";
 import { useTreegeRendererContext } from "@/renderer/context/TreegeRendererContext";
-import { resolveNodeLabel } from "@/renderer/utils/node";
-import { getTemplateDependencyIds } from "@/renderer/utils/templateDependencies";
+import { MissingDependency } from "@/renderer/types/renderer";
+import { getMissingDependencies } from "@/renderer/utils/templateDependencies";
 import { InputNodeData } from "@/shared/types/node";
 
-export interface MissingDependency {
-  /** The referenced node id. */
-  id: string;
-  /** The referenced field's translated, end-user-facing label. */
-  label: string;
-}
-
-const isEmpty = (value: unknown): boolean => value === undefined || value === null || value === "";
+export type { MissingDependency };
 
 /**
  * The fields an input's dynamic options depend on that are not yet filled.
@@ -23,12 +16,5 @@ const isEmpty = (value: unknown): boolean => value === undefined || value === nu
 export const useMissingDependencies = (node: Node<InputNodeData>): MissingDependency[] => {
   const { formValues, inputNodes, language } = useTreegeRendererContext();
 
-  return useMemo(() => {
-    return getTemplateDependencyIds(node)
-      .filter((id) => isEmpty(formValues[id]))
-      .map((id) => {
-        const refNode = inputNodes.find((n) => n.id === id);
-        return { id, label: refNode ? resolveNodeLabel(refNode, language) : id };
-      });
-  }, [node, formValues, inputNodes, language]);
+  return useMemo(() => getMissingDependencies(node, formValues, inputNodes, language), [node, formValues, inputNodes, language]);
 };

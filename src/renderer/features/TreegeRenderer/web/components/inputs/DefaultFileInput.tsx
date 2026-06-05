@@ -1,11 +1,14 @@
 import { ChangeEvent } from "react";
-import { InputRenderProps } from "@/renderer/types/renderer";
+import { InputExtraProps, InputFieldProps } from "@/renderer/types/renderer";
 import { filesToSerializable, fileToSerializable } from "@/renderer/utils/file";
 import { FormDescription, FormError, FormItem } from "@/shared/components/ui/form";
 import { Input } from "@/shared/components/ui/input";
 import { Label } from "@/shared/components/ui/label";
 
-const DefaultFileInput = ({ node, setValue, error, label, placeholder, helperText, name, id }: InputRenderProps<"file">) => {
+const DefaultFileInput = (field: InputFieldProps<"file">, extra: InputExtraProps<"file">) => {
+  const { id, name, placeholder } = field;
+  const { node, setValue, error, label, helperText } = extra;
+
   const handleFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
     const { files } = e.target;
 

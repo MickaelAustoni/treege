@@ -2,9 +2,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ActivityIndicator, FlatList, Modal, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { useTreegeRendererContext } from "@/renderer/context/TreegeRendererContext";
 import DependencyHint from "@/renderer/features/TreegeRenderer/native/components/DependencyHint";
-import { useMissingDependencies } from "@/renderer/hooks/useMissingDependencies";
 import { useTranslate } from "@/renderer/hooks/useTranslate";
-import { InputRenderProps } from "@/renderer/types/renderer";
+import { InputExtraProps, InputFieldProps } from "@/renderer/types/renderer";
 import { convertFormValuesToNamedFormat } from "@/renderer/utils/form";
 import { appendQueryParams, getValueByPath, mergeHttpHeaders } from "@/renderer/utils/http";
 import { sanitizeHttpResponse } from "@/renderer/utils/sanitize.native";
@@ -42,25 +41,16 @@ const replaceTemplateVars = (template: string, formValues: Record<string, unknow
     return encode ? encodeURIComponent(value) : value;
   });
 
-const DefaultHttpInput = ({
-  node,
-  value,
-  setValue,
-  error,
-  label,
-  placeholder,
-  helperText,
-  id: _id,
-  name: _name,
-}: InputRenderProps<"http">) => {
+const DefaultHttpInput = (field: InputFieldProps<"http">, extra: InputExtraProps<"http">) => {
   const [loading, setLoading] = useState(false);
   const [fetchError, setFetchError] = useState<string | null>(null);
   const [options, setOptions] = useState<Array<{ value: string; label: string }>>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
+  const { value, placeholder } = field;
+  const { node, setValue, error, label, helperText, missingDependencies: missing } = extra;
   const { formValues, inputNodes, headers } = useTreegeRendererContext();
   const { colors } = useTheme();
-  const missing = useMissingDependencies(node);
   const { httpConfig } = node.data;
   const t = useTranslate();
   const hasFetchedOnMount = useRef(false);

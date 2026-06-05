@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useTranslate } from "@/renderer/hooks/useTranslate";
-import { InputRenderProps } from "@/renderer/types/renderer";
+import { InputExtraProps, InputFieldProps } from "@/renderer/types/renderer";
 import { SerializableFile } from "@/renderer/utils/file";
 import { useTheme } from "@/shared/context/ThemeContext";
 
@@ -14,11 +14,13 @@ type PickResult = {
 
 type PickFunction = (options?: { allowMultiSelection?: boolean; type?: string[] }) => Promise<PickResult[]>;
 
-const DefaultFileInput = ({ node, value, setValue, error, label, helperText }: InputRenderProps<"file">) => {
+const DefaultFileInput = (field: InputFieldProps<"file">, extra: InputExtraProps<"file">) => {
   const [pick, setPick] = useState<PickFunction | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const t = useTranslate();
+  const { value } = field;
+  const { node, setValue, error, label, helperText } = extra;
   const { colors } = useTheme();
+  const t = useTranslate();
   const files: SerializableFile[] = Array.isArray(value) ? value : value ? [value] : [];
   const isMultiple = node.data.multiple;
 

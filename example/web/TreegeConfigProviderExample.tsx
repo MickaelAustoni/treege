@@ -5,31 +5,27 @@
  * global defaults for all TreegeRenderer instances in your app.
  */
 
-import { TreegeConfigProvider, TreegeRenderer, type InputRenderProps } from "@/renderer";
+import { TreegeConfigProvider, TreegeRenderer, type InputExtraProps, type InputFieldProps } from "@/renderer";
 import flows from "~/example/json/treege.json";
 import { Flow } from "@/shared/types/node";
 
-// Define your custom components once
-const CustomTextInput = ({ node, value, setValue, error }: InputRenderProps<"text">) => {
+// Define your custom components once. `field` is spreadable onto the input;
+// `extra` carries setValue and the already-translated label/helperText.
+const CustomTextInput = (field: InputFieldProps<"text">, extra: InputExtraProps<"text">) => {
   return (
     <div className="tg:mb-4">
-      <label className="tg:block tg:text-sm tg:font-medium tg:mb-1">
-        {typeof node.data.label === "string" ? node.data.label : node.data.label?.en}
-        {node.data.required && <span className="tg:text-red-500 tg:ml-1">*</span>}
+      <label className="tg:block tg:text-sm tg:font-medium tg:mb-1" htmlFor={field.id}>
+        {extra.label}
+        {extra.node.data.required && <span className="tg:text-red-500 tg:ml-1">*</span>}
       </label>
       <input
+        {...field}
         type="text"
-        value={value}
-        onChange={(e) => setValue(e.target.value)}
-        placeholder={typeof node.data.placeholder === "string" ? node.data.placeholder : node.data.placeholder?.en}
+        onChange={(e) => extra.setValue(e.target.value)}
         className="tg:w-full tg:border tg:border-gray-300 tg:rounded tg:px-3 tg:py-2 tg:focus:outline-none tg:focus:ring-2 tg:focus:ring-blue-500 tg:bg-blue-300"
       />
-      {error && <p className="tg:text-red-500 tg:text-sm tg:mt-1">{error}</p>}
-      {node.data.helperText && !error && (
-        <p className="tg:text-gray-500 tg:text-sm tg:mt-1">
-          {typeof node.data.helperText === "string" ? node.data.helperText : node.data.helperText?.en}
-        </p>
-      )}
+      {extra.error && <p className="tg:text-red-500 tg:text-sm tg:mt-1">{extra.error}</p>}
+      {extra.helperText && !extra.error && <p className="tg:text-gray-500 tg:text-sm tg:mt-1">{extra.helperText}</p>}
     </div>
   );
 };

@@ -1,7 +1,11 @@
 import { Node } from "@xyflow/react";
+import { FormValues, MissingDependency } from "@/renderer/types/renderer";
+import { resolveNodeLabel } from "@/renderer/utils/node";
 import { InputNodeData } from "@/shared/types/node";
 
 const TEMPLATE_VAR_REGEX = /\{\{([\w-]+)}}/g;
+
+const isEmpty = (value: unknown): boolean => value === undefined || value === null || value === "";
 
 /** Collect every `{{nodeId}}` reference in the given strings, de-duplicated and order-preserving. */
 const extractRefs = (...templates: (string | undefined)[]): string[] => {
@@ -38,3 +42,22 @@ export const getTemplateDependencyIds = (node: Node<InputNodeData>): string[] =>
   const queryValues = config.queryParams?.map((param) => param.value) ?? [];
   return extractRefs(config.url, config.body, ...queryValues);
 };
+
+/**
+ * The input's template dependencies that are not yet filled, paired with the
+ * referenced field's translated label. Pure counterpart of
+ * `useMissingDependencies` — used where hooks can't run (e.g. the render loop
+ * in `useRenderNode`).
+ */
+export const getMissingDependencies = (
+  node: Node<InputNodeData>,
+  formValues: FormValues,
+  inputNodes: Node<InputNodeData>[],
+  language: string,
+): MissingDependency[] =>
+  getTemplateDependencyIds(node)
+    .filter((id) => isEmpty(formValues[id]))
+    .map((id) => {
+      const refNode = inputNodes.find((n) => n.id === id);
+      return { id, label: refNode ? resolveNodeLabel(refNode, language) : id };
+    });

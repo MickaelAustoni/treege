@@ -1,11 +1,13 @@
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useTranslate } from "@/renderer/hooks/useTranslate";
-import { InputRenderProps } from "@/renderer/types/renderer";
+import { InputExtraProps, InputFieldProps } from "@/renderer/types/renderer";
 import { useTheme } from "@/shared/context/ThemeContext";
 
-const DefaultRadioInput = ({ node, value, setValue, error, label, helperText }: InputRenderProps<"radio">) => {
-  const t = useTranslate();
+const DefaultRadioInput = (field: InputFieldProps<"radio">, extra: InputExtraProps<"radio">) => {
+  const { value } = field;
+  const { node, setValue, error, label, helperText } = extra;
   const { colors } = useTheme();
+  const t = useTranslate();
   const options = node.data.options || [];
   const selectedValue = value || "";
   const isCard = node.data.variant !== "default";

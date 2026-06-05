@@ -2,28 +2,17 @@ import { Loader2 } from "lucide-react";
 import { useTreegeRendererContext } from "@/renderer/context/TreegeRendererContext";
 import { DependencyHintMessage } from "@/renderer/features/TreegeRenderer/web/components/DependencyHint";
 import { useInputOptions } from "@/renderer/hooks/useInputOptions";
-import { useMissingDependencies } from "@/renderer/hooks/useMissingDependencies";
 import { useTranslate } from "@/renderer/hooks/useTranslate";
-import { InputRenderProps } from "@/renderer/types/renderer";
+import { InputExtraProps, InputFieldProps } from "@/renderer/types/renderer";
 import { Checkbox } from "@/shared/components/ui/checkbox";
 import { FormDescription, FormError, FormItem } from "@/shared/components/ui/form";
 import { Label } from "@/shared/components/ui/label";
 import { cn } from "@/shared/lib/utils";
 
-const DefaultCheckboxInput = ({
-  node,
-  value,
-  setValue,
-  error,
-  label,
-  helperText,
-  id,
-  name,
-  renderOptionExtras,
-  compactOptions,
-}: InputRenderProps<"checkbox">) => {
+const DefaultCheckboxInput = (field: InputFieldProps<"checkbox">, extra: InputExtraProps<"checkbox">) => {
+  const { id, name, value } = field;
+  const { node, setValue, error, label, helperText, renderOptionExtras, compactOptions, missingDependencies: missing } = extra;
   const { options, isLoading, error: inputOptionsError } = useInputOptions(node);
-  const missing = useMissingDependencies(node);
   const { optionsDisplayLimit } = useTreegeRendererContext();
   const t = useTranslate();
 

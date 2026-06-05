@@ -1,9 +1,12 @@
-import { InputRenderProps } from "@/renderer/types/renderer";
+import { InputExtraProps, InputFieldProps } from "@/renderer/types/renderer";
 import { FormDescription, FormError, FormItem } from "@/shared/components/ui/form";
 import { Input } from "@/shared/components/ui/input";
 import { Label } from "@/shared/components/ui/label";
 
-const DefaultTextInput = ({ node, value, setValue, error, label, placeholder, helperText, name, id }: InputRenderProps<"text">) => {
+const DefaultTextInput = (field: InputFieldProps<"text">, extra: InputExtraProps<"text">) => {
+  const { id, name, value, placeholder } = field;
+  const { node, setValue, error, label, helperText } = extra;
+
   return (
     <FormItem className="tg:mb-4">
       <Label htmlFor={id}>

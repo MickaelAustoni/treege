@@ -1,13 +1,15 @@
 import { useCallback, useMemo, useState } from "react";
 import { FlatList, Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useTranslate } from "@/renderer/hooks/useTranslate";
-import { InputRenderProps } from "@/renderer/types/renderer";
+import { InputExtraProps, InputFieldProps } from "@/renderer/types/renderer";
 import { useTheme } from "@/shared/context/ThemeContext";
 
-const DefaultDateInput = ({ node, value, setValue, error, label, placeholder, helperText }: InputRenderProps<"date">) => {
+const DefaultDateInput = (field: InputFieldProps<"date">, extra: InputExtraProps<"date">) => {
   const [isOpen, setIsOpen] = useState(false);
-  const t = useTranslate();
+  const { value, placeholder } = field;
+  const { node, setValue, error, label, helperText } = extra;
   const { colors } = useTheme();
+  const t = useTranslate();
   const dateValue = value ? new Date(value) : undefined;
 
   const { year, month, today } = useMemo(() => {

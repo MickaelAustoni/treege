@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import { StyleSheet, Text, TextInput, View } from "react-native";
-import { InputRenderProps } from "@/renderer/types/renderer";
+import { InputExtraProps, InputFieldProps } from "@/renderer/types/renderer";
 import { useTheme } from "@/shared/context/ThemeContext";
 
-const DefaultNumberInput = ({ node, value, setValue, error, label, placeholder, helperText, name }: InputRenderProps<"number">) => {
-  const { colors } = useTheme();
+const DefaultNumberInput = (field: InputFieldProps<"number">, extra: InputExtraProps<"number">) => {
+  const { value, placeholder, name } = field;
   const [textValue, setTextValue] = useState(value?.toString() ?? "");
+  const { node, setValue, error, label, helperText } = extra;
+  const { colors } = useTheme();
 
   /**
    * Sync the local text buffer when the form value changes from outside

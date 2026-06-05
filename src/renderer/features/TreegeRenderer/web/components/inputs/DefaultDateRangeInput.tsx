@@ -2,15 +2,17 @@ import { ChevronDownIcon } from "lucide-react";
 import { useState } from "react";
 import { DateRange } from "react-day-picker";
 import { useTranslate } from "@/renderer/hooks/useTranslate";
-import { InputRenderProps } from "@/renderer/types/renderer";
+import { InputExtraProps, InputFieldProps } from "@/renderer/types/renderer";
 import { Button } from "@/shared/components/ui/button";
 import { Calendar } from "@/shared/components/ui/calendar";
 import { FormDescription, FormError, FormItem } from "@/shared/components/ui/form";
 import { Label } from "@/shared/components/ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "@/shared/components/ui/popover";
 
-const DefaultDateRangeInput = ({ node, value, setValue, error, label, helperText, id }: InputRenderProps<"daterange">) => {
+const DefaultDateRangeInput = (field: InputFieldProps<"daterange">, extra: InputExtraProps<"daterange">) => {
   const [open, setOpen] = useState(false);
+  const { id, value } = field;
+  const { node, setValue, error, label, helperText } = extra;
   const t = useTranslate();
   const dateRange = Array.isArray(value) ? value : [];
   const startDate = dateRange[0] ? new Date(dateRange[0]) : undefined;

@@ -264,27 +264,38 @@ You can customize the appearance using the `style` and `contentContainerStyle` p
 
 ### Custom Components
 
-Override default components with your own React Native components:
+Override default components with your own React Native components.
+
+Each input renderer receives **two arguments**:
+
+1. `field` — DOM-safe props (`id`, `name`, `value`, `placeholder`, `required`, `aria-invalid`). On the web you can spread them onto an element (`<input {...field} />`); on React Native pick the ones you need.
+2. `extra` — Treege-specific props: `setValue`, `error`, `label`, `helperText`, `node`, and `missingDependencies` (the unfilled fields this input's dynamic options depend on).
 
 ```tsx
 import { Text, TextInput, View } from "react-native";
 import { TreegeRenderer } from "treege/renderer-native";
 
-const CustomTextInput = ({ value, setValue, label, error }) => {
+const CustomTextInput = (field, extra) => {
   return (
     <View style={{ marginBottom: 16 }}>
-      <Text style={{ fontSize: 14, marginBottom: 4 }}>{label}</Text>
+      <Text style={{ fontSize: 14, marginBottom: 4 }}>{extra.label}</Text>
       <TextInput
-        value={value}
-        onChangeText={setValue}
+        value={field.value}
+        placeholder={field.placeholder}
+        onChangeText={extra.setValue}
         style={{
           borderWidth: 1,
-          borderColor: error ? "red" : "#ccc",
+          borderColor: extra.error ? "red" : "#ccc",
           padding: 10,
           borderRadius: 8
         }}
       />
-      {error && <Text style={{ color: "red", fontSize: 12 }}>{error}</Text>}
+      {extra.error && <Text style={{ color: "red", fontSize: 12 }}>{extra.error}</Text>}
+      {extra.missingDependencies.length > 0 && (
+        <Text style={{ color: "#b45309", fontSize: 12 }}>
+          Please fill in first: {extra.missingDependencies.map((d) => d.label).join(", ")}
+        </Text>
+      )}
     </View>
   );
 };
@@ -441,13 +452,25 @@ Treege supports multiple languages out of the box:
 
 ### Custom Input Components
 
-Override default input renderers with your own:
+Override default input renderers with your own. A renderer receives two
+arguments: `field` (DOM-safe props, spreadable onto an element) and `extra`
+(`setValue`, `error`, `label`, `helperText`, `node`, `missingDependencies`).
 
 ```tsx
 import { TreegeRenderer } from "treege/renderer";
 
-const CustomTextInput = ({ node }) => {
-  return <input className="my-custom-input" />;
+const CustomTextInput = (field, extra) => {
+  return (
+    <label>
+      {extra.label}
+      <input
+        {...field}
+        className="my-custom-input"
+        onChange={(e) => extra.setValue(e.target.value)}
+      />
+      {extra.error && <span className="error">{extra.error}</span>}
+    </label>
+  );
 };
 
 <TreegeRenderer

@@ -63,55 +63,64 @@ export type InputValue =
   | undefined;
 
 /**
- * Props for input components with dynamic value typing
- * All form state is provided via props for easier custom component implementation
+ * A field the input's dynamic options depend on that is not yet filled.
  */
-export type InputRenderProps<T extends InputType = InputType> = {
-  /**
-   * The node data for this input field
-   */
+export type MissingDependency = {
+  /** The referenced node id. */
+  id: string;
+  /** The referenced field's translated, end-user-facing label. */
+  label: string;
+};
+
+/**
+ * HTML-spreadable props for an input control — safe to spread directly onto a
+ * DOM element: `<input {...field} />`. Intentionally excludes `label`,
+ * `helperText`, and `error` (not valid DOM attributes); those live in
+ * `InputExtraProps`.
+ */
+export type InputFieldProps<T extends InputType = InputType> = {
+  /** Unique field id (nodeId). Use for the element `id`. */
+  id: string;
+  /** Field name (resolved using priority: name > label > nodeId). */
+  name: string;
+  /** Current value of the input (typed by input type when T is specified). */
+  value: InputValueTypeMap[T];
+  /** Translated placeholder (already processed with current language). */
+  placeholder?: string;
+  /** Whether the field is required. */
+  required?: boolean;
+  /** Set when the field has a validation error. */
+  "aria-invalid"?: boolean;
+};
+
+/**
+ * Treege-specific props that are NOT DOM attributes: state setters, resolved
+ * translations, validation and runtime metadata. Passed as the second argument
+ * of an input renderer so the first one (`InputFieldProps`) stays spreadable.
+ */
+export type InputExtraProps<T extends InputType = InputType> = {
+  /** The node data for this input field. */
   node: Node<InputNodeData>;
   /**
-   * Current value of the input field (typed based on input type when T is specified)
-   */
-  value: InputValueTypeMap[T];
-  /**
-   * Unique field ID (nodeId)
-   */
-  id: string;
-  /**
-   * Field name (resolved using priority: name > label > nodeId)
-   * Use this for the name and id attributes of the input element
-   */
-  name: string;
-  /**
-   * Function to update the input value
-   * @param value - The new value (typed based on input type when T is specified)
+   * Function to update the input value.
+   * @param value - The new value (typed by input type when T is specified)
    */
   setValue: (value: InputValueTypeMap[T]) => void;
-  /**
-   * Validation error message for this field (if any)
-   */
+  /** Validation error message for this field (if any). */
   error?: string;
-  /**
-   * Translated label (already processed with current language)
-   */
+  /** Translated label (already processed with current language). */
   label?: string;
-  /**
-   * Translated placeholder (already processed with current language)
-   */
-  placeholder?: string;
-  /**
-   * Translated helper text (already processed with current language)
-   */
+  /** Translated helper text (already processed with current language). */
   helperText?: string;
   /**
-   * Missing required fields on form submit (for submit inputs)
+   * Fields this input's dynamic options depend on that are not yet filled
+   * (its unresolved `{{nodeId}}` template variables). Empty when none — use it
+   * to hint the user which fields to complete before this input can load.
    */
+  missingDependencies: MissingDependency[];
+  /** Missing required fields on form submit (for submit inputs). */
   missingRequiredFields?: string[];
-  /**
-   * Whether the form is currently being submitted (for submit inputs)
-   */
+  /** Whether the form is currently being submitted (for submit inputs). */
   isSubmitting?: boolean;
   /**
    * Editor-only extension slot: when provided, option-based renderers (radio,
@@ -131,6 +140,13 @@ export type InputRenderProps<T extends InputType = InputType> = {
   compactOptions?: boolean;
 };
 
+/**
+ * An input renderer. Receives the spreadable `field` props (DOM-safe) and the
+ * Treege `extra` props (state setters, translations, metadata) as two separate
+ * arguments, so `field` can be spread onto a control: `<input {...field} />`.
+ */
+export type InputRenderer<T extends InputType = InputType> = (field: InputFieldProps<T>, extra: InputExtraProps<T>) => ReactNode;
+
 export type UiRenderProps = {
   node: Node<UINodeData>;
 };
@@ -147,7 +163,7 @@ export type NodeRenderProps = {
  * Each input type gets its own properly typed InputRenderProps
  */
 export type InputRenderers = {
-  [K in InputType]?: (props: InputRenderProps<K>) => ReactNode;
+  [K in InputType]?: InputRenderer<K>;
 };
 
 /**

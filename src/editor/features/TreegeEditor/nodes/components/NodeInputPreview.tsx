@@ -7,8 +7,9 @@ import useFlowActions from "@/editor/hooks/useFlowActions";
 import useTranslate from "@/editor/hooks/useTranslate";
 import { getInputTypeIcon } from "@/editor/utils/inputTypeIcon";
 import { TreegeRendererProvider } from "@/renderer/context/TreegeRendererContext";
+import InputRendererHost from "@/renderer/features/TreegeRenderer/InputRendererHost";
 import { defaultInputRenderers } from "@/renderer/features/TreegeRenderer/web/components/DefaultInputs";
-import type { InputRenderProps } from "@/renderer/types/renderer";
+import type { InputRenderer } from "@/renderer/types/renderer";
 import { resolveInputPlaceholder, resolveNodeKey } from "@/renderer/utils/node";
 import { Button } from "@/shared/components/ui/button";
 import { Input } from "@/shared/components/ui/input";
@@ -197,7 +198,7 @@ const NodeInputPreview = ({ nodeId, data }: NodeInputPreviewProps) => {
     );
   }
 
-  const Renderer = defaultInputRenderers[inputType] as ((props: InputRenderProps) => ReactNode) | undefined;
+  const Renderer = defaultInputRenderers[inputType] as InputRenderer | undefined;
 
   if (!Renderer) {
     return null;
@@ -282,16 +283,23 @@ const NodeInputPreview = ({ nodeId, data }: NodeInputPreviewProps) => {
           and avoids rendering the same text twice.
         */}
         <TreegeRendererProvider value={{ headers, language, optionsDisplayLimit: 10 }}>
-          <Renderer
-            compactOptions
-            node={previewNode}
-            value={defaultValueForType(inputType) as never}
-            setValue={() => {}}
-            id={nodeId}
-            name={resolvedName}
-            placeholder={placeholder || undefined}
-            helperText={helperText || undefined}
-            renderOptionExtras={renderOptionExtras}
+          <InputRendererHost
+            key={inputType}
+            render={Renderer}
+            field={{
+              id: nodeId,
+              name: resolvedName,
+              placeholder: placeholder || undefined,
+              value: defaultValueForType(inputType) as never,
+            }}
+            extra={{
+              compactOptions: true,
+              helperText: helperText || undefined,
+              missingDependencies: [],
+              node: previewNode,
+              renderOptionExtras,
+              setValue: () => {},
+            }}
           />
         </TreegeRendererProvider>
       </div>

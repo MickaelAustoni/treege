@@ -16,9 +16,11 @@ import DefaultTextareaInput from "@/renderer/features/TreegeRenderer/native/comp
 import DefaultTextInput from "@/renderer/features/TreegeRenderer/native/components/inputs/DefaultTextInput";
 import DefaultTimeInput from "@/renderer/features/TreegeRenderer/native/components/inputs/DefaultTimeInput";
 import DefaultTimeRangeInput from "@/renderer/features/TreegeRenderer/native/components/inputs/DefaultTimeRangeInput";
-import { InputRenderers, InputRenderProps } from "@/renderer/types/renderer";
+import { InputExtraProps, InputFieldProps, InputRenderers } from "@/renderer/types/renderer";
 
-const PlaceholderInput = ({ node }: InputRenderProps<"submit">) => <Text>TODO: Implement {node.data.type} input for React Native</Text>;
+const PlaceholderInput = (_field: InputFieldProps<"submit">, extra: InputExtraProps<"submit">) => (
+  <Text>TODO: Implement {extra.node.data.type} input for React Native</Text>
+);
 
 export {
   DefaultAddressInput,

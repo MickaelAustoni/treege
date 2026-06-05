@@ -77,6 +77,7 @@ const TreegeRenderer = ({
     defaultUI,
     formErrors,
     formValues,
+    inputNodes,
     missingRequiredFields,
     setFieldValue,
   });

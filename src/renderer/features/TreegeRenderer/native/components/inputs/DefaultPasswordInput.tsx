@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
-import { InputRenderProps } from "@/renderer/types/renderer";
+import { InputExtraProps, InputFieldProps } from "@/renderer/types/renderer";
 import { useTheme } from "@/shared/context/ThemeContext";
 
-const DefaultPasswordInput = ({ node, value, setValue, error, label, placeholder, helperText, name }: InputRenderProps<"password">) => {
-  const { colors } = useTheme();
+const DefaultPasswordInput = (field: InputFieldProps<"password">, extra: InputExtraProps<"password">) => {
   const [showPassword, setShowPassword] = useState(false);
+  const { value, placeholder, name } = field;
+  const { node, setValue, error, label, helperText } = extra;
+  const { colors } = useTheme();
 
   return (
     <View style={styles.container}>

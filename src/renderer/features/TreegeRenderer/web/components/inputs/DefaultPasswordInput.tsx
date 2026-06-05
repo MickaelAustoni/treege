@@ -1,9 +1,12 @@
-import { InputRenderProps } from "@/renderer/types/renderer";
+import { InputExtraProps, InputFieldProps } from "@/renderer/types/renderer";
 import { FormDescription, FormError, FormItem } from "@/shared/components/ui/form";
 import { Input } from "@/shared/components/ui/input";
 import { Label } from "@/shared/components/ui/label";
 
-const DefaultPasswordInput = ({ node, value, setValue, error, label, placeholder, helperText, name, id }: InputRenderProps<"password">) => {
+const DefaultPasswordInput = (field: InputFieldProps<"password">, extra: InputExtraProps<"password">) => {
+  const { id, name, value, placeholder } = field;
+  const { node, setValue, error, label, helperText } = extra;
+
   return (
     <FormItem className="tg:mb-4">
       <Label htmlFor={id}>

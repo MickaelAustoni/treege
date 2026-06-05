@@ -4,8 +4,8 @@ import type { StepRenderProps } from "@/renderer/types/renderer";
 import { useTheme } from "@/shared/context/ThemeContext";
 
 const DefaultStep = ({ label, children, isFirstStep, isLastStep, canContinue, isSubmitting, onBack, onContinue }: StepRenderProps) => {
-  const t = useTranslate();
   const { colors } = useTheme();
+  const t = useTranslate();
   const continueDisabled = !canContinue || isSubmitting;
 
   return (

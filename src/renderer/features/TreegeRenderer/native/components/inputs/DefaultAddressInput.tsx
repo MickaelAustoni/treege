@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { ActivityIndicator, FlatList, Modal, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { useTreegeRendererContext } from "@/renderer/context/TreegeRendererContext";
 import { useTranslate } from "@/renderer/hooks/useTranslate";
-import { InputRenderProps } from "@/renderer/types/renderer";
+import { InputExtraProps, InputFieldProps } from "@/renderer/types/renderer";
 import { useTheme } from "@/shared/context/ThemeContext";
 
 type AddressSuggestion = {
@@ -81,21 +81,13 @@ const fetchGooglePlacesSuggestions = async (query: string, apiKey: string): Prom
   }
 };
 
-const DefaultAddressInput = ({
-  node,
-  value,
-  setValue,
-  error,
-  label,
-  placeholder,
-  helperText,
-  id: _id,
-  name: _name,
-}: InputRenderProps<"address">) => {
+const DefaultAddressInput = (field: InputFieldProps<"address">, extra: InputExtraProps<"address">) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [suggestions, setSuggestions] = useState<AddressSuggestion[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [loading, setLoading] = useState(false);
+  const { value, placeholder, id: _id, name: _name } = field;
+  const { node, setValue, error, label, helperText } = extra;
   const { language, googleApiKey } = useTreegeRendererContext();
   const t = useTranslate();
   const { colors } = useTheme();
