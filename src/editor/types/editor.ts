@@ -43,9 +43,27 @@ export interface TreegeEditorProps {
    */
   theme?: "dark" | "light";
   /**
-   * Language for the editor interface.
+   * Controlled editor UI language. When provided, the editor runs in controlled
+   * mode: this value always wins and the built-in switcher only fires
+   * `onLanguageChange` — you must update this prop to actually change the
+   * language. Leave undefined to let the editor manage it itself (see
+   * `defaultLanguage`).
    */
   language?: string;
+  /**
+   * Initial editor UI language in uncontrolled mode. The editor seeds its
+   * internal state with this value, then owns it so the user can switch at
+   * runtime via the actions panel. Ignored when `language` is provided.
+   * @default "en"
+   */
+  defaultLanguage?: string;
+  /**
+   * Called whenever the user switches the editor language via the built-in
+   * switcher, with the newly selected language. Required to react to the change
+   * in controlled mode; optional in uncontrolled mode (use it to persist or
+   * sync the choice).
+   */
+  onLanguageChange?: (language: string) => void;
   /**
    * AI configuration for tree generation
    */

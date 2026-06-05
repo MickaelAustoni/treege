@@ -15,7 +15,6 @@ const EditorPanel = ({
   flow,
   onSave,
   theme,
-  language,
   onTogglePreview,
   onAuthorize,
   headers,
@@ -41,7 +40,6 @@ const EditorPanel = ({
           onSave={onSave}
           flow={flow}
           theme={theme}
-          language={language}
           onAuthorize={onAuthorize}
           headers={headers}
           onHeadersChange={onHeadersChange}

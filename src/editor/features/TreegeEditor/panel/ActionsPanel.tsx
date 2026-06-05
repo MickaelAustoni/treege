@@ -1,5 +1,5 @@
 import { type Edge, type Node, Panel, useEdges, useNodes, useReactFlow } from "@xyflow/react";
-import { ArrowRightFromLine, Download, EllipsisVertical, FileJson, KeyRound, Lock, Plus, Save, Trash2 } from "lucide-react";
+import { ArrowRightFromLine, Download, EllipsisVertical, FileJson, KeyRound, Languages, Lock, Plus, Save, Trash2 } from "lucide-react";
 import { nanoid } from "nanoid";
 import { ChangeEvent, useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
@@ -18,9 +18,15 @@ import {
   DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuItem,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
   DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/shared/components/ui/dropdown-menu";
+import { LANGUAGES } from "@/shared/constants/languages";
 import { Flow, HttpHeader } from "@/shared/types/node";
 
 export interface ActionsPanelProps {
@@ -39,7 +45,7 @@ const ActionsPanel = ({ onExportJson, onSave, extraMenuItems, onAuthorize, heade
   const [authorizeDialogOpen, setAuthorizeDialogOpen] = useState(false);
   const [headersDialogOpen, setHeadersDialogOpen] = useState(false);
   const [authorizeAcknowledged, setAuthorizeAcknowledged] = useState(false);
-  const { flowId, setFlowId, aiConfig } = useTreegeEditorContext();
+  const { flowId, setFlowId, aiConfig, language, setLanguage } = useTreegeEditorContext();
   const { document: openApiDocument } = useOpenApi();
   const hasHeaders = (headers?.length ?? 0) > 0;
   const { setNodes, setEdges, addNodes, screenToFlowPosition } = useReactFlow();
@@ -231,6 +237,25 @@ const ActionsPanel = ({ onExportJson, onSave, extraMenuItems, onAuthorize, heade
                 {showAuthorizeDot && <span aria-hidden className="tg:ml-auto tg:size-2 tg:rounded-full tg:bg-destructive" />}
               </DropdownMenuItem>
             )}
+          </DropdownMenuGroup>
+
+          <DropdownMenuSeparator />
+
+          <DropdownMenuGroup>
+            <DropdownMenuSub>
+              <DropdownMenuSubTrigger>
+                <Languages /> {t("editor.actionsPanel.language")}
+              </DropdownMenuSubTrigger>
+              <DropdownMenuSubContent>
+                <DropdownMenuRadioGroup value={language} onValueChange={setLanguage}>
+                  {Object.values(LANGUAGES).map((lng) => (
+                    <DropdownMenuRadioItem key={lng} value={lng} className="tg:uppercase">
+                      {lng}
+                    </DropdownMenuRadioItem>
+                  ))}
+                </DropdownMenuRadioGroup>
+              </DropdownMenuSubContent>
+            </DropdownMenuSub>
           </DropdownMenuGroup>
 
           {extraMenuItems && extraMenuItems.length > 0 && (

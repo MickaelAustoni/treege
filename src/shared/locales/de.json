@@ -28,6 +28,7 @@
       "importSuccessDesc": "Der Ablauf wurde erfolgreich importiert.",
       "invalidJson": "Ungültige JSON-Datei.",
       "invalidJsonDesc": "Die Datei muss Knoten- und Kanten-Arrays enthalten.",
+      "language": "Sprache",
       "openApi": "OpenAPI",
       "parseError": "Fehler beim Parsen der JSON-Datei.",
       "parseErrorDesc": "Versuchen Sie, die Datei zu korrigieren und erneut zu importieren."

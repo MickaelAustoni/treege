@@ -28,6 +28,7 @@
       "importSuccessDesc": "The flow has been imported successfully.",
       "invalidJson": "Invalid JSON file.",
       "invalidJsonDesc": "The file must contain nodes and edges arrays.",
+      "language": "Language",
       "openApi": "OpenAPI",
       "parseError": "Error parsing JSON file.",
       "parseErrorDesc": "Try to fix the file and import it again."

@@ -28,6 +28,7 @@
       "importSuccessDesc": "Le flux a été importé avec succès.",
       "invalidJson": "Fichier JSON invalide.",
       "invalidJsonDesc": "Le fichier doit contenir des tableaux de nœuds et d'arêtes.",
+      "language": "Langue",
       "openApi": "OpenAPI",
       "parseError": "Erreur d'analyse du fichier JSON.",
       "parseErrorDesc": "Essayez de corriger le fichier et de l'importer à nouveau."

@@ -1,6 +1,7 @@
 import { useForm } from "@tanstack/react-form";
 import { ChevronsUpDown, Plus, X } from "lucide-react";
 import { useState } from "react";
+import { useTreegeEditorContext } from "@/editor/context/TreegeEditorContext";
 import HttpConfigForm from "@/editor/features/TreegeEditor/forms/HttpConfigForm";
 import OptionsSourceForm from "@/editor/features/TreegeEditor/forms/OptionsSourceForm";
 import SubmitConfigForm from "@/editor/features/TreegeEditor/forms/SubmitConfigForm";
@@ -19,12 +20,19 @@ import { Label } from "@/shared/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/components/ui/select";
 import { Separator } from "@/shared/components/ui/separator";
 import { Switch } from "@/shared/components/ui/switch";
+import { LANGUAGES } from "@/shared/constants/languages";
 import { Language } from "@/shared/types/languages";
 import { InputNodeData } from "@/shared/types/node";
 import { isOptionsInputData } from "@/shared/utils/inputTypeGuards";
 
+const isSupportedLanguage = (value: string): value is Language => (Object.values(LANGUAGES) as string[]).includes(value);
+
 const InputNodeForm = () => {
-  const [selectedLanguage, setSelectedLanguage] = useState<Language>("en");
+  const { language } = useTreegeEditorContext();
+  // Default the per-node translation editor to the editor's global language, so
+  // switching the editor language also switches which translation you author by
+  // default. The selector below remains a per-node override.
+  const [selectedLanguage, setSelectedLanguage] = useState<Language>(isSupportedLanguage(language) ? language : "en");
   const { selectedNode } = useNodesSelection<InputNodeData>();
   const { updateSelectedNodeData } = useFlowActions();
   const needsOptions = isOptionsInputData(selectedNode?.data);

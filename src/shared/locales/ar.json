@@ -28,6 +28,7 @@
       "importSuccessDesc": "تم استيراد التدفق بنجاح.",
       "invalidJson": "ملف JSON غير صالح.",
       "invalidJsonDesc": "يجب أن يحتوي الملف على مصفوفات من العقد والحواف.",
+      "language": "اللغة",
       "openApi": "OpenAPI",
       "parseError": "خطأ في تحليل ملف JSON.",
       "parseErrorDesc": "حاول إصلاح الملف واستيراده مرة أخرى."

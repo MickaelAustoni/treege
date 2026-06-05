@@ -1,5 +1,5 @@
 import { Background, BackgroundVariant, Controls, MiniMap, ReactFlow, ReactFlowProvider } from "@xyflow/react";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import Logo from "@/editor/components/branding/Logo";
 import EditorStyles from "@/editor/components/styles/EditorStyles";
 import { EDGE_TYPES } from "@/editor/constants/edgeTypes";
@@ -87,7 +87,9 @@ const TreegeEditor = ({
   onExportJson,
   onSave,
   theme = "dark",
-  language = "en",
+  language: controlledLanguage,
+  defaultLanguage = "en",
+  onLanguageChange,
   aiConfig,
   extraMenuItems,
   openApi,
@@ -95,29 +97,47 @@ const TreegeEditor = ({
   onAuthorize,
   headers,
   onHeadersChange,
-}: TreegeEditorProps) => (
-  <>
-    <EditorStyles />
-    <ThemeProvider defaultTheme={theme} storageKey="treege-editor-theme" theme={theme}>
-      <Toaster position="bottom-center" />
-      <TreegeEditorProvider value={{ aiConfig, flowId: flow?.id, headers, language }}>
-        <OpenApiProvider initialDocument={openApi} initialBaseUrl={openApiBaseUrl}>
-          <ReactFlowProvider>
-            <Flow
-              onExportJson={onExportJson}
-              onSave={onSave}
-              flow={flow}
-              theme={theme}
-              extraMenuItems={extraMenuItems}
-              onAuthorize={onAuthorize}
-              headers={headers}
-              onHeadersChange={onHeadersChange}
-            />
-          </ReactFlowProvider>
-        </OpenApiProvider>
-      </TreegeEditorProvider>
-    </ThemeProvider>
-  </>
-);
+}: TreegeEditorProps) => {
+  // Controlled/uncontrolled language: `language` (when defined) always wins;
+  // otherwise the editor owns the value internally, seeded by `defaultLanguage`.
+  const isControlled = controlledLanguage !== undefined;
+  const [internalLanguage, setInternalLanguage] = useState(defaultLanguage);
+  const language = isControlled ? controlledLanguage : internalLanguage;
+
+  const handleLanguageChange = useCallback(
+    (next: string) => {
+      if (!isControlled) {
+        setInternalLanguage(next);
+      }
+      onLanguageChange?.(next);
+    },
+    [isControlled, onLanguageChange],
+  );
+
+  return (
+    <>
+      <EditorStyles />
+      <ThemeProvider defaultTheme={theme} storageKey="treege-editor-theme" theme={theme}>
+        <Toaster position="bottom-center" />
+        <TreegeEditorProvider value={{ aiConfig, flowId: flow?.id, headers, language, setLanguage: handleLanguageChange }}>
+          <OpenApiProvider initialDocument={openApi} initialBaseUrl={openApiBaseUrl}>
+            <ReactFlowProvider>
+              <Flow
+                onExportJson={onExportJson}
+                onSave={onSave}
+                flow={flow}
+                theme={theme}
+                extraMenuItems={extraMenuItems}
+                onAuthorize={onAuthorize}
+                headers={headers}
+                onHeadersChange={onHeadersChange}
+              />
+            </ReactFlowProvider>
+          </OpenApiProvider>
+        </TreegeEditorProvider>
+      </ThemeProvider>
+    </>
+  );
+};
 
 export default TreegeEditor;

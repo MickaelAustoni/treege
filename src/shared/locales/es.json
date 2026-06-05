@@ -28,6 +28,7 @@
       "importSuccessDesc": "El flujo se ha importado correctamente.",
       "invalidJson": "Archivo JSON inválido.",
       "invalidJsonDesc": "El archivo debe contener matrices de nodos y aristas.",
+      "language": "Idioma",
       "openApi": "OpenAPI",
       "parseError": "Error al analizar el archivo JSON.",
       "parseErrorDesc": "Intenta corregir el archivo e importarlo nuevamente."

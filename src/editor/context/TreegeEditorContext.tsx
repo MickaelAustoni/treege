@@ -4,9 +4,16 @@ import { HttpHeader } from "@/shared/types/node";
 
 export interface TreegeEditorContextValue {
   /**
-   * Current language
+   * Current language of the editor UI. Also used as the default language for
+   * the per-node translation editor in `InputNodeForm`.
    */
   language: string;
+  /**
+   * Set the editor UI language at runtime (driven by the language switcher in
+   * the actions panel). Seeded from the `language` prop, then owned internally;
+   * the consumer can observe changes via `TreegeEditor`'s `onLanguageChange`.
+   */
+  setLanguage: (language: string) => void;
   /**
    * Current flow ID
    */
@@ -130,6 +137,7 @@ export const useTreegeEditorContext = () => {
       pendingNodeTypeChange: null,
       setFlowId: () => {},
       setIsNodeSheetOpen: () => {},
+      setLanguage: () => {},
     }
   );
 };

@@ -28,6 +28,7 @@
       "importSuccessDesc": "O fluxo foi importado com sucesso.",
       "invalidJson": "Arquivo JSON inválido.",
       "invalidJsonDesc": "O arquivo deve conter arrays de nós e arestas.",
+      "language": "Idioma",
       "openApi": "OpenAPI",
       "parseError": "Erro ao analisar o arquivo JSON.",
       "parseErrorDesc": "Tente corrigir o arquivo e importá-lo novamente."

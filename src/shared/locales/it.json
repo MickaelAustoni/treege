@@ -28,6 +28,7 @@
       "importSuccessDesc": "Il flusso è stato importato con successo.",
       "invalidJson": "File JSON non valido.",
       "invalidJsonDesc": "Il file deve contenere array di nodi e archi.",
+      "language": "Lingua",
       "openApi": "OpenAPI",
       "parseError": "Errore nell'analisi del file JSON.",
       "parseErrorDesc": "Prova a correggere il file e importarlo di nuovo."
