@@ -431,6 +431,9 @@
       "requiredFieldsMissing": "Erforderliche Felder fehlen",
       "submit": "Senden"
     },
+    "dependencyHint": {
+      "title": "Bitte füllen Sie zuerst die folgenden Felder aus:"
+    },
     "step": {
       "back": "Zurück",
       "continue": "Weiter"

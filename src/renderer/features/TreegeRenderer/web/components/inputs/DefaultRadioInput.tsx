@@ -1,6 +1,8 @@
 import { Loader2 } from "lucide-react";
 import { useTreegeRendererContext } from "@/renderer/context/TreegeRendererContext";
+import { DependencyHintMessage } from "@/renderer/features/TreegeRenderer/web/components/DependencyHint";
 import { useInputOptions } from "@/renderer/hooks/useInputOptions";
+import { useMissingDependencies } from "@/renderer/hooks/useMissingDependencies";
 import { useTranslate } from "@/renderer/hooks/useTranslate";
 import { InputRenderProps } from "@/renderer/types/renderer";
 import { Field, FieldContent, FieldDescription, FieldLabel, FieldTitle } from "@/shared/components/ui/field";
@@ -22,6 +24,7 @@ const DefaultRadioInput = ({
   compactOptions,
 }: InputRenderProps<"radio">) => {
   const { options, isLoading, error: inputOptionsError } = useInputOptions(node);
+  const missing = useMissingDependencies(node);
   const { optionsDisplayLimit } = useTreegeRendererContext();
   const t = useTranslate();
   const normalizedValue = value ? String(value) : "";
@@ -36,6 +39,7 @@ const DefaultRadioInput = ({
         {label || node.data.name}
         {node.data.required && <span className="tg:text-red-500">*</span>}
       </Label>
+      <DependencyHintMessage missing={missing} />
       {isLoading && (
         <div className="tg:flex tg:items-center tg:gap-2 tg:py-2 tg:text-muted-foreground tg:text-sm">
           <Loader2 className="tg:h-4 tg:w-4 tg:animate-spin" />

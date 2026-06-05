@@ -431,6 +431,9 @@
       "requiredFieldsMissing": "Campi obbligatori mancanti",
       "submit": "Invia"
     },
+    "dependencyHint": {
+      "title": "Compila prima i seguenti campi:"
+    },
     "step": {
       "back": "Indietro",
       "continue": "Continua"

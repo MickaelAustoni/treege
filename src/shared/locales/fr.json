@@ -431,6 +431,9 @@
       "requiredFieldsMissing": "Champs requis manquants",
       "submit": "Envoyer"
     },
+    "dependencyHint": {
+      "title": "Veuillez d'abord remplir les champs suivants :"
+    },
     "step": {
       "back": "Retour",
       "continue": "Continuer"

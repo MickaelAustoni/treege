@@ -431,6 +431,9 @@
       "requiredFieldsMissing": "حقول مطلوبة مفقودة:",
       "submit": "إرسال"
     },
+    "dependencyHint": {
+      "title": "يرجى ملء الحقول التالية أولاً:"
+    },
     "step": {
       "back": "رجوع",
       "continue": "متابعة"

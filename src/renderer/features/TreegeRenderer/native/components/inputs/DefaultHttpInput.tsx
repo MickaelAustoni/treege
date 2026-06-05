@@ -1,11 +1,12 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ActivityIndicator, FlatList, Modal, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { useTreegeRendererContext } from "@/renderer/context/TreegeRendererContext";
+import DependencyHint from "@/renderer/features/TreegeRenderer/native/components/DependencyHint";
+import { useMissingDependencies } from "@/renderer/hooks/useMissingDependencies";
 import { useTranslate } from "@/renderer/hooks/useTranslate";
 import { InputRenderProps } from "@/renderer/types/renderer";
 import { convertFormValuesToNamedFormat } from "@/renderer/utils/form";
 import { appendQueryParams, getValueByPath, mergeHttpHeaders } from "@/renderer/utils/http";
-import { getFieldNameFromNodeId } from "@/renderer/utils/node";
 import { sanitizeHttpResponse } from "@/renderer/utils/sanitize.native";
 import { useTheme } from "@/shared/context/ThemeContext";
 
@@ -59,6 +60,7 @@ const DefaultHttpInput = ({
   const [modalOpen, setModalOpen] = useState(false);
   const { formValues, inputNodes, headers } = useTreegeRendererContext();
   const { colors } = useTheme();
+  const missing = useMissingDependencies(node);
   const { httpConfig } = node.data;
   const t = useTranslate();
   const hasFetchedOnMount = useRef(false);
@@ -356,25 +358,36 @@ const DefaultHttpInput = ({
             {node.data.required && <Text style={{ color: colors.error }}>*</Text>}
           </Text>
 
-          <TouchableOpacity
-            style={[styles.trigger, { backgroundColor: colors.input, borderColor: colors.border }, error && { borderColor: colors.error }]}
-            onPress={() => setModalOpen(true)}
-            activeOpacity={0.7}
-          >
-            {isLoading ? (
-              <View style={styles.loadingTrigger}>
-                <ActivityIndicator size="small" color={colors.primary} />
-                <Text style={[styles.triggerText, { color: colors.textMuted }]} numberOfLines={1}>
+          <DependencyHint missing={missing}>
+            <TouchableOpacity
+              style={[
+                styles.trigger,
+                { backgroundColor: colors.input, borderColor: colors.border },
+                error && { borderColor: colors.error },
+                missing.length > 0 && { backgroundColor: colors.muted },
+              ]}
+              onPress={() => setModalOpen(true)}
+              disabled={missing.length > 0}
+              activeOpacity={0.7}
+            >
+              {isLoading ? (
+                <View style={styles.loadingTrigger}>
+                  <ActivityIndicator size="small" color={colors.primary} />
+                  <Text style={[styles.triggerText, { color: colors.textMuted }]} numberOfLines={1}>
+                    {selectedOption?.label || placeholder || t("renderer.defaultHttpInput.search")}
+                  </Text>
+                </View>
+              ) : (
+                <Text
+                  style={[styles.triggerText, { color: colors.text }, !selectedOption && { color: colors.textMuted }]}
+                  numberOfLines={1}
+                >
                   {selectedOption?.label || placeholder || t("renderer.defaultHttpInput.search")}
                 </Text>
-              </View>
-            ) : (
-              <Text style={[styles.triggerText, { color: colors.text }, !selectedOption && { color: colors.textMuted }]} numberOfLines={1}>
-                {selectedOption?.label || placeholder || t("renderer.defaultHttpInput.search")}
-              </Text>
-            )}
-            <Text style={[styles.arrow, { color: colors.textMuted }]}>▼</Text>
-          </TouchableOpacity>
+              )}
+              <Text style={[styles.arrow, { color: colors.textMuted }]}>▼</Text>
+            </TouchableOpacity>
+          </DependencyHint>
 
           <Modal visible={modalOpen} transparent animationType="fade" onRequestClose={() => setModalOpen(false)}>
             <TouchableOpacity style={styles.modalOverlay} activeOpacity={1} onPress={() => setModalOpen(false)}>
@@ -456,21 +469,11 @@ const DefaultHttpInput = ({
     // Render as Select (no search)
     const isLoading = loading && httpConfig?.showLoading;
 
-    // Build tooltip/helper message for disabled state
-    const emptyVars = templateVars.filter((varName) => {
-      const value = formValues[varName];
-      return value === undefined || value === null || value === "";
-    });
-
-    const emptyVarNames = emptyVars.map((varName) => getFieldNameFromNodeId(varName, inputNodes) || varName);
-
-    const disabledMessage =
-      options.length === 0 && !isLoading
-        ? fetchError
-          ? fetchError
-          : emptyVars.length > 0
-            ? `${t("renderer.defaultHttpInput.waitingForRequiredFields")}: ${emptyVarNames.join(", ")}`
-            : t("renderer.defaultHttpInput.noDataAvailable")
+    // Fetch-state hint, shown only once dependencies are satisfied — missing
+    // dependencies are surfaced by DependencyHint instead.
+    const fetchHint =
+      missing.length === 0 && options.length === 0 && !isLoading
+        ? (fetchError ?? t("renderer.defaultHttpInput.noDataAvailable"))
         : undefined;
 
     return (
@@ -480,25 +483,27 @@ const DefaultHttpInput = ({
           {node.data.required && <Text style={{ color: colors.error }}>*</Text>}
         </Text>
 
-        <TouchableOpacity
-          style={[
-            styles.trigger,
-            { backgroundColor: colors.input, borderColor: colors.border },
-            error && { borderColor: colors.error },
-            (isLoading || options.length === 0) && { backgroundColor: colors.muted },
-          ]}
-          onPress={() => setModalOpen(true)}
-          disabled={isLoading || options.length === 0}
-          activeOpacity={0.7}
-        >
-          {isLoading && <ActivityIndicator size="small" color={colors.primary} style={styles.triggerLoader} />}
-          <Text style={[styles.triggerText, { color: colors.text }, !selectedOption && { color: colors.textMuted }]} numberOfLines={1}>
-            {selectedOption?.label || placeholder || t("renderer.defaultHttpInput.selectOption")}
-          </Text>
-          <Text style={[styles.arrow, { color: colors.textMuted }]}>▼</Text>
-        </TouchableOpacity>
+        <DependencyHint missing={missing}>
+          <TouchableOpacity
+            style={[
+              styles.trigger,
+              { backgroundColor: colors.input, borderColor: colors.border },
+              error && { borderColor: colors.error },
+              (isLoading || options.length === 0) && { backgroundColor: colors.muted },
+            ]}
+            onPress={() => setModalOpen(true)}
+            disabled={isLoading || options.length === 0}
+            activeOpacity={0.7}
+          >
+            {isLoading && <ActivityIndicator size="small" color={colors.primary} style={styles.triggerLoader} />}
+            <Text style={[styles.triggerText, { color: colors.text }, !selectedOption && { color: colors.textMuted }]} numberOfLines={1}>
+              {selectedOption?.label || placeholder || t("renderer.defaultHttpInput.selectOption")}
+            </Text>
+            <Text style={[styles.arrow, { color: colors.textMuted }]}>▼</Text>
+          </TouchableOpacity>
+        </DependencyHint>
 
-        {disabledMessage && <Text style={[styles.disabledMessage, { color: colors.error }]}>{disabledMessage}</Text>}
+        {fetchHint && <Text style={[styles.disabledMessage, { color: colors.error }]}>{fetchHint}</Text>}
 
         <Modal visible={modalOpen} transparent animationType="fade" onRequestClose={() => setModalOpen(false)}>
           <TouchableOpacity style={styles.modalOverlay} activeOpacity={1} onPress={() => setModalOpen(false)}>

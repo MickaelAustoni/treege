@@ -1,11 +1,12 @@
 import { Check, ChevronsUpDown, Loader2 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTreegeRendererContext } from "@/renderer/context/TreegeRendererContext";
+import DependencyHint from "@/renderer/features/TreegeRenderer/web/components/DependencyHint";
+import { useMissingDependencies } from "@/renderer/hooks/useMissingDependencies";
 import { useTranslate } from "@/renderer/hooks/useTranslate";
 import { InputRenderProps } from "@/renderer/types/renderer";
 import { convertFormValuesToNamedFormat } from "@/renderer/utils/form";
 import { appendQueryParams, getValueByPath, mergeHttpHeaders } from "@/renderer/utils/http";
-import { getFieldNameFromNodeId } from "@/renderer/utils/node";
 import { sanitizeHttpResponse } from "@/renderer/utils/sanitize";
 import { Button } from "@/shared/components/ui/button";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/shared/components/ui/command";
@@ -60,6 +61,7 @@ const DefaultHttpInput = ({ node, value, setValue, error, label, placeholder, he
   const [searchQuery, setSearchQuery] = useState("");
   const [comboboxOpen, setComboboxOpen] = useState(false);
   const { formValues, inputNodes, headers } = useTreegeRendererContext();
+  const missing = useMissingDependencies(node);
   const { httpConfig } = node.data;
   const hasFetchedOnMount = useRef(false);
   const lastFetchedTemplateValues = useRef<string>("");
@@ -378,65 +380,73 @@ const DefaultHttpInput = ({ node, value, setValue, error, label, placeholder, he
             {label || node.data.name}
             {node.data.required && <span className="tg:text-red-500">*</span>}
           </Label>
-          <Popover open={comboboxOpen} onOpenChange={setComboboxOpen}>
-            <PopoverTrigger asChild>
-              <Button variant="outline" role="combobox" aria-expanded={comboboxOpen} className="tg:w-full tg:justify-between">
-                {buttonContent}
-                <ChevronsUpDown className="tg:ml-2 tg:h-4 tg:w-4 tg:shrink-0 tg:opacity-50" />
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="tg:w-[var(--radix-popover-trigger-width)] tg:p-0" align="start">
-              <Command shouldFilter={false}>
-                <CommandInput
-                  placeholder={t("renderer.defaultHttpInput.search")}
-                  value={searchQuery}
-                  onValueChange={(searchValue) => {
-                    setSearchQuery(searchValue);
-                    setFetchError(null); // Clear error on new search
-                  }}
-                />
-                <CommandList>
-                  {loading && (
-                    <div className="tg:flex tg:items-center tg:justify-center tg:p-4">
-                      <Loader2 className="tg:h-4 tg:w-4 tg:animate-spin" />
-                    </div>
-                  )}
-                  {!loading && fetchError && (
-                    <div className="tg:p-4 tg:text-destructive tg:text-sm">
-                      <div>{fetchError}</div>
-                      <button
-                        type="button"
-                        onClick={() => fetchData(searchQuery)}
-                        className="tg:mt-2 tg:block tg:text-primary tg:hover:underline"
-                      >
-                        {t("renderer.defaultHttpInput.retry")}
-                      </button>
-                    </div>
-                  )}
-                  {!(loading || fetchError) && (
-                    <>
-                      <CommandEmpty>{t("renderer.defaultHttpInput.noResults")}</CommandEmpty>
-                      <CommandGroup>
-                        {options.map((option) => (
-                          <CommandItem
-                            key={option.value}
-                            value={option.value}
-                            onSelect={() => {
-                              setValue(option.value);
-                              setComboboxOpen(false);
-                            }}
-                          >
-                            <Check className={cn("tg:mr-2 tg:h-4 tg:w-4", value === option.value ? "tg:opacity-100" : "tg:opacity-0")} />
-                            {option.label}
-                          </CommandItem>
-                        ))}
-                      </CommandGroup>
-                    </>
-                  )}
-                </CommandList>
-              </Command>
-            </PopoverContent>
-          </Popover>
+          <DependencyHint missing={missing}>
+            <Popover open={comboboxOpen} onOpenChange={setComboboxOpen}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  role="combobox"
+                  aria-expanded={comboboxOpen}
+                  disabled={missing.length > 0}
+                  className="tg:w-full tg:justify-between"
+                >
+                  {buttonContent}
+                  <ChevronsUpDown className="tg:ml-2 tg:h-4 tg:w-4 tg:shrink-0 tg:opacity-50" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="tg:w-[var(--radix-popover-trigger-width)] tg:p-0" align="start">
+                <Command shouldFilter={false}>
+                  <CommandInput
+                    placeholder={t("renderer.defaultHttpInput.search")}
+                    value={searchQuery}
+                    onValueChange={(searchValue) => {
+                      setSearchQuery(searchValue);
+                      setFetchError(null); // Clear error on new search
+                    }}
+                  />
+                  <CommandList>
+                    {loading && (
+                      <div className="tg:flex tg:items-center tg:justify-center tg:p-4">
+                        <Loader2 className="tg:h-4 tg:w-4 tg:animate-spin" />
+                      </div>
+                    )}
+                    {!loading && fetchError && (
+                      <div className="tg:p-4 tg:text-destructive tg:text-sm">
+                        <div>{fetchError}</div>
+                        <button
+                          type="button"
+                          onClick={() => fetchData(searchQuery)}
+                          className="tg:mt-2 tg:block tg:text-primary tg:hover:underline"
+                        >
+                          {t("renderer.defaultHttpInput.retry")}
+                        </button>
+                      </div>
+                    )}
+                    {!(loading || fetchError) && (
+                      <>
+                        <CommandEmpty>{t("renderer.defaultHttpInput.noResults")}</CommandEmpty>
+                        <CommandGroup>
+                          {options.map((option) => (
+                            <CommandItem
+                              key={option.value}
+                              value={option.value}
+                              onSelect={() => {
+                                setValue(option.value);
+                                setComboboxOpen(false);
+                              }}
+                            >
+                              <Check className={cn("tg:mr-2 tg:h-4 tg:w-4", value === option.value ? "tg:opacity-100" : "tg:opacity-0")} />
+                              {option.label}
+                            </CommandItem>
+                          ))}
+                        </CommandGroup>
+                      </>
+                    )}
+                  </CommandList>
+                </Command>
+              </PopoverContent>
+            </Popover>
+          </DependencyHint>
           {error && <FormError>{error}</FormError>}
           {helperText && !error && <FormDescription>{helperText}</FormDescription>}
         </FormItem>
@@ -446,22 +456,11 @@ const DefaultHttpInput = ({ node, value, setValue, error, label, placeholder, he
     // Render as Select (no search)
     const isLoading = loading && httpConfig?.showLoading;
 
-    // Build tooltip message for disabled state
-    const emptyVars = templateVars.filter((varName) => {
-      const value = formValues[varName];
-      return value === undefined || value === null || value === "";
-    });
-
-    // Map empty var IDs to human-readable names
-    const emptyVarNames = emptyVars.map((varName) => getFieldNameFromNodeId(varName, inputNodes) || varName);
-
-    const tooltipMessage =
-      options.length === 0 && !isLoading
-        ? fetchError
-          ? fetchError
-          : emptyVars.length > 0
-            ? `${t("renderer.defaultHttpInput.waitingForRequiredFields")}: ${emptyVarNames.join(", ")}`
-            : t("renderer.defaultHttpInput.noDataAvailable")
+    // Fetch-state hint, shown only once dependencies are satisfied — missing
+    // dependencies are surfaced by DependencyHint instead.
+    const fetchHint =
+      missing.length === 0 && options.length === 0 && !isLoading
+        ? (fetchError ?? t("renderer.defaultHttpInput.noDataAvailable"))
         : undefined;
 
     const selectElement = (
@@ -493,20 +492,22 @@ const DefaultHttpInput = ({ node, value, setValue, error, label, placeholder, he
           {label || node.data.name}
           {node.data.required && <span className="tg:text-red-500">*</span>}
         </Label>
-        {tooltipMessage ? (
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <div className="tg:w-full">{selectElement}</div>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>{tooltipMessage}</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        ) : (
-          selectElement
-        )}
+        <DependencyHint missing={missing}>
+          {fetchHint ? (
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div className="tg:w-full">{selectElement}</div>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>{fetchHint}</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          ) : (
+            selectElement
+          )}
+        </DependencyHint>
         {error && <FormError>{error}</FormError>}
         {helperText && !error && <FormDescription>{helperText}</FormDescription>}
       </FormItem>

@@ -46,6 +46,19 @@ export const resolveNodeKey = (node: Node<InputNodeData>): string => {
 };
 
 /**
+ * Resolve a human, end-user-facing label for an input node, preferring the
+ * translated `label` for the given language over the technical `name`. Used
+ * when surfacing field references to users (e.g. dependency hints). Priority:
+ * translated label > name > node id. This differs from `resolveNodeKey`, which
+ * prioritizes `name` for form-submission keys.
+ * @param node - The input node
+ * @param language - The current language code
+ * @returns The resolved display label
+ */
+export const resolveNodeLabel = (node: Node<InputNodeData>, language: string): string =>
+  getTranslatedText(node.data.label, language) || node.data.name || node.id;
+
+/**
  * Resolve the placeholder text for an input, falling back to the static
  * "newAnswer" translation for textfield-like types when the user has not
  * defined a placeholder for the current language.
