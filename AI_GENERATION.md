@@ -302,7 +302,7 @@ The wand sparkles button is disabled when:
 
 ### Custom System Prompts
 
-To customize how the AI generates flows, edit `src/editor/utils/aiFlowGenerator.ts`:
+To customize how the AI generates flow, edit `src/editor/utils/aiFlowGenerator.ts`:
 
 ```typescript
 const SYSTEM_PROMPT = `Your custom instructions here...`;

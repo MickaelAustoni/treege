@@ -14,7 +14,7 @@ export interface TreegeRendererContextValue {
    * The flow currently being rendered. `null` when the renderer has no flow
    * to display yet.
    */
-  flows?: Flow | null;
+  flow?: Flow | null;
   /**
    * Validation errors keyed by field id (`node.id`). Empty when the form
    * is valid. Renderers read their own entry to display field-level errors.
@@ -72,7 +72,7 @@ export interface TreegeRendererContextValue {
  */
 const DEFAULT_CONTEXT_VALUE: TreegeRendererContextValue = {
   baseUrl: undefined,
-  flows: null,
+  flow: null,
   formErrors: {},
   formValues: {},
   googleApiKey: undefined,
@@ -102,7 +102,7 @@ export const TreegeRendererProvider = ({ children, value }: TreegeRendererProvid
 export const useTreegeRendererContext = () => {
   const context = useContext(TreegeRendererContext);
   const baseContext = context ?? DEFAULT_CONTEXT_VALUE;
-  const edges = useMemo(() => baseContext.flows?.edges ?? [], [baseContext.flows]); // Convenience accessor (kept memoized for stable identity).
+  const edges = useMemo(() => baseContext.flow?.edges ?? [], [baseContext.flow]); // Convenience accessor (kept memoized for stable identity).
 
   return {
     ...baseContext,

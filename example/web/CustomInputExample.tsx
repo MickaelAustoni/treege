@@ -12,7 +12,7 @@ import { ChangeEvent } from "react";
 import { TreegeRenderer } from "@/renderer";
 import type { InputExtraProps, InputFieldProps } from "@/renderer/types/renderer";
 import { Flow, InputOption } from "@/shared/types/node";
-import flows from "~/example/json/treege.json";
+import flow from "~/example/json/treege.json";
 
 // ✅ Example 1: Simple custom text input (recommended approach)
 // Define your component OUTSIDE the render function to avoid re-creation and focus loss.
@@ -109,7 +109,7 @@ const CustomInputsExample = () => {
   return (
     <div className={"tg:p-6"}>
       <TreegeRenderer
-        flows={flows as Flow}
+        flow={flow as Flow}
         onSubmit={handleSubmit}
         components={{
           inputs: {
@@ -127,7 +127,7 @@ const CustomInputsExample = () => {
 export const WrongExample = () => {
   return (
     <TreegeRenderer
-      flows={flows as Flow}
+      flow={flow as Flow}
       onSubmit={() => {}}
       components={{
         inputs: {
@@ -143,7 +143,7 @@ export const WrongExample = () => {
 export const CorrectExample = () => {
   return (
     <TreegeRenderer
-      flows={flows as Flow}
+      flow={flow as Flow}
       onSubmit={() => {}}
       components={{
         inputs: {

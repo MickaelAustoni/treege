@@ -1,7 +1,7 @@
 import { StatusBar } from "expo-status-bar";
 import { Alert, StyleSheet, View } from "react-native";
 import { TreegeRenderer } from "treege/renderer-native";
-import flows from "~/example/json/treege.json";
+import flow from "~/example/json/treege.json";
 import { Flow } from "@/shared/types/node";
 
 export default function App() {
@@ -12,7 +12,7 @@ export default function App() {
   return (
     <View style={styles.container}>
       <TreegeRenderer
-        flows={flows  as Flow}
+        flow={flow  as Flow}
         onSubmit={handleSubmit}
         contentContainerStyle={styles.scrollContent}
         theme="dark"

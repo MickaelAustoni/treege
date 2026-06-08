@@ -6,7 +6,7 @@
  */
 
 import { TreegeConfigProvider, TreegeRenderer, type InputExtraProps, type InputFieldProps } from "@/renderer";
-import flows from "~/example/json/treege.json";
+import flow from "~/example/json/treege.json";
 import { Flow } from "@/shared/types/node";
 
 // Define your custom components once. `field` is spreadable onto the input;
@@ -47,15 +47,14 @@ const TreegeConfigProviderExample = () => {
         <h1 className={"tg:text-center tg:mb-10"}>My App with Treege Config Provider</h1>
 
         {/* This renderer inherits all config from provider */}
-        <TreegeRenderer flows={flows as Flow} onSubmit={(values) => console.log("Form 1:", values)} />
+        <TreegeRenderer flow={flow as Flow} onSubmit={(values) => console.log("Form 1:", values)} />
 
         {/* This renderer also inherits the config */}
-        <TreegeRenderer flows={flows as Flow} onSubmit={(values) => console.log("Form 2:", values)} />
+        <TreegeRenderer flow={flow as Flow} onSubmit={(values) => console.log("Form 2:", values)} />
 
         {/* This renderer overrides the theme (props take precedence) */}
         <TreegeRenderer
-          flows={flows as Flow}
-
+          flow={flow as Flow}
           onSubmit={(values) => console.log("Form 3:", values)}
         />
       </div>

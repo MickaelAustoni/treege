@@ -14,16 +14,6 @@ export const VERTICAL_NODE_SPACING = 100;
 export const HORIZONTAL_NODE_OFFSET = 50;
 
 /**
- * Horizontal spacing for AI-generated flows (in pixels)
- */
-export const AI_HORIZONTAL_SPACING = 350;
-
-/**
- * Position tolerance for detecting nodes at the same Y position (in pixels)
- */
-export const POSITION_TOLERANCE = 20;
-
-/**
  * Default direction for the auto-layout algorithm.
  * "TB" = top to bottom, "LR" = left to right.
  */

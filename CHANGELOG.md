@@ -168,7 +168,7 @@ Version 3.0 introduces full React Native support with a dedicated renderer imple
 import { TreegeRenderer } from "treege/renderer-native";
 
 <TreegeRenderer
-  flows={flow}
+  flow={flow}
   onSubmit={(values) => console.log(values)}
 />
 ```

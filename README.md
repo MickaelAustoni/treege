@@ -22,7 +22,7 @@
 
 ## Overview
 
-Treege is a modern React library for creating and rendering interactive decision trees. Built on top of ReactFlow, it provides a complete solution for building complex form flows, decision logic, and conditional workflows with an intuitive visual editor.
+Treege is a modern React library for creating and rendering interactive decision trees. Built on top of ReactFlow, it provides a complete solution for building complex form flow, decision logic, and conditional workflows with an intuitive visual editor.
 
 ## Features
 
@@ -132,7 +132,7 @@ function App() {
 
   return (
     <TreegeRenderer
-      flows={flow}
+      flow={flow}
       onSubmit={handleSubmit}
     />
   );
@@ -159,7 +159,7 @@ function App() {
       {mode === "edit" ? (
         <TreegeEditor flow={flow} onSave={setFlow} />
       ) : (
-        <TreegeRenderer flows={flow} onSubmit={console.log} />
+        <TreegeRenderer flow={flow} onSubmit={console.log} />
       )}
     </div>
   );
@@ -242,7 +242,7 @@ function App() {
 
   return (
     <TreegeRenderer
-      flows={flow}
+      flow={flow}
       onSubmit={handleSubmit}
     />
   );
@@ -255,7 +255,7 @@ You can customize the appearance using the `style` and `contentContainerStyle` p
 
 ```tsx
 <TreegeRenderer
-  flows={flow}
+  flow={flow}
   onSubmit={handleSubmit}
   style={{ flex: 1, backgroundColor: "#f5f5f5" }}
   contentContainerStyle={{ padding: 20 }}
@@ -301,7 +301,7 @@ const CustomTextInput = (field, extra) => {
 };
 
 <TreegeRenderer
-  flows={flow}
+  flow={flow}
   components={{
     inputs: {
       text: CustomTextInput
@@ -337,7 +337,7 @@ The React Native renderer shares the same API as the web renderer, with some pla
 
 | Prop                    | Type                                        | Default      | Description                                                |
 |-------------------------|---------------------------------------------|--------------|------------------------------------------------------------|
-| `flows`                 | `Flow \| null`                              | -            | Decision tree to render                                    |
+| `flow`                  | `Flow \| null`                              | -            | Decision tree to render                                    |
 | `onSubmit`              | `(values: FormValues, meta?: Meta) => void` | -            | Form submission handler (meta includes HTTP response data) |
 | `onChange`              | `(values: FormValues) => void`              | -            | Form change handler                                        |
 | `validate`              | `(values, nodes) => Record<string, string>` | -            | Custom validation function                                 |
@@ -406,7 +406,7 @@ Supported UI types:
 
 ## Conditional Edges
 
-Create dynamic flows with conditional logic:
+Create dynamic flow with conditional logic:
 
 ```tsx
 {
@@ -474,7 +474,7 @@ const CustomTextInput = (field, extra) => {
 };
 
 <TreegeRenderer
-  flows={flow}
+  flow={flow}
   components={{
     inputs: {
       text: CustomTextInput
@@ -489,7 +489,7 @@ Add custom validation logic:
 
 ```tsx
 <TreegeRenderer
-  flows={flow}
+  flow={flow}
   validate={(values, visibleNodes) => {
     const errors = {};
 
@@ -558,7 +558,7 @@ function App() {
         }
       }}
     >
-      <TreegeRenderer flows={flow} />
+      <TreegeRenderer flow={flow} />
     </TreegeConfigProvider>
   );
 }
@@ -572,7 +572,7 @@ When the flow is being fetched asynchronously, pass `isLoading` to render a skel
 function App() {
   const { data: flow, isPending } = useQuery(/* ... */);
 
-  return <TreegeRenderer flows={flow ?? null} isLoading={isPending} onSubmit={console.log} />;
+  return <TreegeRenderer flow={flow ?? null} isLoading={isPending} onSubmit={console.log} />;
 }
 ```
 
@@ -580,7 +580,7 @@ Customize the skeleton via `components.loadingSkeleton`:
 
 ```tsx
 <TreegeRenderer
-  flows={flow}
+  flow={flow}
   isLoading={isPending}
   components={{
     loadingSkeleton: () => <MyCustomSkeleton />,
@@ -596,7 +596,7 @@ Override the default step layout via `components.step`:
 
 ```tsx
 <TreegeRenderer
-  flows={flow}
+  flow={flow}
   components={{
     step: ({ label, children, isFirstStep, isLastStep, canContinue, onBack, onContinue }) => (
       <section>
@@ -627,12 +627,11 @@ function CustomForm({ flow }) {
     formErrors,
     visibleNodes,
     isSubmitting,
-    // step navigation
     currentStep,
     goToNextStep,
     goToPreviousStep,
   } = useTreegeRenderer({
-    flows: flow,
+    flow,
     onSubmit: (values) => console.log("Submitted:", values),
   });
 
@@ -706,7 +705,7 @@ Once the development server is running, you can access these examples:
 
 | Prop             | Type                                        | Default      | Description                                                |
 |------------------|---------------------------------------------|--------------|------------------------------------------------------------|
-| `flows`          | `Flow \| null`                              | -            | Decision tree to render                                    |
+| `flow`          | `Flow \| null`                              | -            | Decision tree to render                                    |
 | `onSubmit`       | `(values: FormValues, meta?: Meta) => void` | -            | Form submission handler (meta includes HTTP response data) |
 | `onChange`       | `(values: FormValues) => void`              | -            | Form change handler                                        |
 | `validate`       | `(values, nodes) => Record<string, string>` | -            | Custom validation function                                 |

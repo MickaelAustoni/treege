@@ -86,9 +86,7 @@ const BottomHandleDropdown = ({ nodeId, isConnectable, hidden, canBranch, isJunc
       aria-label={isJunction ? t("editor.stackedEdge.createBranch") : t("editor.stackedEdge.addNode")}
       className={cn(
         "tg:flex tg:h-6! tg:w-6! tg:cursor-pointer tg:items-center tg:justify-center tg:rounded-sm tg:transition tg:hover:bg-primary/80!",
-        // When live, override React Flow's absolute Position.Bottom placement so the handle flows inside the flex row.
-        // When inert, keep the default absolute placement so it stays measurable for edge anchoring without taking a flex slot.
-        handleHidden ? "tg:pointer-events-none tg:opacity-0" : "tg:relative! tg:inset-auto! tg:transform-none!",
+        handleHidden ? "tg:pointer-events-none tg:opacity-0" : "tg:relative! tg:transform-none! tg:inset-auto!",
       )}
     >
       {!handleHidden &&

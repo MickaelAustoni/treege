@@ -334,7 +334,7 @@ export type TreegeRendererConfig = {
    *
    * @example
    * // In the tree: "url": "/v2/entities/{{nodeId}}/sub-entities"
-   * <TreegeRenderer flows={tree} baseUrl={import.meta.env.VITE_API_URL} />
+   * <TreegeRenderer flow={tree} baseUrl={import.meta.env.VITE_API_URL} />
    *
    * Absolute urls (starting with `http://` or `https://`) are left untouched,
    * so a field can still point at an external API. Template variables are
@@ -348,7 +348,7 @@ export type TreegeRendererConfig = {
  *
  * Inherits all configuration fields from TreegeRendererConfig (components,
  * headers, googleApiKey, language, theme, validationMode) and adds the
- * instance-specific ones (flows, callbacks, initial values, etc.).
+ * instance-specific ones (flow, callbacks, initial values, etc.).
  */
 export interface TreegeRendererProps extends TreegeRendererConfig {
   /**
@@ -358,7 +358,7 @@ export interface TreegeRendererProps extends TreegeRendererConfig {
   /**
    * Flow to render. `null` / `undefined` renders nothing.
    */
-  flows?: Flow | null;
+  flow?: Flow | null;
   /**
    * Initial form values
    */

@@ -8,8 +8,8 @@ import { Switch } from "@/shared/components/ui/switch";
 import { Language, LANGUAGES } from "@/shared/constants/languages";
 import { useMediaQuery } from "@/shared/hooks/useMediaQuery";
 import { Flow, HttpHeader } from "@/shared/types/node";
-import flows from "~/example/json/treege.json";
-import flowsComplex from "~/example/json/treege-all-inputs.json";
+import flow from "~/example/json/treege.json";
+import flowComplex from "~/example/json/treege-all-inputs.json";
 
 const baseUrl = import.meta.env.VITE_BASE_URL || import.meta.env.VITE_OPENAPI_BASE_URL || undefined;
 
@@ -136,7 +136,7 @@ const RendererPanel = ({
           <>
             <TreegeRenderer
               baseUrl={baseUrl}
-              flows={flow}
+              flow={flow}
               language={language}
               theme={theme}
               headers={headers}
@@ -264,11 +264,11 @@ const Layout = ({ flow }: { flow?: Flow }) => {
 
 const Example = ({ demo, all } : { demo?: boolean; all?: boolean }) => {
   if(demo){
-    return <Layout flow={flows as Flow} />
+    return <Layout flow={flow as Flow} />
   }
 
   if(all){
-    return <Layout flow={flowsComplex as Flow} />
+    return <Layout flow={flowComplex as Flow} />
   }
 
   return  <Layout />

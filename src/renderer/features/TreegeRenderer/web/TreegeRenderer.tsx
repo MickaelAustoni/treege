@@ -19,7 +19,7 @@ const TreegeRenderer = ({
   baseUrl,
   components,
   className,
-  flows,
+  flow,
   googleApiKey,
   headers,
   language,
@@ -57,7 +57,7 @@ const TreegeRenderer = ({
   } = useTreegeRenderer({
     baseUrl,
     components,
-    flows,
+    flow,
     googleApiKey,
     headers,
     initialValues,
@@ -131,7 +131,7 @@ const TreegeRenderer = ({
           <TreegeRendererProvider
             value={{
               baseUrl: config.baseUrl,
-              flows,
+              flow,
               formErrors,
               formValues,
               googleApiKey: config.googleApiKey,

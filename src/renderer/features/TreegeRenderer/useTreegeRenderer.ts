@@ -27,27 +27,27 @@ import { isGroupNode, isInputNode } from "@/shared/utils/nodeTypeGuards";
  * - Submit handling (with HTTP integration support)
  * - Side effects (onChange callbacks, validation modes, reference field sync)
  *
- * @param props - Configuration props (flows, initialValues, callbacks, etc.)
+ * @param props - Configuration props (flow, initialValues, callbacks, etc.)
  * @returns Complete form state and control methods
  */
 export const useTreegeRenderer = ({
   baseUrl,
   components,
-  flows,
+  flow,
   googleApiKey,
   headers,
-  initialValues = {},
   language,
   onChange,
   onSubmit,
   theme,
   validate,
   validationMode,
+  initialValues = {},
 }: Pick<
   TreegeRendererProps,
   | "baseUrl"
   | "components"
-  | "flows"
+  | "flow"
   | "googleApiKey"
   | "headers"
   | "initialValues"
@@ -91,8 +91,8 @@ export const useTreegeRenderer = ({
   // FLOW AND NODE STATE
   // ============================================
 
-  const nodes = useMemo(() => flows?.nodes ?? [], [flows]);
-  const edges = useMemo(() => flows?.edges ?? [], [flows]);
+  const nodes = useMemo(() => flow?.nodes ?? [], [flow]);
+  const edges = useMemo(() => flow?.edges ?? [], [flow]);
   const inputNodes = useMemo(() => getInputNodes(nodes), [nodes]);
   const t = useTranslate(config.language);
   const prevFormValuesRef = useRef<FormValues>({});
