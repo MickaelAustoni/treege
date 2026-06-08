@@ -335,22 +335,22 @@ You can implement these inputs using popular React Native libraries:
 
 The React Native renderer shares the same API as the web renderer, with some platform-specific props:
 
-| Prop                    | Type                                        | Default      | Description                                                |
-|-------------------------|---------------------------------------------|--------------|------------------------------------------------------------|
-| `flow`                  | `Flow \| null`                              | -            | Decision tree to render                                    |
-| `onSubmit`              | `(values: FormValues, meta?: Meta) => void` | -            | Form submission handler (meta includes HTTP response data) |
-| `onChange`              | `(values: FormValues) => void`              | -            | Form change handler                                        |
-| `validate`              | `(values, nodes) => Record<string, string>` | -            | Custom validation function                                 |
-| `initialValues`         | `FormValues`                                | `{}`         | Initial form values                                        |
-| `components`            | `TreegeRendererComponents`                  | -            | Custom component overrides                                 |
-| `language`              | `string`                                    | `"en"`       | UI language                                                |
-| `validationMode`        | `"onSubmit" \| "onChange"`                  | `"onSubmit"` | When to validate                                           |
-| `theme`                 | `"light" \| "dark"`                         | `"dark"`     | Renderer theme                                             |
-| `googleApiKey`          | `string`                                    | -            | API key for address input                                  |
-| `headers`               | `HttpHeaders`                              | -            | HTTP headers as `{ name: value }`, applied to every request (field-level wins)   |
-| `isLoading`             | `boolean`                                   | `false`      | Render a loading skeleton instead of the form              |
-| `style`                 | `ViewStyle`                                 | -            | ScrollView style (RN only)                                 |
-| `contentContainerStyle` | `ViewStyle`                                 | -            | Content container style (RN)                               |
+| Prop                    | Type                                        | Default      | Description                                                                    |
+|-------------------------|---------------------------------------------|--------------|--------------------------------------------------------------------------------|
+| `flow`                  | `Flow \| null`                              | -            | Decision tree to render                                                        |
+| `onSubmit`              | `(values: FormValues, meta?: Meta) => void` | -            | Form submission handler (meta includes HTTP response data)                     |
+| `onChange`              | `(values: FormValues) => void`              | -            | Form change handler                                                            |
+| `validate`              | `(values, nodes) => Record<string, string>` | -            | Custom validation function                                                     |
+| `initialValues`         | `FormValues`                                | `{}`         | Initial form values                                                            |
+| `components`            | `TreegeRendererComponents`                  | -            | Custom component overrides                                                     |
+| `language`              | `string`                                    | `"en"`       | UI language                                                                    |
+| `validationMode`        | `"onSubmit" \| "onChange"`                  | `"onSubmit"` | When to validate                                                               |
+| `theme`                 | `"light" \| "dark"`                         | `"dark"`     | Renderer theme                                                                 |
+| `googleApiKey`          | `string`                                    | -            | API key for address input                                                      |
+| `headers`               | `HttpHeaders`                               | -            | HTTP headers as `{ name: value }`, applied to every request (field-level wins) |
+| `isLoading`             | `boolean`                                   | `false`      | Render a loading skeleton instead of the form                                  |
+| `style`                 | `ViewStyle`                                 | -            | ScrollView style (RN only)                                                     |
+| `contentContainerStyle` | `ViewStyle`                                 | -            | Content container style (RN)                                                   |
 
 ## Node Types
 
@@ -683,39 +683,39 @@ Once the development server is running, you can access these examples:
 
 ### TreegeEditor Props
 
-| Prop              | Type                                     | Default  | Description                                                                                                                                                                                         |
-|-------------------|------------------------------------------|----------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `flow`            | `Flow \| null`                           | `null`   | Initial decision tree                                                                                                                                                                               |
-| `onSave`          | `(flow: Flow) => void`                   | -        | Callback when tree is saved                                                                                                                                                                         |
-| `onExportJson`    | `() => { nodes: Node[]; edges: Edge[] }` | -        | Callback for exporting JSON data                                                                                                                                                                    |
-| `language`        | `string`                                 | `"en"`   | UI language                                                                                                                                                                                         |
-| `theme`           | `"light" \| "dark"`                      | `"dark"` | Editor theme                                                                                                                                                                                        |
-| `aiConfig`        | `AIConfig`                               | -        | AI configuration for tree generation (see [AI Generation](./AI_GENERATION.md))                                                                                                                      |
-| `className`       | `string`                                 | -        | Additional CSS class names for custom styling                                                                                                                                                       |
-| `extraMenuItems`  | `ExtraMenuItem[]`                        | -        | Extra entries appended to the actions panel "more" dropdown                                                                                                                                         |
-| `openApi`         | `OpenApiDocument \| string`              | -        | OpenAPI 3.x source used to power URL/route suggestions and the Authorize flow. Accepts a pre-parsed document or a URL string (the editor fetches it on mount and toasts on failure)                 |
-| `openApiBaseUrl`  | `string`                                 | -        | Base URL used for OpenAPI route resolution. When set, takes precedence over the document's `servers[0].url` — useful when the spec points at a different environment than the one to call           |
-| `headers`         | `HttpHeaders`                           | -        | Global HTTP headers applied to in-editor requests (e.g. the "Detect fields" button). Pass the same value you give to `TreegeRenderer` so editor previews use the same auth/headers as runtime       |
-| `onAuthorize`     | `(headers: HttpHeaders) => void`        | -        | Called when the user submits the Authorize dialog. Forward the resulting headers to `TreegeRenderer` (or `TreegeRendererProvider`) so every form request is authenticated                             |
-| `onHeadersChange` | `(headers: HttpHeaders) => void`        | -        | Called when the user edits headers in the built-in "Global headers" dialog. The component is controlled — update your `headers` state in response and pass the new object back via the `headers` prop |
+| Prop              | Type                                     | Default  | Description                                                                                                                                                                                                         |
+|-------------------|------------------------------------------|----------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `flow`            | `Flow \| null`                           | `null`   | Initial decision tree                                                                                                                                                                                               |
+| `onSave`          | `(flow: Flow) => void`                   | -        | Callback when tree is saved                                                                                                                                                                                         |
+| `onExportJson`    | `() => { nodes: Node[]; edges: Edge[] }` | -        | Callback for exporting JSON data                                                                                                                                                                                    |
+| `language`        | `string`                                 | `"en"`   | UI language                                                                                                                                                                                                         |
+| `theme`           | `"light" \| "dark"`                      | `"dark"` | Editor theme                                                                                                                                                                                                        |
+| `aiConfig`        | `AIConfig`                               | -        | AI configuration for tree generation (see [AI Generation](./AI_GENERATION.md))                                                                                                                                      |
+| `className`       | `string`                                 | -        | Additional CSS class names for custom styling                                                                                                                                                                       |
+| `extraMenuItems`  | `ExtraMenuItem[]`                        | -        | Extra entries appended to the actions panel "more" dropdown                                                                                                                                                         |
+| `openApi`         | `OpenApiDocument \| string`              | -        | OpenAPI 3.x source used to power URL/route suggestions and the Authorize flow. Accepts a pre-parsed document or a URL string (the editor fetches it on mount and toasts on failure)                                 |
+| `baseUrl`         | `string`                                 | -        | Base URL the tree runs against. HTTP/options-source urls are stored relative to it, shown as a read-only prefix, and used to resolve the "Detect fields" probe. Pass the same value as `TreegeRenderer`'s `baseUrl` |
+| `headers`         | `HttpHeaders`                            | -        | Global HTTP headers applied to in-editor requests (e.g. the "Detect fields" button). Pass the same value you give to `TreegeRenderer` so editor previews use the same auth/headers as runtime                       |
+| `onAuthorize`     | `(headers: HttpHeaders) => void`         | -        | Called when the user submits the Authorize dialog. Forward the resulting headers to `TreegeRenderer` (or `TreegeRendererProvider`) so every form request is authenticated                                           |
+| `onHeadersChange` | `(headers: HttpHeaders) => void`         | -        | Called when the user edits headers in the built-in "Global headers" dialog. The component is controlled — update your `headers` state in response and pass the new object back via the `headers` prop               |
 
 ### TreegeRenderer Props
 
-| Prop             | Type                                        | Default      | Description                                                |
-|------------------|---------------------------------------------|--------------|------------------------------------------------------------|
-| `flow`          | `Flow \| null`                              | -            | Decision tree to render                                    |
-| `onSubmit`       | `(values: FormValues, meta?: Meta) => void` | -            | Form submission handler (meta includes HTTP response data) |
-| `onChange`       | `(values: FormValues) => void`              | -            | Form change handler                                        |
-| `validate`       | `(values, nodes) => Record<string, string>` | -            | Custom validation function                                 |
-| `initialValues`  | `FormValues`                                | `{}`         | Initial form values                                        |
-| `components`     | `TreegeRendererComponents`                  | -            | Custom component overrides                                 |
-| `language`       | `string`                                    | `"en"`       | UI language                                                |
-| `validationMode` | `"onSubmit" \| "onChange"`                  | `"onSubmit"` | When to validate                                           |
-| `theme`          | `"light" \| "dark"`                         | `"dark"`     | Renderer theme                                             |
-| `googleApiKey`   | `string`                                    | -            | API key for address input                                  |
-| `headers`        | `HttpHeaders`                              | -            | HTTP headers as `{ name: value }`, applied to every request (field-level wins)   |
-| `isLoading`      | `boolean`                                   | `false`      | Render a loading skeleton instead of the form (see below)  |
-| `className`      | `string`                                    | -            | Additional CSS class names for custom styling              |
+| Prop             | Type                                        | Default      | Description                                                                    |
+|------------------|---------------------------------------------|--------------|--------------------------------------------------------------------------------|
+| `flow`           | `Flow \| null`                              | -            | Decision tree to render                                                        |
+| `onSubmit`       | `(values: FormValues, meta?: Meta) => void` | -            | Form submission handler (meta includes HTTP response data)                     |
+| `onChange`       | `(values: FormValues) => void`              | -            | Form change handler                                                            |
+| `validate`       | `(values, nodes) => Record<string, string>` | -            | Custom validation function                                                     |
+| `initialValues`  | `FormValues`                                | `{}`         | Initial form values                                                            |
+| `components`     | `TreegeRendererComponents`                  | -            | Custom component overrides                                                     |
+| `language`       | `string`                                    | `"en"`       | UI language                                                                    |
+| `validationMode` | `"onSubmit" \| "onChange"`                  | `"onSubmit"` | When to validate                                                               |
+| `theme`          | `"light" \| "dark"`                         | `"dark"`     | Renderer theme                                                                 |
+| `googleApiKey`   | `string`                                    | -            | API key for address input                                                      |
+| `headers`        | `HttpHeaders`                               | -            | HTTP headers as `{ name: value }`, applied to every request (field-level wins) |
+| `isLoading`      | `boolean`                                   | `false`      | Render a loading skeleton instead of the form (see below)                      |
+| `className`      | `string`                                    | -            | Additional CSS class names for custom styling                                  |
 
 ## Development
 

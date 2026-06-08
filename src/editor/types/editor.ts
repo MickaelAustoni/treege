@@ -99,12 +99,6 @@ export interface TreegeEditorProps {
    */
   baseUrl?: string;
   /**
-   * @deprecated Use `baseUrl` instead — it now covers OpenAPI route resolution
-   * and the general runtime base. Kept as an alias for backward compatibility;
-   * `baseUrl` wins when both are set.
-   */
-  openApiBaseUrl?: string;
-  /**
    * Global HTTP headers applied to in-editor requests (e.g. the "Detect
    * fields" button in `OptionsSourceForm`). Pass the same value you give to
    * `TreegeRenderer` so editor-time previews use the same auth and headers

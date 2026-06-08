@@ -61,7 +61,7 @@ const Flow = ({
         onNodeDragStart={takeSnapshot}
         onBeforeDelete={onBeforeDelete}
         isValidConnection={isValidConnection}
-        className={cn(className, "treege")}
+        className={cn(className, "treege treege-editor")}
       >
         <AutoLayout />
         <Background gap={10} variant={BackgroundVariant.Dots} />
@@ -96,7 +96,6 @@ const TreegeEditor = ({
   extraMenuItems,
   openApi,
   baseUrl,
-  openApiBaseUrl,
   onAuthorize,
   headers,
   onHeadersChange,
@@ -126,7 +125,7 @@ const TreegeEditor = ({
       <ThemeProvider defaultTheme={theme} storageKey="treege-editor-theme" theme={theme}>
         <Toaster position="bottom-center" />
         <TreegeEditorRuntimeProvider value={{ aiConfig, flowId: flow?.id, headers, language, setLanguage: handleLanguageChange }}>
-          <OpenApiProvider initialDocument={openApi} initialBaseUrl={baseUrl ?? openApiBaseUrl}>
+          <OpenApiProvider initialDocument={openApi} initialBaseUrl={baseUrl}>
             <ReactFlowProvider>
               <Flow
                 onExportJson={onExportJson}

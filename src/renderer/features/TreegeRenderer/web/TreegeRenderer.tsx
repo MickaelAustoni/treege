@@ -125,7 +125,7 @@ const TreegeRenderer = ({
   }, [isLastStep, handleSubmit, goToNextStep]);
 
   return (
-    <div ref={setPortalContainer} className={cn("treege", className)}>
+    <div ref={setPortalContainer} className={cn("treege treege-renderer", className)}>
       <PortalContainerProvider container={portalContainer}>
         <RendererStyles />
         <ThemeProvider theme={config.theme} storageKey="treege-renderer-theme">
