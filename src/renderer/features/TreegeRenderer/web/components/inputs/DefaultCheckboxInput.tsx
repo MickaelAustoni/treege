@@ -59,6 +59,7 @@ const DefaultCheckboxInput = (field: InputFieldProps<"checkbox">, extra: InputEx
                   disabled={option.disabled}
                   className="tg:mt-0.5"
                 />
+                {option.image && <img src={option.image} alt="" className="tg:h-8 tg:w-8 tg:shrink-0 tg:rounded tg:object-cover" />}
                 <div className={cn("tg:flex tg:flex-col", compactOptions && "tg:min-w-0 tg:flex-1 tg:overflow-hidden")}>
                   <Label
                     htmlFor={`${id}-${option.value}`}

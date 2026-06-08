@@ -29,9 +29,6 @@ const isSupportedLanguage = (value: string): value is Language => (Object.values
 
 const InputNodeForm = () => {
   const { language } = useTreegeEditorRuntime();
-  // Default the per-node translation editor to the editor's global language, so
-  // switching the editor language also switches which translation you author by
-  // default. The selector below remains a per-node override.
   const [selectedLanguage, setSelectedLanguage] = useState<Language>(isSupportedLanguage(language) ? language : "en");
   const { selectedNode } = useNodesSelection<InputNodeData>();
   const { updateSelectedNodeData } = useFlowActions();
@@ -260,16 +257,14 @@ const InputNodeForm = () => {
                               <div key={key} className="tg:flex tg:flex-col tg:gap-2">
                                 {index > 0 && <Separator className="tg:my-1" />}
                                 <div className="tg:flex tg:items-start tg:gap-2">
-                                  {selectedNode?.data?.type === "radio" && (
-                                    <Field name={`options[${index}].image`}>
-                                      {(subField) => (
-                                        <OptionImageField
-                                          value={subField.state.value}
-                                          onChange={(newValue) => subField.handleChange(newValue)}
-                                        />
-                                      )}
-                                    </Field>
-                                  )}
+                                  <Field name={`options[${index}].image`}>
+                                    {(subField) => (
+                                      <OptionImageField
+                                        value={subField.state.value}
+                                        onChange={(newValue) => subField.handleChange(newValue)}
+                                      />
+                                    )}
+                                  </Field>
 
                                   <Field name={`options[${index}].label`}>
                                     {(subField) => (
@@ -311,27 +306,25 @@ const InputNodeForm = () => {
                                   </Button>
                                 </div>
 
-                                {(selectedNode?.data?.type === "radio" || selectedNode?.data?.type === "checkbox") && (
-                                  <Field name={`options[${index}].description`}>
-                                    {(subField) => (
-                                      <Input
-                                        placeholder={t("editor.inputNodeForm.optionDescription")}
-                                        value={
-                                          (subField.state.value as { [key: string]: string | undefined } | undefined)?.[selectedLanguage] ||
-                                          ""
-                                        }
-                                        onChange={({ target }) => {
-                                          subField.handleChange({
-                                            ...(typeof subField.state.value === "object" && subField.state.value !== null
-                                              ? subField.state.value
-                                              : {}),
-                                            [selectedLanguage]: target.value,
-                                          } as never);
-                                        }}
-                                      />
-                                    )}
-                                  </Field>
-                                )}
+                                <Field name={`options[${index}].description`}>
+                                  {(subField) => (
+                                    <Input
+                                      placeholder={t("editor.inputNodeForm.optionDescription")}
+                                      value={
+                                        (subField.state.value as { [key: string]: string | undefined } | undefined)?.[selectedLanguage] ||
+                                        ""
+                                      }
+                                      onChange={({ target }) => {
+                                        subField.handleChange({
+                                          ...(typeof subField.state.value === "object" && subField.state.value !== null
+                                            ? subField.state.value
+                                            : {}),
+                                          [selectedLanguage]: target.value,
+                                        } as never);
+                                      }}
+                                    />
+                                  )}
+                                </Field>
                               </div>
                             );
                           })}

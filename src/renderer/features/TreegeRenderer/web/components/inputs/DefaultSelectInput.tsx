@@ -1,5 +1,6 @@
 import { Loader2 } from "lucide-react";
 import DependencyHint from "@/renderer/features/TreegeRenderer/web/components/DependencyHint";
+import OptionItemContent from "@/renderer/features/TreegeRenderer/web/components/OptionItemContent";
 import { useInputOptions } from "@/renderer/hooks/useInputOptions";
 import { useTranslate } from "@/renderer/hooks/useTranslate";
 import { InputExtraProps, InputFieldProps } from "@/renderer/types/renderer";
@@ -31,7 +32,7 @@ const DefaultSelectInput = (field: InputFieldProps<"select">, extra: InputExtraP
               {options.map((option, index) => {
                 return (
                   <SelectItem key={`${option.value}-${index}`} value={String(option.value)} disabled={option.disabled}>
-                    {t(option.label) ? t(option.label) : option.value}
+                    <OptionItemContent label={t(option.label) || option.value} description={t(option.description)} image={option.image} />
                   </SelectItem>
                 );
               })}

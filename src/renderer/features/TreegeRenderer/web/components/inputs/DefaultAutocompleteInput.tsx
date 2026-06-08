@@ -1,6 +1,7 @@
 import { Check, ChevronsUpDown, Loader2 } from "lucide-react";
 import { useState } from "react";
 import DependencyHint from "@/renderer/features/TreegeRenderer/web/components/DependencyHint";
+import OptionItemContent from "@/renderer/features/TreegeRenderer/web/components/OptionItemContent";
 import { useInputOptions } from "@/renderer/hooks/useInputOptions";
 import { useTranslate } from "@/renderer/hooks/useTranslate";
 import { InputExtraProps, InputFieldProps } from "@/renderer/types/renderer";
@@ -68,7 +69,7 @@ const DefaultAutocompleteInput = (field: InputFieldProps<"autocomplete">, extra:
                       }}
                     >
                       <Check className={cn("tg:mr-2 tg:size-4", value === option.value ? "tg:opacity-100" : "tg:opacity-0")} />
-                      {t(option.label)}
+                      <OptionItemContent label={t(option.label) || option.value} description={t(option.description)} image={option.image} />
                     </CommandItem>
                   ))}
                 </CommandGroup>

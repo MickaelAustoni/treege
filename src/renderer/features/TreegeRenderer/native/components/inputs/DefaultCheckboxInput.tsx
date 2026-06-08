@@ -1,4 +1,4 @@
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useTranslate } from "@/renderer/hooks/useTranslate";
 import { InputExtraProps, InputFieldProps } from "@/renderer/types/renderer";
 import { useTheme } from "@/shared/context/ThemeContext";
@@ -61,6 +61,7 @@ const DefaultCheckboxInput = (field: InputFieldProps<"checkbox">, extra: InputEx
               >
                 {isChecked(option.value) && <Text style={styles.checkmark}>✓</Text>}
               </View>
+              {option.image ? <Image source={{ uri: option.image }} style={styles.image} /> : null}
               <View style={styles.optionTextContainer}>
                 <Text style={[styles.optionLabel, { color: colors.textSecondary }, option.disabled && { color: colors.textMuted }]}>
                   {t(option.label) || option.value}
@@ -125,6 +126,12 @@ const styles = StyleSheet.create({
   helperText: {
     fontSize: 12,
     marginTop: 4,
+  },
+  image: {
+    borderRadius: 4,
+    height: 32,
+    marginRight: 8,
+    width: 32,
   },
   label: {
     fontSize: 14,

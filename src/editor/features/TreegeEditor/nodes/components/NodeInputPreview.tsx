@@ -86,8 +86,8 @@ const NodeInputPreview = ({ nodeId, data }: NodeInputPreviewProps) => {
   const optionsSourceUrl = hasOptions ? data.optionsSource?.url : undefined;
   const previewUrl = optionsSourceUrl ?? (inputType === "http" ? data.httpConfig?.url : undefined);
   const options = hasOptions ? (data.options ?? []) : [];
-  const supportsImage = inputType === "radio";
-  const supportsDescription = inputType === "radio" || inputType === "checkbox";
+  const supportsImage = hasOptions;
+  const supportsDescription = hasOptions;
 
   // Resolve the form name BEFORE stripping the data so the runtime renderer
   // still receives a meaningful `name` prop (used for input `name=` attribute).

@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { FlatList, Modal, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import OptionItemContent from "@/renderer/features/TreegeRenderer/native/components/OptionItemContent";
 import { useTranslate } from "@/renderer/hooks/useTranslate";
 import { InputExtraProps, InputFieldProps } from "@/renderer/types/renderer";
 import { useTheme } from "@/shared/context/ThemeContext";
@@ -105,9 +106,12 @@ const DefaultAutocompleteInput = (field: InputFieldProps<"autocomplete">, extra:
                     disabled={item.disabled}
                     activeOpacity={0.7}
                   >
-                    <Text style={[styles.optionText, { color: colors.text }, item.disabled && { color: colors.textMuted }]}>
-                      {t(item.label)}
-                    </Text>
+                    <OptionItemContent
+                      label={t(item.label) || item.value}
+                      description={t(item.description)}
+                      image={item.image}
+                      disabled={item.disabled}
+                    />
                     {isSelected && <Text style={[styles.checkmark, { color: colors.primary }]}>✓</Text>}
                   </TouchableOpacity>
                 );
@@ -196,10 +200,6 @@ const styles = StyleSheet.create({
   },
   optionsListContent: {
     flexGrow: 0,
-  },
-  optionText: {
-    flex: 1,
-    fontSize: 14,
   },
   searchContainer: {
     marginBottom: 12,

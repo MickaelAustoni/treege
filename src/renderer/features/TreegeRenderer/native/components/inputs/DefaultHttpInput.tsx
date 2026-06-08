@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ActivityIndicator, FlatList, Modal, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { useTreegeRenderRuntime } from "@/renderer/context/TreegeRenderRuntimeProvider";
 import DependencyHint from "@/renderer/features/TreegeRenderer/native/components/DependencyHint";
+import OptionItemContent from "@/renderer/features/TreegeRenderer/native/components/OptionItemContent";
 import { useTranslate } from "@/renderer/hooks/useTranslate";
 import { InputExtraProps, InputFieldProps } from "@/renderer/types/renderer";
 import { convertFormValuesToNamedFormat } from "@/renderer/utils/form";
@@ -44,7 +45,7 @@ const replaceTemplateVars = (template: string, formValues: Record<string, unknow
 const DefaultHttpInput = (field: InputFieldProps<"http">, extra: InputExtraProps<"http">) => {
   const [loading, setLoading] = useState(false);
   const [fetchError, setFetchError] = useState<string | null>(null);
-  const [options, setOptions] = useState<Array<{ value: string; label: string }>>([]);
+  const [options, setOptions] = useState<Array<{ value: string; label: string; description?: string; image?: string }>>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
   const { value, placeholder } = field;
@@ -56,7 +57,6 @@ const DefaultHttpInput = (field: InputFieldProps<"http">, extra: InputExtraProps
   const hasFetchedOnMount = useRef(false);
   const isConfigInitialized = useRef(false);
   const lastFetchedTemplateValues = useRef<string>("");
-  // Refs to store latest values without triggering re-renders
   const httpConfigRef = useRef(httpConfig);
   const formValuesRef = useRef(formValues);
   const inputNodesRef = useRef(inputNodes);
@@ -188,12 +188,19 @@ const DefaultHttpInput = (field: InputFieldProps<"http">, extra: InputExtraProps
 
         // If responseMapping is configured, map the data to options
         if (currentHttpConfig.responseMapping && Array.isArray(extractedData)) {
-          const { valueField = "value", labelField = "label" } = currentHttpConfig.responseMapping;
+          const { valueField = "value", labelField = "label", descriptionField, imageField } = currentHttpConfig.responseMapping;
 
-          const mappedOptions = extractedData.map((item) => ({
-            label: String(getValueByPath(item as HttpResponse, labelField) || ""),
-            value: String(getValueByPath(item as HttpResponse, valueField) || ""),
-          }));
+          const mappedOptions = extractedData.map((item) => {
+            const description = descriptionField ? getValueByPath(item as HttpResponse, descriptionField) : undefined;
+            const image = imageField ? getValueByPath(item as HttpResponse, imageField) : undefined;
+
+            return {
+              description: description != null && description !== "" ? String(description) : undefined,
+              image: typeof image === "string" && image !== "" ? image : undefined,
+              label: String(getValueByPath(item as HttpResponse, labelField) || ""),
+              value: String(getValueByPath(item as HttpResponse, valueField) || ""),
+            };
+          });
 
           setOptions(mappedOptions);
         } else {
@@ -489,7 +496,7 @@ const DefaultHttpInput = (field: InputFieldProps<"http">, extra: InputExtraProps
                           }}
                           activeOpacity={0.7}
                         >
-                          <Text style={[styles.optionText, { color: colors.text }]}>{item.label}</Text>
+                          <OptionItemContent label={item.label} description={item.description} image={item.image} />
                           {isSelected && <Text style={[styles.checkmark, { color: colors.primary }]}>✓</Text>}
                         </TouchableOpacity>
                       );
@@ -572,7 +579,7 @@ const DefaultHttpInput = (field: InputFieldProps<"http">, extra: InputExtraProps
                       }}
                       activeOpacity={0.7}
                     >
-                      <Text style={[styles.optionText, { color: colors.text }]}>{item.label}</Text>
+                      <OptionItemContent label={item.label} description={item.description} image={item.image} />
                       {isSelected && <Text style={[styles.checkmark, { color: colors.primary }]}>✓</Text>}
                     </TouchableOpacity>
                   );
@@ -708,10 +715,6 @@ const styles = StyleSheet.create({
   },
   optionsListContent: {
     flexGrow: 0,
-  },
-  optionText: {
-    flex: 1,
-    fontSize: 14,
   },
   retryButton: {
     marginTop: 12,

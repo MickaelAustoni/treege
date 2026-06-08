@@ -106,6 +106,14 @@ export type HttpConfig = {
      * Path to the label field in response items
      */
     labelField?: string;
+    /**
+     * Path to the field used as the option description (optional)
+     */
+    descriptionField?: string;
+    /**
+     * Path to the field used as the option image — base64 data URL or remote URL (optional)
+     */
+    imageField?: string;
   };
   /**
    * Query parameter name for search (enables combobox with search)

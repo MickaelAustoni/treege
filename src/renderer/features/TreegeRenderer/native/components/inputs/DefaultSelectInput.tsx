@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import OptionItemContent from "@/renderer/features/TreegeRenderer/native/components/OptionItemContent";
 import { useTranslate } from "@/renderer/hooks/useTranslate";
 import { InputExtraProps, InputFieldProps } from "@/renderer/types/renderer";
 import { useTheme } from "@/shared/context/ThemeContext";
@@ -12,9 +13,6 @@ const DefaultSelectInput = (field: InputFieldProps<"select">, extra: InputExtraP
   const t = useTranslate();
   const options = node.data.options || [];
   const isMultiple = node.data.multiple;
-
-  // For single select, value is string
-  // For multiple select, value is string[]
   const selectedValues = Array.isArray(value) ? value : value ? [value] : [];
 
   const handleSelect = (optionValue: string) => {
@@ -83,9 +81,12 @@ const DefaultSelectInput = (field: InputFieldProps<"select">, extra: InputExtraP
                     disabled={option.disabled}
                     activeOpacity={0.7}
                   >
-                    <Text style={[styles.optionText, { color: colors.textSecondary }, option.disabled && { color: colors.textMuted }]}>
-                      {t(option.label) || option.value}
-                    </Text>
+                    <OptionItemContent
+                      label={t(option.label) || option.value}
+                      description={t(option.description)}
+                      image={option.image}
+                      disabled={option.disabled}
+                    />
                     {isSelected && <Text style={[styles.checkmark, { color: colors.primary }]}>✓</Text>}
                   </TouchableOpacity>
                 );
@@ -180,9 +181,6 @@ const styles = StyleSheet.create({
   },
   optionsList: {
     maxHeight: 300,
-  },
-  optionText: {
-    fontSize: 14,
   },
   trigger: {
     alignItems: "center",

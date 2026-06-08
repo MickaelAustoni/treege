@@ -2,6 +2,7 @@ import { Check, ChevronsUpDown, Loader2 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTreegeRenderRuntime } from "@/renderer/context/TreegeRenderRuntimeProvider";
 import DependencyHint from "@/renderer/features/TreegeRenderer/web/components/DependencyHint";
+import OptionItemContent from "@/renderer/features/TreegeRenderer/web/components/OptionItemContent";
 import { useTranslate } from "@/renderer/hooks/useTranslate";
 import { InputExtraProps, InputFieldProps } from "@/renderer/types/renderer";
 import { convertFormValuesToNamedFormat } from "@/renderer/utils/form";
@@ -56,7 +57,7 @@ const replaceTemplateVars = (template: string, formValues: Record<string, unknow
 const DefaultHttpInput = (field: InputFieldProps<"http">, extra: InputExtraProps<"http">) => {
   const [loading, setLoading] = useState(false);
   const [fetchError, setFetchError] = useState<string | null>(null);
-  const [options, setOptions] = useState<Array<{ value: string; label: string }>>([]);
+  const [options, setOptions] = useState<Array<{ value: string; label: string; description?: string; image?: string }>>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [comboboxOpen, setComboboxOpen] = useState(false);
   const { id, name, value, placeholder } = field;
@@ -67,8 +68,6 @@ const DefaultHttpInput = (field: InputFieldProps<"http">, extra: InputExtraProps
   const isConfigInitialized = useRef(false);
   const lastFetchedTemplateValues = useRef<string>("");
   const t = useTranslate();
-
-  // Refs to store latest values without triggering re-renders
   const httpConfigRef = useRef(httpConfig);
   const formValuesRef = useRef(formValues);
   const inputNodesRef = useRef(inputNodes);
@@ -204,12 +203,19 @@ const DefaultHttpInput = (field: InputFieldProps<"http">, extra: InputExtraProps
 
         // If responseMapping is configured, map the data to options
         if (currentHttpConfig.responseMapping && Array.isArray(extractedData)) {
-          const { valueField = "value", labelField = "label" } = currentHttpConfig.responseMapping;
+          const { valueField = "value", labelField = "label", descriptionField, imageField } = currentHttpConfig.responseMapping;
 
-          const mappedOptions = extractedData.map((item) => ({
-            label: String(getValueByPath(item as HttpResponse, labelField) || ""),
-            value: String(getValueByPath(item as HttpResponse, valueField) || ""),
-          }));
+          const mappedOptions = extractedData.map((item) => {
+            const description = descriptionField ? getValueByPath(item as HttpResponse, descriptionField) : undefined;
+            const image = imageField ? getValueByPath(item as HttpResponse, imageField) : undefined;
+
+            return {
+              description: description != null && description !== "" ? String(description) : undefined,
+              image: typeof image === "string" && image !== "" ? image : undefined,
+              label: String(getValueByPath(item as HttpResponse, labelField) || ""),
+              value: String(getValueByPath(item as HttpResponse, valueField) || ""),
+            };
+          });
 
           setOptions(mappedOptions);
         } else {
@@ -486,7 +492,7 @@ const DefaultHttpInput = (field: InputFieldProps<"http">, extra: InputExtraProps
                               }}
                             >
                               <Check className={cn("tg:mr-2 tg:h-4 tg:w-4", value === option.value ? "tg:opacity-100" : "tg:opacity-0")} />
-                              {option.label}
+                              <OptionItemContent label={option.label} description={option.description} image={option.image} />
                             </CommandItem>
                           ))}
                         </CommandGroup>
@@ -528,7 +534,7 @@ const DefaultHttpInput = (field: InputFieldProps<"http">, extra: InputExtraProps
           <SelectGroup>
             {options.map((option, index) => (
               <SelectItem key={option.value + index} value={option.value}>
-                {option.label}
+                <OptionItemContent label={option.label} description={option.description} image={option.image} />
               </SelectItem>
             ))}
           </SelectGroup>

@@ -390,6 +390,9 @@ const HttpConfigForm = ({ value, onChange }: HttpConfigFormProps) => {
                 >
                   {({ body, headers, method, queryParams, responsePath, url }) => (
                     <OptionsMappingFields
+                      showOptionalFields
+                      mapping={mappingField.state.value ?? {}}
+                      onMappingChange={(patch) => mappingField.handleChange({ ...(mappingField.state.value ?? {}), ...patch })}
                       request={{
                         body,
                         headers: entriesToRecord(headers),
@@ -398,8 +401,6 @@ const HttpConfigForm = ({ value, onChange }: HttpConfigFormProps) => {
                         responsePath,
                         url,
                       }}
-                      mapping={mappingField.state.value ?? {}}
-                      onMappingChange={(patch) => mappingField.handleChange({ ...(mappingField.state.value ?? {}), ...patch })}
                     />
                   )}
                 </Subscribe>
