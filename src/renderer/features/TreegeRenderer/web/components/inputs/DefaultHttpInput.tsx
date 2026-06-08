@@ -1,6 +1,6 @@
 import { Check, ChevronsUpDown, Loader2 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useTreegeRendererContext } from "@/renderer/context/TreegeRendererContext";
+import { useTreegeRenderRuntime } from "@/renderer/context/TreegeRenderRuntimeProvider";
 import DependencyHint from "@/renderer/features/TreegeRenderer/web/components/DependencyHint";
 import { useTranslate } from "@/renderer/hooks/useTranslate";
 import { InputExtraProps, InputFieldProps } from "@/renderer/types/renderer";
@@ -61,7 +61,7 @@ const DefaultHttpInput = (field: InputFieldProps<"http">, extra: InputExtraProps
   const [comboboxOpen, setComboboxOpen] = useState(false);
   const { id, name, value, placeholder } = field;
   const { node, setValue, error, label, helperText, missingDependencies: missing } = extra;
-  const { formValues, inputNodes, headers, baseUrl } = useTreegeRendererContext();
+  const { formValues, inputNodes, headers, baseUrl } = useTreegeRenderRuntime();
   const { httpConfig } = node.data;
   const hasFetchedOnMount = useRef(false);
   const isConfigInitialized = useRef(false);

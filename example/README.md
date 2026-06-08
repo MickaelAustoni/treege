@@ -9,7 +9,7 @@ example/
 ├── web/                          # Web examples (React)
 │   ├── Example.tsx              # Main example
 │   ├── CustomInputExample.tsx   # Custom input example
-│   └── TreegeConfigProviderExample.tsx
+│   └── TreegeRendererProviderExample.tsx
 ├── native/                      # React Native examples
 │   ├── App.tsx                  # Main React Native example
 │   └── ...                      # Expo project files

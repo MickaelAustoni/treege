@@ -542,24 +542,22 @@ Use the HTTP input type to fetch and map data from APIs:
 
 ### Global Configuration
 
-Configure the renderer globally using the TreegeConfigProvider:
+Configure the renderer globally using the TreegeRendererProvider:
 
 ```tsx
-import { TreegeConfigProvider } from "treege/renderer";
+import { TreegeRendererProvider } from "treege/renderer";
 
 function App() {
   return (
-    <TreegeConfigProvider
-      config={{
-        language: "fr",
-        googleApiKey: "your-google-api-key",
-        components: {
-          // Your custom components
-        }
+    <TreegeRendererProvider
+      language="fr"
+      googleApiKey="your-google-api-key"
+      components={{
+        // Your custom components
       }}
     >
       <TreegeRenderer flow={flow} />
-    </TreegeConfigProvider>
+    </TreegeRendererProvider>
   );
 }
 ```
@@ -678,8 +676,8 @@ Once the development server is running, you can access these examples:
 - **Custom Input Example**: [http://localhost:5173/example-custom-input](http://localhost:5173/example-custom-input)
   - Demonstrates how to create and integrate custom input components
 
-- **TreegeConfigProvider Example**: [http://localhost:5173/example-treege-config-provider](http://localhost:5173/example-treege-config-provider)
-  - Shows global configuration with TreegeConfigProvider
+- **TreegeRendererProvider Example**: [http://localhost:5173/example-treege-renderer-provider](http://localhost:5173/example-treege-renderer-provider)
+  - Shows global configuration with TreegeRendererProvider
 
 ## API Reference
 
@@ -698,7 +696,7 @@ Once the development server is running, you can access these examples:
 | `openApi`         | `OpenApiDocument \| string`              | -        | OpenAPI 3.x source used to power URL/route suggestions and the Authorize flow. Accepts a pre-parsed document or a URL string (the editor fetches it on mount and toasts on failure)                 |
 | `openApiBaseUrl`  | `string`                                 | -        | Base URL used for OpenAPI route resolution. When set, takes precedence over the document's `servers[0].url` — useful when the spec points at a different environment than the one to call           |
 | `headers`         | `HttpHeader[]`                           | -        | Global HTTP headers applied to in-editor requests (e.g. the "Detect fields" button). Pass the same value you give to `TreegeRenderer` so editor previews use the same auth/headers as runtime       |
-| `onAuthorize`     | `(headers: HttpHeader[]) => void`        | -        | Called when the user submits the Authorize dialog. Forward the resulting headers to `TreegeRenderer` (or `TreegeConfigProvider`) so every form request is authenticated                             |
+| `onAuthorize`     | `(headers: HttpHeader[]) => void`        | -        | Called when the user submits the Authorize dialog. Forward the resulting headers to `TreegeRenderer` (or `TreegeRendererProvider`) so every form request is authenticated                             |
 | `onHeadersChange` | `(headers: HttpHeader[]) => void`        | -        | Called when the user edits headers in the built-in "Global headers" dialog. The component is controlled — update your `headers` state in response and pass the new list back via the `headers` prop |
 
 ### TreegeRenderer Props

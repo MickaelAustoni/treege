@@ -1,6 +1,6 @@
 import { Node } from "@xyflow/react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useTreegeConfig } from "@/renderer/context/TreegeConfigContext";
+import { useTreegeRendererConfig } from "@/renderer/context/TreegeRendererProvider";
 import { useSubmitHandler } from "@/renderer/hooks/useSubmitHandler";
 import { useTranslate } from "@/renderer/hooks/useTranslate";
 import { FormValues, TreegeRendererProps } from "@/renderer/types/renderer";
@@ -63,7 +63,7 @@ export const useTreegeRenderer = ({
   // ============================================
 
   // Get global config from provider (if any)
-  const globalConfig = useTreegeConfig();
+  const globalConfig = useTreegeRendererConfig();
 
   // Merge props with global config (props take precedence)
   const config = useMemo(

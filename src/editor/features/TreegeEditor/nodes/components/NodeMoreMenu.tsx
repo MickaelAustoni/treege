@@ -1,6 +1,6 @@
 import { MoreVertical, Settings, Trash2 } from "lucide-react";
 import { MouseEvent } from "react";
-import { useTreegeEditorContext } from "@/editor/context/TreegeEditorContext";
+import { useTreegeEditorRuntime } from "@/editor/context/TreegeEditorRuntimeProvider";
 import useFlowActions from "@/editor/hooks/useFlowActions";
 import useTranslate from "@/editor/hooks/useTranslate";
 import { Button } from "@/shared/components/ui/button";
@@ -20,7 +20,7 @@ interface NodeMoreMenuProps {
 
 const NodeMoreMenu = ({ nodeId, className }: NodeMoreMenuProps) => {
   const { selectNode } = useFlowActions();
-  const { setIsNodeSheetOpen, openDeleteNodeConfirmation } = useTreegeEditorContext();
+  const { setIsNodeSheetOpen, openDeleteNodeConfirmation } = useTreegeEditorRuntime();
   const t = useTranslate();
 
   const stopPropagation = (event: MouseEvent) => event.stopPropagation();

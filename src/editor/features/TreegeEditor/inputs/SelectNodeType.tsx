@@ -1,6 +1,6 @@
 import { useReactFlow } from "@xyflow/react";
 import { useId } from "react";
-import { useTreegeEditorContext } from "@/editor/context/TreegeEditorContext";
+import { useTreegeEditorRuntime } from "@/editor/context/TreegeEditorRuntimeProvider";
 import useFlowActions from "@/editor/hooks/useFlowActions";
 import useNodesSelection from "@/editor/hooks/useNodesSelection";
 import useTranslate from "@/editor/hooks/useTranslate";
@@ -27,7 +27,7 @@ const SelectNodeType = () => {
   const { selectedNode } = useNodesSelection();
   const { updateSelectedNodeType } = useFlowActions();
   const { getEdges } = useReactFlow();
-  const { openNodeTypeChangeConfirmation } = useTreegeEditorContext();
+  const { openNodeTypeChangeConfirmation } = useTreegeEditorRuntime();
   const isGroup = isGroupNode(selectedNode);
   const t = useTranslate();
   const id = useId();

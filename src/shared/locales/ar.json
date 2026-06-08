@@ -37,7 +37,7 @@
     },
     "aiGenerator": {
       "aiNotConfigured": "الذكاء الاصطناعي غير مُهيأ",
-      "aiNotConfiguredDesc": "أضف خاصية {code} إلى TreegeEditorProvider",
+      "aiNotConfiguredDesc": "أضف خاصية {code} إلى TreegeEditor",
       "buttonLabel": "إنشاء باستخدام الذكاء الاصطناعي",
       "cancel": "إلغاء",
       "description": "الوصف",
@@ -48,7 +48,7 @@
       "generating": "جارٍ الإنشاء...",
       "keyboardShortcut": "اضغط {cmdEnter} أو {ctrlEnter} للإنشاء",
       "missingApiKey": "تكوين الذكاء الاصطناعي مفقود",
-      "missingApiKeyDesc": "الرجاء تكوين مفتاح API الخاص بالذكاء الاصطناعي في TreegeEditorProvider",
+      "missingApiKeyDesc": "الرجاء تكوين مفتاح API الخاص بالذكاء الاصطناعي في TreegeEditor",
       "successDescription": "تم إنشاء {nodes} عقدة و {edges} حافة",
       "successTitle": "تم إنشاء الشجرة بنجاح!",
       "title": "إنشاء تدفق باستخدام الذكاء الاصطناعي",

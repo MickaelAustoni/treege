@@ -1,6 +1,6 @@
 import { useReactFlow } from "@xyflow/react";
 import { useEffect, useMemo, useState } from "react";
-import { useTreegeEditorContext } from "@/editor/context/TreegeEditorContext";
+import { useTreegeEditorRuntime } from "@/editor/context/TreegeEditorRuntimeProvider";
 import useFlowActions from "@/editor/hooks/useFlowActions";
 import useTranslate from "@/editor/hooks/useTranslate";
 import { Button } from "@/shared/components/ui/button";
@@ -39,7 +39,7 @@ const summarizeConditions = (conditions: EdgeCondition[] | undefined, resolveFie
 };
 
 const ChangeNodeTypeDialog = () => {
-  const { pendingNodeTypeChange, closeNodeTypeChangeConfirmation } = useTreegeEditorContext();
+  const { pendingNodeTypeChange, closeNodeTypeChangeConfirmation } = useTreegeEditorRuntime();
   const { getEdges, getNode, setEdges, updateEdgeData } = useReactFlow();
   const { updateNodeType } = useFlowActions();
   const t = useTranslate();

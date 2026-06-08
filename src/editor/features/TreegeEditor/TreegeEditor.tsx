@@ -5,7 +5,7 @@ import EditorStyles from "@/editor/components/styles/EditorStyles";
 import { EDGE_TYPES } from "@/editor/constants/edgeTypes";
 import { NODE_TYPES } from "@/editor/constants/nodeTypes";
 import { OpenApiProvider } from "@/editor/context/OpenApiContext";
-import { TreegeEditorProvider } from "@/editor/context/TreegeEditorContext";
+import { TreegeEditorRuntimeProvider } from "@/editor/context/TreegeEditorRuntimeProvider";
 import MiniMapControl from "@/editor/features/TreegeEditor/controls/MiniMapControl";
 import ChangeNodeTypeDialog from "@/editor/features/TreegeEditor/dialogs/ChangeNodeTypeDialog";
 import DeleteNodeDialog from "@/editor/features/TreegeEditor/dialogs/DeleteNodeDialog";
@@ -120,7 +120,7 @@ const TreegeEditor = ({
       <EditorStyles />
       <ThemeProvider defaultTheme={theme} storageKey="treege-editor-theme" theme={theme}>
         <Toaster position="bottom-center" />
-        <TreegeEditorProvider value={{ aiConfig, flowId: flow?.id, headers, language, setLanguage: handleLanguageChange }}>
+        <TreegeEditorRuntimeProvider value={{ aiConfig, flowId: flow?.id, headers, language, setLanguage: handleLanguageChange }}>
           <OpenApiProvider initialDocument={openApi} initialBaseUrl={baseUrl ?? openApiBaseUrl}>
             <ReactFlowProvider>
               <Flow
@@ -135,7 +135,7 @@ const TreegeEditor = ({
               />
             </ReactFlowProvider>
           </OpenApiProvider>
-        </TreegeEditorProvider>
+        </TreegeEditorRuntimeProvider>
       </ThemeProvider>
     </>
   );

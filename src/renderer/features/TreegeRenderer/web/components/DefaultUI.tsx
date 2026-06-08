@@ -1,4 +1,4 @@
-import { useTreegeRendererContext } from "@/renderer/context/TreegeRendererContext";
+import { useTreegeRenderRuntime } from "@/renderer/context/TreegeRenderRuntimeProvider";
 import { useTranslate } from "@/renderer/hooks/useTranslate";
 import { UiRenderProps } from "@/renderer/types/renderer";
 import { isStartNode } from "@/renderer/utils/flow";
@@ -23,7 +23,7 @@ export const Divider = ({ node }: UiRenderProps) => {
 };
 
 export const Title = ({ node }: UiRenderProps) => {
-  const { edges } = useTreegeRendererContext();
+  const { edges } = useTreegeRenderRuntime();
   const t = useTranslate();
   const isFirst = isStartNode(node.id, edges);
 

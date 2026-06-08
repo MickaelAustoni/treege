@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ActivityIndicator, FlatList, Modal, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
-import { useTreegeRendererContext } from "@/renderer/context/TreegeRendererContext";
+import { useTreegeRenderRuntime } from "@/renderer/context/TreegeRenderRuntimeProvider";
 import DependencyHint from "@/renderer/features/TreegeRenderer/native/components/DependencyHint";
 import { useTranslate } from "@/renderer/hooks/useTranslate";
 import { InputExtraProps, InputFieldProps } from "@/renderer/types/renderer";
@@ -49,7 +49,7 @@ const DefaultHttpInput = (field: InputFieldProps<"http">, extra: InputExtraProps
   const [modalOpen, setModalOpen] = useState(false);
   const { value, placeholder } = field;
   const { node, setValue, error, label, helperText, missingDependencies: missing } = extra;
-  const { formValues, inputNodes, headers, baseUrl } = useTreegeRendererContext();
+  const { formValues, inputNodes, headers, baseUrl } = useTreegeRenderRuntime();
   const { colors } = useTheme();
   const { httpConfig } = node.data;
   const t = useTranslate();

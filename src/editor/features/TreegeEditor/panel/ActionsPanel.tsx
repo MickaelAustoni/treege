@@ -5,7 +5,7 @@ import { ChangeEvent, useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { DEFAULT_NODE } from "@/editor/constants/defaultNode";
 import { useOpenApi } from "@/editor/context/OpenApiContext";
-import { useTreegeEditorContext } from "@/editor/context/TreegeEditorContext";
+import { useTreegeEditorRuntime } from "@/editor/context/TreegeEditorRuntimeProvider";
 import AuthorizeDialog from "@/editor/features/TreegeEditor/dialogs/AuthorizeDialog";
 import HeadersDialog from "@/editor/features/TreegeEditor/dialogs/HeadersDialog";
 import OpenApiDialog from "@/editor/features/TreegeEditor/dialogs/OpenApiDialog";
@@ -46,7 +46,7 @@ const ActionsPanel = ({ onExportJson, onSave, extraMenuItems, onAuthorize, heade
   const [authorizeDialogOpen, setAuthorizeDialogOpen] = useState(false);
   const [headersDialogOpen, setHeadersDialogOpen] = useState(false);
   const [authorizeAcknowledged, setAuthorizeAcknowledged] = useState(false);
-  const { flowId, setFlowId, aiConfig, language, setLanguage } = useTreegeEditorContext();
+  const { flowId, setFlowId, aiConfig, language, setLanguage } = useTreegeEditorRuntime();
   const { document: openApiDocument } = useOpenApi();
   const hasHeaders = (headers?.length ?? 0) > 0;
   const { setNodes, setEdges, addNodes, screenToFlowPosition } = useReactFlow();

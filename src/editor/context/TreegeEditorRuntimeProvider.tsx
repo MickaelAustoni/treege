@@ -2,7 +2,7 @@ import { createContext, PropsWithChildren, useContext, useMemo, useState } from 
 import { AIConfig } from "@/editor/types/ai";
 import { HttpHeader } from "@/shared/types/node";
 
-export interface TreegeEditorContextValue {
+export interface TreegeEditorRuntimeContextValue {
   /**
    * Current language of the editor UI. Also used as the default language for
    * the per-node translation editor in `InputNodeForm`.
@@ -73,9 +73,9 @@ export interface PendingNodeTypeChange {
   subType?: string;
 }
 
-export interface TreegeEditorProviderProps extends PropsWithChildren {
+export interface TreegeEditorRuntimeProviderProps extends PropsWithChildren {
   value: Omit<
-    TreegeEditorContextValue,
+    TreegeEditorRuntimeContextValue,
     | "isNodeSheetOpen"
     | "setIsNodeSheetOpen"
     | "pendingDeleteNodeId"
@@ -87,9 +87,9 @@ export interface TreegeEditorProviderProps extends PropsWithChildren {
   >;
 }
 
-export const TreegeEditorContext = createContext<TreegeEditorContextValue | null>(null);
+export const TreegeEditorRuntimeContext = createContext<TreegeEditorRuntimeContextValue | null>(null);
 
-export const TreegeEditorProvider = ({ children, value }: TreegeEditorProviderProps) => {
+export const TreegeEditorRuntimeProvider = ({ children, value }: TreegeEditorRuntimeProviderProps) => {
   const [flowId, setFlowId] = useState(value?.flowId);
   const [isNodeSheetOpen, setIsNodeSheetOpen] = useState(false);
   const [pendingDeleteNodeId, setPendingDeleteNodeId] = useState<string | null>(null);
@@ -118,11 +118,11 @@ export const TreegeEditorProvider = ({ children, value }: TreegeEditorProviderPr
     [flowId, value, isNodeSheetOpen, pendingDeleteNodeId, pendingNodeTypeChange],
   );
 
-  return <TreegeEditorContext.Provider value={valueMemo}>{children}</TreegeEditorContext.Provider>;
+  return <TreegeEditorRuntimeContext.Provider value={valueMemo}>{children}</TreegeEditorRuntimeContext.Provider>;
 };
 
-export const useTreegeEditorContext = () => {
-  const context = useContext(TreegeEditorContext);
+export const useTreegeEditorRuntime = () => {
+  const context = useContext(TreegeEditorRuntimeContext);
 
   return (
     context ?? {

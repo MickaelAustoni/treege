@@ -1,11 +1,11 @@
-import { useTreegeEditorContext } from "@/editor/context/TreegeEditorContext";
+import { useTreegeEditorRuntime } from "@/editor/context/TreegeEditorRuntimeProvider";
 import useFlowActions from "@/editor/hooks/useFlowActions";
 import useTranslate from "@/editor/hooks/useTranslate";
 import { Button } from "@/shared/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/shared/components/ui/dialog";
 
 const DeleteNodeDialog = () => {
-  const { pendingDeleteNodeId, closeDeleteNodeConfirmation } = useTreegeEditorContext();
+  const { pendingDeleteNodeId, closeDeleteNodeConfirmation } = useTreegeEditorRuntime();
   const { deleteNode } = useFlowActions();
   const t = useTranslate();
 

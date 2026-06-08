@@ -292,7 +292,7 @@ export type TreegeRendererComponents = {
 };
 
 /**
- * Configuration options that can be set globally via TreegeConfigProvider
+ * Configuration options that can be set globally via TreegeRendererProvider
  * or locally via TreegeRenderer config prop
  */
 export type TreegeRendererConfig = {

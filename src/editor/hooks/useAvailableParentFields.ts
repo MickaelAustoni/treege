@@ -1,6 +1,6 @@
 import { useEdges, useNodes } from "@xyflow/react";
 import { useMemo } from "react";
-import { useTreegeEditorContext } from "@/editor/context/TreegeEditorContext";
+import { useTreegeEditorRuntime } from "@/editor/context/TreegeEditorRuntimeProvider";
 import { InputNodeData, TreegeNode } from "@/shared/types/node";
 import { isInputNode } from "@/shared/utils/nodeTypeGuards";
 import { getTranslatedText } from "@/shared/utils/translations";
@@ -20,7 +20,7 @@ import { getTranslatedText } from "@/shared/utils/translations";
 const useAvailableParentFields = (currentNodeId?: string) => {
   const nodes = useNodes() as TreegeNode[];
   const edges = useEdges();
-  const { language } = useTreegeEditorContext();
+  const { language } = useTreegeEditorRuntime();
 
   return useMemo(() => {
     if (!currentNodeId) {

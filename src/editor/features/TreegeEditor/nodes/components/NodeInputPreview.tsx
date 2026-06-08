@@ -1,12 +1,12 @@
 import { Node } from "@xyflow/react";
 import { Globe, Pencil, Plus, Trash2 } from "lucide-react";
 import { FormEvent, KeyboardEvent, MouseEvent, ReactNode, useState } from "react";
-import { useTreegeEditorContext } from "@/editor/context/TreegeEditorContext";
+import { useTreegeEditorRuntime } from "@/editor/context/TreegeEditorRuntimeProvider";
 import OptionImageField from "@/editor/features/TreegeEditor/inputs/OptionImageField";
 import useFlowActions from "@/editor/hooks/useFlowActions";
 import useTranslate from "@/editor/hooks/useTranslate";
 import { getInputTypeIcon } from "@/editor/utils/inputTypeIcon";
-import { TreegeRendererProvider } from "@/renderer/context/TreegeRendererContext";
+import { TreegeRenderRuntimeProvider } from "@/renderer/context/TreegeRenderRuntimeProvider";
 import InputRendererHost from "@/renderer/features/TreegeRenderer/InputRendererHost";
 import { defaultInputRenderers } from "@/renderer/features/TreegeRenderer/web/components/DefaultInputs";
 import type { InputRenderer } from "@/renderer/types/renderer";
@@ -73,7 +73,7 @@ const NodeInputPreview = ({ nodeId, data }: NodeInputPreviewProps) => {
   const [imageDraft, setImageDraft] = useState("");
   const [descriptionDraft, setDescriptionDraft] = useState("");
   const [editingIndex, setEditingIndex] = useState<number | null>(null); // null = creating; number = editing the option at that index.
-  const { language, headers } = useTreegeEditorContext();
+  const { language, headers } = useTreegeEditorRuntime();
   const { updateNodeData } = useFlowActions();
   const t = useTranslate();
   const inputType = data?.type;
@@ -276,14 +276,14 @@ const NodeInputPreview = ({ nodeId, data }: NodeInputPreviewProps) => {
         )}
       >
         {/*
-          Wrap the runtime renderer in a minimal `TreegeRendererProvider` so it
+          Wrap the runtime renderer in a minimal `TreegeRenderRuntimeProvider` so it
           picks up the editor's `headers` (e.g. for `useInputOptions`'s fetch).
           The provider merges with sensible defaults — other fields stay no-op
           since the preview is non-interactive. `label` is intentionally omitted
           so the editor's `NodeLabelInput` is the single source of truth visually
           and avoids rendering the same text twice.
         */}
-        <TreegeRendererProvider value={{ headers, language, optionsDisplayLimit: 10 }}>
+        <TreegeRenderRuntimeProvider value={{ headers, language, optionsDisplayLimit: 10 }}>
           <InputRendererHost
             key={inputType}
             render={Renderer}
@@ -302,7 +302,7 @@ const NodeInputPreview = ({ nodeId, data }: NodeInputPreviewProps) => {
               setValue: () => {},
             }}
           />
-        </TreegeRendererProvider>
+        </TreegeRenderRuntimeProvider>
       </div>
 
       {previewUrl && (

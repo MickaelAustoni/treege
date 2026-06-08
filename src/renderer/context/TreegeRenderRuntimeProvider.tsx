@@ -3,7 +3,7 @@ import { createContext, PropsWithChildren, useContext, useMemo } from "react";
 import { FormValues } from "@/renderer/types/renderer";
 import { Flow, HttpHeader, InputNodeData } from "@/shared/types/node";
 
-export interface TreegeRendererContextValue {
+export interface TreegeRenderRuntimeContextValue {
   /**
    * Base URL prepended to every relative HTTP url issued by inputs. Absolute
    * urls are left untouched. Resolved from the renderer config and applied
@@ -65,12 +65,12 @@ export interface TreegeRendererContextValue {
 }
 
 /**
- * Sensible defaults for every required field of `TreegeRendererContextValue`.
+ * Sensible defaults for every required field of `TreegeRenderRuntimeContextValue`.
  * Used both as the fallback when no provider is mounted, and as the base for
  * partial provider values (so callers like the editor's `NodeInputPreview`
  * can supply just `{ headers, language }` and let the rest stay no-op).
  */
-const DEFAULT_CONTEXT_VALUE: TreegeRendererContextValue = {
+const DEFAULT_CONTEXT_VALUE: TreegeRenderRuntimeContextValue = {
   baseUrl: undefined,
   flow: null,
   formErrors: {},
@@ -83,24 +83,24 @@ const DEFAULT_CONTEXT_VALUE: TreegeRendererContextValue = {
   setFieldValue: () => {},
 };
 
-export interface TreegeRendererProviderProps extends PropsWithChildren {
+export interface TreegeRenderRuntimeProviderProps extends PropsWithChildren {
   /**
-   * Any subset of `TreegeRendererContextValue`. Missing fields default to
+   * Any subset of `TreegeRenderRuntimeContextValue`. Missing fields default to
    * sensible no-op values, so callers only need to supply what they actually
    * want to expose to descendants.
    */
-  value: Partial<TreegeRendererContextValue>;
+  value: Partial<TreegeRenderRuntimeContextValue>;
 }
 
-export const TreegeRendererContext = createContext<TreegeRendererContextValue | null>(null);
+export const TreegeRenderRuntimeContext = createContext<TreegeRenderRuntimeContextValue | null>(null);
 
-export const TreegeRendererProvider = ({ children, value }: TreegeRendererProviderProps) => {
-  const merged = useMemo<TreegeRendererContextValue>(() => ({ ...DEFAULT_CONTEXT_VALUE, ...value }), [value]);
-  return <TreegeRendererContext.Provider value={merged}>{children}</TreegeRendererContext.Provider>;
+export const TreegeRenderRuntimeProvider = ({ children, value }: TreegeRenderRuntimeProviderProps) => {
+  const merged = useMemo<TreegeRenderRuntimeContextValue>(() => ({ ...DEFAULT_CONTEXT_VALUE, ...value }), [value]);
+  return <TreegeRenderRuntimeContext.Provider value={merged}>{children}</TreegeRenderRuntimeContext.Provider>;
 };
 
-export const useTreegeRendererContext = () => {
-  const context = useContext(TreegeRendererContext);
+export const useTreegeRenderRuntime = () => {
+  const context = useContext(TreegeRenderRuntimeContext);
   const baseContext = context ?? DEFAULT_CONTEXT_VALUE;
   const edges = useMemo(() => baseContext.flow?.edges ?? [], [baseContext.flow]); // Convenience accessor (kept memoized for stable identity).
 

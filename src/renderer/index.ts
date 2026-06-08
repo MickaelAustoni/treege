@@ -1,4 +1,4 @@
-export { TreegeConfigProvider, useTreegeConfig } from "@/renderer/context/TreegeConfigContext";
+export { TreegeRendererProvider, useTreegeRendererConfig } from "@/renderer/context/TreegeRendererProvider";
 export type { UseTreegeRendererReturn } from "@/renderer/features/TreegeRenderer/useTreegeRenderer";
 export { useTreegeRenderer } from "@/renderer/features/TreegeRenderer/useTreegeRenderer";
 export * from "@/renderer/features/TreegeRenderer/web/components/DefaultFormWrapper";

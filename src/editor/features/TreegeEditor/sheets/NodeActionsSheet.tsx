@@ -1,5 +1,5 @@
 import { Trash2 } from "lucide-react";
-import { useTreegeEditorContext } from "@/editor/context/TreegeEditorContext";
+import { useTreegeEditorRuntime } from "@/editor/context/TreegeEditorRuntimeProvider";
 import GroupNodeForm from "@/editor/features/TreegeEditor/forms/GroupNodeForm";
 import InputNodeForm from "@/editor/features/TreegeEditor/forms/InputNodeForm";
 import UINodeForm from "@/editor/features/TreegeEditor/forms/UINodeForm";
@@ -18,7 +18,7 @@ import { isGroupNode, isInputNode, isUINode } from "@/shared/utils/nodeTypeGuard
 const NodeActionsSheet = () => {
   const { selectedNode } = useNodesSelection<TreegeNodeData>();
   const { clearSelection } = useFlowActions();
-  const { isNodeSheetOpen, setIsNodeSheetOpen, openDeleteNodeConfirmation } = useTreegeEditorContext();
+  const { isNodeSheetOpen, setIsNodeSheetOpen, openDeleteNodeConfirmation } = useTreegeEditorRuntime();
   const t = useTranslate();
   const label = t(selectedNode?.data?.label);
 

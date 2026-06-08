@@ -1,10 +1,10 @@
-import { useTreegeEditorContext } from "@/editor/context/TreegeEditorContext";
+import { useTreegeEditorRuntime } from "@/editor/context/TreegeEditorRuntimeProvider";
 import { useTranslate as useTranslateShared } from "@/shared/hooks/useTranslate";
 
 /**
  * Hook for translating text in the editor with context-aware language preference.
  *
- * This hook uses the language from TreegeEditorContext and delegates to the shared useTranslate hook.
+ * This hook uses the language from TreegeEditorRuntimeContext and delegates to the shared useTranslate hook.
  *
  * @returns A function that translates either a translation key or a Translatable object
  *
@@ -19,7 +19,7 @@ import { useTranslate as useTranslateShared } from "@/shared/hooks/useTranslate"
  * const label = t(node.data.label); // Translates user-defined content
  */
 export const useTranslate = (language?: string) => {
-  const context = useTreegeEditorContext();
+  const context = useTreegeEditorRuntime();
   const lang = language ?? context.language;
 
   return useTranslateShared(lang);

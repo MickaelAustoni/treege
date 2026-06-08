@@ -2,7 +2,7 @@ import { useForm } from "@tanstack/react-form";
 import { BaseEdge, Edge, EdgeLabelRenderer, EdgeProps, getBezierPath, useEdges, useReactFlow } from "@xyflow/react";
 import { Plus, Trash2, Waypoints, X } from "lucide-react";
 import { MouseEvent, memo, useMemo, useState } from "react";
-import { useTreegeEditorContext } from "@/editor/context/TreegeEditorContext";
+import { useTreegeEditorRuntime } from "@/editor/context/TreegeEditorRuntimeProvider";
 import useAvailableParentFields from "@/editor/hooks/useAvailableParentFields";
 import { useIsStackedEdge } from "@/editor/hooks/useIsStackedEdge";
 import useTranslate from "@/editor/hooks/useTranslate";
@@ -79,7 +79,7 @@ const ConditionalEdge = ({
   const [isOpen, setIsOpen] = useState(false);
   const [mode, setMode] = useState<EdgeMode>("basic");
   const { updateEdgeData, deleteElements } = useReactFlow();
-  const { language } = useTreegeEditorContext();
+  const { language } = useTreegeEditorRuntime();
   const isStacked = useIsStackedEdge(source, target);
   const availableParentFields = useAvailableParentFields(target);
   const directParent = availableParentFields.find((field) => field.nodeId === source) ?? availableParentFields[0];

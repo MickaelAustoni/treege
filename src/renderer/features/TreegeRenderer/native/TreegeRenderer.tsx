@@ -1,6 +1,6 @@
 import { useCallback, useMemo } from "react";
 import { ScrollView, StyleSheet, Text, View, ViewStyle } from "react-native";
-import { TreegeRendererProvider } from "@/renderer/context/TreegeRendererContext";
+import { TreegeRenderRuntimeProvider } from "@/renderer/context/TreegeRenderRuntimeProvider";
 import DefaultFormWrapper from "@/renderer/features/TreegeRenderer/native/components/DefaultFormWrapper";
 import { defaultInputRenderers } from "@/renderer/features/TreegeRenderer/native/components/DefaultInputs";
 import DefaultInputWrapper from "@/renderer/features/TreegeRenderer/native/components/DefaultInputWrapper";
@@ -128,7 +128,7 @@ const TreegeRendererContent = ({
       {isLoading ? (
         <LoadingSkeleton />
       ) : (
-        <TreegeRendererProvider
+        <TreegeRenderRuntimeProvider
           value={{
             baseUrl: config.baseUrl,
             flow,
@@ -199,7 +199,7 @@ const TreegeRendererContent = ({
               </Text>
             </View>
           )}
-        </TreegeRendererProvider>
+        </TreegeRenderRuntimeProvider>
       )}
     </ScrollView>
   );

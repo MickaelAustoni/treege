@@ -1,11 +1,11 @@
 /**
- * Example: Using TreegeConfigProvider for global configuration
+ * Example: Using TreegeRendererProvider for global configuration
  *
- * This example demonstrates how to use TreegeConfigProvider to set
+ * This example demonstrates how to use TreegeRendererProvider to set
  * global defaults for all TreegeRenderer instances in your app.
  */
 
-import { TreegeConfigProvider, TreegeRenderer, type InputExtraProps, type InputFieldProps } from "@/renderer";
+import { TreegeRendererProvider, TreegeRenderer, type InputExtraProps, type InputFieldProps } from "@/renderer";
 import flow from "~/example/json/treege.json";
 import { Flow } from "@/shared/types/node";
 
@@ -31,9 +31,9 @@ const CustomTextInput = (field: InputFieldProps<"text">, extra: InputExtraProps<
 };
 
 // Configure once at the app level
-const TreegeConfigProviderExample = () => {
+const TreegeRendererProviderExample = () => {
   return (
-    <TreegeConfigProvider
+    <TreegeRendererProvider
       googleApiKey="YOUR_GOOGLE_API_KEY_HERE"
       theme="light"
       language="en"
@@ -58,8 +58,8 @@ const TreegeConfigProviderExample = () => {
           onSubmit={(values) => console.log("Form 3:", values)}
         />
       </div>
-    </TreegeConfigProvider>
+    </TreegeRendererProvider>
   );
 };
 
-export default TreegeConfigProviderExample;
+export default TreegeRendererProviderExample;

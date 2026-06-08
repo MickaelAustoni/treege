@@ -114,7 +114,7 @@ export interface TreegeEditorProps {
   /**
    * Called when the user submits the Authorize dialog. Receives the resulting
    * HTTP headers (`Authorization`, API key headers…). The consumer is expected
-   * to forward those headers to `TreegeRenderer` (or `TreegeConfigProvider`)
+   * to forward those headers to `TreegeRenderer` (or `TreegeRendererProvider`)
    * via its `headers` prop so every request issued by the form is authenticated.
    */
   onAuthorize?: (headers: HttpHeader[]) => void;

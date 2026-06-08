@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { ActivityIndicator, FlatList, Modal, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
-import { useTreegeRendererContext } from "@/renderer/context/TreegeRendererContext";
+import { useTreegeRenderRuntime } from "@/renderer/context/TreegeRenderRuntimeProvider";
 import { useTranslate } from "@/renderer/hooks/useTranslate";
 import { InputExtraProps, InputFieldProps } from "@/renderer/types/renderer";
 import { useTheme } from "@/shared/context/ThemeContext";
@@ -88,7 +88,7 @@ const DefaultAddressInput = (field: InputFieldProps<"address">, extra: InputExtr
   const [loading, setLoading] = useState(false);
   const { value, placeholder, id: _id, name: _name } = field;
   const { node, setValue, error, label, helperText } = extra;
-  const { language, googleApiKey } = useTreegeRendererContext();
+  const { language, googleApiKey } = useTreegeRenderRuntime();
   const t = useTranslate();
   const { colors } = useTheme();
 

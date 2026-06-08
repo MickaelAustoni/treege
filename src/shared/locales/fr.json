@@ -37,7 +37,7 @@
     },
     "aiGenerator": {
       "aiNotConfigured": "IA non configurée",
-      "aiNotConfiguredDesc": "Ajoutez la prop {code} à TreegeEditorProvider",
+      "aiNotConfiguredDesc": "Ajoutez la prop {code} à TreegeEditor",
       "buttonLabel": "Générer avec l'IA",
       "cancel": "Annuler",
       "description": "Description",
@@ -48,7 +48,7 @@
       "generating": "Génération...",
       "keyboardShortcut": "Appuyez sur {cmdEnter} ou {ctrlEnter} pour générer",
       "missingApiKey": "Configuration IA manquante",
-      "missingApiKeyDesc": "Veuillez configurer votre clé API IA dans TreegeEditorProvider",
+      "missingApiKeyDesc": "Veuillez configurer votre clé API IA dans TreegeEditor",
       "successDescription": "{nodes} nœuds et {edges} arêtes créés",
       "successTitle": "Arbre généré avec succès !",
       "title": "Générer un flux avec l'IA",

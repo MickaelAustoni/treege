@@ -37,7 +37,7 @@
     },
     "aiGenerator": {
       "aiNotConfigured": "KI nicht konfiguriert",
-      "aiNotConfiguredDesc": "Fügen Sie {code} Prop zu TreegeEditorProvider hinzu",
+      "aiNotConfiguredDesc": "Fügen Sie {code} Prop zu TreegeEditor hinzu",
       "buttonLabel": "Mit KI generieren",
       "cancel": "Abbrechen",
       "description": "Beschreibung",
@@ -48,7 +48,7 @@
       "generating": "Wird generiert...",
       "keyboardShortcut": "Drücken Sie {cmdEnter} oder {ctrlEnter} zum Generieren",
       "missingApiKey": "KI-Konfiguration fehlt",
-      "missingApiKeyDesc": "Bitte konfigurieren Sie Ihren KI-API-Schlüssel in TreegeEditorProvider",
+      "missingApiKeyDesc": "Bitte konfigurieren Sie Ihren KI-API-Schlüssel in TreegeEditor",
       "successDescription": "{nodes} Knoten und {edges} Kanten erstellt",
       "successTitle": "Baum erfolgreich generiert!",
       "title": "Flow mit KI generieren",

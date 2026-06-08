@@ -1,7 +1,7 @@
 import { useForm } from "@tanstack/react-form";
 import { ChevronsUpDown, Plus, X } from "lucide-react";
 import { useState } from "react";
-import { useTreegeEditorContext } from "@/editor/context/TreegeEditorContext";
+import { useTreegeEditorRuntime } from "@/editor/context/TreegeEditorRuntimeProvider";
 import HttpConfigForm from "@/editor/features/TreegeEditor/forms/HttpConfigForm";
 import OptionsSourceForm from "@/editor/features/TreegeEditor/forms/OptionsSourceForm";
 import SubmitConfigForm from "@/editor/features/TreegeEditor/forms/SubmitConfigForm";
@@ -28,7 +28,7 @@ import { isOptionsInputData } from "@/shared/utils/inputTypeGuards";
 const isSupportedLanguage = (value: string): value is Language => (Object.values(LANGUAGES) as string[]).includes(value);
 
 const InputNodeForm = () => {
-  const { language } = useTreegeEditorContext();
+  const { language } = useTreegeEditorRuntime();
   // Default the per-node translation editor to the editor's global language, so
   // switching the editor language also switches which translation you author by
   // default. The selector below remains a per-node override.

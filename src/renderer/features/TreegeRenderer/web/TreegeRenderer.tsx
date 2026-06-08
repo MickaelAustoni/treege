@@ -1,5 +1,5 @@
 import { FormEvent, useCallback, useMemo } from "react";
-import { TreegeRendererProvider } from "@/renderer/context/TreegeRendererContext";
+import { TreegeRenderRuntimeProvider } from "@/renderer/context/TreegeRenderRuntimeProvider";
 import { useTreegeRenderer } from "@/renderer/features/TreegeRenderer/useTreegeRenderer";
 import DefaultFormWrapper from "@/renderer/features/TreegeRenderer/web/components/DefaultFormWrapper";
 import { defaultInputRenderers } from "@/renderer/features/TreegeRenderer/web/components/DefaultInputs";
@@ -128,7 +128,7 @@ const TreegeRenderer = ({
         {isLoading ? (
           <LoadingSkeleton />
         ) : (
-          <TreegeRendererProvider
+          <TreegeRenderRuntimeProvider
             value={{
               baseUrl: config.baseUrl,
               flow,
@@ -187,7 +187,7 @@ const TreegeRenderer = ({
                 </div>
               </div>
             )}
-          </TreegeRendererProvider>
+          </TreegeRenderRuntimeProvider>
         )}
       </ThemeProvider>
     </div>

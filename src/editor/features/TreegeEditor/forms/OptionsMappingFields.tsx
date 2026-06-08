@@ -2,7 +2,7 @@ import { Info, Loader2, Sparkles } from "lucide-react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import { useOpenApi } from "@/editor/context/OpenApiContext";
-import { useTreegeEditorContext } from "@/editor/context/TreegeEditorContext";
+import { useTreegeEditorRuntime } from "@/editor/context/TreegeEditorRuntimeProvider";
 import useTranslate from "@/editor/hooks/useTranslate";
 import { extractOptionsFromResponse, getValueByPath, makeHttpRequest, mergeHttpHeaders, resolveUrl } from "@/renderer/utils/http";
 import { Button } from "@/shared/components/ui/button";
@@ -75,7 +75,7 @@ const OptionsMappingFields = ({ request, mapping, onMappingChange, showOptionalF
   const [isDetecting, setIsDetecting] = useState(false);
   const [detectedPaths, setDetectedPaths] = useState<string[]>([]);
   const [previewCount, setPreviewCount] = useState<number | null>(null);
-  const { headers: globalHeaders } = useTreegeEditorContext();
+  const { headers: globalHeaders } = useTreegeEditorRuntime();
   const { baseUrl } = useOpenApi();
   const { url, method = "GET", headers, queryParams, body, responsePath = "" } = request;
   const t = useTranslate();

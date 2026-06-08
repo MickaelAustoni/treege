@@ -1,12 +1,12 @@
 import CustomInputExample from "~/example/web/CustomInputExample";
 import Example from "~/example/web/Example";
-import TreegeConfigProviderExample from "~/example/web/TreegeConfigProviderExample";
+import TreegeRendererProviderExample from "~/example/web/TreegeRendererProviderExample";
 
 const App = () => {
   const { pathname } = window.location;
 
-  if (pathname === "/example-treege-config-provider") {
-    return <TreegeConfigProviderExample />;
+  if (pathname === "/example-treege-renderer-provider") {
+    return <TreegeRendererProviderExample />;
   }
 
   if (pathname === "/example-custom-input") {

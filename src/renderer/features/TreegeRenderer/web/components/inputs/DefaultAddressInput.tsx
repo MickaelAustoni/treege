@@ -1,6 +1,6 @@
 import { MapPin } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
-import { useTreegeRendererContext } from "@/renderer/context/TreegeRendererContext";
+import { useTreegeRenderRuntime } from "@/renderer/context/TreegeRenderRuntimeProvider";
 import { useTranslate } from "@/renderer/hooks/useTranslate";
 import { InputExtraProps, InputFieldProps } from "@/renderer/types/renderer";
 import { Command, CommandEmpty, CommandGroup, CommandItem, CommandList } from "@/shared/components/ui/command";
@@ -88,7 +88,7 @@ const DefaultAddressInput = (field: InputFieldProps<"address">, extra: InputExtr
   const [popoverOpen, setPopoverOpen] = useState(false);
   const { id, name, value, placeholder } = field;
   const { node, setValue, error, label, helperText } = extra;
-  const { googleApiKey, language } = useTreegeRendererContext();
+  const { googleApiKey, language } = useTreegeRenderRuntime();
   const t = useTranslate();
 
   const handleSelectSuggestion = useCallback(

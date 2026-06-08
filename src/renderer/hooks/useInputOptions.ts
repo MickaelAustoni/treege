@@ -1,6 +1,6 @@
 import { Node } from "@xyflow/react";
 import { useEffect, useMemo, useState } from "react";
-import { useTreegeRendererContext } from "@/renderer/context/TreegeRendererContext";
+import { useTreegeRenderRuntime } from "@/renderer/context/TreegeRenderRuntimeProvider";
 import { extractOptionsFromResponse, makeHttpRequest, mergeHttpHeaders, replaceTemplateVariables, resolveUrl } from "@/renderer/utils/http";
 import { HttpHeader, InputNodeData, InputOption, OptionsSourceMapping, QueryParam } from "@/shared/types/node";
 
@@ -55,7 +55,7 @@ export const useInputOptions = (node: Node<InputNodeData>): UseInputOptionsResul
     isLoading: false,
   });
 
-  const { baseUrl, formValues, headers: globalHeaders } = useTreegeRendererContext();
+  const { baseUrl, formValues, headers: globalHeaders } = useTreegeRenderRuntime();
   const source = node.data.optionsSource;
   const staticOptions = node.data.options;
 

@@ -1,5 +1,5 @@
 import { Loader2 } from "lucide-react";
-import { useTreegeRendererContext } from "@/renderer/context/TreegeRendererContext";
+import { useTreegeRenderRuntime } from "@/renderer/context/TreegeRenderRuntimeProvider";
 import { DependencyHintMessage } from "@/renderer/features/TreegeRenderer/web/components/DependencyHint";
 import { useInputOptions } from "@/renderer/hooks/useInputOptions";
 import { useTranslate } from "@/renderer/hooks/useTranslate";
@@ -13,7 +13,7 @@ const DefaultCheckboxInput = (field: InputFieldProps<"checkbox">, extra: InputEx
   const { id, name, value } = field;
   const { node, setValue, error, label, helperText, renderOptionExtras, compactOptions, missingDependencies: missing } = extra;
   const { options, isLoading, error: inputOptionsError } = useInputOptions(node);
-  const { optionsDisplayLimit } = useTreegeRendererContext();
+  const { optionsDisplayLimit } = useTreegeRenderRuntime();
   const t = useTranslate();
 
   // If there are options (static or dynamic), render a checkbox group

@@ -1,7 +1,7 @@
 import { useReactFlow } from "@xyflow/react";
 import { ChevronDown } from "lucide-react";
 import { MouseEvent } from "react";
-import { useTreegeEditorContext } from "@/editor/context/TreegeEditorContext";
+import { useTreegeEditorRuntime } from "@/editor/context/TreegeEditorRuntimeProvider";
 import useFlowActions from "@/editor/hooks/useFlowActions";
 import useTranslate from "@/editor/hooks/useTranslate";
 import { getInputTypeIcon } from "@/editor/utils/inputTypeIcon";
@@ -32,7 +32,7 @@ const UI_TYPES = Object.values(UI_TYPE) as string[];
 const NodeTypeBadge = ({ nodeId, nodeType, subType }: NodeTypeBadgeProps) => {
   const { updateNodeType } = useFlowActions();
   const { getEdges } = useReactFlow();
-  const { openNodeTypeChangeConfirmation } = useTreegeEditorContext();
+  const { openNodeTypeChangeConfirmation } = useTreegeEditorRuntime();
   const t = useTranslate();
   const stopPropagation = (event: MouseEvent) => event.stopPropagation();
   const currentValue = subType || nodeType;

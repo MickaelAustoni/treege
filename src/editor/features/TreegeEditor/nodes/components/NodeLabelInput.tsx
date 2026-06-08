@@ -1,5 +1,5 @@
 import { ChangeEvent, KeyboardEvent, useEffect, useRef } from "react";
-import { useTreegeEditorContext } from "@/editor/context/TreegeEditorContext";
+import { useTreegeEditorRuntime } from "@/editor/context/TreegeEditorRuntimeProvider";
 import useFlowActions from "@/editor/hooks/useFlowActions";
 import useTranslate from "@/editor/hooks/useTranslate";
 import { cn } from "@/shared/lib/utils";
@@ -14,7 +14,7 @@ interface NodeLabelInputProps {
 }
 
 const NodeLabelInput = ({ nodeId, label, placeholder, className, autoFocus }: NodeLabelInputProps) => {
-  const { language } = useTreegeEditorContext();
+  const { language } = useTreegeEditorRuntime();
   const { updateNodeData, clearSelection } = useFlowActions();
   const t = useTranslate();
   const inputRef = useRef<HTMLInputElement>(null);

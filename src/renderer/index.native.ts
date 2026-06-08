@@ -1,4 +1,4 @@
-export { TreegeConfigProvider, useTreegeConfig } from "@/renderer/context/TreegeConfigContext";
+export { TreegeRendererProvider, useTreegeRendererConfig } from "@/renderer/context/TreegeRendererProvider";
 export * from "@/renderer/features/TreegeRenderer/native/components/DefaultFormWrapper";
 export * from "@/renderer/features/TreegeRenderer/native/components/DefaultInputs";
 export * from "@/renderer/features/TreegeRenderer/native/components/DefaultStep";

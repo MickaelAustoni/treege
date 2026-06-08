@@ -1,5 +1,5 @@
 import { Loader2 } from "lucide-react";
-import { useTreegeRendererContext } from "@/renderer/context/TreegeRendererContext";
+import { useTreegeRenderRuntime } from "@/renderer/context/TreegeRenderRuntimeProvider";
 import { DependencyHintMessage } from "@/renderer/features/TreegeRenderer/web/components/DependencyHint";
 import { useInputOptions } from "@/renderer/hooks/useInputOptions";
 import { useTranslate } from "@/renderer/hooks/useTranslate";
@@ -14,7 +14,7 @@ const DefaultRadioInput = (field: InputFieldProps<"radio">, extra: InputExtraPro
   const { id, name, value } = field;
   const { node, setValue, error, label, helperText, renderOptionExtras, compactOptions, missingDependencies: missing } = extra;
   const { options, isLoading, error: inputOptionsError } = useInputOptions(node);
-  const { optionsDisplayLimit } = useTreegeRendererContext();
+  const { optionsDisplayLimit } = useTreegeRenderRuntime();
   const t = useTranslate();
   const normalizedValue = value ? String(value) : "";
   const isCard = node.data.variant !== "default";

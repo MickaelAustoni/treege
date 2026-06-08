@@ -2,7 +2,7 @@ import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import { Node } from "@xyflow/react";
 import { StrictMode } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { TreegeRendererProvider } from "@/renderer/context/TreegeRendererContext";
+import { TreegeRenderRuntimeProvider } from "@/renderer/context/TreegeRenderRuntimeProvider";
 import InputRendererHost from "@/renderer/features/TreegeRenderer/InputRendererHost";
 import { InputExtraProps, InputFieldProps } from "@/renderer/types/renderer";
 import { InputNodeData } from "@/shared/types/node";
@@ -65,9 +65,9 @@ const renderHttpInput = (node: Node<InputNodeData>) => {
 
   return render(
     <StrictMode>
-      <TreegeRendererProvider value={{ formValues: {}, inputNodes: [node], language: "en" }}>
+      <TreegeRenderRuntimeProvider value={{ formValues: {}, inputNodes: [node], language: "en" }}>
         <InputRendererHost render={DefaultHttpInput} field={field} extra={extra} />
-      </TreegeRendererProvider>
+      </TreegeRenderRuntimeProvider>
     </StrictMode>,
   );
 };
@@ -124,9 +124,9 @@ describe("DefaultHttpInput (web)", () => {
 
     rerender(
       <StrictMode>
-        <TreegeRendererProvider value={{ formValues: {}, inputNodes: [updated], language: "en" }}>
+        <TreegeRenderRuntimeProvider value={{ formValues: {}, inputNodes: [updated], language: "en" }}>
           <InputRendererHost render={DefaultHttpInput} field={field} extra={extra} />
-        </TreegeRendererProvider>
+        </TreegeRenderRuntimeProvider>
       </StrictMode>,
     );
 

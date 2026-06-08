@@ -50,7 +50,7 @@ Version 3.0 represents a complete architectural overhaul of Treege, transforming
   - Custom input component support
   - Flexible theming system
 - **Global Configuration Provider**
-  - `TreegeConfigProvider` for global settings
+  - `TreegeRendererProvider` for global settings
   - Centralized language management
   - Google API key configuration
   - Shared component overrides
@@ -105,7 +105,7 @@ Version 3.0 represents a complete architectural overhaul of Treege, transforming
   - Demo Example
   - All Inputs Example
   - Custom Input Example
-  - TreegeConfigProvider Example
+  - TreegeRendererProvider Example
 
 ### 🎨 UI/UX Improvements
 
