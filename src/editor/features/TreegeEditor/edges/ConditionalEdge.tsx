@@ -256,7 +256,7 @@ const ConditionalEdge = ({
                 {isConfigured ? getConditionSummary() : t("editor.conditionalEdge.defineCondition")}
               </Button>
             </PopoverTrigger>
-            <PopoverContent disablePortal className="tg:w-96 tg:p-1" align="center" onClick={(e) => e.stopPropagation()}>
+            <PopoverContent className="tg:w-96 tg:p-1" align="center" onClick={(e) => e.stopPropagation()}>
               <ScrollArea className="tg:flex tg:max-h-150 tg:flex-col tg:p-3">
                 <form
                   onSubmit={(e) => {

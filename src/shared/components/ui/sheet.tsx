@@ -2,6 +2,7 @@ import * as SheetPrimitive from "@radix-ui/react-dialog";
 import { XIcon } from "lucide-react";
 import * as React from "react";
 
+import { PortalContainerProvider } from "@/shared/context/PortalContainerContext";
 import { cn } from "@/shared/lib/utils";
 
 function Sheet({ ...props }: React.ComponentProps<typeof SheetPrimitive.Root>) {
@@ -41,10 +42,13 @@ function SheetContent({
 }: React.ComponentProps<typeof SheetPrimitive.Content> & {
   side?: "top" | "right" | "bottom" | "left";
 }) {
+  const [content, setContent] = React.useState<HTMLDivElement | null>(null);
+
   return (
     <SheetPortal>
       <SheetOverlay />
       <SheetPrimitive.Content
+        ref={setContent}
         data-slot="sheet-content"
         className={cn(
           "tg:fixed tg:z-[2000] tg:flex tg:flex-col tg:gap-4 tg:bg-background tg:shadow-lg tg:transition tg:ease-in-out tg:data-[state=closed]:animate-out tg:data-[state=open]:animate-in tg:data-[state=closed]:duration-300 tg:data-[state=open]:duration-500",
@@ -60,11 +64,13 @@ function SheetContent({
         )}
         {...props}
       >
-        {children}
-        <SheetPrimitive.Close className="tg:absolute tg:top-4 tg:right-4 tg:rounded-xs tg:opacity-70 tg:ring-offset-background tg:transition-opacity tg:hover:opacity-100 tg:focus:outline-hidden tg:focus:ring-2 tg:focus:ring-ring tg:focus:ring-offset-2 tg:disabled:pointer-events-none tg:data-[state=open]:bg-secondary">
-          <XIcon className="tg:size-4" />
-          <span className="tg:sr-only">Close</span>
-        </SheetPrimitive.Close>
+        <PortalContainerProvider container={content}>
+          {children}
+          <SheetPrimitive.Close className="tg:absolute tg:top-4 tg:right-4 tg:rounded-xs tg:opacity-70 tg:ring-offset-background tg:transition-opacity tg:hover:opacity-100 tg:focus:outline-hidden tg:focus:ring-2 tg:focus:ring-ring tg:focus:ring-offset-2 tg:disabled:pointer-events-none tg:data-[state=open]:bg-secondary">
+            <XIcon className="tg:size-4" />
+            <span className="tg:sr-only">Close</span>
+          </SheetPrimitive.Close>
+        </PortalContainerProvider>
       </SheetPrimitive.Content>
     </SheetPortal>
   );

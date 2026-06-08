@@ -2,6 +2,7 @@ import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { XIcon } from "lucide-react";
 import * as React from "react";
 
+import { PortalContainerProvider } from "@/shared/context/PortalContainerContext";
 import { cn } from "@/shared/lib/utils";
 
 function Dialog({ ...props }: React.ComponentProps<typeof DialogPrimitive.Root>) {
@@ -41,10 +42,13 @@ function DialogContent({
 }: React.ComponentProps<typeof DialogPrimitive.Content> & {
   showCloseButton?: boolean;
 }) {
+  const [content, setContent] = React.useState<HTMLDivElement | null>(null);
+
   return (
     <DialogPortal data-slot="dialog-portal">
       <DialogOverlay />
       <DialogPrimitive.Content
+        ref={setContent}
         data-slot="dialog-content"
         className={cn(
           "tg:data-[state=closed]:fade-out-0 tg:data-[state=open]:fade-in-0 tg:data-[state=closed]:zoom-out-95 tg:data-[state=open]:zoom-in-95 tg:fixed tg:top-[50%] tg:left-[50%] tg:z-[2000] tg:grid tg:w-full tg:max-w-[calc(100%-2rem)] tg:translate-x-[-50%] tg:translate-y-[-50%] tg:gap-4 tg:rounded-lg tg:border tg:bg-background tg:p-6 tg:shadow-lg tg:duration-200 tg:data-[state=closed]:animate-out tg:data-[state=open]:animate-in tg:sm:max-w-lg",
@@ -52,16 +56,18 @@ function DialogContent({
         )}
         {...props}
       >
-        {children}
-        {showCloseButton && (
-          <DialogPrimitive.Close
-            data-slot="dialog-close"
-            className="tg:absolute tg:top-4 tg:right-4 tg:rounded-xs tg:opacity-70 tg:ring-offset-background tg:transition-opacity tg:hover:opacity-100 tg:focus:outline-hidden tg:focus:ring-2 tg:focus:ring-ring tg:focus:ring-offset-2 tg:disabled:pointer-events-none tg:data-[state=open]:bg-accent tg:data-[state=open]:text-muted-foreground tg:[&_svg:not([class*='size-'])]:size-4 tg:[&_svg]:pointer-events-none tg:[&_svg]:shrink-0"
-          >
-            <XIcon />
-            <span className="tg:sr-only">Close</span>
-          </DialogPrimitive.Close>
-        )}
+        <PortalContainerProvider container={content}>
+          {children}
+          {showCloseButton && (
+            <DialogPrimitive.Close
+              data-slot="dialog-close"
+              className="tg:absolute tg:top-4 tg:right-4 tg:rounded-xs tg:opacity-70 tg:ring-offset-background tg:transition-opacity tg:hover:opacity-100 tg:focus:outline-hidden tg:focus:ring-2 tg:focus:ring-ring tg:focus:ring-offset-2 tg:disabled:pointer-events-none tg:data-[state=open]:bg-accent tg:data-[state=open]:text-muted-foreground tg:[&_svg:not([class*='size-'])]:size-4 tg:[&_svg]:pointer-events-none tg:[&_svg]:shrink-0"
+            >
+              <XIcon />
+              <span className="tg:sr-only">Close</span>
+            </DialogPrimitive.Close>
+          )}
+        </PortalContainerProvider>
       </DialogPrimitive.Content>
     </DialogPortal>
   );

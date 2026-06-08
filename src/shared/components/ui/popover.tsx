@@ -1,6 +1,7 @@
 import * as PopoverPrimitive from "@radix-ui/react-popover";
 import * as React from "react";
 
+import { usePortalContainer } from "@/shared/context/PortalContainerContext";
 import { cn } from "@/shared/lib/utils";
 
 function Popover({ ...props }: React.ComponentProps<typeof PopoverPrimitive.Root>) {
@@ -16,10 +17,19 @@ function PopoverContent({
   align = "center",
   sideOffset = 4,
   disablePortal = false,
+  container,
   ...props
 }: React.ComponentProps<typeof PopoverPrimitive.Content> & {
   disablePortal?: boolean;
+  /**
+   * Element to portal the content into. Defaults to the nearest
+   * `PortalContainerProvider` (the editor root, or an enclosing Sheet/Dialog),
+   * falling back to `document.body`. Ignored when `disablePortal` is set.
+   */
+  container?: HTMLElement | null;
 }) {
+  const contextContainer = usePortalContainer();
+  const portalContainer = container ?? contextContainer;
   const content = (
     <PopoverPrimitive.Content
       data-slot="popover-content"
@@ -37,7 +47,7 @@ function PopoverContent({
     return content;
   }
 
-  return <PopoverPrimitive.Portal>{content}</PopoverPrimitive.Portal>;
+  return <PopoverPrimitive.Portal container={portalContainer ?? undefined}>{content}</PopoverPrimitive.Portal>;
 }
 
 function PopoverAnchor({ ...props }: React.ComponentProps<typeof PopoverPrimitive.Anchor>) {

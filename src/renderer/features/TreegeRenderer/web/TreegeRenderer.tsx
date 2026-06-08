@@ -1,4 +1,4 @@
-import { FormEvent, useCallback, useMemo } from "react";
+import { FormEvent, useCallback, useMemo, useState } from "react";
 import { TreegeRenderRuntimeProvider } from "@/renderer/context/TreegeRenderRuntimeProvider";
 import { useTreegeRenderer } from "@/renderer/features/TreegeRenderer/useTreegeRenderer";
 import DefaultFormWrapper from "@/renderer/features/TreegeRenderer/web/components/DefaultFormWrapper";
@@ -12,6 +12,7 @@ import { defaultUI } from "@/renderer/features/TreegeRenderer/web/components/Def
 import RendererStyles from "@/renderer/features/TreegeRenderer/web/components/styles/RendererStyles";
 import { useRenderNode } from "@/renderer/hooks/useRenderNode";
 import { TreegeRendererProps } from "@/renderer/types/renderer";
+import { PortalContainerProvider } from "@/shared/context/PortalContainerContext";
 import { ThemeProvider } from "@/shared/context/ThemeContext";
 import { cn } from "@/shared/lib/utils";
 
@@ -69,6 +70,8 @@ const TreegeRenderer = ({
     validationMode,
   });
 
+  const [portalContainer, setPortalContainer] = useState<HTMLDivElement | null>(null);
+
   const { FormWrapper, renderNode } = useRenderNode({
     config,
     DefaultFormWrapper,
@@ -122,74 +125,76 @@ const TreegeRenderer = ({
   }, [isLastStep, handleSubmit, goToNextStep]);
 
   return (
-    <div className={cn("treege", className)}>
-      <RendererStyles />
-      <ThemeProvider theme={config.theme} storageKey="treege-renderer-theme">
-        {isLoading ? (
-          <LoadingSkeleton />
-        ) : (
-          <TreegeRenderRuntimeProvider
-            value={{
-              baseUrl: config.baseUrl,
-              flow,
-              formErrors,
-              formValues,
-              googleApiKey: config.googleApiKey,
-              headers: config.headers,
-              inputNodes,
-              language: config.language,
-              setFieldValue,
-            }}
-          >
-            <FormWrapper onSubmit={handleFormSubmit}>
-              {currentStep && (
-                <StepComponent
-                  step={currentStep}
-                  groupNode={currentStepGroupNode}
-                  stepIndex={currentStepIndex}
-                  totalSteps={steps.length}
-                  isFirstStep={isFirstStep}
-                  isLastStep={isLastStep}
-                  canContinue={canContinueStep && (!isLastStep || canSubmit)}
-                  isSubmitting={isSubmitting}
-                  onBack={goToPreviousStep}
-                  onContinue={handleContinue}
-                  label={stepLabel}
-                  missingFields={isLastStep ? missingRequiredFields : undefined}
-                >
-                  {currentStep.nodes.map((node) => renderNode(node))}
-                </StepComponent>
-              )}
-
-              {/* Powered by Treege */}
-              <p className="tg:py-2 tg:text-right tg:text-muted-foreground tg:text-xs">Powered by Treege</p>
-            </FormWrapper>
-
-            {/* Submit message (success/error) */}
-            {submitMessage && (
-              <div
-                className={`tg:my-4 tg:rounded-md tg:p-4 ${
-                  submitMessage.type === "success"
-                    ? "bg-green-50 text-green-800 dark:bg-green-900/20 dark:text-green-300"
-                    : "bg-red-50 text-red-800 dark:bg-red-900/20 dark:text-red-300"
-                }`}
-                role="alert"
-              >
-                <div className="tg:flex tg:items-center tg:justify-between">
-                  <p className="tg:font-medium tg:text-sm">{submitMessage.message}</p>
-                  <button
-                    type="button"
-                    onClick={clearSubmitMessage}
-                    className="tg:ml-4 tg:font-medium tg:text-sm tg:underline tg:hover:no-underline tg:focus:outline-none"
+    <div ref={setPortalContainer} className={cn("treege", className)}>
+      <PortalContainerProvider container={portalContainer}>
+        <RendererStyles />
+        <ThemeProvider theme={config.theme} storageKey="treege-renderer-theme">
+          {isLoading ? (
+            <LoadingSkeleton />
+          ) : (
+            <TreegeRenderRuntimeProvider
+              value={{
+                baseUrl: config.baseUrl,
+                flow,
+                formErrors,
+                formValues,
+                googleApiKey: config.googleApiKey,
+                headers: config.headers,
+                inputNodes,
+                language: config.language,
+                setFieldValue,
+              }}
+            >
+              <FormWrapper onSubmit={handleFormSubmit}>
+                {currentStep && (
+                  <StepComponent
+                    step={currentStep}
+                    groupNode={currentStepGroupNode}
+                    stepIndex={currentStepIndex}
+                    totalSteps={steps.length}
+                    isFirstStep={isFirstStep}
+                    isLastStep={isLastStep}
+                    canContinue={canContinueStep && (!isLastStep || canSubmit)}
+                    isSubmitting={isSubmitting}
+                    onBack={goToPreviousStep}
+                    onContinue={handleContinue}
+                    label={stepLabel}
+                    missingFields={isLastStep ? missingRequiredFields : undefined}
                   >
-                    {t("common.close")}
-                  </button>
+                    {currentStep.nodes.map((node) => renderNode(node))}
+                  </StepComponent>
+                )}
+
+                {/* Powered by Treege */}
+                <p className="tg:py-2 tg:text-right tg:text-muted-foreground tg:text-xs">Powered by Treege</p>
+              </FormWrapper>
+
+              {/* Submit message (success/error) */}
+              {submitMessage && (
+                <div
+                  className={`tg:my-4 tg:rounded-md tg:p-4 ${
+                    submitMessage.type === "success"
+                      ? "bg-green-50 text-green-800 dark:bg-green-900/20 dark:text-green-300"
+                      : "bg-red-50 text-red-800 dark:bg-red-900/20 dark:text-red-300"
+                  }`}
+                  role="alert"
+                >
+                  <div className="tg:flex tg:items-center tg:justify-between">
+                    <p className="tg:font-medium tg:text-sm">{submitMessage.message}</p>
+                    <button
+                      type="button"
+                      onClick={clearSubmitMessage}
+                      className="tg:ml-4 tg:font-medium tg:text-sm tg:underline tg:hover:no-underline tg:focus:outline-none"
+                    >
+                      {t("common.close")}
+                    </button>
+                  </div>
                 </div>
-              </div>
-            )}
-          </TreegeRenderRuntimeProvider>
-        )}
-      </ThemeProvider>
+              )}
+            </TreegeRenderRuntimeProvider>
+          )}
+        </ThemeProvider>
+      </PortalContainerProvider>
     </div>
   );
 };

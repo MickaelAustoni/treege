@@ -218,7 +218,7 @@ const SelectNodeGroup = ({ targetNodes, hideLabel, onChange }: SelectNodeGroupPr
                 <Pencil className="tg:h-4 tg:w-4" />
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="tg:w-80" align="end" disablePortal>
+            <PopoverContent className="tg:w-80" align="end" onClick={(e) => e.stopPropagation()}>
               <div className="tg:space-y-4">
                 <div className="tg:space-y-2">
                   <h4 className="tg:font-medium tg:leading-none">{t("editor.selectNodeGroup.renameGroup")}</h4>
@@ -257,7 +257,7 @@ const SelectNodeGroup = ({ targetNodes, hideLabel, onChange }: SelectNodeGroupPr
               <PlusCircle className="tg:h-4 tg:w-4" />
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="tg:w-80" align="end" disablePortal>
+          <PopoverContent className="tg:w-80" align="end" onClick={(e) => e.stopPropagation()}>
             <div className="tg:space-y-4">
               <div className="tg:space-y-2">
                 <h4 className="tg:font-medium tg:leading-none">{t("editor.selectNodeGroup.newGroup")}</h4>

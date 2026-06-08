@@ -15,9 +15,9 @@ interface NodeGroupBadgeProps {
 }
 
 const NodeGroupBadge = ({ nodeId, groupId }: NodeGroupBadgeProps) => {
+  const [open, setOpen] = useState(false);
   const t = useTranslate();
   const nodes = useNodes<TreegeNode>();
-  const [open, setOpen] = useState(false);
   const currentNode = useMemo(() => nodes.find((n) => n.id === nodeId), [nodes, nodeId]);
   const groupNode = useMemo(() => (groupId ? nodes.find((n) => n.id === groupId) : undefined), [nodes, groupId]);
   const label = isGroupNode(groupNode) ? t(groupNode.data?.label) : "";
@@ -49,7 +49,7 @@ const NodeGroupBadge = ({ nodeId, groupId }: NodeGroupBadgeProps) => {
           </Badge>
         )}
       </PopoverTrigger>
-      <PopoverContent align="start" className="tg:w-80" onClick={stopPropagation} disablePortal>
+      <PopoverContent align="start" className="tg:w-80" onClick={stopPropagation}>
         {currentNode && <SelectNodeGroup targetNodes={[currentNode]} onChange={() => setOpen(false)} />}
       </PopoverContent>
     </Popover>
