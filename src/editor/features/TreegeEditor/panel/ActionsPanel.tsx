@@ -28,15 +28,15 @@ import {
   DropdownMenuTrigger,
 } from "@/shared/components/ui/dropdown-menu";
 import { LANGUAGES } from "@/shared/constants/languages";
-import { Flow, HttpHeader } from "@/shared/types/node";
+import { Flow, HttpHeaders } from "@/shared/types/node";
 
 export interface ActionsPanelProps {
   onExportJson?: (data: Flow) => void;
   onSave?: (data: Flow) => void;
   extraMenuItems?: ExtraMenuItem[];
-  onAuthorize?: (headers: HttpHeader[]) => void;
-  headers?: HttpHeader[];
-  onHeadersChange?: (headers: HttpHeader[]) => void;
+  onAuthorize?: (headers: HttpHeaders) => void;
+  headers?: HttpHeaders;
+  onHeadersChange?: (headers: HttpHeaders) => void;
 }
 
 const uniqueId = nanoid();
@@ -48,8 +48,8 @@ const ActionsPanel = ({ onExportJson, onSave, extraMenuItems, onAuthorize, heade
   const [authorizeAcknowledged, setAuthorizeAcknowledged] = useState(false);
   const { flowId, setFlowId, aiConfig, language, setLanguage } = useTreegeEditorRuntime();
   const { document: openApiDocument } = useOpenApi();
-  const hasHeaders = (headers?.length ?? 0) > 0;
   const { setNodes, setEdges, addNodes, screenToFlowPosition } = useReactFlow();
+  const hasHeaders = Object.keys(headers ?? {}).length > 0;
   const id = flowId || uniqueId;
   const nodes = useNodes();
   const edges = useEdges();
@@ -318,7 +318,7 @@ const ActionsPanel = ({ onExportJson, onSave, extraMenuItems, onAuthorize, heade
       <OpenApiDialog open={openApiDialogOpen} onOpenChange={setOpenApiDialogOpen} />
       <AuthorizeDialog open={authorizeDialogOpen} onOpenChange={setAuthorizeDialogOpen} onAuthorize={onAuthorize} />
       {onHeadersChange && (
-        <HeadersDialog open={headersDialogOpen} onOpenChange={setHeadersDialogOpen} headers={headers ?? []} onChange={onHeadersChange} />
+        <HeadersDialog open={headersDialogOpen} onOpenChange={setHeadersDialogOpen} headers={headers ?? {}} onChange={onHeadersChange} />
       )}
     </Panel>
   );

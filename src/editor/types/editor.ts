@@ -2,7 +2,7 @@ import { Edge, Node } from "@xyflow/react";
 import { ReactNode } from "react";
 import { AIConfig } from "@/editor/types/ai";
 import { OpenApiDocument } from "@/editor/types/openapi";
-import { Flow, HttpHeader } from "@/shared/types/node";
+import { Flow, HttpHeaders } from "@/shared/types/node";
 
 export interface ExtraMenuItem {
   /**
@@ -110,14 +110,14 @@ export interface TreegeEditorProps {
    * `TreegeRenderer` so editor-time previews use the same auth and headers
    * that the runtime form will use.
    */
-  headers?: HttpHeader[];
+  headers?: HttpHeaders;
   /**
    * Called when the user submits the Authorize dialog. Receives the resulting
    * HTTP headers (`Authorization`, API key headers…). The consumer is expected
    * to forward those headers to `TreegeRenderer` (or `TreegeRendererProvider`)
    * via its `headers` prop so every request issued by the form is authenticated.
    */
-  onAuthorize?: (headers: HttpHeader[]) => void;
+  onAuthorize?: (headers: HttpHeaders) => void;
   /**
    * Called whenever the user edits the global headers via the editor's
    * built-in "Global headers" dialog. The component is controlled — the
@@ -125,5 +125,5 @@ export interface TreegeEditorProps {
    * the new list back via the `headers` prop, so every editor-time and
    * runtime request reflects the change.
    */
-  onHeadersChange?: (headers: HttpHeader[]) => void;
+  onHeadersChange?: (headers: HttpHeaders) => void;
 }

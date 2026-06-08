@@ -1,37 +1,34 @@
 import { describe, expect, it } from "vitest";
-import type { HttpConfig, HttpHeader, InputNodeData } from "@/shared/types/node";
+import type { HttpConfig, HttpHeaders, InputNodeData } from "@/shared/types/node";
 
 describe("HTTP Configuration System", () => {
-  describe("HttpHeader Structure", () => {
+  describe("HttpHeaders Structure", () => {
     it("should validate HTTP header structure", () => {
-      const header: HttpHeader = {
-        key: "Authorization",
-        value: "Bearer token123",
+      const headers: HttpHeaders = {
+        Authorization: "Bearer token123",
       };
 
-      expect(header.key).toBe("Authorization");
-      expect(header.value).toBe("Bearer token123");
+      expect(headers.Authorization).toBe("Bearer token123");
     });
 
     it("should support common HTTP headers", () => {
-      const headers: HttpHeader[] = [
-        { key: "Content-Type", value: "application/json" },
-        { key: "Authorization", value: "Bearer token" },
-        { key: "Accept", value: "application/json" },
-        { key: "User-Agent", value: "TreegeApp/1.0" },
-      ];
+      const headers: HttpHeaders = {
+        Accept: "application/json",
+        Authorization: "Bearer token",
+        "Content-Type": "application/json",
+        "User-Agent": "TreegeApp/1.0",
+      };
 
-      expect(headers.length).toBe(4);
-      expect(headers.every((h) => h.key && h.value)).toBe(true);
+      expect(Object.keys(headers).length).toBe(4);
+      expect(Object.entries(headers).every(([key, value]) => key && value)).toBe(true);
     });
 
     it("should allow custom headers", () => {
-      const header: HttpHeader = {
-        key: "X-Custom-Header",
-        value: "custom-value",
+      const headers: HttpHeaders = {
+        "X-Custom-Header": "custom-value",
       };
 
-      expect(header.key).toContain("X-");
+      expect(Object.keys(headers)[0]).toContain("X-");
     });
   });
 
@@ -49,14 +46,14 @@ describe("HTTP Configuration System", () => {
     it("should validate POST request with body", () => {
       const config: HttpConfig = {
         body: JSON.stringify({ email: "john@example.com", name: "John" }),
-        headers: [{ key: "Content-Type", value: "application/json" }],
+        headers: { "Content-Type": "application/json" },
         method: "POST",
         url: "https://api.example.com/users",
       };
 
       expect(config.method).toBe("POST");
       expect(config.body).toBeDefined();
-      expect(config.headers?.length).toBe(1);
+      expect(Object.keys(config.headers ?? {}).length).toBe(1);
     });
 
     it("should support all HTTP methods", () => {
@@ -74,16 +71,16 @@ describe("HTTP Configuration System", () => {
 
     it("should validate config with custom headers", () => {
       const config: HttpConfig = {
-        headers: [
-          { key: "Authorization", value: "Bearer token123" },
-          { key: "Accept-Language", value: "en-US" },
-        ],
+        headers: {
+          "Accept-Language": "en-US",
+          Authorization: "Bearer token123",
+        },
         method: "GET",
         url: "https://api.example.com/data",
       };
 
-      expect(config.headers?.length).toBe(2);
-      expect(config.headers?.[0].key).toBe("Authorization");
+      expect(Object.keys(config.headers ?? {}).length).toBe(2);
+      expect(config.headers?.Authorization).toBe("Bearer token123");
     });
   });
 
@@ -256,12 +253,12 @@ describe("HTTP Configuration System", () => {
 
     it("should support template variables in headers", () => {
       const config: HttpConfig = {
-        headers: [{ key: "Authorization", value: "Bearer {{token}}" }],
+        headers: { Authorization: "Bearer {{token}}" },
         method: "GET",
         url: "https://api.example.com/data",
       };
 
-      expect(config.headers?.[0].value).toContain("{{token}}");
+      expect(config.headers?.Authorization).toContain("{{token}}");
     });
 
     it("should support template variables in body", () => {
@@ -344,7 +341,7 @@ describe("HTTP Configuration System", () => {
       const inputData: InputNodeData = {
         httpConfig: {
           body: '{"search": "{{searchTerm}}"}',
-          headers: [{ key: "Content-Type", value: "application/json" }],
+          headers: { "Content-Type": "application/json" },
           method: "POST",
           responseMapping: {
             labelField: "title",
@@ -366,10 +363,10 @@ describe("HTTP Configuration System", () => {
   describe("Complex HTTP Scenarios", () => {
     it("should validate authenticated API request", () => {
       const config: HttpConfig = {
-        headers: [
-          { key: "Authorization", value: "Bearer {{authToken}}" },
-          { key: "Content-Type", value: "application/json" },
-        ],
+        headers: {
+          Authorization: "Bearer {{authToken}}",
+          "Content-Type": "application/json",
+        },
         method: "GET",
         responseMapping: {
           labelField: "displayName",
@@ -380,8 +377,8 @@ describe("HTTP Configuration System", () => {
         url: "https://api.example.com/users",
       };
 
-      expect(config.headers?.length).toBe(2);
-      expect(config.headers?.some((h) => h.key === "Authorization")).toBe(true);
+      expect(Object.keys(config.headers ?? {}).length).toBe(2);
+      expect(Object.keys(config.headers ?? {}).includes("Authorization")).toBe(true);
     });
 
     it("should validate paginated API request", () => {
@@ -430,14 +427,14 @@ describe("HTTP Configuration System", () => {
       expect(config.responseMapping).toBeUndefined();
     });
 
-    it("should handle empty headers array", () => {
+    it("should handle empty headers object", () => {
       const config: HttpConfig = {
-        headers: [],
+        headers: {},
         method: "GET",
         url: "https://api.example.com/data",
       };
 
-      expect(config.headers?.length).toBe(0);
+      expect(Object.keys(config.headers ?? {}).length).toBe(0);
     });
   });
 });

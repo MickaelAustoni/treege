@@ -1,7 +1,7 @@
 import { Node } from "@xyflow/react";
 import { createContext, PropsWithChildren, useContext, useMemo } from "react";
 import { FormValues } from "@/renderer/types/renderer";
-import { Flow, HttpHeader, InputNodeData } from "@/shared/types/node";
+import { Flow, HttpHeaders, InputNodeData } from "@/shared/types/node";
 
 export interface TreegeRenderRuntimeContextValue {
   /**
@@ -36,7 +36,7 @@ export interface TreegeRenderRuntimeContextValue {
    * to every request issued by inputs. Field-level headers override these
    * on key collision (case-insensitive).
    */
-  headers?: HttpHeader[];
+  headers?: HttpHeaders;
   /**
    * The flow's input nodes — exposed so renderers can resolve references
    * between fields (e.g. `convertFormValuesToNamedFormat`, reference-field

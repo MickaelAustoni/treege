@@ -5,7 +5,7 @@ import { FlowStep } from "@/renderer/utils/step";
 import {
   Flow,
   GroupNodeData,
-  HttpHeader,
+  HttpHeaders,
   InputNodeData,
   InputOption,
   InputType,
@@ -304,8 +304,11 @@ export type TreegeRendererConfig = {
    * Global HTTP headers applied to every request issued by the renderer
    * (HTTP inputs, submit buttons). Field-level headers with the same key
    * (case-insensitive) take precedence over these.
+   *
+   * @example
+   * headers={{ Authorization: `Bearer ${accessToken}` }}
    */
-  headers?: HttpHeader[];
+  headers?: HttpHeaders;
   /**
    * Google Maps API key for address autocomplete
    * If not provided, falls back to free Nominatim (OpenStreetMap)

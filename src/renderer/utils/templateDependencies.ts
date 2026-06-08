@@ -39,7 +39,7 @@ export const getTemplateDependencyIds = (node: Node<InputNodeData>): string[] =>
     return [];
   }
 
-  const queryValues = config.queryParams?.map((param) => param.value) ?? [];
+  const queryValues = Object.values(config.queryParams ?? {});
   return extractRefs(config.url, config.body, ...queryValues);
 };
 

@@ -50,27 +50,19 @@ export type GroupNodeData = BaseNodeData & {
   label: Translatable;
 };
 
-export type HttpHeader = {
-  /**
-   * The header key (e.g., "Authorization", "Content-Type")
-   */
-  key: string;
-  /**
-   * The header value
-   */
-  value: string;
-};
+/**
+ * HTTP headers as a plain object keyed by header name, e.g.
+ * `{ Authorization: "Bearer xyz", "Content-Type": "application/json" }`.
+ * Values support template variables like `{{fieldId}}`.
+ */
+export type HttpHeaders = Record<string, string>;
 
-export type QueryParam = {
-  /**
-   * The query parameter key (e.g., "limit", "page", "sort")
-   */
-  key: string;
-  /**
-   * The query parameter value (supports template variables like {{fieldId}})
-   */
-  value: string;
-};
+/**
+ * Query parameters as a plain object keyed by parameter name, e.g.
+ * `{ limit: "10", sort: "asc" }`. Values support template variables like
+ * `{{fieldId}}`.
+ */
+export type QueryParams = Record<string, string>;
 
 export type HttpConfig = {
   /**
@@ -84,11 +76,11 @@ export type HttpConfig = {
   /**
    * Custom headers for the HTTP request
    */
-  headers?: HttpHeader[];
+  headers?: HttpHeaders;
   /**
    * Query parameters appended to the URL (supports template variables like {{fieldId}})
    */
-  queryParams?: QueryParam[];
+  queryParams?: QueryParams;
   /**
    * Request body (for POST/PUT/PATCH methods)
    */
@@ -156,9 +148,9 @@ export type OptionsSource = {
   /** HTTP method */
   method?: "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
   /** Custom headers (merged with global headers; field-level wins) */
-  headers?: HttpHeader[];
+  headers?: HttpHeaders;
   /** Query parameters appended to the URL (supports template variables like {{fieldId}}) */
-  queryParams?: QueryParam[];
+  queryParams?: QueryParams;
   /** Request body (for POST/PUT/PATCH; supports template variables) */
   body?: string;
   /** JSONPath to extract the array from the response (e.g., "data.users") */
@@ -179,11 +171,11 @@ export type SubmitConfig = {
   /**
    * Custom headers for the HTTP request
    */
-  headers?: HttpHeader[];
+  headers?: HttpHeaders;
   /**
    * Query parameters appended to the URL (supports template variables like {{fieldId}})
    */
-  queryParams?: QueryParam[];
+  queryParams?: QueryParams;
   /**
    * Request body (for POST/PUT/PATCH methods, supports template variables like {{fieldId}})
    * Strings are automatically quoted, use: {"name": {{userName}}}

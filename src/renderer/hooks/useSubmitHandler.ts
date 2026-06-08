@@ -2,7 +2,7 @@ import { Node } from "@xyflow/react";
 import { useCallback, useMemo, useState } from "react";
 import { FormValues } from "@/renderer/types/renderer";
 import { redirect, SubmitResult, submitFormData } from "@/renderer/utils/submit";
-import { HttpHeader, InputNodeData, TreegeNodeData } from "@/shared/types/node";
+import { HttpHeaders, InputNodeData, TreegeNodeData } from "@/shared/types/node";
 import { isInputNode } from "@/shared/utils/nodeTypeGuards";
 import { getTranslatedText } from "@/shared/utils/translations";
 
@@ -29,7 +29,7 @@ export const useSubmitHandler = (
   formValues: FormValues,
   language: string,
   inputNodes: Node<InputNodeData>[],
-  headers?: HttpHeader[],
+  headers?: HttpHeaders,
   baseUrl?: string,
 ) => {
   const [isSubmitting, setIsSubmitting] = useState(false);

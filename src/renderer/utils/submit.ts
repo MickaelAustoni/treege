@@ -1,8 +1,15 @@
 import { Node } from "@xyflow/react";
 import { FormValues } from "@/renderer/types/renderer";
 import { convertFormValuesToNamedFormat } from "@/renderer/utils/form";
-import { makeHttpRequest, mergeHttpHeaders, replaceResponseVariables, replaceTemplateVariables, resolveUrl } from "@/renderer/utils/http";
-import { HttpHeader, InputNodeData, QueryParam, SubmitConfig } from "@/shared/types/node";
+import {
+  makeHttpRequest,
+  mergeHttpHeaders,
+  replaceResponseVariables,
+  replaceTemplateVariables,
+  resolveTemplateRecord,
+  resolveUrl,
+} from "@/renderer/utils/http";
+import { HttpHeaders, InputNodeData, SubmitConfig } from "@/shared/types/node";
 
 /**
  * Result of a form submission
@@ -46,7 +53,7 @@ export const submitFormData = async (
   config: SubmitConfig,
   formValues: FormValues,
   inputNodes: Node<InputNodeData>[],
-  headers?: HttpHeader[],
+  headers?: HttpHeaders,
   baseUrl?: string,
 ): Promise<SubmitResult> => {
   // Validate configuration
@@ -68,19 +75,6 @@ export const submitFormData = async (
     };
   }
 
-  // Replace template variables in both global and field-level headers,
-  // then merge with field-level winning over globals on key collision.
-  const replaceVars = (header: HttpHeader): HttpHeader => ({
-    key: header.key,
-    value: replaceTemplateVariables(header.value, formValues),
-  });
-
-  // Resolve template variables in query parameter values
-  const replaceParamVars = (param: QueryParam): QueryParam => ({
-    key: param.key,
-    value: replaceTemplateVariables(param.value, formValues),
-  });
-
   // Prepare body: use all form data if sendAllFormValues is true, otherwise use custom body
   const body = config.sendAllFormValues
     ? JSON.stringify(convertFormValuesToNamedFormat(formValues, inputNodes))
@@ -91,9 +85,9 @@ export const submitFormData = async (
   // Make the HTTP request using shared utility
   const result = await makeHttpRequest({
     body,
-    headers: mergeHttpHeaders(headers?.map(replaceVars), config.headers?.map(replaceVars)),
+    headers: mergeHttpHeaders(resolveTemplateRecord(headers, formValues), resolveTemplateRecord(config.headers, formValues)),
     method: config.method || "POST",
-    queryParams: config.queryParams?.map(replaceParamVars),
+    queryParams: resolveTemplateRecord(config.queryParams, formValues),
     url,
   });
 

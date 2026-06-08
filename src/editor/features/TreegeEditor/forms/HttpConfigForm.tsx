@@ -15,6 +15,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/shared/components/ui/switch";
 import { Textarea } from "@/shared/components/ui/textarea";
 import { HttpConfig, InputNodeData } from "@/shared/types/node";
+import { entriesToRecord, KeyValueEntry, recordToEntries } from "@/shared/utils/httpRecord";
 
 const METHODS_NEEDING_BODY = ["POST", "PUT", "PATCH"];
 
@@ -22,6 +23,16 @@ interface HttpConfigFormProps {
   value: HttpConfig | undefined;
   onChange: (config: HttpConfig | undefined) => void;
 }
+
+/**
+ * The form's working shape: `headers`/`queryParams` are edited as ordered
+ * key/value rows (which tolerate empty keys mid-typing) and serialized back to
+ * the persisted `Record<string, string>` form on submit.
+ */
+type HttpConfigFormValues = Omit<HttpConfig, "headers" | "queryParams"> & {
+  headers: KeyValueEntry[];
+  queryParams: KeyValueEntry[];
+};
 
 const HttpConfigForm = ({ value, onChange }: HttpConfigFormProps) => {
   const { selectedNode } = useNodesSelection<InputNodeData>();
@@ -32,9 +43,9 @@ const HttpConfigForm = ({ value, onChange }: HttpConfigFormProps) => {
     defaultValues: {
       body: value?.body || "",
       fetchOnMount: value?.fetchOnMount ?? true,
-      headers: value?.headers || [],
+      headers: recordToEntries(value?.headers),
       method: value?.method || "GET",
-      queryParams: value?.queryParams || [],
+      queryParams: recordToEntries(value?.queryParams),
       responseMapping: value?.responseMapping || {
         labelField: "",
         valueField: "",
@@ -44,7 +55,7 @@ const HttpConfigForm = ({ value, onChange }: HttpConfigFormProps) => {
       sendAllFormValues: !!value?.sendAllFormValues,
       showLoading: value?.showLoading !== false,
       url: value?.url || "",
-    } as HttpConfig,
+    } as HttpConfigFormValues,
     listeners: {
       onChange: ({ formApi }) => {
         formApi.handleSubmit().then();
@@ -52,7 +63,11 @@ const HttpConfigForm = ({ value, onChange }: HttpConfigFormProps) => {
       onChangeDebounceMs: 150,
     },
     onSubmit: ({ value: formValue }) => {
-      onChange(formValue);
+      onChange({
+        ...formValue,
+        headers: entriesToRecord(formValue.headers),
+        queryParams: entriesToRecord(formValue.queryParams),
+      });
     },
   });
 
@@ -375,7 +390,14 @@ const HttpConfigForm = ({ value, onChange }: HttpConfigFormProps) => {
                 >
                   {({ body, headers, method, queryParams, responsePath, url }) => (
                     <OptionsMappingFields
-                      request={{ body, headers, method, queryParams, responsePath, url }}
+                      request={{
+                        body,
+                        headers: entriesToRecord(headers),
+                        method,
+                        queryParams: entriesToRecord(queryParams),
+                        responsePath,
+                        url,
+                      }}
                       mapping={mappingField.state.value ?? {}}
                       onMappingChange={(patch) => mappingField.handleChange({ ...(mappingField.state.value ?? {}), ...patch })}
                     />

@@ -15,6 +15,7 @@ import { Switch } from "@/shared/components/ui/switch";
 import { Textarea } from "@/shared/components/ui/textarea";
 import { Language } from "@/shared/types/languages";
 import { InputNodeData, SubmitConfig } from "@/shared/types/node";
+import { entriesToRecord, KeyValueEntry, recordToEntries } from "@/shared/utils/httpRecord";
 
 const METHODS_NEEDING_BODY = ["POST", "PUT", "PATCH"];
 
@@ -22,6 +23,16 @@ interface SubmitConfigFormProps {
   value: SubmitConfig | undefined;
   onChange: (config: SubmitConfig | undefined) => void;
 }
+
+/**
+ * The form's working shape: `headers`/`queryParams` are edited as ordered
+ * key/value rows (which tolerate empty keys mid-typing) and serialized back to
+ * the persisted `Record<string, string>` form on submit.
+ */
+type SubmitConfigFormValues = Omit<SubmitConfig, "headers" | "queryParams"> & {
+  headers: KeyValueEntry[];
+  queryParams: KeyValueEntry[];
+};
 
 const SubmitConfigForm = ({ value, onChange }: SubmitConfigFormProps) => {
   const [selectedLanguage, setSelectedLanguage] = useState<Language>("en");
@@ -33,15 +44,15 @@ const SubmitConfigForm = ({ value, onChange }: SubmitConfigFormProps) => {
     defaultValues: {
       body: value?.body || "",
       errorMessage: value?.errorMessage || { en: "" },
-      headers: value?.headers || [],
+      headers: recordToEntries(value?.headers),
       method: value?.method || "POST",
-      queryParams: value?.queryParams || [],
+      queryParams: recordToEntries(value?.queryParams),
       redirectUrl: value?.redirectUrl || "",
       sendAllFormValues: !!value?.sendAllFormValues,
       showLoading: value?.showLoading !== false,
       successMessage: value?.successMessage || { en: "" },
       url: value?.url || "",
-    } as SubmitConfig,
+    } as SubmitConfigFormValues,
     listeners: {
       onChange: ({ formApi }) => {
         formApi.handleSubmit().then();
@@ -49,7 +60,11 @@ const SubmitConfigForm = ({ value, onChange }: SubmitConfigFormProps) => {
       onChangeDebounceMs: 150,
     },
     onSubmit: ({ value: formValue }) => {
-      onChange(formValue);
+      onChange({
+        ...formValue,
+        headers: entriesToRecord(formValue.headers),
+        queryParams: entriesToRecord(formValue.queryParams),
+      });
     },
   });
 

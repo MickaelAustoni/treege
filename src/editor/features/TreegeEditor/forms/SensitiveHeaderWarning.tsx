@@ -1,10 +1,10 @@
 import { ShieldAlert } from "lucide-react";
 import useTranslate from "@/editor/hooks/useTranslate";
 import { hasSensitiveHeader } from "@/editor/utils/sensitiveHeaders";
-import { HttpHeader } from "@/shared/types/node";
+import { KeyValueEntry } from "@/shared/utils/httpRecord";
 
 interface SensitiveHeaderWarningProps {
-  headers?: HttpHeader[];
+  headers?: KeyValueEntry[];
 }
 
 /**

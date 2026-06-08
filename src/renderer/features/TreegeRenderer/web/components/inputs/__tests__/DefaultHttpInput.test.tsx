@@ -42,9 +42,9 @@ const buildNode = (): Node<InputNodeData> => ({
     httpConfig: {
       body: "",
       fetchOnMount: true,
-      headers: [],
+      headers: {},
       method: "GET",
-      queryParams: [],
+      queryParams: {},
       responseMapping: { labelField: "name", valueField: "id" },
       responsePath: "",
       searchParam: "",

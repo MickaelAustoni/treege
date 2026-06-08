@@ -1,8 +1,15 @@
 import { Node } from "@xyflow/react";
 import { useEffect, useMemo, useState } from "react";
 import { useTreegeRenderRuntime } from "@/renderer/context/TreegeRenderRuntimeProvider";
-import { extractOptionsFromResponse, makeHttpRequest, mergeHttpHeaders, replaceTemplateVariables, resolveUrl } from "@/renderer/utils/http";
-import { HttpHeader, InputNodeData, InputOption, OptionsSourceMapping, QueryParam } from "@/shared/types/node";
+import {
+  extractOptionsFromResponse,
+  makeHttpRequest,
+  mergeHttpHeaders,
+  replaceTemplateVariables,
+  resolveTemplateRecord,
+  resolveUrl,
+} from "@/renderer/utils/http";
+import { HttpHeaders, InputNodeData, InputOption, OptionsSourceMapping, QueryParams } from "@/shared/types/node";
 
 const TEMPLATE_VAR_REGEX = /\{\{([\w-]+)}}/g;
 
@@ -29,8 +36,8 @@ type HttpMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
 interface ResolvedOptionsSource {
   url: string;
   method: HttpMethod;
-  headers: HttpHeader[];
-  queryParams: QueryParam[];
+  headers: HttpHeaders;
+  queryParams: QueryParams;
   body: string | undefined;
   responsePath: string | undefined;
   mapping: OptionsSourceMapping;
@@ -79,26 +86,16 @@ export const useInputOptions = (node: Node<InputNodeData>): UseInputOptionsResul
       return null;
     }
 
-    const replaceHeaderVars = (header: HttpHeader): HttpHeader => ({
-      key: header.key,
-      value: replaceTemplateVariables(header.value, formValues),
-    });
-
-    const replaceParamVars = (param: QueryParam): QueryParam => ({
-      key: param.key,
-      value: replaceTemplateVariables(param.value, formValues),
-    });
-
     const method = source.method ?? "GET";
     const resolved: ResolvedOptionsSource = {
       body:
         source.body && ["POST", "PUT", "PATCH"].includes(method)
           ? replaceTemplateVariables(source.body, formValues, { json: true })
           : undefined,
-      headers: mergeHttpHeaders(globalHeaders?.map(replaceHeaderVars), source.headers?.map(replaceHeaderVars)),
+      headers: mergeHttpHeaders(resolveTemplateRecord(globalHeaders, formValues), resolveTemplateRecord(source.headers, formValues)),
       mapping: source.mapping,
       method,
-      queryParams: source.queryParams?.map(replaceParamVars) ?? [],
+      queryParams: resolveTemplateRecord(source.queryParams, formValues) ?? {},
       responsePath: source.responsePath,
       url: resolveUrl(replaceTemplateVariables(source.url, formValues, { encode: true }), baseUrl),
     };

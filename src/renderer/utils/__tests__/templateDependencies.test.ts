@@ -24,7 +24,7 @@ describe("getTemplateDependencyIds", () => {
     const node = makeNode({
       optionsSource: {
         body: "{{c}}",
-        queryParams: [{ key: "q", value: "{{b}}" }],
+        queryParams: { q: "{{b}}" },
         url: "https://api/{{a}}",
       },
       type: "select",

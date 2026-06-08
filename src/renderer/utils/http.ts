@@ -1,6 +1,6 @@
 import { FormValues } from "@/renderer/types/renderer";
 import { sanitize } from "@/renderer/utils/sanitize";
-import { HttpHeader, InputOption, OptionsSourceMapping, QueryParam } from "@/shared/types/node";
+import { HttpHeaders, InputOption, OptionsSourceMapping, QueryParams } from "@/shared/types/node";
 
 /**
  * Merge multiple lists of HTTP headers. Later sources override earlier ones
@@ -8,20 +8,37 @@ import { HttpHeader, InputOption, OptionsSourceMapping, QueryParam } from "@/sha
  * header names are case-insensitive). The casing of the latest occurrence
  * is preserved in the output.
  */
-export const mergeHttpHeaders = (...sources: (HttpHeader[] | undefined)[]): HttpHeader[] => {
-  const byLowerKey = new Map<string, HttpHeader>();
+export const mergeHttpHeaders = (...sources: (HttpHeaders | undefined)[]): HttpHeaders => {
+  // Keyed by lowercased header name so a later source overrides an earlier one
+  // regardless of casing, while the latest casing (and value) is what we keep.
+  const byLowerKey = new Map<string, { key: string; value: string }>();
 
   sources.forEach((source) => {
-    source?.forEach((header) => {
-      if (!header.key) {
+    if (!source) {
+      return;
+    }
+    Object.entries(source).forEach(([key, value]) => {
+      if (!key) {
         return;
       }
-      byLowerKey.set(header.key.toLowerCase(), header);
+      byLowerKey.set(key.toLowerCase(), { key, value });
     });
   });
 
-  return Array.from(byLowerKey.values());
+  return Object.fromEntries(Array.from(byLowerKey.values(), ({ key, value }) => [key, value]));
 };
+
+/**
+ * Resolve `{{templateVar}}` placeholders in every value of a header/query-param
+ * record, leaving the keys untouched. Returns `undefined` for `undefined` so
+ * callers can pass the result straight into `mergeHttpHeaders`/`makeHttpRequest`.
+ */
+export const resolveTemplateRecord = (
+  record: Record<string, string> | undefined,
+  values: FormValues,
+  options?: { encode?: boolean; json?: boolean },
+): Record<string, string> | undefined =>
+  record && Object.fromEntries(Object.entries(record).map(([key, value]) => [key, replaceTemplateVariables(value, values, options)]));
 
 /**
  * Append query parameters to a URL. Entries with an empty key are skipped,
@@ -29,15 +46,13 @@ export const mergeHttpHeaders = (...sources: (HttpHeader[] | undefined)[]): Http
  * based on whether the URL already has a query string. Values are expected
  * to already have their template variables resolved.
  */
-export const appendQueryParams = (url: string, params?: QueryParam[]): string => {
-  if (!params?.length) {
+export const appendQueryParams = (url: string, params?: QueryParams): string => {
+  const entries = Object.entries(params ?? {}).filter(([key]) => key);
+  if (entries.length === 0) {
     return url;
   }
 
-  const query = params
-    .filter((param) => param.key)
-    .map((param) => `${encodeURIComponent(param.key)}=${encodeURIComponent(param.value ?? "")}`)
-    .join("&");
+  const query = entries.map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value ?? "")}`).join("&");
 
   if (!query) {
     return url;
@@ -110,12 +125,12 @@ export interface HttpRequestOptions {
   /**
    * Request headers
    */
-  headers?: HttpHeader[];
+  headers?: HttpHeaders;
   /**
    * Query parameters appended to the URL (values should already have their
    * template variables resolved; keys/values are URL-encoded here)
    */
-  queryParams?: QueryParam[];
+  queryParams?: QueryParams;
   /**
    * Request body (for POST/PUT/PATCH)
    */
@@ -137,7 +152,7 @@ export interface HttpRequestOptions {
  */
 export const makeHttpRequest = async (options: HttpRequestOptions): Promise<HttpRequestResult> => {
   try {
-    const { url, method = "GET", headers: customHeaders = [], queryParams, body, signal } = options;
+    const { url, method = "GET", headers: customHeaders, queryParams, body, signal } = options;
 
     // Validate URL
     if (!url || url.trim() === "") {
@@ -152,8 +167,8 @@ export const makeHttpRequest = async (options: HttpRequestOptions): Promise<Http
 
     // Default Content-Type has the lowest priority — caller-provided headers
     // (global or field-level) win when they specify the same key.
-    const merged = mergeHttpHeaders([{ key: "Content-Type", value: "application/json" }], customHeaders);
-    const headers = Object.fromEntries(merged.filter((h) => h.key && h.value).map((h) => [h.key, h.value]));
+    const merged = mergeHttpHeaders({ "Content-Type": "application/json" }, customHeaders);
+    const headers = Object.fromEntries(Object.entries(merged).filter(([, value]) => value));
 
     // Prepare request options
     const requestOptions: RequestInit = {

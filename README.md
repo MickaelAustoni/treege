@@ -347,7 +347,7 @@ The React Native renderer shares the same API as the web renderer, with some pla
 | `validationMode`        | `"onSubmit" \| "onChange"`                  | `"onSubmit"` | When to validate                                           |
 | `theme`                 | `"light" \| "dark"`                         | `"dark"`     | Renderer theme                                             |
 | `googleApiKey`          | `string`                                    | -            | API key for address input                                  |
-| `headers`               | `HttpHeader[]`                              | -            | HTTP headers applied to every request (field-level wins)   |
+| `headers`               | `HttpHeaders`                              | -            | HTTP headers as `{ name: value }`, applied to every request (field-level wins)   |
 | `isLoading`             | `boolean`                                   | `false`      | Render a loading skeleton instead of the form              |
 | `style`                 | `ViewStyle`                                 | -            | ScrollView style (RN only)                                 |
 | `contentContainerStyle` | `ViewStyle`                                 | -            | Content container style (RN)                               |
@@ -695,9 +695,9 @@ Once the development server is running, you can access these examples:
 | `extraMenuItems`  | `ExtraMenuItem[]`                        | -        | Extra entries appended to the actions panel "more" dropdown                                                                                                                                         |
 | `openApi`         | `OpenApiDocument \| string`              | -        | OpenAPI 3.x source used to power URL/route suggestions and the Authorize flow. Accepts a pre-parsed document or a URL string (the editor fetches it on mount and toasts on failure)                 |
 | `openApiBaseUrl`  | `string`                                 | -        | Base URL used for OpenAPI route resolution. When set, takes precedence over the document's `servers[0].url` — useful when the spec points at a different environment than the one to call           |
-| `headers`         | `HttpHeader[]`                           | -        | Global HTTP headers applied to in-editor requests (e.g. the "Detect fields" button). Pass the same value you give to `TreegeRenderer` so editor previews use the same auth/headers as runtime       |
-| `onAuthorize`     | `(headers: HttpHeader[]) => void`        | -        | Called when the user submits the Authorize dialog. Forward the resulting headers to `TreegeRenderer` (or `TreegeRendererProvider`) so every form request is authenticated                             |
-| `onHeadersChange` | `(headers: HttpHeader[]) => void`        | -        | Called when the user edits headers in the built-in "Global headers" dialog. The component is controlled — update your `headers` state in response and pass the new list back via the `headers` prop |
+| `headers`         | `HttpHeaders`                           | -        | Global HTTP headers applied to in-editor requests (e.g. the "Detect fields" button). Pass the same value you give to `TreegeRenderer` so editor previews use the same auth/headers as runtime       |
+| `onAuthorize`     | `(headers: HttpHeaders) => void`        | -        | Called when the user submits the Authorize dialog. Forward the resulting headers to `TreegeRenderer` (or `TreegeRendererProvider`) so every form request is authenticated                             |
+| `onHeadersChange` | `(headers: HttpHeaders) => void`        | -        | Called when the user edits headers in the built-in "Global headers" dialog. The component is controlled — update your `headers` state in response and pass the new object back via the `headers` prop |
 
 ### TreegeRenderer Props
 
@@ -713,7 +713,7 @@ Once the development server is running, you can access these examples:
 | `validationMode` | `"onSubmit" \| "onChange"`                  | `"onSubmit"` | When to validate                                           |
 | `theme`          | `"light" \| "dark"`                         | `"dark"`     | Renderer theme                                             |
 | `googleApiKey`   | `string`                                    | -            | API key for address input                                  |
-| `headers`        | `HttpHeader[]`                              | -            | HTTP headers applied to every request (field-level wins)   |
+| `headers`        | `HttpHeaders`                              | -            | HTTP headers as `{ name: value }`, applied to every request (field-level wins)   |
 | `isLoading`      | `boolean`                                   | `false`      | Render a loading skeleton instead of the form (see below)  |
 | `className`      | `string`                                    | -            | Additional CSS class names for custom styling              |
 

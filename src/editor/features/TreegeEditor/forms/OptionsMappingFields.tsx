@@ -10,7 +10,7 @@ import { FormItem } from "@/shared/components/ui/form";
 import { Input } from "@/shared/components/ui/input";
 import { Label } from "@/shared/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/components/ui/select";
-import { HttpHeader, OptionsSourceMapping, QueryParam } from "@/shared/types/node";
+import { HttpHeaders, OptionsSourceMapping, QueryParams } from "@/shared/types/node";
 
 const METHODS_NEEDING_BODY = ["POST", "PUT", "PATCH"];
 
@@ -19,8 +19,8 @@ type HttpMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
 export interface OptionsMappingRequest {
   url?: string;
   method?: HttpMethod;
-  headers?: HttpHeader[];
-  queryParams?: QueryParam[];
+  headers?: HttpHeaders;
+  queryParams?: QueryParams;
   body?: string;
   responsePath?: string;
 }
@@ -86,7 +86,7 @@ const OptionsMappingFields = ({ request, mapping, onMappingChange, showOptionalF
   // Surface them so the user knows to swap in a static example value to detect.
   const templateVars = useMemo(() => {
     const found = new Set<string>();
-    for (const source of [url, body, ...(queryParams?.map((param) => param.value) ?? [])]) {
+    for (const source of [url, body, ...Object.values(queryParams ?? {})]) {
       if (!source) {
         continue;
       }

@@ -70,12 +70,10 @@ export const sanitize = (input: string | undefined | null, _options: SanitizeOpt
 
   // Convert to string if needed
   const stringInput = String(input);
-
   // In React Native, we always strip HTML tags since Text components don't support HTML
   const stripped = stripHtmlTags(stringInput);
-  const decoded = decodeHtmlEntities(stripped);
 
-  return decoded;
+  return decodeHtmlEntities(stripped);
 };
 
 /**

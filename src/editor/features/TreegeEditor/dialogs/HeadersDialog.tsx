@@ -1,15 +1,16 @@
 import { Plus, Trash2 } from "lucide-react";
+import { useKeyValueRows } from "@/editor/hooks/useKeyValueRows";
 import useTranslate from "@/editor/hooks/useTranslate";
 import { Button } from "@/shared/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/shared/components/ui/dialog";
 import { Input } from "@/shared/components/ui/input";
-import { HttpHeader } from "@/shared/types/node";
+import { HttpHeaders } from "@/shared/types/node";
 
 interface HeadersDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  headers: HttpHeader[];
-  onChange: (headers: HttpHeader[]) => void;
+  headers: HttpHeaders;
+  onChange: (headers: HttpHeaders) => void;
 }
 
 /**
@@ -23,18 +24,19 @@ interface HeadersDialogProps {
  * to `TreegeRenderer` without any state duplication.
  */
 const HeadersDialog = ({ open, onOpenChange, headers, onChange }: HeadersDialogProps) => {
+  const [rows, setRows] = useKeyValueRows(headers, onChange);
   const t = useTranslate();
 
-  const updateHeader = (index: number, patch: Partial<HttpHeader>) => {
-    onChange(headers.map((h, i) => (i === index ? { ...h, ...patch } : h)));
+  const updateHeader = (index: number, patch: Partial<{ key: string; value: string }>) => {
+    setRows(rows.map((row, i) => (i === index ? { ...row, ...patch } : row)));
   };
 
   const removeHeader = (index: number) => {
-    onChange(headers.filter((_, i) => i !== index));
+    setRows(rows.filter((_, i) => i !== index));
   };
 
   const addHeader = () => {
-    onChange([...headers, { key: "", value: "" }]);
+    setRows([...rows, { key: "", value: "" }]);
   };
 
   return (
@@ -46,10 +48,10 @@ const HeadersDialog = ({ open, onOpenChange, headers, onChange }: HeadersDialogP
         </DialogHeader>
 
         <div className="tg:flex tg:flex-col tg:gap-2">
-          {headers.length === 0 && (
+          {rows.length === 0 && (
             <p className="tg:py-4 tg:text-center tg:text-muted-foreground tg:text-sm">{t("editor.headersDialog.empty")}</p>
           )}
-          {headers.map((header, index) => (
+          {rows.map((header, index) => (
             <div key={index} className="tg:flex tg:items-center tg:gap-2">
               <Input
                 placeholder={t("editor.headersDialog.keyPlaceholder")}

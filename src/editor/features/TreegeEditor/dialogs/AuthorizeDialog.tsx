@@ -9,12 +9,12 @@ import { Button } from "@/shared/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/shared/components/ui/dialog";
 import { Input } from "@/shared/components/ui/input";
 import { Label } from "@/shared/components/ui/label";
-import { HttpHeader } from "@/shared/types/node";
+import { HttpHeaders } from "@/shared/types/node";
 
 interface AuthorizeDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onAuthorize?: (headers: HttpHeader[]) => void;
+  onAuthorize?: (headers: HttpHeaders) => void;
 }
 
 /**
@@ -27,7 +27,7 @@ const fetchOAuth2PasswordToken = async (
   baseUrl: string,
   username: string,
   password: string,
-): Promise<HttpHeader> => {
+): Promise<[name: string, value: string]> => {
   const tokenUrl = /^https?:\/\//i.test(scheme.tokenUrl)
     ? scheme.tokenUrl
     : `${baseUrl.replace(/\/$/, "")}/${scheme.tokenUrl.replace(/^\//, "")}`;
@@ -49,14 +49,14 @@ const fetchOAuth2PasswordToken = async (
     throw new Error("Token endpoint did not return an access_token");
   }
   const tokenType = data.token_type ? `${data.token_type[0].toUpperCase()}${data.token_type.slice(1).toLowerCase()}` : "Bearer";
-  return { key: "Authorization", value: `${tokenType} ${data.access_token}` };
+  return ["Authorization", `${tokenType} ${data.access_token}`];
 };
 
 /**
  * Reads supported security schemes from the loaded OpenAPI document and
  * collects credentials from the user (Bearer token, API key value, or
  * OAuth2 password grant). On submit, exchanges OAuth2 credentials at the
- * token endpoint, builds the resulting `HttpHeader[]`, and calls
+ * token endpoint, builds the resulting `HttpHeaders`, and calls
  * `onAuthorize` so the consumer can forward them to the renderer's
  * global `headers`.
  *
@@ -81,18 +81,18 @@ const AuthorizeDialog = ({ open, onOpenChange, onAuthorize }: AuthorizeDialogPro
 
     setIsLoading(true);
     try {
-      const headers: HttpHeader[] = [];
+      const headers: HttpHeaders = {};
 
       for (const { name, scheme } of schemes) {
         if (scheme.type === "http" && scheme.scheme === "bearer") {
           const token = values[valueKey(name)]?.trim();
           if (token) {
-            headers.push({ key: "Authorization", value: `Bearer ${token}` });
+            headers.Authorization = `Bearer ${token}`;
           }
         } else if (scheme.type === "apiKey" && scheme.in === "header") {
           const apiKey = values[valueKey(name)]?.trim();
           if (apiKey) {
-            headers.push({ key: scheme.name, value: apiKey });
+            headers[scheme.name] = apiKey;
           }
         } else if (scheme.type === "oauth2") {
           const username = values[valueKey(name, "username")]?.trim();
@@ -100,7 +100,8 @@ const AuthorizeDialog = ({ open, onOpenChange, onAuthorize }: AuthorizeDialogPro
           if (!(username && password)) {
             continue;
           }
-          headers.push(await fetchOAuth2PasswordToken(scheme, baseUrl, username, password));
+          const [headerName, headerValue] = await fetchOAuth2PasswordToken(scheme, baseUrl, username, password);
+          headers[headerName] = headerValue;
         }
       }
 
@@ -115,7 +116,7 @@ const AuthorizeDialog = ({ open, onOpenChange, onAuthorize }: AuthorizeDialogPro
   };
 
   const handleClear = () => {
-    onAuthorize?.([]);
+    onAuthorize?.({});
     onOpenChange(false);
   };
 

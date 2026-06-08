@@ -7,7 +7,7 @@ import { Sheet, SheetContent, SheetTitle } from "@/shared/components/ui/sheet";
 import { Switch } from "@/shared/components/ui/switch";
 import { Language, LANGUAGES } from "@/shared/constants/languages";
 import { useMediaQuery } from "@/shared/hooks/useMediaQuery";
-import { Flow, HttpHeader } from "@/shared/types/node";
+import { Flow, HttpHeaders } from "@/shared/types/node";
 import flow from "~/example/json/treege.json";
 import flowComplex from "~/example/json/treege-all-inputs.json";
 
@@ -27,9 +27,9 @@ const EditorPanel = ({
   theme: "light" | "dark";
   language: Language;
   onTogglePreview: () => void;
-  onAuthorize: (headers: HttpHeader[]) => void;
-  headers?: HttpHeader[];
-  onHeadersChange: (headers: HttpHeader[]) => void;
+  onAuthorize: (headers: HttpHeaders) => void;
+  headers?: HttpHeaders;
+  onHeadersChange: (headers: HttpHeaders) => void;
 }) => {
   const apiKey = import.meta.env.VITE_AI_API_KEY ?? "";
   const openApiUrl = import.meta.env.VITE_OPENAPI_URL || undefined;
@@ -78,7 +78,7 @@ const RendererPanel = ({
   language: Language;
   setLanguage: (l: Language) => void;
   inSheet?: boolean;
-  headers?: HttpHeader[];
+  headers?: HttpHeaders;
 }) => {
   const [formValues, setFormValues] = useState<FormValues>({});
   const hasNodes = flow && flow.nodes.length > 0;
@@ -176,14 +176,15 @@ const RendererPanel = ({
  * (case-insensitive) so a fresh "Authorize" overrides any matching key the
  * user might have set manually.
  */
-const mergeHeaders = (base: HttpHeader[], overrides: HttpHeader[]): HttpHeader[] => {
-  const out: HttpHeader[] = [];
+const mergeHeaders = (base: HttpHeaders, overrides: HttpHeaders): HttpHeaders => {
+  const out: HttpHeaders = {};
   const seen = new Set<string>();
-  for (const header of [...overrides, ...base]) {
-    const key = header.key.toLowerCase();
-    if (seen.has(key)) continue;
-    seen.add(key);
-    out.push(header);
+
+  for (const [key, value] of [...Object.entries(overrides), ...Object.entries(base)]) {
+    const lowerKey = key.toLowerCase();
+    if (seen.has(lowerKey)) continue;
+    seen.add(lowerKey);
+    out[key] = value;
   }
   return out;
 };
@@ -193,9 +194,9 @@ const mergeHeaders = (base: HttpHeader[], overrides: HttpHeader[]): HttpHeader[]
  * `VITE_BEARER_TOKEN` is set. Lets devs hit protected APIs without going
  * through the Authorize dialog on every reload.
  */
-const initialHeaders = (): HttpHeader[] => {
+const initialHeaders = (): HttpHeaders => {
   const token = import.meta.env.VITE_BEARER_TOKEN?.trim();
-  return token ? [{ key: "Authorization", value: `Bearer ${token}` }] : [];
+  return token ? { Authorization: `Bearer ${token}` } : {};
 };
 
 const Layout = ({ flow }: { flow?: Flow }) => {
@@ -203,8 +204,8 @@ const Layout = ({ flow }: { flow?: Flow }) => {
   const [theme, setTheme] = useState<"light" | "dark">("dark");
   const [language, setLanguage] = useState<Language>("en");
   const [showPreview, setShowPreview] = useState<boolean | null>(null);
-  const [headers, setHeaders] = useState<HttpHeader[]>(initialHeaders);
-  const [authHeaders, setAuthHeaders] = useState<HttpHeader[]>([]);
+  const [headers, setHeaders] = useState<HttpHeaders>(initialHeaders);
+  const [authHeaders, setAuthHeaders] = useState<HttpHeaders>({});
   const isDesktop = useMediaQuery("desktop");
   const previewOpen = showPreview ?? isDesktop;
   const mergedHeaders = mergeHeaders(headers, authHeaders);

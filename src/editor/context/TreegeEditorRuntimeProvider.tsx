@@ -1,6 +1,6 @@
 import { createContext, PropsWithChildren, useContext, useMemo, useState } from "react";
 import { AIConfig } from "@/editor/types/ai";
-import { HttpHeader } from "@/shared/types/node";
+import { HttpHeaders } from "@/shared/types/node";
 
 export interface TreegeEditorRuntimeContextValue {
   /**
@@ -23,7 +23,7 @@ export interface TreegeEditorRuntimeContextValue {
    * "Detect fields" button). Forwarded by the consumer; same shape and
    * semantics as `TreegeRenderer`'s `headers`.
    */
-  headers?: HttpHeader[];
+  headers?: HttpHeaders;
   /**
    * Function to set the current flow ID
    * @param flow

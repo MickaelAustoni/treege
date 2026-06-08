@@ -5,7 +5,7 @@ import DependencyHint from "@/renderer/features/TreegeRenderer/web/components/De
 import { useTranslate } from "@/renderer/hooks/useTranslate";
 import { InputExtraProps, InputFieldProps } from "@/renderer/types/renderer";
 import { convertFormValuesToNamedFormat } from "@/renderer/utils/form";
-import { appendQueryParams, getValueByPath, mergeHttpHeaders, resolveUrl } from "@/renderer/utils/http";
+import { appendQueryParams, getValueByPath, mergeHttpHeaders, resolveTemplateRecord, resolveUrl } from "@/renderer/utils/http";
 import { sanitizeHttpResponse } from "@/renderer/utils/sanitize";
 import { Button } from "@/shared/components/ui/button";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/shared/components/ui/command";
@@ -157,24 +157,14 @@ const DefaultHttpInput = (field: InputFieldProps<"http">, extra: InputExtraProps
             : resolvedUrl;
 
         // Append configured query params (e.g. ?limit=10), resolving template variables in their values
-        const url = appendQueryParams(
-          urlWithSearch,
-          currentHttpConfig.queryParams?.map((param) => ({
-            key: param.key,
-            value: replaceTemplateVars(param.value, currentFormValues),
-          })),
-        );
+        const url = appendQueryParams(urlWithSearch, resolveTemplateRecord(currentHttpConfig.queryParams, currentFormValues));
 
         // Replace template variables in headers, merge with global ones
         // (field-level headers override globals on key collision).
-        const replaceVars = (header: { key: string; value: string }) => ({
-          key: header.key,
-          value: replaceTemplateVars(header.value, currentFormValues),
-        });
         const mergedHeaders = mergeHttpHeaders(
-          [{ key: "Content-Type", value: "application/json" }],
-          headersRef.current?.map(replaceVars),
-          currentHttpConfig.headers?.map(replaceVars),
+          { "Content-Type": "application/json" },
+          resolveTemplateRecord(headersRef.current, currentFormValues),
+          resolveTemplateRecord(currentHttpConfig.headers, currentFormValues),
         );
 
         // Prepare body: use all form data if sendAllFormValues is true, otherwise use custom body
@@ -189,7 +179,7 @@ const DefaultHttpInput = (field: InputFieldProps<"http">, extra: InputExtraProps
         const timeoutId = setTimeout(() => abortController.abort(), 30000);
         const response = await fetch(url, {
           body: body || undefined,
-          headers: Object.fromEntries(mergedHeaders.filter((h) => h.key && h.value).map((h) => [h.key, h.value])),
+          headers: Object.fromEntries(Object.entries(mergedHeaders).filter(([, value]) => value)),
           method: currentHttpConfig.method || "GET",
           signal: abortController.signal,
         });

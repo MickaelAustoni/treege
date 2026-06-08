@@ -1,4 +1,5 @@
-import { Flow, HttpHeader } from "@/shared/types/node";
+import { Flow, HttpHeaders } from "@/shared/types/node";
+import { KeyValueEntry } from "@/shared/utils/httpRecord";
 
 /**
  * Header names that typically carry credentials or secrets, matched
@@ -9,14 +10,18 @@ import { Flow, HttpHeader } from "@/shared/types/node";
  */
 const SENSITIVE_HEADER_PATTERN = /^(authorization|proxy-authorization|cookie|x-api-key|api-?key|x-auth-token|x-access-token|x-secret)$/i;
 
-/** Node data keys whose value is an HTTP config carrying a `headers` array. */
+/** Node data keys whose value is an HTTP config carrying a `headers` record. */
 const HEADER_CONFIG_KEYS = ["httpConfig", "optionsSource", "submitConfig"] as const;
 
 /** True when a header key is known to carry credentials/secrets. */
 export const isSensitiveHeaderKey = (key: string): boolean => SENSITIVE_HEADER_PATTERN.test(key.trim());
 
-/** True when the list contains a sensitive header with a non-empty value. */
-export const hasSensitiveHeader = (headers?: HttpHeader[]): boolean =>
+/**
+ * True when the editor rows contain a sensitive header with a non-empty value.
+ * Operates on the form's working rows (which may still hold empty keys) rather
+ * than the serialized record, so the warning shows as soon as the user types.
+ */
+export const hasSensitiveHeader = (headers?: KeyValueEntry[]): boolean =>
   Boolean(headers?.some((header) => isSensitiveHeaderKey(header.key) && header.value.trim() !== ""));
 
 /**
@@ -38,15 +43,16 @@ export const stripSensitiveHeadersFromFlow = (flow: Flow): { flow: Flow; strippe
     const nextData: Record<string, unknown> = { ...data };
 
     for (const key of HEADER_CONFIG_KEYS) {
-      const config = data[key] as { headers?: HttpHeader[] } | undefined;
-      if (!config?.headers?.length) {
+      const config = data[key] as { headers?: HttpHeaders } | undefined;
+      const entries = Object.entries(config?.headers ?? {});
+      if (entries.length === 0) {
         continue;
       }
 
-      const kept = config.headers.filter((header) => !isSensitiveHeaderKey(header.key));
-      if (kept.length !== config.headers.length) {
-        strippedCount += config.headers.length - kept.length;
-        nextData[key] = { ...config, headers: kept };
+      const kept = entries.filter(([headerKey]) => !isSensitiveHeaderKey(headerKey));
+      if (kept.length !== entries.length) {
+        strippedCount += entries.length - kept.length;
+        nextData[key] = { ...config, headers: Object.fromEntries(kept) };
         nodeChanged = true;
       }
     }
