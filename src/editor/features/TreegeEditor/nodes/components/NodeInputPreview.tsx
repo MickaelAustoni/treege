@@ -298,7 +298,7 @@ const NodeInputPreview = ({ nodeId, data }: NodeInputPreviewProps) => {
               helperText: helperText || undefined,
               missingDependencies: [],
               node: previewNode,
-              renderOptionExtras,
+              renderOptionExtras: optionsSourceUrl ? undefined : renderOptionExtras,
               setValue: () => {},
             }}
           />
