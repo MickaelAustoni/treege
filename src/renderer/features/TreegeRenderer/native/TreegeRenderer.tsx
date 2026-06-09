@@ -50,6 +50,7 @@ const TreegeRendererContent = ({
   onBack,
   onChange,
   onSubmit,
+  showPoweredBy,
   style,
   theme,
   validate,
@@ -89,6 +90,7 @@ const TreegeRendererContent = ({
     language,
     onChange,
     onSubmit,
+    showPoweredBy,
     theme,
     validate,
     validationMode,
@@ -186,7 +188,7 @@ const TreegeRendererContent = ({
             )}
 
             {/* Powered by Treege */}
-            <Text style={[styles.poweredBy, { color: colors.textMuted }]}>Powered by Treege</Text>
+            {config.showPoweredBy && <Text style={[styles.poweredBy, { color: colors.textMuted }]}>Powered by Treege</Text>}
           </FormWrapper>
 
           {/* Submit message (success/error) */}

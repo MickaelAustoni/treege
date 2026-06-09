@@ -64,6 +64,7 @@ export const useTreegeRenderer = ({
   language,
   onChange,
   onSubmit,
+  showPoweredBy,
   theme,
   validate,
   validationMode,
@@ -79,6 +80,7 @@ export const useTreegeRenderer = ({
   | "language"
   | "onChange"
   | "onSubmit"
+  | "showPoweredBy"
   | "theme"
   | "validate"
   | "validationMode"
@@ -106,10 +108,11 @@ export const useTreegeRenderer = ({
       googleApiKey: googleApiKey ?? globalConfig?.googleApiKey,
       headers: mergeHttpHeaders(globalConfig?.headers, headers),
       language: language ?? globalConfig?.language ?? "en",
+      showPoweredBy: showPoweredBy ?? globalConfig?.showPoweredBy ?? true,
       theme: theme ?? globalConfig?.theme ?? "dark",
       validationMode: validationMode ?? globalConfig?.validationMode ?? "onSubmit",
     }),
-    [baseUrl, components, globalConfig, googleApiKey, headers, language, theme, validationMode],
+    [baseUrl, components, globalConfig, googleApiKey, headers, language, showPoweredBy, theme, validationMode],
   );
 
   // ============================================

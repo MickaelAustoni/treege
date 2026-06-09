@@ -361,6 +361,11 @@ export type TreegeRendererConfig = {
    */
   validationMode?: "onChange" | "onSubmit";
   /**
+   * Whether to display the "Powered by Treege" credit at the bottom of the form.
+   * @default true
+   */
+  showPoweredBy?: boolean;
+  /**
    * Base URL prepended to every **relative** HTTP url issued by the renderer
    * (HTTP inputs, dynamic options, and submit). Use this to keep the tree
    * JSON environment-agnostic — store relative paths in the tree and supply

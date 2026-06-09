@@ -28,6 +28,7 @@ const TreegeRenderer = ({
   onBack,
   onChange,
   onSubmit,
+  showPoweredBy,
   theme,
   validate,
   validationMode,
@@ -69,6 +70,7 @@ const TreegeRenderer = ({
     language,
     onChange,
     onSubmit,
+    showPoweredBy,
     theme,
     validate,
     validationMode,
@@ -203,7 +205,7 @@ const TreegeRenderer = ({
                 )}
 
                 {/* Powered by Treege */}
-                <p className="tg:py-2 tg:text-right tg:text-muted-foreground tg:text-xs">Powered by Treege</p>
+                {config.showPoweredBy && <p className="tg:py-2 tg:text-right tg:text-muted-foreground tg:text-xs">Powered by Treege</p>}
               </FormWrapper>
 
               {/* Submit message (success/error) */}
