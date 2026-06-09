@@ -230,8 +230,9 @@ export type StepRenderProps = {
    */
   hasSubmitInput?: boolean;
   /**
-   * Translated labels of required fields still empty. Only populated on the
-   * last step so the step can show a tooltip explaining why submit is disabled.
+   * Translated labels of the current step's required fields still empty. Lines
+   * up with `canContinue`, so the action button can show a tooltip explaining
+   * why Continue/Submit is disabled — on every step, not just the last.
    */
   missingFields?: string[];
   /** Submission in progress (passed through from `useTreegeRenderer`). */

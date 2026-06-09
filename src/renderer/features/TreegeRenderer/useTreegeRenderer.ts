@@ -354,29 +354,33 @@ export const useTreegeRenderer = ({
   // ============================================
 
   /**
-   * Get list of missing required fields for tooltip
-   * Returns array of field labels that are required but not filled
+   * Labels of the *current step's* required fields that are still empty — used
+   * for the action button's tooltip. Scoped to the current step so it lines up
+   * exactly with `canContinueStep` (which gates the button): the tooltip
+   * explains precisely why Continue/Submit is disabled. Submit-type inputs are
+   * excluded since they never gate the step.
    */
   const missingRequiredFields = useMemo(() => {
+    if (!currentStep) {
+      return [];
+    }
+
     const missing: string[] = [];
 
-    visibleNodes.forEach((node) => {
+    currentStep.nodes.forEach((node) => {
       if (!isInputNode(node)) {
         return;
       }
-
-      const fieldName = node.id;
-      const value = formValues[fieldName];
-
-      // Check if required field is empty
-      if (node.data.required && isFieldEmpty(value)) {
-        const label = t(node.data.label) || fieldName;
-        missing.push(label);
+      if (node.data.type === "submit") {
+        return;
+      }
+      if (node.data.required && isFieldEmpty(formValues[node.id])) {
+        missing.push(t(node.data.label) || node.id);
       }
     });
 
     return missing;
-  }, [visibleNodes, formValues, t]);
+  }, [currentStep, formValues, t]);
 
   /**
    * Check if there's a submit input node in the visible nodes

@@ -165,7 +165,7 @@ const TreegeRendererContent = ({
         >
           <FormWrapper onSubmit={handleSubmit}>
             {currentStep && (
-              <SubmitButtonWrapper missingFields={isLastStep ? missingRequiredFields : undefined}>
+              <SubmitButtonWrapper missingFields={missingRequiredFields}>
                 <StepComponent
                   step={currentStep}
                   groupNode={currentStepGroupNode}

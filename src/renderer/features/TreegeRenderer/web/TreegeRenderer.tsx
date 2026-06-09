@@ -196,7 +196,7 @@ const TreegeRenderer = ({
                     onBack={handleBack}
                     onContinue={handleContinue}
                     label={stepLabel}
-                    missingFields={isLastStep ? missingRequiredFields : undefined}
+                    missingFields={missingRequiredFields}
                   >
                     {currentStep.nodes.map((node) => renderNode(node))}
                   </StepComponent>
