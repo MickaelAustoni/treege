@@ -364,7 +364,17 @@ export interface TreegeRendererProps extends TreegeRendererConfig {
    */
   flow?: Flow | null;
   /**
-   * Initial form values
+   * Initial form values — use this to pre-fill the form when editing a record
+   * that was already submitted.
+   *
+   * Keys can be either `node.id` OR the same name-based keys you receive back in
+   * `onChange` / `onSubmit`, so the previously-submitted object can be fed
+   * straight back in without any remapping.
+   *
+   * Reactive: if this changes after mount (e.g. an async-fetched record resolves
+   * later), the form is re-seeded automatically. A new object literal of
+   * identical content does NOT reset the form, so in-progress user edits are
+   * preserved.
    */
   initialValues?: FormValues;
   /**

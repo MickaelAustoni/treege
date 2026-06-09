@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import { FormValues } from "@/renderer/types/renderer";
 import {
   applyReferenceTransformation,
+  buildInitialFormValues,
   calculateReferenceFieldUpdates,
   checkFormFieldHasValue,
   convertFormValuesToNamedFormat,
@@ -458,6 +459,122 @@ describe("Form Utils", () => {
         const result = convertFormValuesToNamedFormat({}, []);
 
         expect(result).toEqual({});
+      });
+    });
+  });
+
+  describe("buildInitialFormValues", () => {
+    /** Concise input-node factory for these tests. */
+    const input = (id: string, data: InputNodeData): Node<InputNodeData> => ({
+      data,
+      id,
+      position: { x: 0, y: 0 },
+      type: "input",
+    });
+
+    describe("Key Normalization", () => {
+      it("should seed values keyed by node.id", () => {
+        const nodes = [input("node-1", { name: "firstName", type: "text" }), input("node-2", { name: "lastName", type: "text" })];
+
+        const result = buildInitialFormValues({ "node-1": "Alice", "node-2": "Bob" }, nodes);
+
+        expect(result).toEqual({ "node-1": "Alice", "node-2": "Bob" });
+      });
+
+      it("should accept name-based keys (round-trip from onSubmit)", () => {
+        const nodes = [input("node-1", { name: "firstName", type: "text" }), input("node-2", { name: "lastName", type: "text" })];
+
+        const result = buildInitialFormValues({ firstName: "Alice", lastName: "Bob" }, nodes);
+
+        expect(result).toEqual({ "node-1": "Alice", "node-2": "Bob" });
+      });
+
+      it("should accept label-based keys when name is missing", () => {
+        const nodes = [input("node-1", { label: { en: "First Name" }, type: "text" })];
+
+        const result = buildInitialFormValues({ "First Name": "Alice" }, nodes);
+
+        expect(result).toEqual({ "node-1": "Alice" });
+      });
+
+      it("should prioritize the node.id key over the name key when both are present", () => {
+        const nodes = [input("node-1", { name: "firstName", type: "text" })];
+
+        const result = buildInitialFormValues({ firstName: "byName", "node-1": "byId" }, nodes);
+
+        expect(result).toEqual({ "node-1": "byId" });
+      });
+
+      it("should ignore keys that match no node", () => {
+        const nodes = [input("node-1", { name: "firstName", type: "text" })];
+
+        const result = buildInitialFormValues({ firstName: "Alice", unknownField: "ignored" }, nodes);
+
+        expect(result).toEqual({ "node-1": "Alice" });
+      });
+
+      it("should preserve falsy values (0, false, empty string)", () => {
+        const nodes = [
+          input("node-1", { name: "count", type: "number" }),
+          input("node-2", { name: "active", type: "checkbox" }),
+          input("node-3", { name: "label", type: "text" }),
+        ];
+
+        const result = buildInitialFormValues({ active: false, count: 0, label: "" }, nodes);
+
+        expect(result).toEqual({ "node-1": 0, "node-2": false, "node-3": "" });
+      });
+    });
+
+    describe("Default Values", () => {
+      it("should apply static defaults to fields left unset", () => {
+        const nodes = [input("node-1", { defaultValue: { staticValue: "fallback", type: "static" }, name: "firstName", type: "text" })];
+
+        const result = buildInitialFormValues({}, nodes);
+
+        expect(result).toEqual({ "node-1": "fallback" });
+      });
+
+      it("should let provided values override static defaults", () => {
+        const nodes = [input("node-1", { defaultValue: { staticValue: "fallback", type: "static" }, name: "firstName", type: "text" })];
+
+        const result = buildInitialFormValues({ firstName: "Alice" }, nodes);
+
+        expect(result).toEqual({ "node-1": "Alice" });
+      });
+
+      it("should resolve reference defaults from another field's resolved value", () => {
+        const nodes = [
+          input("source", { name: "email", type: "text" }),
+          input("target", { defaultValue: { referenceField: "source", type: "reference" }, name: "confirmEmail", type: "text" }),
+        ];
+
+        const result = buildInitialFormValues({ email: "a@b.com" }, nodes);
+
+        expect(result).toEqual({ source: "a@b.com", target: "a@b.com" });
+      });
+
+      it("should not apply a reference default when the referenced field is unset", () => {
+        const nodes = [
+          input("source", { name: "email", type: "text" }),
+          input("target", { defaultValue: { referenceField: "source", type: "reference" }, name: "confirmEmail", type: "text" }),
+        ];
+
+        const result = buildInitialFormValues({}, nodes);
+
+        expect(result).toEqual({});
+      });
+    });
+
+    describe("Empty Cases", () => {
+      it("should return an empty object for empty inputs", () => {
+        expect(buildInitialFormValues({}, [])).toEqual({});
+      });
+
+      it("should return an empty object when no values match and no defaults exist", () => {
+        const nodes = [input("node-1", { name: "firstName", type: "text" })];
+
+        expect(buildInitialFormValues({}, nodes)).toEqual({});
       });
     });
   });

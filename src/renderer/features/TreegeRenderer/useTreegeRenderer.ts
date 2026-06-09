@@ -5,12 +5,37 @@ import { useSubmitHandler } from "@/renderer/hooks/useSubmitHandler";
 import { useTranslate } from "@/renderer/hooks/useTranslate";
 import { FormValues, TreegeRendererProps } from "@/renderer/types/renderer";
 import { getFlowRenderState } from "@/renderer/utils/flow";
-import { calculateReferenceFieldUpdates, convertFormValuesToNamedFormat, isFieldEmpty } from "@/renderer/utils/form";
+import {
+  buildInitialFormValues,
+  calculateReferenceFieldUpdates,
+  convertFormValuesToNamedFormat,
+  isFieldEmpty,
+} from "@/renderer/utils/form";
 import { mergeHttpHeaders } from "@/renderer/utils/http";
 import { getInputNodes } from "@/renderer/utils/node";
 import { computeSteps } from "@/renderer/utils/step";
 import { GroupNodeData, TreegeNodeData } from "@/shared/types/node";
 import { isGroupNode, isInputNode } from "@/shared/utils/nodeTypeGuards";
+
+/**
+ * Stable JSON signature (object keys sorted) used to detect a genuine change in
+ * the consumer-provided `initialValues` — so we can re-seed the form when it
+ * actually changes (e.g. an async-loaded record) without resetting it when the
+ * caller merely passes a fresh object literal of identical content each render.
+ */
+const stableStringify = (value: unknown): string => {
+  if (value === null || typeof value !== "object") {
+    return JSON.stringify(value) ?? "null";
+  }
+  if (Array.isArray(value)) {
+    return `[${value.map(stableStringify).join(",")}]`;
+  }
+  const record = value as Record<string, unknown>;
+  const entries = Object.keys(record)
+    .sort()
+    .map((key) => `${JSON.stringify(key)}:${stableStringify(record[key])}`);
+  return `{${entries.join(",")}}`;
+};
 
 /**
  * Main TreegeRenderer hook
@@ -102,40 +127,12 @@ export const useTreegeRenderer = ({
   // ============================================
 
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
-  const [formValues, setFormValues] = useState<FormValues>(() => {
-    const defaultValues: FormValues = { ...initialValues };
+  const [formValues, setFormValues] = useState<FormValues>(() => buildInitialFormValues(initialValues, inputNodes));
 
-    nodes.forEach((node) => {
-      if (isInputNode(node)) {
-        const fieldName = node.id;
-
-        if (defaultValues[fieldName] !== undefined) {
-          return;
-        }
-
-        const { defaultValue } = node.data;
-        if (!defaultValue) {
-          return;
-        }
-
-        // Handle static default value
-        if (defaultValue.type === "static" && defaultValue.staticValue !== undefined) {
-          defaultValues[fieldName] = defaultValue.staticValue;
-        }
-
-        // Handle reference default value
-        if (defaultValue.type === "reference" && defaultValue.referenceField) {
-          const { referenceField } = defaultValue;
-          const refValue = defaultValues[referenceField];
-          if (refValue !== undefined) {
-            defaultValues[fieldName] = refValue;
-          }
-        }
-      }
-    });
-
-    return defaultValues;
-  });
+  // Signature of the consumer-provided `initialValues`, used to re-seed the form
+  // only when its content genuinely changes (see the re-seed effect below).
+  const initialValuesSignature = useMemo(() => stableStringify(initialValues), [initialValues]);
+  const appliedInitialSignatureRef = useRef(initialValuesSignature);
 
   const { endOfPathReached, visibleNodes, visibleRootNodes } = useMemo(
     () => getFlowRenderState(nodes, edges, formValues),
@@ -496,6 +493,25 @@ export const useTreegeRenderer = ({
     // Update previous values ref
     prevFormValuesRef.current = formValues;
   }, [formValues, inputNodes, setMultipleFieldValues]);
+
+  /**
+   * Re-seed the form when the consumer-provided `initialValues` actually
+   * changes (e.g. an edit screen that fetches the record asynchronously and
+   * passes it once it resolves). The lazy initializer above only runs on mount,
+   * so without this the form would stay empty when the data arrives after the
+   * first render. The signature comparison ensures we only reset on a genuine
+   * content change — not when the caller passes a new object literal of the
+   * same content on every render, which would otherwise wipe user edits.
+   */
+  useEffect(() => {
+    if (appliedInitialSignatureRef.current === initialValuesSignature) {
+      return;
+    }
+    appliedInitialSignatureRef.current = initialValuesSignature;
+    setFormValues(buildInitialFormValues(initialValues, inputNodes));
+    // Drop any stale validation errors from the previous record.
+    setFormErrors({});
+  }, [initialValuesSignature, initialValues, inputNodes]);
 
   // ============================================
   // RETURN VALUES

@@ -36,6 +36,63 @@ export const checkFormFieldHasValue = (fieldName: string | undefined, formValues
 };
 
 /**
+ * Build the initial (nodeId-keyed) form state from consumer-provided values.
+ *
+ * Consumers can pass `initialValues` keyed either by `node.id` OR by the same
+ * key shape they receive back in `onChange`/`onSubmit` (resolved via
+ * `resolveNodeKey`: name > label > node.id). This lets an edit screen feed the
+ * previously-submitted object straight back in without any remapping.
+ *
+ * After normalizing provided values, node `defaultValue`s (static / reference)
+ * are applied to any field still left unset — matching a fresh mount.
+ *
+ * @param initialValues - Values provided by the consumer (id- or name-keyed)
+ * @param inputNodes - All input nodes of the flow
+ * @returns Form values keyed strictly by node id
+ */
+export const buildInitialFormValues = (initialValues: FormValues, inputNodes: Node<InputNodeData>[]): FormValues => {
+  const values: FormValues = {};
+
+  // 1) Normalize provided values: accept both `node.id` and resolved-name keys.
+  inputNodes.forEach((node) => {
+    if (initialValues[node.id] !== undefined) {
+      values[node.id] = initialValues[node.id];
+      return;
+    }
+    const namedKey = resolveNodeKey(node);
+    if (initialValues[namedKey] !== undefined) {
+      values[node.id] = initialValues[namedKey];
+    }
+  });
+
+  // 2) Apply node defaults for fields still unset (in node order, so a
+  //    reference default can read an earlier field's resolved value).
+  inputNodes.forEach((node) => {
+    if (values[node.id] !== undefined) {
+      return;
+    }
+
+    const { defaultValue } = node.data;
+    if (!defaultValue) {
+      return;
+    }
+
+    if (defaultValue.type === "static" && defaultValue.staticValue !== undefined) {
+      values[node.id] = defaultValue.staticValue;
+    }
+
+    if (defaultValue.type === "reference" && defaultValue.referenceField) {
+      const refValue = values[defaultValue.referenceField];
+      if (refValue !== undefined) {
+        values[node.id] = refValue;
+      }
+    }
+  });
+
+  return values;
+};
+
+/**
  * Convert internal form values (keyed by nodeId) to external format (keyed by name)
  * When multiple nodes share the same name, later values overwrite earlier ones
  * Priority for key naming: name > label (en) > nodeId
