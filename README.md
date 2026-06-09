@@ -45,8 +45,9 @@ Treege is a modern React library for creating and rendering interactive decision
 - **Security**: Built-in input sanitization to prevent XSS attacks
 - **Enhanced Error Messages**: Clear, user-friendly error messages for HTTP inputs and validation
 - **Conditional Logic**: Dynamic field visibility based on user input and conditional edges
-- **Multi-Step Forms**: Group nodes are automatically turned into navigable steps with Back/Continue controls
-- **Loading State**: Built-in `isLoading` prop renders a customizable skeleton while the flow is being fetched
+- **Multi-Step Forms**: Group nodes are automatically turned into navigable steps with Back/Continue controls, an `onBack` bridge to outer flows, and external-button submission via `formId`
+- **Edit Mode**: Pre-fill with `initialValues` (accepts name keys, reactive) to round-trip and edit previously submitted records
+- **Loading State**: Built-in `isLoading` prop renders a customizable skeleton while the flow is being fetched, plus `isSubmitting` to drive the button's loading state from async submits
 - **Fully Customizable**: Override any component (form, inputs, ui, step, submitButton, submitButtonWrapper, loadingSkeleton)
 - **Optional Dependencies**: Graceful degradation when optional packages like `react-native-document-picker` aren't installed
 - **Theme Support**: Dark/light mode out of the box
@@ -335,22 +336,24 @@ You can implement these inputs using popular React Native libraries:
 
 The React Native renderer shares the same API as the web renderer, with some platform-specific props:
 
-| Prop                    | Type                                        | Default      | Description                                                                    |
-|-------------------------|---------------------------------------------|--------------|--------------------------------------------------------------------------------|
-| `flow`                  | `Flow \| null`                              | -            | Decision tree to render                                                        |
-| `onSubmit`              | `(values: FormValues, meta?: Meta) => void` | -            | Form submission handler (meta includes HTTP response data)                     |
-| `onChange`              | `(values: FormValues) => void`              | -            | Form change handler                                                            |
-| `validate`              | `(values, nodes) => Record<string, string>` | -            | Custom validation function                                                     |
-| `initialValues`         | `FormValues`                                | `{}`         | Initial form values                                                            |
-| `components`            | `TreegeRendererComponents`                  | -            | Custom component overrides                                                     |
-| `language`              | `string`                                    | `"en"`       | UI language                                                                    |
-| `validationMode`        | `"onSubmit" \| "onChange"`                  | `"onSubmit"` | When to validate                                                               |
-| `theme`                 | `"light" \| "dark"`                         | `"dark"`     | Renderer theme                                                                 |
-| `googleApiKey`          | `string`                                    | -            | API key for address input                                                      |
-| `headers`               | `HttpHeaders`                               | -            | HTTP headers as `{ name: value }`, applied to every request (field-level wins) |
-| `isLoading`             | `boolean`                                   | `false`      | Render a loading skeleton instead of the form                                  |
-| `style`                 | `ViewStyle`                                 | -            | ScrollView style (RN only)                                                     |
-| `contentContainerStyle` | `ViewStyle`                                 | -            | Content container style (RN)                                                   |
+| Prop                    | Type                                        | Default      | Description                                                                                                     |
+|-------------------------|---------------------------------------------|--------------|-----------------------------------------------------------------------------------------------------------------|
+| `flow`                  | `Flow \| null`                              | -            | Decision tree to render                                                                                         |
+| `onSubmit`              | `(values: FormValues, meta?: Meta) => void` | -            | Form submission handler (meta includes HTTP response data)                                                      |
+| `onChange`              | `(values: FormValues) => void`              | -            | Form change handler                                                                                             |
+| `validate`              | `(values, nodes) => Record<string, string>` | -            | Custom validation function                                                                                      |
+| `initialValues`         | `FormValues`                                | `{}`         | Pre-fill values to edit a record. Accepts `node.id` or name keys; reactive (re-seeds if it changes after mount) |
+| `components`            | `TreegeRendererComponents`                  | -            | Custom component overrides                                                                                      |
+| `language`              | `string`                                    | `"en"`       | UI language                                                                                                     |
+| `validationMode`        | `"onSubmit" \| "onChange"`                  | `"onSubmit"` | When to validate                                                                                                |
+| `theme`                 | `"light" \| "dark"`                         | `"dark"`     | Renderer theme                                                                                                  |
+| `googleApiKey`          | `string`                                    | -            | API key for address input                                                                                       |
+| `headers`               | `HttpHeaders`                               | -            | HTTP headers as `{ name: value }`, applied to every request (field-level wins)                                  |
+| `isLoading`             | `boolean`                                   | `false`      | Render a loading skeleton instead of the form                                                                   |
+| `isSubmitting`          | `boolean`                                   | `false`      | Force the submit/continue button into its loading state (OR-ed with internal state)                             |
+| `onBack`                | `() => void`                                | -            | Called when Back is clicked on the first step; bridges to an outer flow                                         |
+| `style`                 | `ViewStyle`                                 | -            | ScrollView style (RN only)                                                                                      |
+| `contentContainerStyle` | `ViewStyle`                                 | -            | Content container style (RN)                                                                                    |
 
 ## Node Types
 
@@ -586,6 +589,32 @@ Customize the skeleton via `components.loadingSkeleton`:
 />
 ```
 
+### Editing an Existing Submission
+
+To edit a record that was already filled in, pass it to `initialValues`. The keys can be either `node.id` **or** the same name-based keys you receive from `onSubmit`/`onChange`, so you can round-trip the submitted object directly — no remapping needed:
+
+```tsx
+const handleSubmit = (values) => save(values); // e.g. { firstName: "Alice", email: "a@b.com" }
+
+// later, to edit the saved record:
+<TreegeRenderer flow={flow} initialValues={savedRecord} onSubmit={handleSubmit} />
+```
+
+`initialValues` is **reactive**: if it changes after mount (e.g. an async-fetched record resolves later), the form is re-seeded automatically — no `key` prop or `isLoading` gate required. Passing a new object of identical content does not reset the form, so in-progress edits are preserved.
+
+```tsx
+const { data } = useQuery(/* ... */);
+<TreegeRenderer flow={flow} initialValues={data ?? {}} onSubmit={handleSubmit} />
+```
+
+### Submitting State
+
+Pass `isSubmitting` to keep the submit/continue button in its loading state (spinner + disabled) while an async `onSubmit` resolves on your side. It's OR-ed with the renderer's own internal submitting state (e.g. during an HTTP `submitConfig` call):
+
+```tsx
+<TreegeRenderer flow={flow} isSubmitting={mutation.isPending} onSubmit={handleSubmit} />
+```
+
 ### Multi-Step Forms
 
 When a flow contains **Group** nodes, the renderer automatically splits the form into navigable steps — each contiguous slice of visible nodes sharing the same group becomes one step, with built-in Back/Continue controls (Continue turns into Submit on the last step). Branching via conditional edges recomputes the steps on the fly.
@@ -596,18 +625,37 @@ Override the default step layout via `components.step`:
 <TreegeRenderer
   flow={flow}
   components={{
-    step: ({ label, children, isFirstStep, isLastStep, canContinue, onBack, onContinue }) => (
+    step: ({ label, children, canGoBack, isLastStep, canContinue, isSubmitting, onBack, onContinue }) => (
       <section>
         <h2>{label}</h2>
         {children}
-        {!isFirstStep && <button onClick={onBack}>Back</button>}
-        <button disabled={!canContinue} onClick={onContinue}>
-          {isLastStep ? "Submit" : "Continue"}
+        {canGoBack && <button onClick={onBack}>Back</button>}
+        <button disabled={!canContinue || isSubmitting} onClick={onContinue}>
+          {isSubmitting ? "Submitting…" : isLastStep ? "Submit" : "Continue"}
         </button>
       </section>
     ),
   }}
 />
+```
+
+Use **`canGoBack`** (not `!isFirstStep`) to decide whether to show the Back control: it's `true` on any step past the first, and also on the first step when an `onBack` prop is provided.
+
+#### Bridging navigation to an outer flow
+
+When the renderer is embedded in a surrounding wizard (e.g. a modal with its own steps), use `onBack` to step back out of the renderer's first step, and `formId` to drive submission from an external button:
+
+```tsx
+<TreegeRenderer
+  flow={flow}
+  formId="treege-form"
+  onBack={() => modal.goToPreviousStep()} // Back on step 0 → previous modal step
+  onSubmit={handleSubmit}
+/>
+
+// A submit button living outside the renderer (web): only submits on the last
+// step — on earlier steps it advances, like the built-in Continue button.
+<button type="submit" form="treege-form">Save</button>
 ```
 
 ### Headless / Programmatic Control
@@ -701,21 +749,24 @@ Once the development server is running, you can access these examples:
 
 ### TreegeRenderer Props
 
-| Prop             | Type                                        | Default      | Description                                                                    |
-|------------------|---------------------------------------------|--------------|--------------------------------------------------------------------------------|
-| `flow`           | `Flow \| null`                              | -            | Decision tree to render                                                        |
-| `onSubmit`       | `(values: FormValues, meta?: Meta) => void` | -            | Form submission handler (meta includes HTTP response data)                     |
-| `onChange`       | `(values: FormValues) => void`              | -            | Form change handler                                                            |
-| `validate`       | `(values, nodes) => Record<string, string>` | -            | Custom validation function                                                     |
-| `initialValues`  | `FormValues`                                | `{}`         | Initial form values                                                            |
-| `components`     | `TreegeRendererComponents`                  | -            | Custom component overrides                                                     |
-| `language`       | `string`                                    | `"en"`       | UI language                                                                    |
-| `validationMode` | `"onSubmit" \| "onChange"`                  | `"onSubmit"` | When to validate                                                               |
-| `theme`          | `"light" \| "dark"`                         | `"dark"`     | Renderer theme                                                                 |
-| `googleApiKey`   | `string`                                    | -            | API key for address input                                                      |
-| `headers`        | `HttpHeaders`                               | -            | HTTP headers as `{ name: value }`, applied to every request (field-level wins) |
-| `isLoading`      | `boolean`                                   | `false`      | Render a loading skeleton instead of the form (see below)                      |
-| `className`      | `string`                                    | -            | Additional CSS class names for custom styling                                  |
+| Prop             | Type                                        | Default      | Description                                                                                                                                                               |
+|------------------|---------------------------------------------|--------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `flow`           | `Flow \| null`                              | -            | Decision tree to render                                                                                                                                                   |
+| `onSubmit`       | `(values: FormValues, meta?: Meta) => void` | -            | Form submission handler (meta includes HTTP response data)                                                                                                                |
+| `onChange`       | `(values: FormValues) => void`              | -            | Form change handler                                                                                                                                                       |
+| `validate`       | `(values, nodes) => Record<string, string>` | -            | Custom validation function                                                                                                                                                |
+| `initialValues`  | `FormValues`                                | `{}`         | Pre-fill values to edit a submitted record. Accepts `node.id` **or** name keys (same shape as `onSubmit`); reactive — re-seeds if it changes after mount (see below)      |
+| `components`     | `TreegeRendererComponents`                  | -            | Custom component overrides                                                                                                                                                |
+| `language`       | `string`                                    | `"en"`       | UI language                                                                                                                                                               |
+| `validationMode` | `"onSubmit" \| "onChange"`                  | `"onSubmit"` | When to validate                                                                                                                                                          |
+| `theme`          | `"light" \| "dark"`                         | `"dark"`     | Renderer theme                                                                                                                                                            |
+| `googleApiKey`   | `string`                                    | -            | API key for address input                                                                                                                                                 |
+| `headers`        | `HttpHeaders`                               | -            | HTTP headers as `{ name: value }`, applied to every request (field-level wins)                                                                                            |
+| `isLoading`      | `boolean`                                   | `false`      | Render a loading skeleton instead of the form (see below)                                                                                                                 |
+| `isSubmitting`   | `boolean`                                   | `false`      | Force the submit/continue button into its loading state (spinner + disabled). OR-ed with the internal submitting state — useful with an async `onSubmit`                  |
+| `onBack`         | `() => void`                                | -            | Called when Back is clicked on the **first step**; bridges back-navigation to an outer flow (e.g. a parent modal). Shows a Back button on step 0 when provided            |
+| `formId`         | `string`                                    | -            | Sets the `<form>` `id` so a submit button outside the renderer can target it via the native `form` attribute. Web only; submits only on the last step in multi-step flows |
+| `className`      | `string`                                    | -            | Additional CSS class names for custom styling                                                                                                                             |
 
 ## Development
 
