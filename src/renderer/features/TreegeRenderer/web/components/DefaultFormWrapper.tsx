@@ -1,7 +1,15 @@
 import { FormEvent, ReactNode } from "react";
 
-const DefaultFormWrapper = ({ children, onSubmit }: { children: ReactNode; onSubmit: (e: FormEvent<HTMLFormElement>) => void }) => (
-  <form onSubmit={onSubmit} className="tg:mx-auto tg:max-w-2xl tg:gap-y-3">
+const DefaultFormWrapper = ({
+  children,
+  id,
+  onSubmit,
+}: {
+  children: ReactNode;
+  id?: string;
+  onSubmit: (e: FormEvent<HTMLFormElement>) => void;
+}) => (
+  <form id={id} onSubmit={onSubmit} className="tg:mx-auto tg:max-w-2xl tg:gap-y-3">
     {children}
   </form>
 );

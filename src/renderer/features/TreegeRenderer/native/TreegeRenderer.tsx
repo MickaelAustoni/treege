@@ -20,7 +20,7 @@ import { ThemeProvider, useTheme } from "@/shared/context/ThemeContext";
  * - Omits className (not used in React Native)
  * - Adds style and contentContainerStyle (React Native specific)
  */
-export type TreegeRendererNativeProps = Omit<TreegeRendererProps, "className"> & {
+export type TreegeRendererNativeProps = Omit<TreegeRendererProps, "className" | "formId"> & {
   /**
    * Style for the ScrollView container
    */
