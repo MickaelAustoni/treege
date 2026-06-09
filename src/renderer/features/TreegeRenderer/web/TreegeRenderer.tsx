@@ -31,6 +31,7 @@ const TreegeRenderer = ({
   validationMode,
   initialValues = {},
   isLoading = false,
+  isSubmitting: isSubmittingProp = false,
 }: TreegeRendererProps) => {
   const {
     canContinueStep,
@@ -49,7 +50,7 @@ const TreegeRenderer = ({
     inputNodes,
     isFirstStep,
     isLastStep,
-    isSubmitting,
+    isSubmitting: isSubmittingInternal,
     missingRequiredFields,
     setFieldValue,
     steps,
@@ -71,6 +72,7 @@ const TreegeRenderer = ({
   });
 
   const [portalContainer, setPortalContainer] = useState<HTMLDivElement | null>(null);
+  const isSubmitting = isSubmittingProp || isSubmittingInternal;
 
   const { FormWrapper, renderNode } = useRenderNode({
     config,
@@ -83,6 +85,7 @@ const TreegeRenderer = ({
     formErrors,
     formValues,
     inputNodes,
+    isSubmitting,
     missingRequiredFields,
     setFieldValue,
   });

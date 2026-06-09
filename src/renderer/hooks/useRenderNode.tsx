@@ -34,6 +34,7 @@ type UseRenderNodeParams = {
   formErrors: Record<string, string>;
   formValues: FormValues;
   inputNodes: Node<InputNodeData>[];
+  isSubmitting?: boolean;
   missingRequiredFields: string[];
   setFieldValue: (fieldId: string, value: unknown) => void;
 };
@@ -59,6 +60,7 @@ export const useRenderNode = ({
   formErrors,
   formValues,
   inputNodes,
+  isSubmitting,
   missingRequiredFields,
   setFieldValue,
 }: UseRenderNodeParams) => {
@@ -116,6 +118,7 @@ export const useRenderNode = ({
           const extra: InputExtraProps = {
             error,
             helperText: safeHelperText,
+            isSubmitting,
             label: safeLabel,
             missingDependencies: getMissingDependencies(node, formValues, inputNodes, config.language),
             missingRequiredFields,
@@ -165,6 +168,7 @@ export const useRenderNode = ({
       formValues,
       formErrors,
       setFieldValue,
+      isSubmitting,
       missingRequiredFields,
       inputNodes,
       defaultInputRenderers,

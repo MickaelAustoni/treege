@@ -260,7 +260,7 @@ export type TreegeRendererComponents = {
   form?: (props: { children: ReactNode; onSubmit: (e: FormEvent<HTMLFormElement>) => void }) => ReactNode;
   /**
    * Custom submit button (supports both web and native variants)
-   * Web variant: { label?: string; disabled?: boolean; ...otherHTMLAttributes }
+   * Web variant: { label?: string; disabled?: boolean; isSubmitting?: boolean; ...otherHTMLAttributes }
    * Native variant: { children?: ReactNode; disabled?: boolean; isSubmitting?: boolean; onPress?: () => void }
    */
   submitButton?: (
@@ -269,6 +269,7 @@ export type TreegeRendererComponents = {
           // Web variant
           label?: string;
           disabled?: boolean;
+          isSubmitting?: boolean;
           [key: string]: unknown;
         }
       | {
@@ -371,6 +372,13 @@ export interface TreegeRendererProps extends TreegeRendererConfig {
    * the flow is being fetched. Customizable via `components.loadingSkeleton`.
    */
   isLoading?: boolean;
+  /**
+   * When true, forces the submit/continue button into its loading state
+   * (spinner + disabled). Use this to keep the button busy while an async
+   * `onSubmit` is still resolving on the consumer side. It is OR-ed with the
+   * renderer's own internal submitting state, so it only ever adds to it.
+   */
+  isSubmitting?: boolean;
   /**
    * Callback when form values change
    */

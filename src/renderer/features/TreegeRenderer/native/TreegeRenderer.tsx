@@ -45,6 +45,7 @@ const TreegeRendererContent = ({
   headers,
   initialValues,
   isLoading = false,
+  isSubmitting: isSubmittingProp = false,
   language,
   onChange,
   onSubmit,
@@ -71,7 +72,7 @@ const TreegeRendererContent = ({
     inputNodes,
     isFirstStep,
     isLastStep,
-    isSubmitting,
+    isSubmitting: isSubmittingInternal,
     missingRequiredFields,
     setFieldValue,
     steps,
@@ -92,6 +93,10 @@ const TreegeRendererContent = ({
     validationMode,
   });
 
+  // Consumer-driven submitting state (e.g. async onSubmit) is OR-ed with the
+  // renderer's own internal state so the button shows a loader for both.
+  const isSubmitting = isSubmittingProp || isSubmittingInternal;
+
   const { FormWrapper, SubmitButtonWrapper, renderNode } = useRenderNode({
     config,
     DefaultFormWrapper,
@@ -103,6 +108,7 @@ const TreegeRendererContent = ({
     formErrors,
     formValues,
     inputNodes,
+    isSubmitting,
     missingRequiredFields,
     setFieldValue,
   });

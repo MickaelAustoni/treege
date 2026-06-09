@@ -1,3 +1,4 @@
+import { Loader2 } from "lucide-react";
 import DefaultSubmitButtonWrapper from "@/renderer/features/TreegeRenderer/web/components/DefaultSubmitButtonWrapper";
 import { useTranslate } from "@/renderer/hooks/useTranslate";
 import type { StepRenderProps } from "@/renderer/types/renderer";
@@ -21,8 +22,9 @@ const DefaultStep = ({
       type="button"
       onClick={onContinue}
       disabled={continueDisabled}
-      className="tg:rounded-md tg:bg-blue-500 tg:px-4 tg:py-2 tg:font-medium tg:text-sm tg:text-white tg:transition-colors tg:hover:bg-blue-600 tg:focus:outline-none tg:focus:ring-2 tg:focus:ring-blue-500 tg:focus:ring-offset-2 tg:disabled:cursor-not-allowed tg:disabled:opacity-50"
+      className="tg:inline-flex tg:items-center tg:justify-center tg:gap-2 tg:rounded-md tg:bg-blue-500 tg:px-4 tg:py-2 tg:font-medium tg:text-sm tg:text-white tg:transition-colors tg:hover:bg-blue-600 tg:focus:outline-none tg:focus:ring-2 tg:focus:ring-blue-500 tg:focus:ring-offset-2 tg:disabled:cursor-not-allowed tg:disabled:opacity-50"
     >
+      {isSubmitting && <Loader2 className="tg:h-4 tg:w-4 tg:animate-spin" />}
       {isLastStep ? t("renderer.defaultSubmitButton.submit") : t("renderer.step.continue")}
     </button>
   );

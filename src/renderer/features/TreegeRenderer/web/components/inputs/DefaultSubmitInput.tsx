@@ -13,7 +13,7 @@ const DefaultSubmitInput = (_field: InputFieldProps<"submit">, extra: InputExtra
 
   return (
     <SubmitButtonWrapper missingFields={missingRequiredFields}>
-      <SubmitButton label={label} disabled={isSubmitting} />
+      <SubmitButton label={label} disabled={isSubmitting} isSubmitting={isSubmitting} />
     </SubmitButtonWrapper>
   );
 };
