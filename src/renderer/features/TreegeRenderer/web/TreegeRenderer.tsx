@@ -96,13 +96,27 @@ const TreegeRenderer = ({
   const stepLabel = useMemo(() => t(currentStepGroupNode?.data?.label), [t, currentStepGroupNode]);
 
   /**
-   * Web-specific form submission handler with focus logic
+   * Web-specific form submission handler with focus logic.
+   *
+   * A native form submit can be triggered by a deported submit button (via the
+   * `formId` prop) or by pressing Enter inside a field. In a multi-step flow we
+   * must NOT submit until the last step: earlier steps advance instead — gated
+   * by `canContinueStep` so an incomplete step can't be skipped, mirroring the
+   * built-in Continue button.
    */
   const handleFormSubmit = useCallback(
     async (e: FormEvent<HTMLFormElement>) => {
       e.preventDefault();
 
-      // Call the shared submit logic
+      // Not on the last step yet: advance instead of submitting.
+      if (!isLastStep) {
+        if (canContinueStep) {
+          goToNextStep();
+        }
+        return;
+      }
+
+      // Last step: run the shared submit logic.
       const isValid = await handleSubmit();
 
       // If validation failed, focus the first input field with an error
@@ -112,7 +126,7 @@ const TreegeRenderer = ({
         input?.focus();
       }
     },
-    [handleSubmit, firstErrorFieldId],
+    [isLastStep, canContinueStep, goToNextStep, handleSubmit, firstErrorFieldId],
   );
 
   /**
