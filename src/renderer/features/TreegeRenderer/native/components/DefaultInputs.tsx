@@ -1,4 +1,3 @@
-import { Text } from "react-native";
 import DefaultAddressInput from "@/renderer/features/TreegeRenderer/native/components/inputs/DefaultAddressInput";
 import DefaultAutocompleteInput from "@/renderer/features/TreegeRenderer/native/components/inputs/DefaultAutocompleteInput";
 import DefaultCheckboxInput from "@/renderer/features/TreegeRenderer/native/components/inputs/DefaultCheckboxInput";
@@ -11,16 +10,13 @@ import DefaultNumberInput from "@/renderer/features/TreegeRenderer/native/compon
 import DefaultPasswordInput from "@/renderer/features/TreegeRenderer/native/components/inputs/DefaultPasswordInput";
 import DefaultRadioInput from "@/renderer/features/TreegeRenderer/native/components/inputs/DefaultRadioInput";
 import DefaultSelectInput from "@/renderer/features/TreegeRenderer/native/components/inputs/DefaultSelectInput";
+import DefaultSubmitInput from "@/renderer/features/TreegeRenderer/native/components/inputs/DefaultSubmitInput";
 import DefaultSwitchInput from "@/renderer/features/TreegeRenderer/native/components/inputs/DefaultSwitchInput";
 import DefaultTextareaInput from "@/renderer/features/TreegeRenderer/native/components/inputs/DefaultTextareaInput";
 import DefaultTextInput from "@/renderer/features/TreegeRenderer/native/components/inputs/DefaultTextInput";
 import DefaultTimeInput from "@/renderer/features/TreegeRenderer/native/components/inputs/DefaultTimeInput";
 import DefaultTimeRangeInput from "@/renderer/features/TreegeRenderer/native/components/inputs/DefaultTimeRangeInput";
-import { InputExtraProps, InputFieldProps, InputRenderers } from "@/renderer/types/renderer";
-
-const PlaceholderInput = (_field: InputFieldProps<"submit">, extra: InputExtraProps<"submit">) => (
-  <Text>TODO: Implement {extra.node.data.type} input for React Native</Text>
-);
+import { InputRenderers } from "@/renderer/types/renderer";
 
 export {
   DefaultAddressInput,
@@ -41,8 +37,6 @@ export {
   DefaultTimeInput,
   DefaultTimeRangeInput,
 };
-
-export const DefaultSubmitInput = PlaceholderInput;
 
 // Default input renderers mapping with proper typing
 export const defaultInputRenderers: InputRenderers = {

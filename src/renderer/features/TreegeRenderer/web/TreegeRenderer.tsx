@@ -49,6 +49,7 @@ const TreegeRenderer = ({
     goToNextStep,
     goToPreviousStep,
     handleSubmit,
+    hasSubmitInput,
     inputNodes,
     isFirstStep,
     isLastStep,
@@ -190,6 +191,7 @@ const TreegeRenderer = ({
                     isLastStep={isLastStep}
                     canContinue={canContinueStep && (!isLastStep || canSubmit)}
                     canGoBack={canGoBack}
+                    hasSubmitInput={hasSubmitInput}
                     isSubmitting={isSubmitting}
                     onBack={handleBack}
                     onContinue={handleContinue}

@@ -29,7 +29,7 @@ const DefaultSubmitButton = forwardRef<HTMLButtonElement, SubmitButtonProps>(
         onPointerLeave={onPointerLeave}
         onPointerMove={onPointerMove}
         type="submit"
-        className="tg:mt-4 tg:inline-flex tg:items-center tg:justify-center tg:gap-2 tg:rounded-md tg:bg-blue-500 tg:px-4 tg:py-2 tg:font-medium tg:text-white tg:transition-colors tg:hover:bg-blue-600 tg:focus:outline-none tg:focus:ring-2 tg:focus:ring-blue-500 tg:focus:ring-offset-2 tg:disabled:cursor-not-allowed tg:disabled:opacity-50"
+        className="tg:inline-flex tg:items-center tg:justify-center tg:gap-2 tg:rounded-md tg:bg-blue-500 tg:px-4 tg:py-2 tg:font-medium tg:text-sm tg:text-white tg:transition-colors tg:hover:bg-blue-600 tg:focus:outline-none tg:focus:ring-2 tg:focus:ring-blue-500 tg:focus:ring-offset-2 tg:disabled:cursor-not-allowed tg:disabled:opacity-50"
         {...props}
       >
         {isSubmitting && <Loader2 className="tg:h-4 tg:w-4 tg:animate-spin" />}

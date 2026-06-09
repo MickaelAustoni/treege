@@ -1,9 +1,12 @@
-import { Loader2 } from "lucide-react";
+import { useTreegeRendererConfig } from "@/renderer";
+import DefaultSubmitButton from "@/renderer/features/TreegeRenderer/web/components/DefaultSubmitButton";
 import DefaultSubmitButtonWrapper from "@/renderer/features/TreegeRenderer/web/components/DefaultSubmitButtonWrapper";
 import { useTranslate } from "@/renderer/hooks/useTranslate";
 import type { StepRenderProps } from "@/renderer/types/renderer";
+import { isInputNode } from "@/shared/utils/nodeTypeGuards";
 
 const DefaultStep = ({
+  step,
   label,
   children,
   canGoBack,
@@ -15,18 +18,16 @@ const DefaultStep = ({
   missingFields,
 }: StepRenderProps) => {
   const t = useTranslate();
+  const config = useTreegeRendererConfig();
+  const SubmitButton = config?.components?.submitButton || DefaultSubmitButton;
+  const SubmitButtonWrapper = config?.components?.submitButtonWrapper || DefaultSubmitButtonWrapper;
   const continueDisabled = !canContinue || isSubmitting;
+  const submitNode = step.nodes.find((node) => isInputNode(node) && node.data.type === "submit");
+  const submitLabel = submitNode && isInputNode(submitNode) ? t(submitNode.data.label) : undefined;
+  const actionLabel = isLastStep ? submitLabel || t("renderer.defaultSubmitButton.submit") : t("renderer.step.continue");
 
   const continueButton = (
-    <button
-      type="button"
-      onClick={onContinue}
-      disabled={continueDisabled}
-      className="tg:inline-flex tg:items-center tg:justify-center tg:gap-2 tg:rounded-md tg:bg-blue-500 tg:px-4 tg:py-2 tg:font-medium tg:text-sm tg:text-white tg:transition-colors tg:hover:bg-blue-600 tg:focus:outline-none tg:focus:ring-2 tg:focus:ring-blue-500 tg:focus:ring-offset-2 tg:disabled:cursor-not-allowed tg:disabled:opacity-50"
-    >
-      {isSubmitting && <Loader2 className="tg:h-4 tg:w-4 tg:animate-spin" />}
-      {isLastStep ? t("renderer.defaultSubmitButton.submit") : t("renderer.step.continue")}
-    </button>
+    <SubmitButton type="button" onClick={onContinue} disabled={continueDisabled} isSubmitting={isSubmitting} label={actionLabel} />
   );
 
   return (
@@ -52,7 +53,7 @@ const DefaultStep = ({
         {/* Only the submit button is wrapped — the tooltip explaining missing
             required fields must not enclose the inputs, otherwise toggling its
             presence remounts the step and steals input focus. */}
-        <DefaultSubmitButtonWrapper missingFields={missingFields}>{continueButton}</DefaultSubmitButtonWrapper>
+        <SubmitButtonWrapper missingFields={missingFields}>{continueButton}</SubmitButtonWrapper>
       </div>
     </section>
   );

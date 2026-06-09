@@ -519,7 +519,7 @@ export const useTreegeRenderer = ({
 
   return {
     canContinueStep,
-    canSubmit: !hasSubmitInput && endOfPathReached && nodes.length > 0,
+    canSubmit: (hasSubmitInput || endOfPathReached) && nodes.length > 0,
     clearSubmitMessage,
     config,
     currentStep,

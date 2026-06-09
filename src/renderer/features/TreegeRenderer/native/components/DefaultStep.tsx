@@ -2,11 +2,15 @@ import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View } from "rea
 import { useTranslate } from "@/renderer/hooks/useTranslate";
 import type { StepRenderProps } from "@/renderer/types/renderer";
 import { useTheme } from "@/shared/context/ThemeContext";
+import { isInputNode } from "@/shared/utils/nodeTypeGuards";
 
-const DefaultStep = ({ label, children, canGoBack, isLastStep, canContinue, isSubmitting, onBack, onContinue }: StepRenderProps) => {
+const DefaultStep = ({ step, label, children, canGoBack, isLastStep, canContinue, isSubmitting, onBack, onContinue }: StepRenderProps) => {
   const { colors } = useTheme();
   const t = useTranslate();
   const continueDisabled = !canContinue || isSubmitting;
+  const submitNode = step.nodes.find((node) => isInputNode(node) && node.data.type === "submit");
+  const submitLabel = submitNode && isInputNode(submitNode) ? t(submitNode.data.label) : undefined;
+  const actionLabel = isLastStep ? submitLabel || t("renderer.defaultSubmitButton.submit") : t("renderer.step.continue");
 
   return (
     <View>
@@ -41,9 +45,7 @@ const DefaultStep = ({ label, children, canGoBack, isLastStep, canContinue, isSu
           {isSubmitting ? (
             <ActivityIndicator color={colors.primaryForeground} />
           ) : (
-            <Text style={[styles.continueButtonText, { color: colors.primaryForeground }]}>
-              {isLastStep ? t("renderer.defaultSubmitButton.submit") : t("renderer.step.continue")}
-            </Text>
+            <Text style={[styles.continueButtonText, { color: colors.primaryForeground }]}>{actionLabel}</Text>
           )}
         </TouchableOpacity>
       </View>

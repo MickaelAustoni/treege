@@ -223,6 +223,13 @@ export type StepRenderProps = {
   /** Whether all required visible inputs of the step are filled. */
   canContinue: boolean;
   /**
+   * True when the step contains an explicit `submit` input node. Such a node is
+   * declarative — it renders no button itself; the step renders the single
+   * submit button (reusing the node's label). Exposed for custom step
+   * implementations that need to know a submit node is present.
+   */
+  hasSubmitInput?: boolean;
+  /**
    * Translated labels of required fields still empty. Only populated on the
    * last step so the step can show a tooltip explaining why submit is disabled.
    */
