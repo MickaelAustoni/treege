@@ -1,10 +1,10 @@
 import { useCallback, useMemo, useState } from "react";
 import { FlatList, Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useTranslate } from "@/renderer/hooks/useTranslate";
-import { InputExtraProps, InputFieldProps } from "@/renderer/types/renderer";
+import { InputRenderProps } from "@/renderer/types/renderer";
 import { useTheme } from "@/shared/context/ThemeContext";
 
-const DefaultDateInput = (field: InputFieldProps<"date">, extra: InputExtraProps<"date">) => {
+const DefaultDateInput = ({ field, extra }: InputRenderProps<"date">) => {
   const [isOpen, setIsOpen] = useState(false);
   const { value, placeholder } = field;
   const { node, setValue, error, label, helperText } = extra;

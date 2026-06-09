@@ -2,10 +2,10 @@ import { useMemo, useState } from "react";
 import { FlatList, Modal, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import OptionItemContent from "@/renderer/features/TreegeRenderer/native/components/OptionItemContent";
 import { useTranslate } from "@/renderer/hooks/useTranslate";
-import { InputExtraProps, InputFieldProps } from "@/renderer/types/renderer";
+import { InputRenderProps } from "@/renderer/types/renderer";
 import { useTheme } from "@/shared/context/ThemeContext";
 
-const DefaultAutocompleteInput = (field: InputFieldProps<"autocomplete">, extra: InputExtraProps<"autocomplete">) => {
+const DefaultAutocompleteInput = ({ field, extra }: InputRenderProps<"autocomplete">) => {
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const { value, placeholder } = field;

@@ -1,10 +1,10 @@
 import { useTranslate } from "@/renderer/hooks/useTranslate";
-import { InputExtraProps, InputFieldProps } from "@/renderer/types/renderer";
+import { InputRenderProps } from "@/renderer/types/renderer";
 import { FormDescription, FormError, FormItem } from "@/shared/components/ui/form";
 import { Input } from "@/shared/components/ui/input";
 import { Label } from "@/shared/components/ui/label";
 
-const DefaultTimeRangeInput = (field: InputFieldProps<"timerange">, extra: InputExtraProps<"timerange">) => {
+const DefaultTimeRangeInput = ({ field, extra }: InputRenderProps<"timerange">) => {
   const { id, name, value } = field;
   const { node, setValue, error, label, helperText } = extra;
   const t = useTranslate();

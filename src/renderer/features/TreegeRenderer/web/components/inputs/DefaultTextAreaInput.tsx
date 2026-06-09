@@ -1,9 +1,9 @@
-import { InputExtraProps, InputFieldProps } from "@/renderer/types/renderer";
+import { InputRenderProps } from "@/renderer/types/renderer";
 import { FormDescription, FormError, FormItem } from "@/shared/components/ui/form";
 import { Label } from "@/shared/components/ui/label";
 import { Textarea } from "@/shared/components/ui/textarea";
 
-const DefaultTextAreaInput = (field: InputFieldProps<"textarea">, extra: InputExtraProps<"textarea">) => {
+const DefaultTextAreaInput = ({ field, extra }: InputRenderProps<"textarea">) => {
   const { id, name, value, placeholder } = field;
   const { node, setValue, error, label, helperText } = extra;
 

@@ -1,10 +1,10 @@
 import { useCallback, useState } from "react";
 import { Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useTranslate } from "@/renderer/hooks/useTranslate";
-import { InputExtraProps, InputFieldProps } from "@/renderer/types/renderer";
+import { InputRenderProps } from "@/renderer/types/renderer";
 import { useTheme } from "@/shared/context/ThemeContext";
 
-const DefaultTimeRangeInput = (field: InputFieldProps<"timerange">, extra: InputExtraProps<"timerange">) => {
+const DefaultTimeRangeInput = ({ field, extra }: InputRenderProps<"timerange">) => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectingStart, setSelectingStart] = useState(true);
   const { value } = field;

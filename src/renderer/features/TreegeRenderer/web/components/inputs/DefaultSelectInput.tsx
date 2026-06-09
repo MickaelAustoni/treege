@@ -3,12 +3,12 @@ import DependencyHint from "@/renderer/features/TreegeRenderer/web/components/De
 import OptionItemContent from "@/renderer/features/TreegeRenderer/web/components/OptionItemContent";
 import { useInputOptions } from "@/renderer/hooks/useInputOptions";
 import { useTranslate } from "@/renderer/hooks/useTranslate";
-import { InputExtraProps, InputFieldProps } from "@/renderer/types/renderer";
+import { InputRenderProps } from "@/renderer/types/renderer";
 import { FormDescription, FormError, FormItem } from "@/shared/components/ui/form";
 import { Label } from "@/shared/components/ui/label";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/shared/components/ui/select";
 
-const DefaultSelectInput = (field: InputFieldProps<"select">, extra: InputExtraProps<"select">) => {
+const DefaultSelectInput = ({ field, extra }: InputRenderProps<"select">) => {
   const { id, name, value, placeholder } = field;
   const { node, setValue, error, label, helperText, missingDependencies: missing } = extra;
   const { options, isLoading, error: inputOptionsError } = useInputOptions(node);

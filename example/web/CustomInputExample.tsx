@@ -1,23 +1,23 @@
 /**
  * Example: Custom Input Components with TreegeRenderer
  *
- * Custom input renderers receive TWO arguments:
- *   1. `field` — DOM-safe props you can spread straight onto an element:
+ * A custom input renderer is a React component receiving a single props object:
+ *   - `field` — DOM-safe props you can spread straight onto an element:
  *      `<input {...field} />` (id, name, value, placeholder, required, aria-invalid).
- *   2. `extra` — Treege-specific props: setValue, error, label, helperText,
+ *   - `extra` — Treege-specific props: setValue, error, label, helperText,
  *      missingDependencies, node, etc. (NOT DOM attributes).
  */
 
 import { ChangeEvent } from "react";
 import { TreegeRenderer } from "@/renderer";
-import type { InputExtraProps, InputFieldProps } from "@/renderer/types/renderer";
+import type { InputRenderProps } from "@/renderer/types/renderer";
 import { Flow, InputOption } from "@/shared/types/node";
 import flow from "~/example/json/treege.json";
 
 // ✅ Example 1: Simple custom text input (recommended approach)
 // Define your component OUTSIDE the render function to avoid re-creation and focus loss.
 // `field` is spreadable onto the input; `extra` carries setValue + translated label/helperText.
-const CustomTextInput = (field: InputFieldProps<"text">, extra: InputExtraProps<"text">) => {
+const CustomTextInput = ({ field, extra }: InputRenderProps<"text">) => {
   return (
     <div className="tg:mb-4">
       <label className="tg:block tg:text-sm tg:font-medium tg:mb-1" htmlFor={field.id}>
@@ -37,7 +37,7 @@ const CustomTextInput = (field: InputFieldProps<"text">, extra: InputExtraProps<
 };
 
 // ✅ Example 2: Custom number input — spread `field`, then override `value` for the null case.
-const CustomNumberInput = (field: InputFieldProps<"number">, extra: InputExtraProps<"number">) => {
+const CustomNumberInput = ({ field, extra }: InputRenderProps<"number">) => {
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const numValue = e.target.value === "" ? null : Number(e.target.value);
     extra.setValue(numValue); // ✅ setValue is typed as (value: number | null) => void
@@ -65,7 +65,7 @@ const CustomNumberInput = (field: InputFieldProps<"number">, extra: InputExtraPr
 // When this field's options come from an API whose URL references another field
 // (e.g. `.../entities/{{plan_de_compte}}/sub-entities`), `extra.missingDependencies`
 // lists the fields the user must fill first.
-const CustomSelectInput = (field: InputFieldProps<"select">, extra: InputExtraProps<"select">) => {
+const CustomSelectInput = ({ field, extra }: InputRenderProps<"select">) => {
   const selectValue = Array.isArray(field.value) ? (field.value[0] ?? "") : field.value;
   const blocked = extra.missingDependencies.length > 0;
 
@@ -132,7 +132,7 @@ export const WrongExample = () => {
       components={{
         inputs: {
           // ❌ Don't do this - function is recreated on every render
-          text: (field, extra) => <input {...field} onChange={(e) => extra.setValue(e.target.value)} />,
+          text: ({ field, extra }) => <input {...field} onChange={(e) => extra.setValue(e.target.value)} />,
         },
       }}
     />

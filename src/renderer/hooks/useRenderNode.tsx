@@ -1,6 +1,5 @@
 import { Node } from "@xyflow/react";
 import { ComponentType, Fragment, ReactNode, useCallback, useMemo } from "react";
-import InputRendererHost from "@/renderer/features/TreegeRenderer/InputRendererHost";
 import {
   FormValues,
   InputExtraProps,
@@ -128,7 +127,7 @@ export const useRenderNode = ({
 
           return (
             <DefaultInputWrapper key={node.id} node={node}>
-              <InputRendererHost key={inputType} render={Renderer} field={field} extra={extra} />
+              <Renderer key={inputType} field={field} extra={extra} />
             </DefaultInputWrapper>
           );
         }

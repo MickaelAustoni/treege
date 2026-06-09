@@ -3,14 +3,14 @@ import { useTreegeRenderRuntime } from "@/renderer/context/TreegeRenderRuntimePr
 import { DependencyHintMessage } from "@/renderer/features/TreegeRenderer/web/components/DependencyHint";
 import { useInputOptions } from "@/renderer/hooks/useInputOptions";
 import { useTranslate } from "@/renderer/hooks/useTranslate";
-import { InputExtraProps, InputFieldProps } from "@/renderer/types/renderer";
+import { InputRenderProps } from "@/renderer/types/renderer";
 import { Field, FieldContent, FieldDescription, FieldLabel, FieldTitle } from "@/shared/components/ui/field";
 import { FormDescription, FormError, FormItem } from "@/shared/components/ui/form";
 import { Label } from "@/shared/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/shared/components/ui/radio-group";
 import { cn } from "@/shared/lib/utils";
 
-const DefaultRadioInput = (field: InputFieldProps<"radio">, extra: InputExtraProps<"radio">) => {
+const DefaultRadioInput = ({ field, extra }: InputRenderProps<"radio">) => {
   const { id, name, value } = field;
   const { node, setValue, error, label, helperText, renderOptionExtras, compactOptions, missingDependencies: missing } = extra;
   const { options, isLoading, error: inputOptionsError } = useInputOptions(node);

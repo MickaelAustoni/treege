@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { StyleSheet, Text, TextInput, View } from "react-native";
-import { InputExtraProps, InputFieldProps } from "@/renderer/types/renderer";
+import { InputRenderProps } from "@/renderer/types/renderer";
 import { useTheme } from "@/shared/context/ThemeContext";
 
-const DefaultNumberInput = (field: InputFieldProps<"number">, extra: InputExtraProps<"number">) => {
+const DefaultNumberInput = ({ field, extra }: InputRenderProps<"number">) => {
   const { value, placeholder, name } = field;
   const [textValue, setTextValue] = useState(value?.toString() ?? "");
   const { node, setValue, error, label, helperText } = extra;

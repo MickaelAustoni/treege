@@ -4,7 +4,7 @@ import { useTreegeRenderRuntime } from "@/renderer/context/TreegeRenderRuntimePr
 import DependencyHint from "@/renderer/features/TreegeRenderer/web/components/DependencyHint";
 import OptionItemContent from "@/renderer/features/TreegeRenderer/web/components/OptionItemContent";
 import { useTranslate } from "@/renderer/hooks/useTranslate";
-import { InputExtraProps, InputFieldProps } from "@/renderer/types/renderer";
+import { InputRenderProps } from "@/renderer/types/renderer";
 import { convertFormValuesToNamedFormat } from "@/renderer/utils/form";
 import { appendQueryParams, getValueByPath, mergeHttpHeaders, resolveTemplateRecord, resolveUrl } from "@/renderer/utils/http";
 import { sanitizeHttpResponse } from "@/renderer/utils/sanitize";
@@ -54,7 +54,7 @@ const replaceTemplateVars = (template: string, formValues: Record<string, unknow
     return encode ? encodeURIComponent(value) : value;
   });
 
-const DefaultHttpInput = (field: InputFieldProps<"http">, extra: InputExtraProps<"http">) => {
+const DefaultHttpInput = ({ field, extra }: InputRenderProps<"http">) => {
   const [loading, setLoading] = useState(false);
   const [fetchError, setFetchError] = useState<string | null>(null);
   const [options, setOptions] = useState<Array<{ value: string; label: string; description?: string; image?: string }>>([]);

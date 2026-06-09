@@ -1,9 +1,9 @@
 import { useCallback, useRef, useState } from "react";
 import { Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { InputExtraProps, InputFieldProps } from "@/renderer/types/renderer";
+import { InputRenderProps } from "@/renderer/types/renderer";
 import { useTheme } from "@/shared/context/ThemeContext";
 
-const DefaultTimeInput = (field: InputFieldProps<"time">, extra: InputExtraProps<"time">) => {
+const DefaultTimeInput = ({ field, extra }: InputRenderProps<"time">) => {
   const { value, placeholder } = field;
   const timeValue = value || "";
   const parts = timeValue.split(":");

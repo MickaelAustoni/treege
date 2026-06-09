@@ -1,8 +1,8 @@
 import { StyleSheet, Text, TextInput, View } from "react-native";
-import { InputExtraProps, InputFieldProps } from "@/renderer/types/renderer";
+import { InputRenderProps } from "@/renderer/types/renderer";
 import { useTheme } from "@/shared/context/ThemeContext";
 
-const DefaultTextareaInput = (field: InputFieldProps<"textarea">, extra: InputExtraProps<"textarea">) => {
+const DefaultTextareaInput = ({ field, extra }: InputRenderProps<"textarea">) => {
   const { value, placeholder, name } = field;
   const { node, setValue, error, label, helperText } = extra;
   const { colors } = useTheme();

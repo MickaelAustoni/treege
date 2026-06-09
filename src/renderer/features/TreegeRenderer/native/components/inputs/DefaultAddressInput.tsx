@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { ActivityIndicator, FlatList, Modal, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { useTreegeRenderRuntime } from "@/renderer/context/TreegeRenderRuntimeProvider";
 import { useTranslate } from "@/renderer/hooks/useTranslate";
-import { InputExtraProps, InputFieldProps } from "@/renderer/types/renderer";
+import { InputRenderProps } from "@/renderer/types/renderer";
 import { useTheme } from "@/shared/context/ThemeContext";
 
 type AddressSuggestion = {
@@ -81,7 +81,7 @@ const fetchGooglePlacesSuggestions = async (query: string, apiKey: string): Prom
   }
 };
 
-const DefaultAddressInput = (field: InputFieldProps<"address">, extra: InputExtraProps<"address">) => {
+const DefaultAddressInput = ({ field, extra }: InputRenderProps<"address">) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [suggestions, setSuggestions] = useState<AddressSuggestion[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);

@@ -7,7 +7,6 @@ import useFlowActions from "@/editor/hooks/useFlowActions";
 import useTranslate from "@/editor/hooks/useTranslate";
 import { getInputTypeIcon } from "@/editor/utils/inputTypeIcon";
 import { TreegeRenderRuntimeProvider } from "@/renderer/context/TreegeRenderRuntimeProvider";
-import InputRendererHost from "@/renderer/features/TreegeRenderer/InputRendererHost";
 import { defaultInputRenderers } from "@/renderer/features/TreegeRenderer/web/components/DefaultInputs";
 import type { InputRenderer } from "@/renderer/types/renderer";
 import { resolveInputPlaceholder, resolveNodeKey } from "@/renderer/utils/node";
@@ -284,9 +283,8 @@ const NodeInputPreview = ({ nodeId, data }: NodeInputPreviewProps) => {
           and avoids rendering the same text twice.
         */}
         <TreegeRenderRuntimeProvider value={{ headers, language, optionsDisplayLimit: 10 }}>
-          <InputRendererHost
+          <Renderer
             key={inputType}
-            render={Renderer}
             field={{
               id: nodeId,
               name: resolvedName,

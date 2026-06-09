@@ -3,13 +3,13 @@ import { useTreegeRenderRuntime } from "@/renderer/context/TreegeRenderRuntimePr
 import { DependencyHintMessage } from "@/renderer/features/TreegeRenderer/web/components/DependencyHint";
 import { useInputOptions } from "@/renderer/hooks/useInputOptions";
 import { useTranslate } from "@/renderer/hooks/useTranslate";
-import { InputExtraProps, InputFieldProps } from "@/renderer/types/renderer";
+import { InputRenderProps } from "@/renderer/types/renderer";
 import { Checkbox } from "@/shared/components/ui/checkbox";
 import { FormDescription, FormError, FormItem } from "@/shared/components/ui/form";
 import { Label } from "@/shared/components/ui/label";
 import { cn } from "@/shared/lib/utils";
 
-const DefaultCheckboxInput = (field: InputFieldProps<"checkbox">, extra: InputExtraProps<"checkbox">) => {
+const DefaultCheckboxInput = ({ field, extra }: InputRenderProps<"checkbox">) => {
   const { id, name, value } = field;
   const { node, setValue, error, label, helperText, renderOptionExtras, compactOptions, missingDependencies: missing } = extra;
   const { options, isLoading, error: inputOptionsError } = useInputOptions(node);

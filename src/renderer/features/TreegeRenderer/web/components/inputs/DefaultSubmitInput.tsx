@@ -1,4 +1,4 @@
-import { InputExtraProps, InputFieldProps } from "@/renderer/types/renderer";
+import { InputRenderProps } from "@/renderer/types/renderer";
 
 /**
  * The `submit` input node is declarative only: it marks where the flow submits
@@ -8,6 +8,6 @@ import { InputExtraProps, InputFieldProps } from "@/renderer/types/renderer";
  * consistently-placed button whether submission comes from an explicit submit
  * node, the default "Submit", or a "Continue" step.
  */
-const DefaultSubmitInput = (_field: InputFieldProps<"submit">, _extra: InputExtraProps<"submit">) => null;
+const DefaultSubmitInput = (_props: InputRenderProps<"submit">) => null;
 
 export default DefaultSubmitInput;

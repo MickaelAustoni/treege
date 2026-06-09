@@ -2,10 +2,10 @@ import { useState } from "react";
 import { Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import OptionItemContent from "@/renderer/features/TreegeRenderer/native/components/OptionItemContent";
 import { useTranslate } from "@/renderer/hooks/useTranslate";
-import { InputExtraProps, InputFieldProps } from "@/renderer/types/renderer";
+import { InputRenderProps } from "@/renderer/types/renderer";
 import { useTheme } from "@/shared/context/ThemeContext";
 
-const DefaultSelectInput = (field: InputFieldProps<"select">, extra: InputExtraProps<"select">) => {
+const DefaultSelectInput = ({ field, extra }: InputRenderProps<"select">) => {
   const [isOpen, setIsOpen] = useState(false);
   const { value, placeholder } = field;
   const { node, setValue, error, label, helperText } = extra;

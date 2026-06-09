@@ -1,9 +1,9 @@
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useTranslate } from "@/renderer/hooks/useTranslate";
-import { InputExtraProps, InputFieldProps } from "@/renderer/types/renderer";
+import { InputRenderProps } from "@/renderer/types/renderer";
 import { useTheme } from "@/shared/context/ThemeContext";
 
-const DefaultRadioInput = (field: InputFieldProps<"radio">, extra: InputExtraProps<"radio">) => {
+const DefaultRadioInput = ({ field, extra }: InputRenderProps<"radio">) => {
   const { value } = field;
   const { node, setValue, error, label, helperText } = extra;
   const { colors } = useTheme();

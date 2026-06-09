@@ -1,5 +1,5 @@
 import { Node } from "@xyflow/react";
-import { FormEvent, ReactNode } from "react";
+import { ComponentType, FormEvent, ReactNode } from "react";
 import { SerializableFile } from "@/renderer/utils/file";
 import { FlowStep } from "@/renderer/utils/step";
 import {
@@ -167,11 +167,20 @@ export type InputExtraProps<T extends InputType = InputType> = {
 };
 
 /**
- * An input renderer. Receives the spreadable `field` props (DOM-safe) and the
- * Treege `extra` props (state setters, translations, metadata) as two separate
- * arguments, so `field` can be spread onto a control: `<input {...field} />`.
+ * Props passed to an input renderer: the spreadable `field` props (DOM-safe, so
+ * `field` can be spread onto a control — `<input {...field} />`) and the Treege
+ * `extra` props (state setters, translations, metadata).
  */
-export type InputRenderer<T extends InputType = InputType> = (field: InputFieldProps<T>, extra: InputExtraProps<T>) => ReactNode;
+export type InputRenderProps<T extends InputType = InputType> = {
+  field: InputFieldProps<T>;
+  extra: InputExtraProps<T>;
+};
+
+/**
+ * An input renderer — a React component, so it can use hooks and is rendered
+ * directly (`<Renderer field={field} extra={extra} />`) without a wrapper.
+ */
+export type InputRenderer<T extends InputType = InputType> = ComponentType<InputRenderProps<T>>;
 
 export type UiRenderProps = {
   node: Node<UINodeData>;

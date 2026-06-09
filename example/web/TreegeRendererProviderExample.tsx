@@ -5,13 +5,13 @@
  * global defaults for all TreegeRenderer instances in your app.
  */
 
-import { TreegeRendererProvider, TreegeRenderer, type InputExtraProps, type InputFieldProps } from "@/renderer";
+import { TreegeRendererProvider, TreegeRenderer, type InputRenderProps } from "@/renderer";
 import flow from "~/example/json/treege.json";
 import { Flow } from "@/shared/types/node";
 
 // Define your custom components once. `field` is spreadable onto the input;
 // `extra` carries setValue and the already-translated label/helperText.
-const CustomTextInput = (field: InputFieldProps<"text">, extra: InputExtraProps<"text">) => {
+const CustomTextInput = ({ field, extra }: InputRenderProps<"text">) => {
   return (
     <div className="tg:mb-4">
       <label className="tg:block tg:text-sm tg:font-medium tg:mb-1" htmlFor={field.id}>

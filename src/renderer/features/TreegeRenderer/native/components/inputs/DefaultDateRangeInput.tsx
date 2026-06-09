@@ -1,10 +1,10 @@
 import { useCallback, useMemo, useState } from "react";
 import { FlatList, Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useTranslate } from "@/renderer/hooks/useTranslate";
-import { InputExtraProps, InputFieldProps } from "@/renderer/types/renderer";
+import { InputRenderProps } from "@/renderer/types/renderer";
 import { useTheme } from "@/shared/context/ThemeContext";
 
-const DefaultDateRangeInput = (field: InputFieldProps<"daterange">, extra: InputExtraProps<"daterange">) => {
+const DefaultDateRangeInput = ({ field, extra }: InputRenderProps<"daterange">) => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectingStart, setSelectingStart] = useState(true);
   const { value } = field;

@@ -1,8 +1,8 @@
 import { StyleSheet, Switch, Text, View } from "react-native";
-import { InputExtraProps, InputFieldProps } from "@/renderer/types/renderer";
+import { InputRenderProps } from "@/renderer/types/renderer";
 import { useTheme } from "@/shared/context/ThemeContext";
 
-const DefaultSwitchInput = (field: InputFieldProps<"switch">, extra: InputExtraProps<"switch">) => {
+const DefaultSwitchInput = ({ field, extra }: InputRenderProps<"switch">) => {
   const { value } = field;
   const { node, setValue, error, label, helperText } = extra;
   const { colors } = useTheme();

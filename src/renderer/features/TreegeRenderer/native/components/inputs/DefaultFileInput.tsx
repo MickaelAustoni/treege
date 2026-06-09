@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useTranslate } from "@/renderer/hooks/useTranslate";
-import { InputExtraProps, InputFieldProps } from "@/renderer/types/renderer";
+import { InputRenderProps } from "@/renderer/types/renderer";
 import { SerializableFile } from "@/renderer/utils/file";
 import { useTheme } from "@/shared/context/ThemeContext";
 
@@ -14,7 +14,7 @@ type PickResult = {
 
 type PickFunction = (options?: { allowMultiSelection?: boolean; type?: string[] }) => Promise<PickResult[]>;
 
-const DefaultFileInput = (field: InputFieldProps<"file">, extra: InputExtraProps<"file">) => {
+const DefaultFileInput = ({ field, extra }: InputRenderProps<"file">) => {
   const [pick, setPick] = useState<PickFunction | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const { value } = field;

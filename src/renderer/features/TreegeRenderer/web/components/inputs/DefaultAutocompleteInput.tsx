@@ -4,7 +4,7 @@ import DependencyHint from "@/renderer/features/TreegeRenderer/web/components/De
 import OptionItemContent from "@/renderer/features/TreegeRenderer/web/components/OptionItemContent";
 import { useInputOptions } from "@/renderer/hooks/useInputOptions";
 import { useTranslate } from "@/renderer/hooks/useTranslate";
-import { InputExtraProps, InputFieldProps } from "@/renderer/types/renderer";
+import { InputRenderProps } from "@/renderer/types/renderer";
 import { Button } from "@/shared/components/ui/button";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/shared/components/ui/command";
 import { FormDescription, FormError, FormItem } from "@/shared/components/ui/form";
@@ -12,7 +12,7 @@ import { Label } from "@/shared/components/ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "@/shared/components/ui/popover";
 import { cn } from "@/shared/lib/utils";
 
-const DefaultAutocompleteInput = (field: InputFieldProps<"autocomplete">, extra: InputExtraProps<"autocomplete">) => {
+const DefaultAutocompleteInput = ({ field, extra }: InputRenderProps<"autocomplete">) => {
   const [open, setOpen] = useState(false);
   const { id, value, placeholder } = field;
   const { node, setValue, error, label, helperText, missingDependencies: missing } = extra;

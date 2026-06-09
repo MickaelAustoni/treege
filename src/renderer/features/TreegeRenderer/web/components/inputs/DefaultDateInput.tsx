@@ -1,14 +1,14 @@
 import { ChevronDownIcon } from "lucide-react";
 import { useState } from "react";
 import { useTranslate } from "@/renderer/hooks/useTranslate";
-import { InputExtraProps, InputFieldProps } from "@/renderer/types/renderer";
+import { InputRenderProps } from "@/renderer/types/renderer";
 import { Button } from "@/shared/components/ui/button";
 import { Calendar } from "@/shared/components/ui/calendar";
 import { FormDescription, FormError, FormItem } from "@/shared/components/ui/form";
 import { Label } from "@/shared/components/ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "@/shared/components/ui/popover";
 
-const DefaultDateInput = (field: InputFieldProps<"date">, extra: InputExtraProps<"date">) => {
+const DefaultDateInput = ({ field, extra }: InputRenderProps<"date">) => {
   const [open, setOpen] = useState(false);
   const { id, name, value, placeholder } = field;
   const { node, setValue, error, label, helperText } = extra;
