@@ -3,7 +3,7 @@ import { useTranslate } from "@/renderer/hooks/useTranslate";
 import type { StepRenderProps } from "@/renderer/types/renderer";
 import { useTheme } from "@/shared/context/ThemeContext";
 
-const DefaultStep = ({ label, children, isFirstStep, isLastStep, canContinue, isSubmitting, onBack, onContinue }: StepRenderProps) => {
+const DefaultStep = ({ label, children, canGoBack, isLastStep, canContinue, isSubmitting, onBack, onContinue }: StepRenderProps) => {
   const { colors } = useTheme();
   const t = useTranslate();
   const continueDisabled = !canContinue || isSubmitting;
@@ -15,9 +15,7 @@ const DefaultStep = ({ label, children, isFirstStep, isLastStep, canContinue, is
       <View style={styles.content}>{children}</View>
 
       <View style={styles.actions}>
-        {isFirstStep ? (
-          <View />
-        ) : (
+        {canGoBack ? (
           <TouchableOpacity
             style={[styles.backButton, { borderColor: colors.border }, isSubmitting && styles.disabled]}
             onPress={onBack}
@@ -26,6 +24,8 @@ const DefaultStep = ({ label, children, isFirstStep, isLastStep, canContinue, is
           >
             <Text style={[styles.backButtonText, { color: colors.text }]}>{t("renderer.step.back")}</Text>
           </TouchableOpacity>
+        ) : (
+          <View />
         )}
 
         <TouchableOpacity

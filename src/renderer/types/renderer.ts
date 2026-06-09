@@ -209,6 +209,13 @@ export type StepRenderProps = {
   /** True when this is the first step (Back should be hidden/disabled). */
   isFirstStep: boolean;
   /**
+   * Whether a Back button should be shown. True on any step past the first, and
+   * also on the first step when the consumer passes an `onBack` prop (to bridge
+   * back-navigation to an outer flow, e.g. a parent modal's steps). Prefer this
+   * over `isFirstStep` to decide whether to render the Back control.
+   */
+  canGoBack: boolean;
+  /**
    * True when this is the last visible step. The renderer turns Continue
    * into a submit action on the last step.
    */
@@ -222,7 +229,11 @@ export type StepRenderProps = {
   missingFields?: string[];
   /** Submission in progress (passed through from `useTreegeRenderer`). */
   isSubmitting?: boolean;
-  /** Advance to the previous step. No-op on the first step. */
+  /**
+   * Go back: advances to the previous step, or — on the first step, when the
+   * consumer passed an `onBack` prop — invokes that callback instead. No-op on
+   * the first step when no `onBack` prop was provided.
+   */
   onBack: () => void;
   /**
    * Advance to the next step (or trigger submit on the last step). The wrapper
@@ -397,6 +408,14 @@ export interface TreegeRendererProps extends TreegeRendererConfig {
    * renderer's own internal submitting state, so it only ever adds to it.
    */
   isSubmitting?: boolean;
+  /**
+   * Called when the user clicks Back on the FIRST step. Provide this to bridge
+   * back-navigation to an outer flow (e.g. a parent modal's steps): when set, a
+   * Back button is shown on the first step and triggers this callback instead
+   * of being a no-op. Has no effect on later steps, which always navigate back
+   * internally.
+   */
+  onBack?: () => void;
   /**
    * Callback when form values change
    */

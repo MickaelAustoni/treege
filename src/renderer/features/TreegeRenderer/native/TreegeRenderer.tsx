@@ -47,6 +47,7 @@ const TreegeRendererContent = ({
   isLoading = false,
   isSubmitting: isSubmittingProp = false,
   language,
+  onBack,
   onChange,
   onSubmit,
   style,
@@ -125,6 +126,21 @@ const TreegeRendererContent = ({
     goToNextStep();
   }, [isLastStep, handleSubmit, goToNextStep]);
 
+  /**
+   * Back handler. On intermediate steps it navigates back inside the flow; on
+   * the first step it delegates to the consumer's `onBack` (e.g. to step back
+   * in a parent modal). With no `onBack`, the first step has no Back button.
+   */
+  const handleBack = useCallback(() => {
+    if (isFirstStep) {
+      onBack?.();
+      return;
+    }
+    goToPreviousStep();
+  }, [isFirstStep, onBack, goToPreviousStep]);
+
+  const canGoBack = !isFirstStep || Boolean(onBack);
+
   return (
     <ScrollView
       nestedScrollEnabled
@@ -158,8 +174,9 @@ const TreegeRendererContent = ({
                   isFirstStep={isFirstStep}
                   isLastStep={isLastStep}
                   canContinue={canContinueStep && (!isLastStep || canSubmit)}
+                  canGoBack={canGoBack}
                   isSubmitting={isSubmitting}
-                  onBack={goToPreviousStep}
+                  onBack={handleBack}
                   onContinue={handleContinue}
                   label={stepLabel}
                 >

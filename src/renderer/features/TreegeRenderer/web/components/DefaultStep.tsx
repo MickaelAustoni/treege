@@ -6,7 +6,7 @@ import type { StepRenderProps } from "@/renderer/types/renderer";
 const DefaultStep = ({
   label,
   children,
-  isFirstStep,
+  canGoBack,
   isLastStep,
   canContinue,
   isSubmitting,
@@ -36,9 +36,7 @@ const DefaultStep = ({
       {children}
 
       <div className="tg:mt-6 tg:flex tg:items-center tg:justify-between tg:gap-2">
-        {isFirstStep ? (
-          <span />
-        ) : (
+        {canGoBack ? (
           <button
             type="button"
             onClick={onBack}
@@ -47,6 +45,8 @@ const DefaultStep = ({
           >
             {t("renderer.step.back")}
           </button>
+        ) : (
+          <span />
         )}
 
         {/* Only the submit button is wrapped — the tooltip explaining missing
