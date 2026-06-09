@@ -255,9 +255,11 @@ export type TreegeRendererComponents = {
    */
   step?: (props: StepRenderProps) => ReactNode;
   /**
-   * Custom form wrapper
+   * Custom form wrapper. `id` (when provided via the `formId` prop) should be
+   * forwarded to the underlying `<form>` element to keep external submit
+   * buttons working.
    */
-  form?: (props: { children: ReactNode; onSubmit: (e: FormEvent<HTMLFormElement>) => void }) => ReactNode;
+  form?: (props: { children: ReactNode; id?: string; onSubmit: (e: FormEvent<HTMLFormElement>) => void }) => ReactNode;
   /**
    * Custom submit button (supports both web and native variants)
    * Web variant: { label?: string; disabled?: boolean; isSubmitting?: boolean; ...otherHTMLAttributes }
@@ -363,6 +365,12 @@ export interface TreegeRendererProps extends TreegeRendererConfig {
    * Flow to render. `null` / `undefined` renders nothing.
    */
   flow?: Flow | null;
+  /**
+   * Sets the `id` attribute on the underlying `<form>` element, so a submit
+   * button rendered outside the renderer can target it via the native HTML
+   * `form` attribute: `<button type="submit" form={formId}>`. Web only.
+   */
+  formId?: string;
   /**
    * Initial form values — use this to pre-fill the form when editing a record
    * that was already submitted.

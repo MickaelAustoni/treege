@@ -21,6 +21,7 @@ const TreegeRenderer = ({
   components,
   className,
   flow,
+  formId,
   googleApiKey,
   headers,
   language,
@@ -148,7 +149,7 @@ const TreegeRenderer = ({
                 setFieldValue,
               }}
             >
-              <FormWrapper onSubmit={handleFormSubmit}>
+              <FormWrapper id={formId} onSubmit={handleFormSubmit}>
                 {currentStep && (
                   <StepComponent
                     step={currentStep}
