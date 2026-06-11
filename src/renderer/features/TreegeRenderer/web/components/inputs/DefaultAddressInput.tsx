@@ -158,7 +158,7 @@ const DefaultAddressInput = ({ field, extra }: InputRenderProps<"address">) => {
             className="tg:pr-10"
             autoComplete="off"
           />
-          <MapPin className="tg:-translate-y-1/2 tg:pointer-events-none tg:absolute tg:top-1/2 tg:right-3 tg:h-4 tg:w-4 tg:text-muted-foreground" />
+          <MapPin className="tg:pointer-events-none tg:absolute tg:top-1/2 tg:right-3 tg:h-4 tg:w-4 tg:-translate-y-1/2 tg:text-muted-foreground" />
           {popoverOpen && (
             <div className="tg:absolute tg:z-50 tg:mt-1 tg:w-full tg:rounded-md tg:border tg:bg-popover tg:shadow-md">
               <Command>
