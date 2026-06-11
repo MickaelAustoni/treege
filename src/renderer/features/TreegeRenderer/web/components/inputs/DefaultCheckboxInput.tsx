@@ -18,6 +18,7 @@ const DefaultCheckboxInput = ({ field, extra }: InputRenderProps<"checkbox">) =>
 
   // If there are options (static or dynamic), render a checkbox group
   if (options.length > 0 || node.data.optionsSource) {
+    const labelId = `${id}-label`;
     const selectedValues = Array.isArray(value) ? value.map(String) : [];
     const visibleOptions = optionsDisplayLimit ? options.slice(0, optionsDisplayLimit) : options;
     const hiddenCount = options.length - visibleOptions.length;
@@ -29,7 +30,7 @@ const DefaultCheckboxInput = ({ field, extra }: InputRenderProps<"checkbox">) =>
 
     return (
       <FormItem className="tg:mb-4">
-        <Label className="tg:mb-1">
+        <Label className="tg:mb-1" id={labelId}>
           {label || node.data.name}
           {node.data.required && <span className="tg:text-red-500">*</span>}
         </Label>
@@ -40,7 +41,8 @@ const DefaultCheckboxInput = ({ field, extra }: InputRenderProps<"checkbox">) =>
             <span>{t("renderer.defaultCheckboxInput.loadingOptions")}</span>
           </div>
         )}
-        <div className="tg:min-w-0 tg:space-y-2">
+        {/* biome-ignore lint/a11y/useSemanticElements: a fieldset would change layout/styling, same trade-off as the Field primitive */}
+        <div role="group" aria-labelledby={labelId} className="tg:min-w-0 tg:space-y-2">
           {visibleOptions.map((option, index) => {
             const optionDescription = t(option.description);
             return (

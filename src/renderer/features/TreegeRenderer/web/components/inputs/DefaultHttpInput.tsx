@@ -432,7 +432,7 @@ const DefaultHttpInput = ({ field, extra }: InputRenderProps<"http">) => {
 
       return (
         <FormItem className="tg:mb-4">
-          <Label>
+          <Label htmlFor={id}>
             {label || node.data.name}
             {node.data.required && <span className="tg:text-red-500">*</span>}
           </Label>
@@ -440,6 +440,7 @@ const DefaultHttpInput = ({ field, extra }: InputRenderProps<"http">) => {
             <Popover open={comboboxOpen} onOpenChange={setComboboxOpen}>
               <PopoverTrigger asChild>
                 <Button
+                  id={id}
                   variant="outline"
                   role="combobox"
                   aria-expanded={comboboxOpen}
