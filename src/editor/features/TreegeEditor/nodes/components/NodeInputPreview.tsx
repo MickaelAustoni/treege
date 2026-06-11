@@ -286,7 +286,7 @@ const NodeInputPreview = ({ nodeId, data }: NodeInputPreviewProps) => {
           <Renderer
             key={inputType}
             field={{
-              id: nodeId,
+              id: `${nodeId}-preview`,
               name: resolvedName,
               placeholder: placeholder || undefined,
               value: defaultValueForType(inputType) as never,
