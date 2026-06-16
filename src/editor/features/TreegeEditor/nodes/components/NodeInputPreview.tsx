@@ -8,13 +8,13 @@ import useTranslate from "@/editor/hooks/useTranslate";
 import { getInputTypeIcon } from "@/editor/utils/inputTypeIcon";
 import { TreegeRenderRuntimeProvider } from "@/renderer/context/TreegeRenderRuntimeProvider";
 import { defaultInputRenderers } from "@/renderer/features/TreegeRenderer/web/components/DefaultInputs";
+import DefaultSubmitButton from "@/renderer/features/TreegeRenderer/web/components/DefaultSubmitButton";
 import type { InputRenderer } from "@/renderer/types/renderer";
 import { resolveInputPlaceholder, resolveNodeKey } from "@/renderer/utils/node";
 import { Button } from "@/shared/components/ui/button";
 import { Input } from "@/shared/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/shared/components/ui/popover";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/shared/components/ui/tooltip";
-import { cn } from "@/shared/lib/utils";
 import { Language } from "@/shared/types/languages";
 import { InputNodeData, InputOption, InputType } from "@/shared/types/node";
 import { isOptionsInputData } from "@/shared/utils/inputTypeGuards";
@@ -198,6 +198,22 @@ const NodeInputPreview = ({ nodeId, data }: NodeInputPreviewProps) => {
     );
   }
 
+  // The `submit` input renders nothing through its runtime renderer — the actual
+  // button is painted once by the step's action row (see `DefaultStep`). So the
+  // node preview can't go through `defaultInputRenderers["submit"]` (it returns
+  // `null`). Render a static, non-interactive copy of the default submit button
+  // here so the node still shows what users will see, using the node's label
+  // (falling back to the button's own default "Submit" text when empty).
+  if (inputType === "submit") {
+    return (
+      <div className="tg:pointer-events-none tg:flex tg:select-none tg:justify-center">
+        <TreegeRenderRuntimeProvider value={{ headers, language, optionsDisplayLimit: 10 }}>
+          <DefaultSubmitButton label={getTranslatedText(data.label, language) || undefined} />
+        </TreegeRenderRuntimeProvider>
+      </div>
+    );
+  }
+
   const Renderer = defaultInputRenderers[inputType] as InputRenderer | undefined;
 
   if (!Renderer) {
@@ -268,12 +284,7 @@ const NodeInputPreview = ({ nodeId, data }: NodeInputPreviewProps) => {
 
   return (
     <>
-      <div
-        className={cn(
-          "tg:pointer-events-none tg:flex tg:select-none tg:flex-col tg:gap-1 tg:[&_label:empty]:hidden",
-          inputType === "submit" && "tg:items-center",
-        )}
-      >
+      <div className="tg:pointer-events-none tg:flex tg:select-none tg:flex-col tg:gap-1 tg:[&_label:empty]:hidden">
         {/*
           Wrap the runtime renderer in a minimal `TreegeRenderRuntimeProvider` so it
           picks up the editor's `headers` (e.g. for `useInputOptions`'s fetch).
