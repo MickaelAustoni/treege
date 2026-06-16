@@ -245,7 +245,7 @@ const ActionsPanel = ({ onExportJson, onSave, extraMenuItems, onAuthorize, heade
             <DropdownMenuItem onClick={() => inputFileRef?.current?.click()}>
               <Download /> {t("editor.actionsPanel.importJson")}
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={handleExport}>
+            <DropdownMenuItem onClick={handleExport} disabled={nodes.length === 0}>
               <ArrowRightFromLine /> {t("editor.actionsPanel.exportJson")}
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => setOpenApiDialogOpen(true)}>
@@ -306,7 +306,11 @@ const ActionsPanel = ({ onExportJson, onSave, extraMenuItems, onAuthorize, heade
           <DropdownMenuSeparator />
 
           <DropdownMenuGroup>
-            <DropdownMenuItem onClick={handleClear} className="tg:text-destructive tg:focus:text-destructive">
+            <DropdownMenuItem
+              onClick={handleClear}
+              disabled={nodes.length === 0 && edges.length === 0}
+              className="tg:text-destructive tg:focus:text-destructive"
+            >
               <Trash2 className="tg:text-destructive" /> {t("editor.actionsPanel.clear")}
             </DropdownMenuItem>
           </DropdownMenuGroup>
