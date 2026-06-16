@@ -2,7 +2,7 @@
   <img alt="Treege" src="https://user-images.githubusercontent.com/108873902/189673125-5d1fdaf3-82d1-486f-bb16-01b0554bd4f1.png" style="padding: 20px;" width="auto" height="100" />
 
   <h1>Treege</h1>
-  <p><strong>Build powerful decision trees with a visual node-based editor</strong></p>
+  <p><strong>Building complex, dynamic forms has never been this simple</strong></p>
 
   [![npm version](https://badge.fury.io/js/treege.svg)](https://badge.fury.io/js/treege)
   [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
