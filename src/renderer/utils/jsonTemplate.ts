@@ -67,6 +67,15 @@ const substitute = (value: unknown, lookup: FormValues): unknown => {
   return value;
 };
 
+/** Parse JSON, returning `undefined` instead of throwing on invalid input. */
+const tryParseJson = (text: string): unknown => {
+  try {
+    return JSON.parse(text);
+  } catch {
+    return undefined;
+  }
+};
+
 /**
  * Resolve a free-form JSON template into the actual payload.
  *
@@ -87,10 +96,10 @@ export const resolveJsonTemplate = (template: string | undefined, formValues: Fo
     return undefined;
   }
 
-  let parsed: unknown;
-  try {
-    parsed = JSON.parse(template);
-  } catch {
+  const parsed = tryParseJson(template);
+
+  // Valid JSON never parses to `undefined`, so this only triggers on a parse error.
+  if (parsed === undefined) {
     return undefined;
   }
 
@@ -120,10 +129,6 @@ export const isJsonTemplateValid = (template: string | undefined): boolean => {
     return true;
   }
 
-  try {
-    JSON.parse(template);
-    return true;
-  } catch {
-    return false;
-  }
+  // Valid JSON never parses to `undefined`, so a defined result means it parsed.
+  return tryParseJson(template) !== undefined;
 };
