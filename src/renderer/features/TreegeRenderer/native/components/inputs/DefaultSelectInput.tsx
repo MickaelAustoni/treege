@@ -56,6 +56,15 @@ const DefaultSelectInput = ({ field, extra }: InputRenderProps<"select">) => {
         <Text style={[styles.triggerText, { color: colors.text }, selectedValues.length === 0 && { color: colors.textMuted }]}>
           {getDisplayText()}
         </Text>
+        {selectedValues.length > 0 && (
+          <TouchableOpacity
+            onPress={() => setValue(isMultiple ? [] : "")}
+            hitSlop={{ bottom: 8, left: 8, right: 8, top: 8 }}
+            style={styles.clearButton}
+          >
+            <Text style={[styles.clearIcon, { color: colors.textMuted }]}>✕</Text>
+          </TouchableOpacity>
+        )}
         <Text style={[styles.arrow, { color: colors.textMuted }]}>▼</Text>
       </TouchableOpacity>
 
@@ -115,6 +124,13 @@ const styles = StyleSheet.create({
   checkmark: {
     fontSize: 18,
     fontWeight: "700",
+  },
+  clearButton: {
+    marginRight: 8,
+    paddingHorizontal: 2,
+  },
+  clearIcon: {
+    fontSize: 14,
   },
   closeButton: {
     fontSize: 24,

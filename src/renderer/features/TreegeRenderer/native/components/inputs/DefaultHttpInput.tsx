@@ -431,6 +431,15 @@ const DefaultHttpInput = ({ field, extra }: InputRenderProps<"http">) => {
                   {selectedOption?.label || placeholder || t("renderer.defaultHttpInput.search")}
                 </Text>
               )}
+              {normalizedValue ? (
+                <TouchableOpacity
+                  onPress={() => setValue("")}
+                  hitSlop={{ bottom: 8, left: 8, right: 8, top: 8 }}
+                  style={styles.clearButton}
+                >
+                  <Text style={[styles.clearIcon, { color: colors.textMuted }]}>✕</Text>
+                </TouchableOpacity>
+              ) : null}
               <Text style={[styles.arrow, { color: colors.textMuted }]}>▼</Text>
             </TouchableOpacity>
           </DependencyHint>
@@ -545,6 +554,11 @@ const DefaultHttpInput = ({ field, extra }: InputRenderProps<"http">) => {
             <Text style={[styles.triggerText, { color: colors.text }, !selectedOption && { color: colors.textMuted }]} numberOfLines={1}>
               {selectedOption?.label || placeholder || t("renderer.defaultHttpInput.selectOption")}
             </Text>
+            {normalizedValue ? (
+              <TouchableOpacity onPress={() => setValue("")} hitSlop={{ bottom: 8, left: 8, right: 8, top: 8 }} style={styles.clearButton}>
+                <Text style={[styles.clearIcon, { color: colors.textMuted }]}>✕</Text>
+              </TouchableOpacity>
+            ) : null}
             <Text style={[styles.arrow, { color: colors.textMuted }]}>▼</Text>
           </TouchableOpacity>
         </DependencyHint>
@@ -619,6 +633,13 @@ const styles = StyleSheet.create({
   checkmark: {
     fontSize: 18,
     fontWeight: "700",
+  },
+  clearButton: {
+    marginRight: 8,
+    paddingHorizontal: 2,
+  },
+  clearIcon: {
+    fontSize: 14,
   },
   closeButton: {
     fontSize: 24,

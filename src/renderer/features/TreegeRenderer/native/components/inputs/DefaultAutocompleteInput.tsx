@@ -60,6 +60,11 @@ const DefaultAutocompleteInput = ({ field, extra }: InputRenderProps<"autocomple
         <Text style={[styles.triggerText, { color: colors.text }, !value && { color: colors.textMuted }]} numberOfLines={1}>
           {getDisplayText()}
         </Text>
+        {value ? (
+          <TouchableOpacity onPress={() => setValue("")} hitSlop={{ bottom: 8, left: 8, right: 8, top: 8 }} style={styles.clearButton}>
+            <Text style={[styles.clearIcon, { color: colors.textMuted }]}>✕</Text>
+          </TouchableOpacity>
+        ) : null}
         <Text style={[styles.arrow, { color: colors.textMuted }]}>▼</Text>
       </TouchableOpacity>
 
@@ -134,6 +139,13 @@ const styles = StyleSheet.create({
   checkmark: {
     fontSize: 18,
     fontWeight: "700",
+  },
+  clearButton: {
+    marginRight: 8,
+    paddingHorizontal: 2,
+  },
+  clearIcon: {
+    fontSize: 14,
   },
   closeButton: {
     fontSize: 24,

@@ -1,4 +1,4 @@
-import { Check, ChevronsUpDown, Loader2 } from "lucide-react";
+import { Check, ChevronsUpDown, Loader2, X } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTreegeRenderRuntime } from "@/renderer/context/TreegeRenderRuntimeProvider";
 import DependencyHint from "@/renderer/features/TreegeRenderer/web/components/DependencyHint";
@@ -436,72 +436,87 @@ const DefaultHttpInput = ({ field, extra }: InputRenderProps<"http">) => {
             {node.data.required && <span className="tg:text-red-500">*</span>}
           </Label>
           <DependencyHint missing={missing}>
-            <Popover open={comboboxOpen} onOpenChange={setComboboxOpen}>
-              <PopoverTrigger asChild>
-                <Button
-                  id={id}
-                  variant="outline"
-                  role="combobox"
-                  aria-expanded={comboboxOpen}
-                  disabled={missing.length > 0}
-                  className="tg:w-full tg:justify-between"
+            <div className="tg:relative">
+              <Popover open={comboboxOpen} onOpenChange={setComboboxOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    id={id}
+                    variant="outline"
+                    role="combobox"
+                    aria-expanded={comboboxOpen}
+                    disabled={missing.length > 0}
+                    className={cn("tg:w-full tg:justify-between", normalizedValue && "tg:pr-14")}
+                  >
+                    {buttonContent}
+                    <ChevronsUpDown className="tg:ml-2 tg:h-4 tg:w-4 tg:shrink-0 tg:opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="tg:w-[var(--radix-popover-trigger-width)] tg:p-0" align="start">
+                  <Command shouldFilter={false}>
+                    <CommandInput
+                      placeholder={t("renderer.defaultHttpInput.search")}
+                      value={searchQuery}
+                      onValueChange={(searchValue) => {
+                        setSearchQuery(searchValue);
+                        setFetchError(null); // Clear error on new search
+                      }}
+                    />
+                    <CommandList>
+                      {loading && (
+                        <div className="tg:flex tg:items-center tg:justify-center tg:p-4">
+                          <Loader2 className="tg:h-4 tg:w-4 tg:animate-spin" />
+                        </div>
+                      )}
+                      {!loading && fetchError && (
+                        <div className="tg:p-4 tg:text-destructive tg:text-sm">
+                          <div>{fetchError}</div>
+                          <button
+                            type="button"
+                            onClick={() => fetchData(searchQuery)}
+                            className="tg:mt-2 tg:block tg:text-primary tg:hover:underline"
+                          >
+                            {t("renderer.defaultHttpInput.retry")}
+                          </button>
+                        </div>
+                      )}
+                      {!(loading || fetchError) && (
+                        <>
+                          <CommandEmpty>{t("renderer.defaultHttpInput.noResults")}</CommandEmpty>
+                          <CommandGroup>
+                            {options.map((option) => (
+                              <CommandItem
+                                key={option.value}
+                                value={option.value}
+                                onSelect={() => {
+                                  // Toggle off when the already-selected option is picked again.
+                                  setValue(option.value === value ? "" : option.value);
+                                  setComboboxOpen(false);
+                                }}
+                              >
+                                <Check
+                                  className={cn("tg:mr-2 tg:h-4 tg:w-4", value === option.value ? "tg:opacity-100" : "tg:opacity-0")}
+                                />
+                                <OptionItemContent label={option.label} description={option.description} image={option.image} />
+                              </CommandItem>
+                            ))}
+                          </CommandGroup>
+                        </>
+                      )}
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+              </Popover>
+              {normalizedValue && !isLoading && missing.length === 0 && (
+                <button
+                  type="button"
+                  aria-label={t("common.clear")}
+                  onClick={() => setValue("")}
+                  className="tg:-translate-y-1/2 tg:absolute tg:top-1/2 tg:right-8 tg:rounded-sm tg:p-0.5 tg:text-muted-foreground tg:opacity-70 tg:transition-opacity tg:hover:opacity-100"
                 >
-                  {buttonContent}
-                  <ChevronsUpDown className="tg:ml-2 tg:h-4 tg:w-4 tg:shrink-0 tg:opacity-50" />
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="tg:w-[var(--radix-popover-trigger-width)] tg:p-0" align="start">
-                <Command shouldFilter={false}>
-                  <CommandInput
-                    placeholder={t("renderer.defaultHttpInput.search")}
-                    value={searchQuery}
-                    onValueChange={(searchValue) => {
-                      setSearchQuery(searchValue);
-                      setFetchError(null); // Clear error on new search
-                    }}
-                  />
-                  <CommandList>
-                    {loading && (
-                      <div className="tg:flex tg:items-center tg:justify-center tg:p-4">
-                        <Loader2 className="tg:h-4 tg:w-4 tg:animate-spin" />
-                      </div>
-                    )}
-                    {!loading && fetchError && (
-                      <div className="tg:p-4 tg:text-destructive tg:text-sm">
-                        <div>{fetchError}</div>
-                        <button
-                          type="button"
-                          onClick={() => fetchData(searchQuery)}
-                          className="tg:mt-2 tg:block tg:text-primary tg:hover:underline"
-                        >
-                          {t("renderer.defaultHttpInput.retry")}
-                        </button>
-                      </div>
-                    )}
-                    {!(loading || fetchError) && (
-                      <>
-                        <CommandEmpty>{t("renderer.defaultHttpInput.noResults")}</CommandEmpty>
-                        <CommandGroup>
-                          {options.map((option) => (
-                            <CommandItem
-                              key={option.value}
-                              value={option.value}
-                              onSelect={() => {
-                                setValue(option.value);
-                                setComboboxOpen(false);
-                              }}
-                            >
-                              <Check className={cn("tg:mr-2 tg:h-4 tg:w-4", value === option.value ? "tg:opacity-100" : "tg:opacity-0")} />
-                              <OptionItemContent label={option.label} description={option.description} image={option.image} />
-                            </CommandItem>
-                          ))}
-                        </CommandGroup>
-                      </>
-                    )}
-                  </CommandList>
-                </Command>
-              </PopoverContent>
-            </Popover>
+                  <X className="tg:size-4" />
+                </button>
+              )}
+            </div>
           </DependencyHint>
           {error && <FormError>{error}</FormError>}
           {helperText && !error && <FormDescription>{helperText}</FormDescription>}
@@ -519,27 +534,35 @@ const DefaultHttpInput = ({ field, extra }: InputRenderProps<"http">) => {
         ? (fetchError ?? t("renderer.defaultHttpInput.noDataAvailable"))
         : undefined;
 
+    const selectValue = Array.isArray(value) ? (value[0] ?? "") : (value ?? "");
     const selectElement = (
-      <Select
-        value={Array.isArray(value) ? (value[0] ?? "") : (value ?? "")}
-        onValueChange={(val) => setValue(val)}
-        disabled={isLoading || options.length === 0}
-        name={name}
-      >
-        <SelectTrigger id={id} name={name} className="tg:w-full">
-          {isLoading && <Loader2 className="tg:mr-2 tg:h-4 tg:w-4 tg:animate-spin" />}
-          <SelectValue placeholder={placeholder || t("renderer.defaultHttpInput.selectOption")} />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectGroup>
-            {options.map((option, index) => (
-              <SelectItem key={option.value + index} value={option.value}>
-                <OptionItemContent label={option.label} description={option.description} image={option.image} />
-              </SelectItem>
-            ))}
-          </SelectGroup>
-        </SelectContent>
-      </Select>
+      <div className="tg:relative">
+        <Select value={selectValue} onValueChange={(val) => setValue(val)} disabled={isLoading || options.length === 0} name={name}>
+          <SelectTrigger id={id} name={name} className={cn("tg:w-full", selectValue && "tg:pr-14")}>
+            {isLoading && <Loader2 className="tg:mr-2 tg:h-4 tg:w-4 tg:animate-spin" />}
+            <SelectValue placeholder={placeholder || t("renderer.defaultHttpInput.selectOption")} />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              {options.map((option, index) => (
+                <SelectItem key={option.value + index} value={option.value}>
+                  <OptionItemContent label={option.label} description={option.description} image={option.image} />
+                </SelectItem>
+              ))}
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+        {selectValue && !isLoading && (
+          <button
+            type="button"
+            aria-label={t("common.clear")}
+            onClick={() => setValue("")}
+            className="tg:-translate-y-1/2 tg:absolute tg:top-1/2 tg:right-8 tg:rounded-sm tg:p-0.5 tg:text-muted-foreground tg:opacity-70 tg:transition-opacity tg:hover:opacity-100"
+          >
+            <X className="tg:size-4" />
+          </button>
+        )}
+      </div>
     );
 
     return (
