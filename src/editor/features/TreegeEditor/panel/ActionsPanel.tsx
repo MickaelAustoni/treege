@@ -224,7 +224,7 @@ const ActionsPanel = ({ onExportJson, onSave, extraMenuItems, onAuthorize, heade
         <Plus /> <span className="tg:hidden tg:md:inline">{t("editor.actionsPanel.addNode")}</span>
       </Button>
 
-      <Button variant="outline" size="sm" onClick={handleSave}>
+      <Button variant="outline" size="sm" onClick={handleSave} disabled={nodes.length === 0}>
         <Save /> <span className="tg:hidden tg:md:inline">{t("common.save")}</span>
       </Button>
 
