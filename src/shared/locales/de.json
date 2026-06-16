@@ -241,6 +241,12 @@
       "variantCard": "Karte",
       "variantDefault": "Standard"
     },
+    "jsonTemplate": {
+      "hint": "JSON eingeben oder einfügen, dann auf einen Schlüssel oder Wert klicken, um ihn mit einem Feld zu verknüpfen — oder {{feldname}} bzw. {{feld_id}} tippen.",
+      "invalidJson": "Ungültiges JSON – korrigieren Sie die Syntax, damit die Vorlage wirksam wird.",
+      "placeholder": "{\n  \"data\": {\n    \"name\": \"{{firstName}}\",\n    \"age\": \"{{age}}\"\n  }\n}",
+      "unbind": "Verknüpfung aufheben"
+    },
     "multiSelectionPanel": {
       "clearSelection": "Auswahl aufheben",
       "deleteSelected": "Ausgewählte Knoten löschen",
@@ -354,6 +360,8 @@
       "methodPost": "POST",
       "methodPut": "PUT",
       "noFieldsAvailable": "Keine Felder verfügbar",
+      "payload": "Ausgabe-Payload (JSON)",
+      "payloadDesc": "Die Nutzlast, die an onSubmit übergeben und – wenn eine URL gesetzt ist – als HTTP-Anfragetext gesendet wird. Hat Vorrang vor „Alle Formulardaten senden“.",
       "postSubmission": "Nach dem Absenden",
       "queryParamName": "Parametername",
       "queryParams": "Query-Parameter",

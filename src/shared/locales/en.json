@@ -241,6 +241,12 @@
       "variantCard": "Card",
       "variantDefault": "Default"
     },
+    "jsonTemplate": {
+      "hint": "Type or paste JSON, then click a key or value to bind it to a field — or type {{field_name}} or {{field_id}}.",
+      "invalidJson": "Invalid JSON — fix the syntax for the template to take effect.",
+      "placeholder": "{\n  \"data\": {\n    \"name\": \"{{firstName}}\",\n    \"age\": \"{{age}}\"\n  }\n}",
+      "unbind": "Unbind"
+    },
     "multiSelectionPanel": {
       "clearSelection": "Clear selection",
       "deleteSelected": "Delete selected nodes",
@@ -354,6 +360,8 @@
       "methodPost": "POST",
       "methodPut": "PUT",
       "noFieldsAvailable": "No fields available",
+      "payload": "Output payload (JSON)",
+      "payloadDesc": "The payload delivered to onSubmit and, when a URL is set, sent as the HTTP request body. Takes precedence over \"Send all form data\".",
       "postSubmission": "Post Submission",
       "queryParamName": "Parameter name",
       "queryParams": "Query parameters",

@@ -1,17 +1,19 @@
 import { Plus, X } from "lucide-react";
+import JsonTemplateEditor from "@/editor/features/TreegeEditor/forms/JsonTemplateEditor";
 import OptionsMappingFields from "@/editor/features/TreegeEditor/forms/OptionsMappingFields";
 import SensitiveHeaderWarning from "@/editor/features/TreegeEditor/forms/SensitiveHeaderWarning";
 import ApiUrlCombobox from "@/editor/features/TreegeEditor/inputs/ApiUrlCombobox";
+import useAvailableParentFields from "@/editor/hooks/useAvailableParentFields";
 import { useKeyValueRows } from "@/editor/hooks/useKeyValueRows";
+import useNodesSelection from "@/editor/hooks/useNodesSelection";
 import useTranslate from "@/editor/hooks/useTranslate";
 import { Button } from "@/shared/components/ui/button";
 import { FormItem } from "@/shared/components/ui/form";
 import { Input } from "@/shared/components/ui/input";
 import { Label } from "@/shared/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/components/ui/select";
-import { Textarea } from "@/shared/components/ui/textarea";
 import { ToggleGroup, ToggleGroupItem } from "@/shared/components/ui/toggle-group";
-import { OptionsSource, OptionsSourceMapping } from "@/shared/types/node";
+import { InputNodeData, OptionsSource, OptionsSourceMapping } from "@/shared/types/node";
 
 const METHODS_NEEDING_BODY = ["POST", "PUT", "PATCH"];
 const HTTP_METHODS = ["GET", "POST", "PUT", "DELETE", "PATCH"] as const;
@@ -23,7 +25,9 @@ interface OptionsSourceFormProps {
 }
 
 const OptionsSourceForm = ({ value, onChange }: OptionsSourceFormProps) => {
+  const { selectedNode } = useNodesSelection<InputNodeData>();
   const t = useTranslate();
+  const availableParentFields = useAvailableParentFields(selectedNode?.id);
   const url = value?.url ?? "";
   const method = value?.method ?? "GET";
   const body = value?.body ?? "";
@@ -185,7 +189,7 @@ const OptionsSourceForm = ({ value, onChange }: OptionsSourceFormProps) => {
           {METHODS_NEEDING_BODY.includes(method) && (
             <FormItem>
               <Label className="tg:text-xs">{t("editor.httpConfigForm.requestBody")}</Label>
-              <Textarea value={body} rows={3} onChange={({ target }) => update({ body: target.value })} />
+              <JsonTemplateEditor value={body} onChange={(next) => update({ body: next })} fields={availableParentFields} />
             </FormItem>
           )}
 

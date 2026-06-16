@@ -12,6 +12,7 @@ import {
   isFieldEmpty,
 } from "@/renderer/utils/form";
 import { mergeHttpHeaders } from "@/renderer/utils/http";
+import { resolveJsonTemplate } from "@/renderer/utils/jsonTemplate";
 import { getInputNodes } from "@/renderer/utils/node";
 import { computeSteps } from "@/renderer/utils/step";
 import { GroupNodeData, TreegeNodeData } from "@/shared/types/node";
@@ -171,7 +172,7 @@ export const useTreegeRenderer = ({
   // ============================================
 
   // Submit handler for submit button with HTTP configuration
-  const { clearSubmitMessage, handleSubmitWithConfig, hasSubmitConfig, isSubmitting, submitMessage } = useSubmitHandler(
+  const { clearSubmitMessage, handleSubmitWithConfig, hasSubmitConfig, isSubmitting, submitButtonNode, submitMessage } = useSubmitHandler(
     visibleNodes,
     formValues,
     config.language,
@@ -189,6 +190,23 @@ export const useTreegeRenderer = ({
 
   // Memoize exported values for callbacks
   const exportedValues = useMemo(() => convertFormValuesToNamedFormat(formValues, inputNodes), [formValues, inputNodes]);
+
+  /**
+   * Payload handed to `onSubmit`. When the submit button defines an
+   * `payloadTemplate`, the flat named values are reshaped into the template's
+   * JSON structure; otherwise the flat named values are used as-is. An invalid
+   * template (e.g. mid-edit) falls back to the flat values rather than throwing.
+   */
+  const submitPayload = useMemo(() => {
+    const template = submitButtonNode?.data?.submitConfig?.payloadTemplate;
+
+    if (!template) {
+      return exportedValues;
+    }
+
+    const resolved = resolveJsonTemplate(template, formValues, inputNodes);
+    return (resolved ?? exportedValues) as FormValues;
+  }, [submitButtonNode, formValues, inputNodes, exportedValues]);
 
   // ============================================
   // FORM CONTROL METHODS
@@ -329,14 +347,14 @@ export const useTreegeRenderer = ({
       const result = await handleSubmitWithConfig((httpResponse) => {
         // Call onSubmit callback with form values and HTTP response as second parameter
         if (onSubmit) {
-          onSubmit(exportedValues, { httpResponse });
+          onSubmit(submitPayload, { httpResponse });
         }
       });
 
       // If result is null, it means the submit config is incomplete (no URL)
       // Fall back to the default submit behavior
       if (result === null) {
-        onSubmit?.(exportedValues);
+        onSubmit?.(submitPayload);
         return true;
       }
 
@@ -346,11 +364,11 @@ export const useTreegeRenderer = ({
       }
     } else if (onSubmit) {
       // Default behavior: call onSubmit directly
-      onSubmit(exportedValues);
+      onSubmit(submitPayload);
     }
 
     return true;
-  }, [validateForm, hasSubmitConfig, handleSubmitWithConfig, onSubmit, exportedValues]);
+  }, [validateForm, hasSubmitConfig, handleSubmitWithConfig, onSubmit, submitPayload]);
 
   // ============================================
   // COMPUTED VALUES

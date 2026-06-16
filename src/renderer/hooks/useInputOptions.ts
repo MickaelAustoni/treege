@@ -9,6 +9,7 @@ import {
   resolveTemplateRecord,
   resolveUrl,
 } from "@/renderer/utils/http";
+import { resolveTemplateToJson } from "@/renderer/utils/jsonTemplate";
 import { HttpHeaders, InputNodeData, InputOption, OptionsSourceMapping, QueryParams } from "@/shared/types/node";
 
 const TEMPLATE_VAR_REGEX = /\{\{([\w-]+)}}/g;
@@ -88,10 +89,7 @@ export const useInputOptions = (node: Node<InputNodeData>): UseInputOptionsResul
 
     const method = source.method ?? "GET";
     const resolved: ResolvedOptionsSource = {
-      body:
-        source.body && ["POST", "PUT", "PATCH"].includes(method)
-          ? replaceTemplateVariables(source.body, formValues, { json: true })
-          : undefined,
+      body: ["POST", "PUT", "PATCH"].includes(method) ? resolveTemplateToJson(source.body, formValues, []) : undefined,
       headers: mergeHttpHeaders(resolveTemplateRecord(globalHeaders, formValues), resolveTemplateRecord(source.headers, formValues)),
       mapping: source.mapping,
       method,

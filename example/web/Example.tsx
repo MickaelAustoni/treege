@@ -90,9 +90,9 @@ const RendererPanel = ({
       console.log("Meta:", meta);
     }
 
-    // Alert form values as JSON and meta
+    // Alert the submitted payload (output template applied) as JSON and meta
     alert(JSON.stringify({
-      formValues,
+      values,
       meta,
     }, null, 2));
   };

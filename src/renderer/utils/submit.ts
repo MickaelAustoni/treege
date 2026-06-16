@@ -9,6 +9,7 @@ import {
   resolveTemplateRecord,
   resolveUrl,
 } from "@/renderer/utils/http";
+import { resolveJsonTemplate } from "@/renderer/utils/jsonTemplate";
 import { HttpHeaders, InputNodeData, SubmitConfig } from "@/shared/types/node";
 
 /**
@@ -75,12 +76,15 @@ export const submitFormData = async (
     };
   }
 
-  // Prepare body: use all form data if sendAllFormValues is true, otherwise use custom body
-  const body = config.sendAllFormValues
-    ? JSON.stringify(convertFormValuesToNamedFormat(formValues, inputNodes))
-    : config.body
-      ? replaceTemplateVariables(config.body, formValues, { json: true })
-      : undefined;
+  // Prepare body. Precedence: the payload template (defines the exact payload
+  // shape) wins, otherwise send all form values when requested.
+  const templatedPayload = config.payloadTemplate ? resolveJsonTemplate(config.payloadTemplate, formValues, inputNodes) : undefined;
+  const body =
+    templatedPayload === undefined
+      ? config.sendAllFormValues
+        ? JSON.stringify(convertFormValuesToNamedFormat(formValues, inputNodes))
+        : undefined
+      : JSON.stringify(templatedPayload);
 
   // Make the HTTP request using shared utility
   const result = await makeHttpRequest({

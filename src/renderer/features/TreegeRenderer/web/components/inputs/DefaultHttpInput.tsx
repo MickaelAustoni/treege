@@ -7,6 +7,7 @@ import { useTranslate } from "@/renderer/hooks/useTranslate";
 import { InputRenderProps } from "@/renderer/types/renderer";
 import { convertFormValuesToNamedFormat } from "@/renderer/utils/form";
 import { appendQueryParams, getValueByPath, mergeHttpHeaders, resolveTemplateRecord, resolveUrl } from "@/renderer/utils/http";
+import { resolveTemplateToJson } from "@/renderer/utils/jsonTemplate";
 import { sanitizeHttpResponse } from "@/renderer/utils/sanitize";
 import { Button } from "@/shared/components/ui/button";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/shared/components/ui/command";
@@ -170,9 +171,7 @@ const DefaultHttpInput = ({ field, extra }: InputRenderProps<"http">) => {
         const body = ["POST", "PUT", "PATCH"].includes(currentHttpConfig.method || "")
           ? currentHttpConfig.sendAllFormValues
             ? JSON.stringify(convertFormValuesToNamedFormat(currentFormValues, inputNodesRef.current))
-            : currentHttpConfig.body
-              ? replaceTemplateVars(currentHttpConfig.body, currentFormValues)
-              : undefined
+            : resolveTemplateToJson(currentHttpConfig.body, currentFormValues, inputNodesRef.current)
           : undefined;
 
         const timeoutId = setTimeout(() => abortController.abort(), 30000);

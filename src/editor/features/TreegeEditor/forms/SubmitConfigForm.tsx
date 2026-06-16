@@ -1,6 +1,7 @@
 import { useForm } from "@tanstack/react-form";
 import { Plus, Variable, X } from "lucide-react";
 import { useState } from "react";
+import JsonTemplateEditor from "@/editor/features/TreegeEditor/forms/JsonTemplateEditor";
 import SelectLanguage from "@/editor/features/TreegeEditor/inputs/SelectLanguage";
 import useAvailableParentFields from "@/editor/hooks/useAvailableParentFields";
 import useNodesSelection from "@/editor/hooks/useNodesSelection";
@@ -12,7 +13,6 @@ import { Input } from "@/shared/components/ui/input";
 import { Label } from "@/shared/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/components/ui/select";
 import { Switch } from "@/shared/components/ui/switch";
-import { Textarea } from "@/shared/components/ui/textarea";
 import { Language } from "@/shared/types/languages";
 import { InputNodeData, SubmitConfig } from "@/shared/types/node";
 import { entriesToRecord, KeyValueEntry, recordToEntries } from "@/shared/utils/httpRecord";
@@ -40,12 +40,12 @@ const SubmitConfigForm = ({ value, onChange }: SubmitConfigFormProps) => {
   const t = useTranslate();
   const availableParentFields = useAvailableParentFields(selectedNode?.id);
 
-  const { handleSubmit, Field, Subscribe } = useForm({
+  const { Field, Subscribe } = useForm({
     defaultValues: {
-      body: value?.body || "",
       errorMessage: value?.errorMessage || { en: "" },
       headers: recordToEntries(value?.headers),
       method: value?.method || "POST",
+      payloadTemplate: value?.payloadTemplate || "",
       queryParams: recordToEntries(value?.queryParams),
       redirectUrl: value?.redirectUrl || "",
       sendAllFormValues: !!value?.sendAllFormValues,
@@ -71,6 +71,17 @@ const SubmitConfigForm = ({ value, onChange }: SubmitConfigFormProps) => {
   return (
     <div>
       <div className="tg:grid tg:gap-6">
+        <Field
+          name="payloadTemplate"
+          children={(field) => (
+            <FormItem>
+              <Label>{t("editor.submitConfigForm.payload")}</Label>
+              <JsonTemplateEditor value={field.state.value ?? ""} onChange={field.handleChange} fields={availableParentFields} />
+              <FormDescription>{t("editor.submitConfigForm.payloadDesc")}</FormDescription>
+            </FormItem>
+          )}
+        />
+
         <Field
           name="url"
           children={(field) => (
@@ -263,75 +274,20 @@ const SubmitConfigForm = ({ value, onChange }: SubmitConfigFormProps) => {
           </Field>
         </div>
 
-        <Subscribe selector={(state) => ({ method: state.values.method, sendAllFormValues: state.values.sendAllFormValues })}>
-          {({ method, sendAllFormValues }) =>
+        <Subscribe selector={(state) => state.values.method}>
+          {(method) =>
             METHODS_NEEDING_BODY.includes(method || "") && (
-              <div className="tg:space-y-4">
-                <Field name="sendAllFormValues">
-                  {(field) => (
+              <Field name="sendAllFormValues">
+                {(field) => (
+                  <div className="tg:space-y-1">
                     <div className="tg:flex tg:items-center tg:space-x-2">
                       <Switch id={field.name} checked={field.state.value} onCheckedChange={(newValue) => field.handleChange(newValue)} />
                       <Label htmlFor={field.name}>{t("editor.submitConfigForm.sendAllFormValues")}</Label>
                     </div>
-                  )}
-                </Field>
-
-                <Field name="body">
-                  {(field) => (
-                    <FormItem>
-                      <div className="tg:mb-2 tg:flex tg:items-center tg:justify-between">
-                        <Label htmlFor={field.name}>{t("editor.submitConfigForm.requestBody")}</Label>
-
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button type="button" variant="ghost" size="sm" disabled={sendAllFormValues}>
-                              <Variable className="tg:mr-2 tg:h-4 tg:w-4" />
-                              {t("editor.submitConfigForm.insertVariable")}
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            {availableParentFields.length === 0 ? (
-                              <DropdownMenuItem disabled>{t("editor.submitConfigForm.noFieldsAvailable")}</DropdownMenuItem>
-                            ) : (
-                              availableParentFields.map((availField) => (
-                                <DropdownMenuItem
-                                  key={availField.nodeId}
-                                  onClick={() => {
-                                    const variable = `{{${availField.nodeId}}}`;
-                                    const currentValue = field.state.value || "";
-                                    field.handleChange(currentValue + variable);
-                                    handleSubmit().then();
-                                  }}
-                                >
-                                  <div className="tg:flex tg:flex-col">
-                                    <span className="tg:font-medium">{availField.label}</span>
-                                    <span className="tg:text-muted-foreground tg:text-xs">{`{{${availField.nodeId}}}`}</span>
-                                  </div>
-                                </DropdownMenuItem>
-                              ))
-                            )}
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </div>
-                      <Textarea
-                        id={field.name}
-                        name={field.name}
-                        value={field.state.value}
-                        onBlur={field.handleBlur}
-                        onChange={({ target }) => field.handleChange(target.value)}
-                        placeholder={t("editor.submitConfigForm.requestBodyPlaceholder")}
-                        rows={4}
-                        disabled={sendAllFormValues}
-                      />
-                      <FormDescription>
-                        {sendAllFormValues
-                          ? t("editor.submitConfigForm.sendAllFormValuesDesc")
-                          : t("editor.submitConfigForm.requestBodyDesc")}
-                      </FormDescription>
-                    </FormItem>
-                  )}
-                </Field>
-              </div>
+                    <FormDescription>{t("editor.submitConfigForm.sendAllFormValuesDesc")}</FormDescription>
+                  </div>
+                )}
+              </Field>
             )
           }
         </Subscribe>

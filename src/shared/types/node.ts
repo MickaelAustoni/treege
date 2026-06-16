@@ -185,10 +185,16 @@ export type SubmitConfig = {
    */
   queryParams?: QueryParams;
   /**
-   * Request body (for POST/PUT/PATCH methods, supports template variables like {{fieldId}})
-   * Strings are automatically quoted, use: {"name": {{userName}}}
+   * Free-form JSON template that defines the submitted payload. Field tokens
+   * sit inside string positions, e.g. `{"data": {"name": "{{firstName}}"}}`,
+   * where `{{token}}` is a field's node id (or its token-safe `name`) and is
+   * replaced by the field value with its JSON type preserved.
+   *
+   * This is the single source of truth for the payload: it is delivered to the
+   * `onSubmit` callback AND, when a `url` is configured, sent as the HTTP request
+   * body. Takes precedence over `sendAllFormValues`.
    */
-  body?: string;
+  payloadTemplate?: string;
   /**
    * If true, automatically sends all form data as JSON body (overrides custom body)
    */

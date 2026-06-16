@@ -241,6 +241,12 @@
       "variantCard": "Scheda",
       "variantDefault": "Predefinito"
     },
+    "jsonTemplate": {
+      "hint": "Scrivi o incolla il JSON, poi fai clic su una chiave o un valore per associarlo a un campo — oppure digita {{nome_campo}} o {{id_campo}}.",
+      "invalidJson": "JSON non valido — correggi la sintassi affinché il template abbia effetto.",
+      "placeholder": "{\n  \"data\": {\n    \"name\": \"{{firstName}}\",\n    \"age\": \"{{age}}\"\n  }\n}",
+      "unbind": "Dissocia"
+    },
     "multiSelectionPanel": {
       "clearSelection": "Cancella selezione",
       "deleteSelected": "Elimina nodi selezionati",
@@ -354,6 +360,8 @@
       "methodPost": "POST",
       "methodPut": "PUT",
       "noFieldsAvailable": "Nessun campo disponibile",
+      "payload": "Payload di output (JSON)",
+      "payloadDesc": "Il payload inviato a onSubmit e, se è impostata un'URL, come corpo della richiesta HTTP. Ha la precedenza su «Invia tutti i dati del modulo».",
       "postSubmission": "Dopo l'invio",
       "queryParamName": "Nome parametro",
       "queryParams": "Parametri di query",

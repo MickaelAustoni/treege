@@ -1,5 +1,6 @@
 import { useForm } from "@tanstack/react-form";
 import { Plus, Variable, X } from "lucide-react";
+import JsonTemplateEditor from "@/editor/features/TreegeEditor/forms/JsonTemplateEditor";
 import OptionsMappingFields from "@/editor/features/TreegeEditor/forms/OptionsMappingFields";
 import SensitiveHeaderWarning from "@/editor/features/TreegeEditor/forms/SensitiveHeaderWarning";
 import ApiUrlCombobox from "@/editor/features/TreegeEditor/inputs/ApiUrlCombobox";
@@ -13,7 +14,6 @@ import { Input } from "@/shared/components/ui/input";
 import { Label } from "@/shared/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/components/ui/select";
 import { Switch } from "@/shared/components/ui/switch";
-import { Textarea } from "@/shared/components/ui/textarea";
 import { HttpConfig, InputNodeData } from "@/shared/types/node";
 import { entriesToRecord, KeyValueEntry, recordToEntries } from "@/shared/utils/httpRecord";
 
@@ -39,7 +39,7 @@ const HttpConfigForm = ({ value, onChange }: HttpConfigFormProps) => {
   const t = useTranslate();
   const availableParentFields = useAvailableParentFields(selectedNode?.id);
 
-  const { handleSubmit, Field, Subscribe, setFieldValue } = useForm({
+  const { Field, Subscribe, setFieldValue } = useForm({
     defaultValues: {
       body: value?.body || "",
       fetchOnMount: value?.fetchOnMount ?? true,
@@ -291,59 +291,17 @@ const HttpConfigForm = ({ value, onChange }: HttpConfigFormProps) => {
                   )}
                 </Field>
 
-                <Field name="body">
-                  {(field) => (
-                    <FormItem>
-                      <div className="tg:mb-2 tg:flex tg:items-center tg:justify-between">
-                        <Label htmlFor={field.name}>{t("editor.httpConfigForm.requestBody")}</Label>
-
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button type="button" variant="ghost" size="sm" disabled={sendAllFormValues}>
-                              <Variable className="tg:mr-2 tg:h-4 tg:w-4" />
-                              {t("editor.httpConfigForm.insertVariable")}
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            {availableParentFields.length === 0 ? (
-                              <DropdownMenuItem disabled>{t("editor.httpConfigForm.noFieldsAvailable")}</DropdownMenuItem>
-                            ) : (
-                              availableParentFields.map((availField) => (
-                                <DropdownMenuItem
-                                  key={availField.nodeId}
-                                  onClick={() => {
-                                    const variable = `{{${availField.nodeId}}}`;
-                                    const currentValue = field.state.value || "";
-                                    field.handleChange(currentValue + variable);
-                                    handleSubmit().then();
-                                  }}
-                                >
-                                  <div className="tg:flex tg:flex-col">
-                                    <span className="tg:font-medium">{availField.label}</span>
-                                    <span className="tg:text-muted-foreground tg:text-xs">{`{{${availField.nodeId}}}`}</span>
-                                  </div>
-                                </DropdownMenuItem>
-                              ))
-                            )}
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </div>
-                      <Textarea
-                        id={field.name}
-                        name={field.name}
-                        value={field.state.value}
-                        onBlur={field.handleBlur}
-                        onChange={({ target }) => field.handleChange(target.value)}
-                        placeholder={t("editor.httpConfigForm.requestBodyPlaceholder")}
-                        rows={4}
-                        disabled={sendAllFormValues}
-                      />
-                      <FormDescription>
-                        {sendAllFormValues ? t("editor.httpConfigForm.sendAllFormValuesDesc") : t("editor.httpConfigForm.requestBodyDesc")}
-                      </FormDescription>
-                    </FormItem>
-                  )}
-                </Field>
+                {!sendAllFormValues && (
+                  <Field name="body">
+                    {(field) => (
+                      <FormItem>
+                        <Label>{t("editor.httpConfigForm.requestBody")}</Label>
+                        <JsonTemplateEditor value={field.state.value ?? ""} onChange={field.handleChange} fields={availableParentFields} />
+                        <FormDescription>{t("editor.httpConfigForm.requestBodyDesc")}</FormDescription>
+                      </FormItem>
+                    )}
+                  </Field>
+                )}
               </div>
             )
           }

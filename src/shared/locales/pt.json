@@ -241,6 +241,12 @@
       "variantCard": "Cartão",
       "variantDefault": "Padrão"
     },
+    "jsonTemplate": {
+      "hint": "Digite ou cole o JSON e clique em uma chave ou valor para vinculá-lo a um campo — ou digite {{nome_do_campo}} ou {{id_do_campo}}.",
+      "invalidJson": "JSON inválido — corrija a sintaxe para o template ter efeito.",
+      "placeholder": "{\n  \"data\": {\n    \"name\": \"{{firstName}}\",\n    \"age\": \"{{age}}\"\n  }\n}",
+      "unbind": "Desvincular"
+    },
     "multiSelectionPanel": {
       "clearSelection": "Limpar seleção",
       "deleteSelected": "Excluir nós selecionados",
@@ -354,6 +360,8 @@
       "methodPost": "POST",
       "methodPut": "PUT",
       "noFieldsAvailable": "Nenhum campo disponível",
+      "payload": "Payload de saída (JSON)",
+      "payloadDesc": "O payload entregue ao onSubmit e, quando uma URL está definida, enviado como corpo da requisição HTTP. Tem precedência sobre «Enviar todos os dados do formulário».",
       "postSubmission": "Após o envio",
       "queryParamName": "Nome do parâmetro",
       "queryParams": "Parâmetros de consulta",

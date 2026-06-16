@@ -241,6 +241,12 @@
       "variantCard": "بطاقة",
       "variantDefault": "افتراضي"
     },
+    "jsonTemplate": {
+      "hint": "اكتب أو الصق JSON، ثم انقر على مفتاح أو قيمة لربطه بحقل — أو اكتب {{اسم_الحقل}} أو {{معرّف_الحقل}}.",
+      "invalidJson": "JSON غير صالح — صحّح الصياغة حتى يصبح القالب فعّالاً.",
+      "placeholder": "{\n  \"data\": {\n    \"name\": \"{{firstName}}\",\n    \"age\": \"{{age}}\"\n  }\n}",
+      "unbind": "إلغاء الربط"
+    },
     "multiSelectionPanel": {
       "clearSelection": "إلغاء التحديد",
       "deleteSelected": "حذف العقد المحددة",
@@ -354,6 +360,8 @@
       "methodPost": "POST",
       "methodPut": "PUT",
       "noFieldsAvailable": "لا توجد حقول متاحة",
+      "payload": "حمولة الإخراج (JSON)",
+      "payloadDesc": "الحمولة التي تُسلَّم إلى onSubmit، وتُرسَل كجسم لطلب HTTP عند تحديد عنوان URL. ولها الأولوية على «إرسال جميع بيانات النموذج».",
       "postSubmission": "بعد الإرسال",
       "queryParamName": "اسم المعامل",
       "queryParams": "معاملات الاستعلام",
