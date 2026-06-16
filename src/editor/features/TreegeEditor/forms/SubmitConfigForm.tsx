@@ -2,6 +2,7 @@ import { useForm } from "@tanstack/react-form";
 import { Plus, Variable, X } from "lucide-react";
 import { useState } from "react";
 import JsonTemplateEditor from "@/editor/features/TreegeEditor/forms/JsonTemplateEditor";
+import ApiUrlCombobox from "@/editor/features/TreegeEditor/inputs/ApiUrlCombobox";
 import SelectLanguage from "@/editor/features/TreegeEditor/inputs/SelectLanguage";
 import useAvailableParentFields from "@/editor/hooks/useAvailableParentFields";
 import useNodesSelection from "@/editor/hooks/useNodesSelection";
@@ -40,7 +41,7 @@ const SubmitConfigForm = ({ value, onChange }: SubmitConfigFormProps) => {
   const t = useTranslate();
   const availableParentFields = useAvailableParentFields(selectedNode?.id);
 
-  const { Field, Subscribe } = useForm({
+  const { Field, Subscribe, setFieldValue } = useForm({
     defaultValues: {
       errorMessage: value?.errorMessage || { en: "" },
       headers: recordToEntries(value?.headers),
@@ -87,16 +88,20 @@ const SubmitConfigForm = ({ value, onChange }: SubmitConfigFormProps) => {
           children={(field) => (
             <FormItem>
               <Label htmlFor={field.name}>{t("editor.submitConfigForm.apiUrl")}</Label>
-              <div className="tg:flex tg:gap-2">
-                <Input
-                  id={field.name}
-                  name={field.name}
-                  value={field.state.value}
-                  onBlur={field.handleBlur}
-                  onChange={({ target }) => field.handleChange(target.value)}
-                  placeholder={t("editor.submitConfigForm.apiUrlPlaceholder")}
-                  className="tg:flex-1"
-                />
+              <ApiUrlCombobox
+                id={field.name}
+                name={field.name}
+                value={field.state.value ?? ""}
+                onBlur={field.handleBlur}
+                placeholder={t("editor.submitConfigForm.apiUrlPlaceholder")}
+                onChange={(nextUrl, nextMethod) => {
+                  field.handleChange(nextUrl);
+                  // Submit can't be a GET; only adopt a picked route's method when it's submit-compatible.
+                  if (nextMethod && nextMethod !== "GET") {
+                    setFieldValue("method", nextMethod);
+                  }
+                }}
+              >
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button type="button" variant="outline" size="icon">
@@ -125,7 +130,7 @@ const SubmitConfigForm = ({ value, onChange }: SubmitConfigFormProps) => {
                     )}
                   </DropdownMenuContent>
                 </DropdownMenu>
-              </div>
+              </ApiUrlCombobox>
               <FormDescription>{t("editor.submitConfigForm.apiUrlDesc")}</FormDescription>
             </FormItem>
           )}
