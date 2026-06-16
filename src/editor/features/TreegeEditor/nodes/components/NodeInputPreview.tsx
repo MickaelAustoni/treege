@@ -1,6 +1,7 @@
 import { Node } from "@xyflow/react";
 import { Globe, Pencil, Plus, Trash2 } from "lucide-react";
 import { FormEvent, KeyboardEvent, MouseEvent, ReactNode, useState } from "react";
+import { useOpenApi } from "@/editor/context/OpenApiContext";
 import { useTreegeEditorRuntime } from "@/editor/context/TreegeEditorRuntimeProvider";
 import OptionImageField from "@/editor/features/TreegeEditor/inputs/OptionImageField";
 import useFlowActions from "@/editor/hooks/useFlowActions";
@@ -73,6 +74,7 @@ const NodeInputPreview = ({ nodeId, data }: NodeInputPreviewProps) => {
   const [descriptionDraft, setDescriptionDraft] = useState("");
   const [editingIndex, setEditingIndex] = useState<number | null>(null); // null = creating; number = editing the option at that index.
   const { language, headers } = useTreegeEditorRuntime();
+  const { baseUrl } = useOpenApi();
   const { updateNodeData } = useFlowActions();
   const t = useTranslate();
   const inputType = data?.type;
@@ -207,7 +209,7 @@ const NodeInputPreview = ({ nodeId, data }: NodeInputPreviewProps) => {
   if (inputType === "submit") {
     return (
       <div className="tg:pointer-events-none tg:flex tg:select-none tg:justify-center">
-        <TreegeRenderRuntimeProvider value={{ headers, language, optionsDisplayLimit: 10 }}>
+        <TreegeRenderRuntimeProvider value={{ baseUrl, headers, language, optionsDisplayLimit: 10 }}>
           <DefaultSubmitButton label={getTranslatedText(data.label, language) || undefined} />
         </TreegeRenderRuntimeProvider>
       </div>
@@ -293,7 +295,7 @@ const NodeInputPreview = ({ nodeId, data }: NodeInputPreviewProps) => {
           so the editor's `NodeLabelInput` is the single source of truth visually
           and avoids rendering the same text twice.
         */}
-        <TreegeRenderRuntimeProvider value={{ headers, language, optionsDisplayLimit: 10 }}>
+        <TreegeRenderRuntimeProvider value={{ baseUrl, headers, language, optionsDisplayLimit: 10 }}>
           <Renderer
             key={inputType}
             field={{
