@@ -1,17 +1,9 @@
 import { autocompletion, type CompletionContext, startCompletion } from "@codemirror/autocomplete";
 import { json } from "@codemirror/lang-json";
-import { syntaxTree } from "@codemirror/language";
-import CodeMirror, {
-  Decoration,
-  type DecorationSet,
-  type EditorState,
-  EditorView,
-  MatchDecorator,
-  ViewPlugin,
-  WidgetType,
-} from "@uiw/react-codemirror";
+import CodeMirror, { Decoration, type DecorationSet, EditorView, MatchDecorator, ViewPlugin, WidgetType } from "@uiw/react-codemirror";
 import { useMemo } from "react";
 import useTranslate from "@/editor/hooks/useTranslate";
+import { findJsonBindTargetAt } from "@/editor/utils/jsonBindTarget";
 import { useTheme } from "@/shared/context/ThemeContext";
 
 interface FieldRef {
@@ -27,17 +19,7 @@ interface JsonTemplateEditorProps {
   fields: FieldRef[];
 }
 
-/** Minimal shape of a Lezer syntax node (avoids a direct @lezer/common dep). */
-interface SyntaxNodeLike {
-  name: string;
-  from: number;
-  to: number;
-  parent: SyntaxNodeLike | null;
-}
-
 const TOKEN_REGEXP = /"\{\{([\w-]+)}}"|\{\{([\w-]+)}}/g; // A bound field token, optionally wrapped in JSON quotes: `{{id}}` or `"{{id}}"`.
-const TOKEN_TEST = /^"?\{\{[\w-]+}}"?$/;
-const VALUE_NODE_NAMES = new Set(["Number", "True", "False", "Null"]); // JSON primitive value node names (a key is a `String` under a `PropertyName`).
 
 /** Renders a `{{nodeId}}` token as a readable, atomic pill showing the field label. */
 class TokenWidget extends WidgetType {
@@ -77,27 +59,6 @@ const tokenTheme = EditorView.baseTheme({
     color: "#93c5fd",
   },
 });
-
-/**
- * Find the JSON key or value node under `pos`, so a click there can bind a
- * field. Returns the range to replace and whether it is already a token.
- */
-const findBindable = (state: EditorState, pos: number): { from: number; to: number; isToken: boolean } | null => {
-  let node = syntaxTree(state).resolveInner(pos, -1) as unknown as SyntaxNodeLike | null;
-
-  while (node) {
-    const isKeyString = node.name === "String" && node.parent?.name === "PropertyName";
-    const target =
-      node.name === "PropertyName" ? node : isKeyString ? node : node.name === "String" || VALUE_NODE_NAMES.has(node.name) ? node : null;
-
-    if (target) {
-      return { from: target.from, isToken: TOKEN_TEST.test(state.sliceDoc(target.from, target.to)), to: target.to };
-    }
-    node = node.parent;
-  }
-
-  return null;
-};
 
 const JsonTemplateEditor = ({ value, onChange, fields }: JsonTemplateEditorProps) => {
   const t = useTranslate();
@@ -164,7 +125,7 @@ const JsonTemplateEditor = ({ value, onChange, fields }: JsonTemplateEditorProps
         return null;
       }
 
-      const target = findBindable(context.state, context.pos);
+      const target = findJsonBindTargetAt(context.state, context.pos);
 
       if (!target) {
         return null;
@@ -186,7 +147,7 @@ const JsonTemplateEditor = ({ value, onChange, fields }: JsonTemplateEditorProps
     const clickToBind = EditorView.domEventHandlers({
       mousedown(event, view) {
         const pos = view.posAtCoords({ x: event.clientX, y: event.clientY });
-        if (pos == null || !findBindable(view.state, pos)) {
+        if (pos == null || !findJsonBindTargetAt(view.state, pos)) {
           return false;
         }
         // Let the click place the caret first, then open the menu at that node.
