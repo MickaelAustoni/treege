@@ -410,6 +410,7 @@
     "defaultHttpInput": {
       "fetchFailed": "Error al obtener los datos. Por favor, verifique su conexión de red.",
       "httpError": "Error HTTP {status}: {statusText}",
+      "invalidJson": "La respuesta del servidor no es un JSON válido. Verifica la URL, la URL base y la autenticación.",
       "noDataAvailable": "No hay datos disponibles. Configure \"Cargar al montar\" o agregue un parámetro de búsqueda.",
       "noResults": "No se encontraron resultados.",
       "noUrlConfigured": "No hay URL configurada. Por favor, agregue una URL en la configuración HTTP.",

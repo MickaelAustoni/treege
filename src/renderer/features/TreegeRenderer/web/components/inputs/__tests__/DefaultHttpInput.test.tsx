@@ -32,6 +32,7 @@ const createAbortAwareFetch = (data: unknown) =>
         ok: true,
         status: 200,
         statusText: "OK",
+        text: async () => JSON.stringify(data),
       } as Response;
     }),
   );

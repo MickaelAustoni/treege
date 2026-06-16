@@ -410,6 +410,7 @@
     "defaultHttpInput": {
       "fetchFailed": "Failed to fetch data. Please check your network connection.",
       "httpError": "HTTP Error {status}: {statusText}",
+      "invalidJson": "The server response is not valid JSON. Check the URL, base URL and authentication.",
       "noDataAvailable": "No data available. Configure \"Fetch on mount\" or add a search parameter.",
       "noResults": "No results found.",
       "noUrlConfigured": "No URL configured. Please add a URL in the HTTP configuration.",

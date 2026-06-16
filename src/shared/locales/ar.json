@@ -410,6 +410,7 @@
     "defaultHttpInput": {
       "fetchFailed": "فشل في جلب البيانات. يرجى التحقق من اتصالك بالشبكة.",
       "httpError": "خطأ HTTP {status}: {statusText}",
+      "invalidJson": "استجابة الخادم ليست JSON صالحة. تحقق من عنوان URL وعنوان URL الأساسي والمصادقة.",
       "noDataAvailable": "لا توجد بيانات متاحة. قم بتكوين \"جلب عند التحميل\" أو أضف معامل بحث.",
       "noResults": "لم يتم العثور على نتائج.",
       "noUrlConfigured": "لم يتم تكوين رابط. يرجى إضافة عنوان URL في إعدادات HTTP.",

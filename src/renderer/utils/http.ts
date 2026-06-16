@@ -85,6 +85,24 @@ export const resolveUrl = (url: string, baseUrl?: string): string => {
 };
 
 /**
+ * Parse a response body as JSON without throwing. Returns a discriminated
+ * result so callers can branch declaratively instead of wrapping a `let` in
+ * try/catch. A relative url resolved against the app origin (no baseUrl) or an
+ * auth redirect returns an HTML page, which `JSON.parse` would otherwise reject
+ * with a cryptic "Unexpected token '<'".
+ *
+ * @param text - The raw response body
+ * @returns `{ ok: true, value }` on success, `{ ok: false }` on parse failure
+ */
+export const tryParseJson = (text: string): { ok: true; value: unknown } | { ok: false } => {
+  try {
+    return { ok: true, value: JSON.parse(text) };
+  } catch {
+    return { ok: false };
+  }
+};
+
+/**
  * Result of an HTTP request
  */
 export interface HttpRequestResult {

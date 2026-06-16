@@ -6,7 +6,14 @@ import OptionItemContent from "@/renderer/features/TreegeRenderer/native/compone
 import { useTranslate } from "@/renderer/hooks/useTranslate";
 import { InputRenderProps } from "@/renderer/types/renderer";
 import { convertFormValuesToNamedFormat } from "@/renderer/utils/form";
-import { appendQueryParams, getValueByPath, mergeHttpHeaders, resolveTemplateRecord, resolveUrl } from "@/renderer/utils/http";
+import {
+  appendQueryParams,
+  getValueByPath,
+  mergeHttpHeaders,
+  resolveTemplateRecord,
+  resolveUrl,
+  tryParseJson,
+} from "@/renderer/utils/http";
 import { resolveTemplateToJson } from "@/renderer/utils/jsonTemplate";
 import { sanitizeHttpResponse } from "@/renderer/utils/sanitize.native";
 import { useTheme } from "@/shared/context/ThemeContext";
@@ -175,10 +182,18 @@ const DefaultHttpInput = ({ field, extra }: InputRenderProps<"http">) => {
           return;
         }
 
-        const data: HttpResponse = await response.json();
+        // Parse the body defensively: a relative url resolved against the app
+        // origin (no baseUrl) or an auth redirect returns an HTML page, so
+        // `response.json()` would throw a cryptic "Unexpected token '<'". Read
+        // the text first and surface a clear, actionable error instead.
+        const parsed = tryParseJson(await response.text());
+        if (!parsed.ok) {
+          setFetchError(t("renderer.defaultHttpInput.invalidJson"));
+          return;
+        }
 
         // Sanitize the response data
-        const sanitizedData = sanitizeHttpResponse(data) as HttpResponse;
+        const sanitizedData = sanitizeHttpResponse(parsed.value) as HttpResponse;
 
         // Extract data using responsePath
         const extractedData = currentHttpConfig.responsePath

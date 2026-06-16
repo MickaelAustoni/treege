@@ -410,6 +410,7 @@
     "defaultHttpInput": {
       "fetchFailed": "Fehler beim Abrufen der Daten. Bitte überprüfen Sie Ihre Netzwerkverbindung.",
       "httpError": "HTTP-Fehler {status}: {statusText}",
+      "invalidJson": "Die Serverantwort ist kein gültiges JSON. Überprüfen Sie die URL, die Basis-URL und die Authentifizierung.",
       "noDataAvailable": "Keine Daten verfügbar. Konfigurieren Sie \"Beim Laden abrufen\" oder fügen Sie einen Suchparameter hinzu.",
       "noResults": "Keine Ergebnisse gefunden.",
       "noUrlConfigured": "Keine URL konfiguriert. Bitte fügen Sie eine URL in der HTTP-Konfiguration hinzu.",
