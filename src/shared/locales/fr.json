@@ -350,6 +350,8 @@
       "errorMessage": "Message d'erreur",
       "errorMessageDesc": "Message affiché en cas d'échec de la soumission",
       "errorMessagePlaceholder": "Une erreur s'est produite. Veuillez réessayer.",
+      "fillFromApi": "Pré-remplir depuis l'API",
+      "fillFromApiHint": "Pré-remplit le payload depuis le corps de requête de la route OpenAPI. Disponible quand l'URL correspond à une route qui en définit un.",
       "headerName": "Nom de l'en-tête",
       "headers": "En-têtes",
       "headerValue": "Valeur de l'en-tête",

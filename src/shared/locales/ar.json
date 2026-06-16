@@ -350,6 +350,8 @@
       "errorMessage": "رسالة الخطأ",
       "errorMessageDesc": "الرسالة المعروضة عند فشل الإرسال",
       "errorMessagePlaceholder": "حدث خطأ. يرجى المحاولة مرة أخرى.",
+      "fillFromApi": "التعبئة من واجهة API",
+      "fillFromApiHint": "يملأ الحمولة من جسم طلب مسار OpenAPI. متاح عندما يطابق عنوان URL مسارًا يحدّد جسم طلب.",
       "headerName": "اسم الرأس",
       "headers": "الرؤوس",
       "headerValue": "قيمة الرأس",

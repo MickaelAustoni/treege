@@ -350,6 +350,8 @@
       "errorMessage": "Mensaje de error",
       "errorMessageDesc": "Mensaje mostrado cuando falla el envío",
       "errorMessagePlaceholder": "Ocurrió un error. Por favor, intente nuevamente.",
+      "fillFromApi": "Rellenar desde la API",
+      "fillFromApiHint": "Rellena el payload desde el cuerpo de la solicitud de la ruta OpenAPI. Disponible cuando la URL coincide con una ruta que lo define.",
       "headerName": "Nombre del encabezado",
       "headers": "Encabezados",
       "headerValue": "Valor del encabezado",

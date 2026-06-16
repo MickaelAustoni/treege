@@ -350,6 +350,8 @@
       "errorMessage": "Fehlermeldung",
       "errorMessageDesc": "Nachricht, die bei fehlgeschlagener Übermittlung angezeigt wird",
       "errorMessagePlaceholder": "Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut.",
+      "fillFromApi": "Aus API befüllen",
+      "fillFromApiHint": "Füllt das Payload aus dem Request-Body der OpenAPI-Route. Verfügbar, wenn die URL einer Route entspricht, die einen definiert.",
       "headerName": "Header-Name",
       "headers": "Header",
       "headerValue": "Header-Wert",

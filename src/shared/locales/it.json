@@ -350,6 +350,8 @@
       "errorMessage": "Messaggio di errore",
       "errorMessageDesc": "Messaggio visualizzato quando l'invio fallisce",
       "errorMessagePlaceholder": "Si è verificato un errore. Riprova.",
+      "fillFromApi": "Compila dall'API",
+      "fillFromApiHint": "Compila il payload dal corpo della richiesta della rotta OpenAPI. Disponibile quando l'URL corrisponde a una rotta che ne definisce uno.",
       "headerName": "Nome intestazione",
       "headers": "Intestazioni",
       "headerValue": "Valore intestazione",

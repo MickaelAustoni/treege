@@ -350,6 +350,8 @@
       "errorMessage": "Mensagem de erro",
       "errorMessageDesc": "Mensagem exibida quando o envio falha",
       "errorMessagePlaceholder": "Ocorreu um erro. Por favor, tente novamente.",
+      "fillFromApi": "Preencher a partir da API",
+      "fillFromApiHint": "Preenche o payload a partir do corpo da requisição da rota OpenAPI. Disponível quando a URL corresponde a uma rota que define um.",
       "headerName": "Nome do cabeçalho",
       "headers": "Cabeçalhos",
       "headerValue": "Valor do cabeçalho",

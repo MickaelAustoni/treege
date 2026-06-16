@@ -12,7 +12,34 @@ export interface OpenApiDocument {
   paths: Record<string, OpenApiPathItem | undefined>;
   components?: {
     securitySchemes?: Record<string, OpenApiSecurityScheme | undefined>;
+    schemas?: Record<string, OpenApiSchema>;
   };
+}
+
+/**
+ * Minimal JSON Schema subset — only what's needed to generate a request-body
+ * skeleton for a route. Supports `$ref` (to `#/components/schemas/*`), objects,
+ * arrays, primitives, and `example`/`default`/`enum` hints.
+ */
+export interface OpenApiSchema {
+  $ref?: string;
+  type?: "object" | "array" | "string" | "number" | "integer" | "boolean" | "null";
+  format?: string;
+  properties?: Record<string, OpenApiSchema>;
+  items?: OpenApiSchema;
+  required?: string[];
+  enum?: unknown[];
+  example?: unknown;
+  default?: unknown;
+}
+
+export interface OpenApiMediaType {
+  schema?: OpenApiSchema;
+}
+
+export interface OpenApiRequestBody {
+  required?: boolean;
+  content?: Record<string, OpenApiMediaType>;
 }
 
 export interface OpenApiPathItem {
@@ -28,6 +55,7 @@ export interface OpenApiOperation {
   description?: string;
   tags?: string[];
   operationId?: string;
+  requestBody?: OpenApiRequestBody;
 }
 
 /** HTTP Bearer auth scheme. */

@@ -1,12 +1,14 @@
 import { useForm } from "@tanstack/react-form";
-import { Plus, Variable, X } from "lucide-react";
+import { FileDown, Plus, Variable, X } from "lucide-react";
 import { useState } from "react";
+import { useOpenApi } from "@/editor/context/OpenApiContext";
 import JsonTemplateEditor from "@/editor/features/TreegeEditor/forms/JsonTemplateEditor";
 import ApiUrlCombobox from "@/editor/features/TreegeEditor/inputs/ApiUrlCombobox";
 import SelectLanguage from "@/editor/features/TreegeEditor/inputs/SelectLanguage";
 import useAvailableParentFields from "@/editor/hooks/useAvailableParentFields";
 import useNodesSelection from "@/editor/hooks/useNodesSelection";
 import useTranslate from "@/editor/hooks/useTranslate";
+import { buildPayloadSkeleton, findRouteRequestSchema } from "@/editor/utils/openApiPayload";
 import { Button } from "@/shared/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/shared/components/ui/dropdown-menu";
 import { FormDescription, FormItem } from "@/shared/components/ui/form";
@@ -14,6 +16,7 @@ import { Input } from "@/shared/components/ui/input";
 import { Label } from "@/shared/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/components/ui/select";
 import { Switch } from "@/shared/components/ui/switch";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/shared/components/ui/tooltip";
 import { Language } from "@/shared/types/languages";
 import { InputNodeData, SubmitConfig } from "@/shared/types/node";
 import { entriesToRecord, KeyValueEntry, recordToEntries } from "@/shared/utils/httpRecord";
@@ -40,6 +43,7 @@ const SubmitConfigForm = ({ value, onChange }: SubmitConfigFormProps) => {
   const { selectedNode } = useNodesSelection<InputNodeData>();
   const t = useTranslate();
   const availableParentFields = useAvailableParentFields(selectedNode?.id);
+  const { document: openApiDocument } = useOpenApi();
 
   const { Field, Subscribe, setFieldValue } = useForm({
     defaultValues: {
@@ -76,7 +80,38 @@ const SubmitConfigForm = ({ value, onChange }: SubmitConfigFormProps) => {
           name="payloadTemplate"
           children={(field) => (
             <FormItem>
-              <Label>{t("editor.submitConfigForm.payload")}</Label>
+              <div className="tg:flex tg:items-center tg:justify-between tg:gap-2">
+                <Label>{t("editor.submitConfigForm.payload")}</Label>
+                {openApiDocument && (
+                  <Subscribe selector={(state) => ({ method: state.values.method, url: state.values.url })}>
+                    {({ url, method }) => {
+                      const schema = findRouteRequestSchema(openApiDocument, url ?? "", method ?? "POST");
+                      return (
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              {/* span wrapper so the tooltip still shows while the button is disabled */}
+                              <span className="tg:inline-flex">
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="sm"
+                                  disabled={!schema}
+                                  onClick={() => field.handleChange(JSON.stringify(buildPayloadSkeleton(openApiDocument, schema), null, 2))}
+                                >
+                                  <FileDown className="tg:mr-1 tg:h-3 tg:w-3" />
+                                  {t("editor.submitConfigForm.fillFromApi")}
+                                </Button>
+                              </span>
+                            </TooltipTrigger>
+                            <TooltipContent>{t("editor.submitConfigForm.fillFromApiHint")}</TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      );
+                    }}
+                  </Subscribe>
+                )}
+              </div>
               <JsonTemplateEditor value={field.state.value ?? ""} onChange={field.handleChange} fields={availableParentFields} />
               <FormDescription>{t("editor.submitConfigForm.payloadDesc")}</FormDescription>
             </FormItem>

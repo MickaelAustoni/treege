@@ -350,6 +350,8 @@
       "errorMessage": "Error Message",
       "errorMessageDesc": "Message displayed when submission fails",
       "errorMessagePlaceholder": "An error occurred. Please try again.",
+      "fillFromApi": "Fill from API",
+      "fillFromApiHint": "Fills the payload from the selected OpenAPI route's request body. Available when the URL matches a route that defines one.",
       "headerName": "Header name",
       "headers": "Headers",
       "headerValue": "Header value",
