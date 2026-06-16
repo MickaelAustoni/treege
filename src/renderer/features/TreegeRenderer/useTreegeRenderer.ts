@@ -10,6 +10,7 @@ import {
   calculateReferenceFieldUpdates,
   convertFormValuesToNamedFormat,
   isFieldEmpty,
+  resolveNodeDefaultValue,
 } from "@/renderer/utils/form";
 import { mergeHttpHeaders } from "@/renderer/utils/http";
 import { resolveJsonTemplate } from "@/renderer/utils/jsonTemplate";
@@ -126,6 +127,11 @@ export const useTreegeRenderer = ({
   const t = useTranslate(config.language);
   const prevFormValuesRef = useRef<FormValues>({});
 
+  // Set of input-node ids that were in the active branch on the previous render.
+  // `null` until the first reconcile pass so the form's initial seed is left
+  // untouched. Drives the branch-switch purge/re-seed effect below.
+  const prevVisibleInputIdsRef = useRef<Set<string> | null>(null);
+
   // ============================================
   // FORM STATE
   // ============================================
@@ -142,6 +148,11 @@ export const useTreegeRenderer = ({
     () => getFlowRenderState(nodes, edges, formValues),
     [nodes, edges, formValues],
   );
+
+  // Input nodes actually reachable in the active branch. Used for export/submit
+  // so values from inactive branches (e.g. a hidden node's static default that
+  // was seeded at mount but never traversed) don't leak into the output.
+  const visibleInputNodes = useMemo(() => getInputNodes(visibleNodes), [visibleNodes]);
 
   // ============================================
   // STEP STATE (group → step navigation)
@@ -176,7 +187,7 @@ export const useTreegeRenderer = ({
     visibleNodes,
     formValues,
     config.language,
-    inputNodes,
+    visibleInputNodes,
     config.headers,
     config.baseUrl,
   );
@@ -189,7 +200,7 @@ export const useTreegeRenderer = ({
   const validateRef = useRef(validate);
 
   // Memoize exported values for callbacks
-  const exportedValues = useMemo(() => convertFormValuesToNamedFormat(formValues, inputNodes), [formValues, inputNodes]);
+  const exportedValues = useMemo(() => convertFormValuesToNamedFormat(formValues, visibleInputNodes), [formValues, visibleInputNodes]);
 
   /**
    * Payload handed to `onSubmit`. When the submit button defines an
@@ -204,9 +215,9 @@ export const useTreegeRenderer = ({
       return exportedValues;
     }
 
-    const resolved = resolveJsonTemplate(template, formValues, inputNodes);
+    const resolved = resolveJsonTemplate(template, formValues, visibleInputNodes);
     return (resolved ?? exportedValues) as FormValues;
-  }, [submitButtonNode, formValues, inputNodes, exportedValues]);
+  }, [submitButtonNode, formValues, visibleInputNodes, exportedValues]);
 
   // ============================================
   // FORM CONTROL METHODS
@@ -520,6 +531,68 @@ export const useTreegeRenderer = ({
   }, [formValues, inputNodes, setMultipleFieldValues]);
 
   /**
+   * Reconcile form values with the active branch whenever it changes:
+   * - Fields whose node just LEFT the active branch (a different conditional
+   *   path is now taken) have their value and error dropped, so stale values
+   *   from an abandoned branch never linger in `formValues`.
+   * - Fields whose node just ENTERED the active branch get their static /
+   *   reference default re-applied if still unset, so re-entering a branch
+   *   behaves like a fresh mount (matching `buildInitialFormValues`).
+   * The first pass only records the visible set (the initial seed is authoritative).
+   */
+  useEffect(() => {
+    const prevVisibleIds = prevVisibleInputIdsRef.current;
+    const currentVisibleIds = new Set(visibleInputNodes.map((node) => node.id));
+
+    prevVisibleInputIdsRef.current = currentVisibleIds;
+
+    if (!prevVisibleIds) {
+      return;
+    }
+
+    // Nodes that left the active branch → purge their values.
+    const removedIds = [...prevVisibleIds].filter((id) => !currentVisibleIds.has(id));
+
+    // Nodes that entered the active branch → re-seed their default if unset.
+    const defaultsToApply: FormValues = {};
+    visibleInputNodes.forEach((node) => {
+      if (prevVisibleIds.has(node.id) || formValues[node.id] !== undefined) {
+        return;
+      }
+      const defaultValue = resolveNodeDefaultValue(node, formValues);
+      if (defaultValue !== undefined) {
+        defaultsToApply[node.id] = defaultValue;
+      }
+    });
+
+    if (removedIds.length === 0 && Object.keys(defaultsToApply).length === 0) {
+      return;
+    }
+
+    setFormValues((prev) => {
+      const next = { ...prev, ...defaultsToApply };
+      removedIds.forEach((id) => {
+        delete next[id];
+      });
+      return next;
+    });
+
+    if (removedIds.length > 0) {
+      setFormErrors((prev) => {
+        let changed = false;
+        const next = { ...prev };
+        removedIds.forEach((id) => {
+          if (id in next) {
+            delete next[id];
+            changed = true;
+          }
+        });
+        return changed ? next : prev;
+      });
+    }
+  }, [visibleInputNodes, formValues]);
+
+  /**
    * Re-seed the form when the consumer-provided `initialValues` actually
    * changes (e.g. an edit screen that fetches the record asynchronously and
    * passes it once it resolves). The lazy initializer above only runs on mount,
@@ -536,6 +609,9 @@ export const useTreegeRenderer = ({
     setFormValues(buildInitialFormValues(initialValues, inputNodes));
     // Drop any stale validation errors from the previous record.
     setFormErrors({});
+    // Treat the fresh seed as authoritative: the next reconcile pass must not
+    // purge/re-seed against the previous record's visible set.
+    prevVisibleInputIdsRef.current = null;
   }, [initialValuesSignature, initialValues, inputNodes]);
 
   // ============================================

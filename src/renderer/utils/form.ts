@@ -36,6 +36,42 @@ export const checkFormFieldHasValue = (fieldName: string | undefined, formValues
 };
 
 /**
+ * Resolve the default value for a single input node given the current form
+ * values. Mirrors the seeding rules used at mount:
+ * - `static`: returns the configured `staticValue`
+ * - `reference`: returns the (raw, untransformed) value of the referenced field
+ *   if that field currently has a value
+ *
+ * Returns `undefined` when the node has no applicable default. The raw
+ * reference value is intentionally returned untransformed — transformations are
+ * handled separately by `calculateReferenceFieldUpdates`.
+ *
+ * @param node - The input node
+ * @param values - Current form values (keyed by node id)
+ * @returns The default value to apply, or `undefined`
+ */
+export const resolveNodeDefaultValue = (node: Node<InputNodeData>, values: FormValues): unknown => {
+  const { defaultValue } = node.data;
+
+  if (!defaultValue) {
+    return undefined;
+  }
+
+  if (defaultValue.type === "static" && defaultValue.staticValue !== undefined) {
+    return defaultValue.staticValue;
+  }
+
+  if (defaultValue.type === "reference" && defaultValue.referenceField) {
+    const refValue = values[defaultValue.referenceField];
+    if (refValue !== undefined) {
+      return refValue;
+    }
+  }
+
+  return undefined;
+};
+
+/**
  * Build the initial (nodeId-keyed) form state from consumer-provided values.
  *
  * Consumers can pass `initialValues` keyed either by `node.id` OR by the same
@@ -72,20 +108,9 @@ export const buildInitialFormValues = (initialValues: FormValues, inputNodes: No
       return;
     }
 
-    const { defaultValue } = node.data;
-    if (!defaultValue) {
-      return;
-    }
-
-    if (defaultValue.type === "static" && defaultValue.staticValue !== undefined) {
-      values[node.id] = defaultValue.staticValue;
-    }
-
-    if (defaultValue.type === "reference" && defaultValue.referenceField) {
-      const refValue = values[defaultValue.referenceField];
-      if (refValue !== undefined) {
-        values[node.id] = refValue;
-      }
+    const defaultValue = resolveNodeDefaultValue(node, values);
+    if (defaultValue !== undefined) {
+      values[node.id] = defaultValue;
     }
   });
 

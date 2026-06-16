@@ -8,6 +8,7 @@ import {
   checkFormFieldHasValue,
   convertFormValuesToNamedFormat,
   isFieldEmpty,
+  resolveNodeDefaultValue,
 } from "@/renderer/utils/form";
 import { InputNodeData } from "@/shared/types/node";
 
@@ -576,6 +577,44 @@ describe("Form Utils", () => {
 
         expect(buildInitialFormValues({}, nodes)).toEqual({});
       });
+    });
+  });
+
+  describe("resolveNodeDefaultValue", () => {
+    const input = (id: string, data: InputNodeData): Node<InputNodeData> => ({
+      data,
+      id,
+      position: { x: 0, y: 0 },
+      type: "input",
+    });
+
+    it("should return undefined when the node has no default", () => {
+      const node = input("node-1", { name: "firstName", type: "text" });
+      expect(resolveNodeDefaultValue(node, {})).toBeUndefined();
+    });
+
+    it("should return the static default value", () => {
+      const node = input("node-1", {
+        defaultValue: { staticValue: "08_Code intervention", type: "static" },
+        name: "sousLivre",
+        type: "hidden",
+      });
+      expect(resolveNodeDefaultValue(node, {})).toBe("08_Code intervention");
+    });
+
+    it("should preserve falsy static defaults", () => {
+      const node = input("node-1", { defaultValue: { staticValue: false, type: "static" }, name: "flag", type: "checkbox" });
+      expect(resolveNodeDefaultValue(node, {})).toBe(false);
+    });
+
+    it("should resolve a reference default from the current values (untransformed)", () => {
+      const node = input("target", { defaultValue: { referenceField: "source", type: "reference" }, name: "confirm", type: "text" });
+      expect(resolveNodeDefaultValue(node, { source: "a@b.com" })).toBe("a@b.com");
+    });
+
+    it("should return undefined when the referenced field is unset", () => {
+      const node = input("target", { defaultValue: { referenceField: "source", type: "reference" }, name: "confirm", type: "text" });
+      expect(resolveNodeDefaultValue(node, {})).toBeUndefined();
     });
   });
 
