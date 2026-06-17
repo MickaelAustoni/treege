@@ -109,7 +109,7 @@ const ApiUrlCombobox = ({ value, onChange, placeholder, children, ...inputProps 
           </PopoverTrigger>
           <PopoverContent
             align="end"
-            className="tg:w-md tg:p-0"
+            className="tg:w-[36rem] tg:max-w-[90vw] tg:p-0"
             // ReactFlow attaches a global wheel handler on its canvas for pan/zoom.
             // Even though Radix portals this content, the event bubbles up — stop
             // it here so the routes list scrolls under the cursor.
