@@ -182,7 +182,6 @@ const DefaultHttpInput = ({ field, extra }: InputRenderProps<"http">) => {
 
         if (!response.ok) {
           setFetchError(`HTTP Error ${response.status}: ${response.statusText}`);
-          setLoading(false);
           return;
         }
 
@@ -229,15 +228,22 @@ const DefaultHttpInput = ({ field, extra }: InputRenderProps<"http">) => {
         }
       } catch (err) {
         if (err instanceof Error && err.name === "AbortError") {
-          // Request was cancelled, don't update state
+          // Superseded by a newer request: it now owns the loading state and the
+          // active controller, so bail without touching either.
           return;
         }
         const errorMessage = err instanceof Error ? err.message : t("renderer.defaultHttpInput.fetchFailed");
         setFetchError(errorMessage);
         console.error("HTTP Input fetch error:", err);
       } finally {
-        setLoading(false);
-        abortControllerRef.current = null;
+        // Only the most recent request clears loading / the active controller. A
+        // request aborted by a newer fetch must not flip loading off while that
+        // newer fetch is still in flight — otherwise the spinner vanishes
+        // mid-load (notably on the StrictMode-doubled fetchOnMount call).
+        if (abortControllerRef.current === abortController) {
+          setLoading(false);
+          abortControllerRef.current = null;
+        }
       }
     },
     [t],
