@@ -438,21 +438,10 @@ const DefaultHttpInput = ({ field, extra }: InputRenderProps<"http">) => {
               disabled={missing.length > 0}
               activeOpacity={0.7}
             >
-              {isLoading ? (
-                <View style={styles.loadingTrigger}>
-                  <ActivityIndicator size="small" color={colors.primary} />
-                  <Text style={[styles.triggerText, { color: colors.textMuted }]} numberOfLines={1}>
-                    {selectedOption?.label || placeholder || t("renderer.defaultHttpInput.search")}
-                  </Text>
-                </View>
-              ) : (
-                <Text
-                  style={[styles.triggerText, { color: colors.text }, !selectedOption && { color: colors.textMuted }]}
-                  numberOfLines={1}
-                >
-                  {selectedOption?.label || placeholder || t("renderer.defaultHttpInput.search")}
-                </Text>
-              )}
+              <Text style={[styles.triggerText, { color: colors.text }, !selectedOption && { color: colors.textMuted }]} numberOfLines={1}>
+                {selectedOption?.label || placeholder || t("renderer.defaultHttpInput.search")}
+              </Text>
+              {isLoading && <ActivityIndicator size="small" color={colors.primary} style={styles.triggerLoader} />}
               {normalizedValue ? (
                 <TouchableOpacity
                   onPress={() => setValue("")}
@@ -572,10 +561,10 @@ const DefaultHttpInput = ({ field, extra }: InputRenderProps<"http">) => {
             disabled={isLoading || options.length === 0}
             activeOpacity={0.7}
           >
-            {isLoading && <ActivityIndicator size="small" color={colors.primary} style={styles.triggerLoader} />}
             <Text style={[styles.triggerText, { color: colors.text }, !selectedOption && { color: colors.textMuted }]} numberOfLines={1}>
               {selectedOption?.label || placeholder || t("renderer.defaultHttpInput.selectOption")}
             </Text>
+            {isLoading && <ActivityIndicator size="small" color={colors.primary} style={styles.triggerLoader} />}
             {normalizedValue ? (
               <TouchableOpacity onPress={() => setValue("")} hitSlop={{ bottom: 8, left: 8, right: 8, top: 8 }} style={styles.clearButton}>
                 <Text style={[styles.clearIcon, { color: colors.textMuted }]}>✕</Text>
@@ -712,12 +701,6 @@ const styles = StyleSheet.create({
   loadingContainer: {
     alignItems: "center",
     paddingVertical: 24,
-  },
-  loadingTrigger: {
-    alignItems: "center",
-    flex: 1,
-    flexDirection: "row",
-    gap: 8,
   },
   modalContent: {
     borderRadius: 12,

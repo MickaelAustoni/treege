@@ -442,14 +442,7 @@ const DefaultHttpInput = ({ field, extra }: InputRenderProps<"http">) => {
     // Render as Combobox if searchParam is configured
     if (httpConfig.searchParam) {
       const isLoading = loading && httpConfig?.showLoading;
-      const buttonContent = isLoading ? (
-        <div className="tg:flex tg:items-center tg:gap-2">
-          <Loader2 className="tg:h-4 tg:w-4 tg:animate-spin" />
-          <span className="tg:text-muted-foreground">{selectedOption?.label || placeholder || t("renderer.defaultHttpInput.search")}</span>
-        </div>
-      ) : (
-        selectedOption?.label || placeholder || t("renderer.defaultHttpInput.search")
-      );
+      const buttonContent = selectedOption?.label || placeholder || t("renderer.defaultHttpInput.search");
 
       return (
         <FormItem className="tg:mb-4">
@@ -467,9 +460,9 @@ const DefaultHttpInput = ({ field, extra }: InputRenderProps<"http">) => {
                     role="combobox"
                     aria-expanded={comboboxOpen}
                     disabled={missing.length > 0}
-                    className={cn("tg:w-full tg:justify-between", normalizedValue && "tg:pr-14")}
+                    className={cn("tg:w-full tg:justify-between", (normalizedValue || isLoading) && "tg:pr-14")}
                   >
-                    {buttonContent}
+                    <span className="tg:truncate">{buttonContent}</span>
                     <ChevronsUpDown className="tg:ml-2 tg:h-4 tg:w-4 tg:shrink-0 tg:opacity-50" />
                   </Button>
                 </PopoverTrigger>
@@ -528,6 +521,9 @@ const DefaultHttpInput = ({ field, extra }: InputRenderProps<"http">) => {
                   </Command>
                 </PopoverContent>
               </Popover>
+              {isLoading && (
+                <Loader2 className="tg:-translate-y-1/2 tg:pointer-events-none tg:absolute tg:top-1/2 tg:right-8 tg:size-4 tg:animate-spin tg:text-muted-foreground" />
+              )}
               {normalizedValue && !isLoading && missing.length === 0 && (
                 <button
                   type="button"
@@ -560,8 +556,7 @@ const DefaultHttpInput = ({ field, extra }: InputRenderProps<"http">) => {
     const selectElement = (
       <div className="tg:relative">
         <Select value={selectValue} onValueChange={(val) => setValue(val)} disabled={isLoading || options.length === 0} name={name}>
-          <SelectTrigger id={id} name={name} className={cn("tg:w-full", selectValue && "tg:pr-14")}>
-            {isLoading && <Loader2 className="tg:mr-2 tg:h-4 tg:w-4 tg:animate-spin" />}
+          <SelectTrigger id={id} name={name} className={cn("tg:w-full", (selectValue || isLoading) && "tg:pr-14")}>
             <SelectValue placeholder={placeholder || t("renderer.defaultHttpInput.selectOption")} />
           </SelectTrigger>
           <SelectContent>
@@ -574,6 +569,9 @@ const DefaultHttpInput = ({ field, extra }: InputRenderProps<"http">) => {
             </SelectGroup>
           </SelectContent>
         </Select>
+        {isLoading && (
+          <Loader2 className="tg:-translate-y-1/2 tg:pointer-events-none tg:absolute tg:top-1/2 tg:right-8 tg:size-4 tg:animate-spin tg:text-muted-foreground" />
+        )}
         {selectValue && !isLoading && (
           <button
             type="button"

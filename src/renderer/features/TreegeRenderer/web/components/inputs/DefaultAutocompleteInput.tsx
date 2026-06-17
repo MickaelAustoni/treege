@@ -40,10 +40,9 @@ const DefaultAutocompleteInput = ({ field, extra }: InputRenderProps<"autocomple
                 aria-invalid={Boolean(error) || undefined}
                 aria-describedby={error ? errorId : undefined}
                 disabled={isLoading || missing.length > 0}
-                className={cn("tg:w-full tg:justify-between tg:font-normal", value && "tg:pr-14")}
+                className={cn("tg:w-full tg:justify-between tg:font-normal", (value || isLoading) && "tg:pr-14")}
               >
                 <span className="tg:flex tg:items-center tg:gap-2 tg:truncate">
-                  {isLoading && <Loader2 className="tg:h-4 tg:w-4 tg:shrink-0 tg:animate-spin" />}
                   {value
                     ? selectedOption?.label
                       ? t(selectedOption.label)
@@ -83,6 +82,9 @@ const DefaultAutocompleteInput = ({ field, extra }: InputRenderProps<"autocomple
               </Command>
             </PopoverContent>
           </Popover>
+          {isLoading && (
+            <Loader2 className="tg:-translate-y-1/2 tg:pointer-events-none tg:absolute tg:top-1/2 tg:right-8 tg:size-4 tg:animate-spin tg:text-muted-foreground" />
+          )}
           {value && !isLoading && missing.length === 0 && (
             <button
               type="button"

@@ -25,8 +25,7 @@ const DefaultSelectInput = ({ field, extra }: InputRenderProps<"select">) => {
       <DependencyHint missing={missing}>
         <div className="tg:relative">
           <Select name={name} value={normalizedValue} onValueChange={(val) => setValue(val)} disabled={isLoading || missing.length > 0}>
-            <SelectTrigger id={id} name={name} className={cn("tg:w-full", normalizedValue && "tg:pr-14")}>
-              {isLoading && <Loader2 className="tg:mr-2 tg:h-4 tg:w-4 tg:animate-spin" />}
+            <SelectTrigger id={id} name={name} className={cn("tg:w-full", (normalizedValue || isLoading) && "tg:pr-14")}>
               <SelectValue placeholder={placeholder || t("renderer.defaultSelectInput.selectOption")} />
             </SelectTrigger>
             <SelectContent>
@@ -41,6 +40,9 @@ const DefaultSelectInput = ({ field, extra }: InputRenderProps<"select">) => {
               </SelectGroup>
             </SelectContent>
           </Select>
+          {isLoading && (
+            <Loader2 className="tg:-translate-y-1/2 tg:pointer-events-none tg:absolute tg:top-1/2 tg:right-8 tg:size-4 tg:animate-spin tg:text-muted-foreground" />
+          )}
           {normalizedValue && !isLoading && missing.length === 0 && (
             <button
               type="button"
