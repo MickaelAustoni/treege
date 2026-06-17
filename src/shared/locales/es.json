@@ -201,6 +201,8 @@
       "name": "Nombre",
       "nameDescription": "Nombre de campo personalizado opcional para la exportación del formulario. Si está vacío, la etiqueta se usará como clave.",
       "noParentFieldsAvailable": "No hay campos principales disponibles",
+      "normalizeLabels": "Normalizar etiquetas",
+      "normalizeLabelsHint": "Limpia las etiquetas que vienen de la API (p. ej. EN MAYÚSCULAS) a una forma uniforme y legible. Las opciones escritas a mano no se ven afectadas.",
       "objectMapping": "Mapeo de objetos",
       "objectMappingDesc": "Mapear las propiedades del objeto de origen a una nueva estructura",
       "optional": "Opcional",

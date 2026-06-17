@@ -25,6 +25,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/shared/components/ui/
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/shared/components/ui/select";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/shared/components/ui/tooltip";
 import { cn } from "@/shared/lib/utils";
+import { normalizeLabel } from "@/shared/utils/normalizeLabel";
 
 type HttpResponse = Record<string, unknown> | unknown[];
 
@@ -84,6 +85,9 @@ const DefaultHttpInput = ({ field, extra }: InputRenderProps<"http">) => {
   const setValueRef = useRef(setValue);
   const fetchDataRef = useRef<((search?: string) => Promise<void>) | null>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
+  // API labels are normalized to a uniform Title Case form unless the node opts
+  // out. Kept in a ref so the memoized `fetchData` always reads the latest flag.
+  const normalizeOptionLabelsRef = useRef(node.data.normalizeOptionLabels !== false);
 
   /**
    * Extract template variables from URL (memoized)
@@ -219,14 +223,16 @@ const DefaultHttpInput = ({ field, extra }: InputRenderProps<"http">) => {
         if (currentHttpConfig.responseMapping && Array.isArray(extractedData)) {
           const { valueField = "value", labelField = "label", descriptionField, imageField } = currentHttpConfig.responseMapping;
 
+          const normalizeLabels = normalizeOptionLabelsRef.current;
           const mappedOptions = extractedData.map((item) => {
             const description = descriptionField ? getValueByPath(item as HttpResponse, descriptionField) : undefined;
             const image = imageField ? getValueByPath(item as HttpResponse, imageField) : undefined;
+            const rawLabel = String(getValueByPath(item as HttpResponse, labelField) || "");
 
             return {
               description: description != null && description !== "" ? String(description) : undefined,
               image: typeof image === "string" && image !== "" ? image : undefined,
-              label: String(getValueByPath(item as HttpResponse, labelField) || ""),
+              label: normalizeLabels ? normalizeLabel(rawLabel) : rawLabel,
               value: String(getValueByPath(item as HttpResponse, valueField) || ""),
             };
           });
@@ -265,7 +271,8 @@ const DefaultHttpInput = ({ field, extra }: InputRenderProps<"http">) => {
     baseUrlRef.current = baseUrl;
     setValueRef.current = setValue;
     fetchDataRef.current = fetchData;
-  }, [httpConfig, formValues, inputNodes, headers, baseUrl, setValue, fetchData]);
+    normalizeOptionLabelsRef.current = node.data.normalizeOptionLabels !== false;
+  }, [httpConfig, formValues, inputNodes, headers, baseUrl, setValue, fetchData, node.data.normalizeOptionLabels]);
 
   /**
    * Abort any in-flight request when the component unmounts so we don't

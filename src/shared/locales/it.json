@@ -201,6 +201,8 @@
       "name": "Nome",
       "nameDescription": "Nome campo personalizzato opzionale per l'esportazione del modulo. Se vuoto, l'etichetta verrà utilizzata come chiave.",
       "noParentFieldsAvailable": "Nessun campo genitore disponibile",
+      "normalizeLabels": "Normalizza le etichette",
+      "normalizeLabelsHint": "Uniforma le etichette provenienti dall'API (es. TUTTO MAIUSCOLO) in una forma leggibile. Le opzioni inserite manualmente non vengono modificate.",
       "objectMapping": "Mappatura oggetto",
       "objectMappingDesc": "Mappa le proprietà dell'oggetto sorgente su una nuova struttura",
       "optional": "Opzionale",

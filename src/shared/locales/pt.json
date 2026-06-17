@@ -201,6 +201,8 @@
       "name": "Nome",
       "nameDescription": "Nome de campo personalizado opcional para exportação de formulário. Se vazio, o rótulo será usado como chave.",
       "noParentFieldsAvailable": "Nenhum campo pai disponível",
+      "normalizeLabels": "Normalizar rótulos",
+      "normalizeLabelsHint": "Limpa os rótulos vindos da API (ex.: MAIÚSCULAS) para um formato uniforme e legível. As opções digitadas manualmente não são afetadas.",
       "objectMapping": "Mapeamento de objeto",
       "objectMappingDesc": "Mapear as propriedades do objeto de origem para uma nova estrutura",
       "optional": "Opcional",

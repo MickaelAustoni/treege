@@ -11,6 +11,7 @@ import {
 } from "@/renderer/utils/http";
 import { resolveTemplateToJson } from "@/renderer/utils/jsonTemplate";
 import { HttpHeaders, InputNodeData, InputOption, OptionsSourceMapping, QueryParams } from "@/shared/types/node";
+import { normalizeTranslatableLabel } from "@/shared/utils/normalizeLabel";
 
 const TEMPLATE_VAR_REGEX = /\{\{([\w-]+)}}/g;
 
@@ -142,7 +143,18 @@ export const useInputOptions = (node: Node<InputNodeData>): UseInputOptionsResul
     return () => controller.abort();
   }, [resolvedSourceJson]);
 
-  const options = state.fetched ?? staticOptions ?? [];
+  // Normalize only API-fetched labels (not manually-typed static options),
+  // and only when the node hasn't opted out. Defaults to on when unset.
+  const normalize = node.data.normalizeOptionLabels !== false;
+  const options = useMemo<InputOption[]>(() => {
+    if (!state.fetched) {
+      return staticOptions ?? [];
+    }
+    if (!normalize) {
+      return state.fetched;
+    }
+    return state.fetched.map((option) => ({ ...option, label: normalizeTranslatableLabel(option.label) }));
+  }, [state.fetched, staticOptions, normalize]);
 
   return {
     error: state.error,

@@ -286,6 +286,13 @@ export type InputNodeData = BaseNodeData & {
    */
   optionsSource?: OptionsSource;
   /**
+   * Whether labels fetched from an API (dynamic `optionsSource` or an `http`
+   * input's `responseMapping`) are normalized to a uniform, readable Title Case
+   * form (e.g. "DUPONT JEAN" -> "Dupont Jean"). Manually-typed static option
+   * labels are never affected. Defaults to `true` when unset.
+   */
+  normalizeOptionLabels?: boolean;
+  /**
    * Submit configuration for the input field (used with type="submit")
    */
   submitConfig?: SubmitConfig;

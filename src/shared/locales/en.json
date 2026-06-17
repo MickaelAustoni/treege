@@ -201,6 +201,8 @@
       "name": "Name",
       "nameDescription": "Optional custom field name for form export. If empty, the label will be used as the key.",
       "noParentFieldsAvailable": "No parent fields available",
+      "normalizeLabels": "Normalize labels",
+      "normalizeLabelsHint": "Clean up labels coming from the API (e.g. ALL CAPS) into a uniform, readable form. Manually-typed options are not affected.",
       "objectMapping": "Object Mapping",
       "objectMappingDesc": "Map properties from the source object to a new structure",
       "optional": "Optional",

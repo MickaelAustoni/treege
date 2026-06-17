@@ -201,6 +201,8 @@
       "name": "Name",
       "nameDescription": "Optionaler benutzerdefinierter Feldname für den Formularexport. Falls leer, wird die Bezeichnung als Schlüssel verwendet.",
       "noParentFieldsAvailable": "Keine übergeordneten Felder verfügbar",
+      "normalizeLabels": "Beschriftungen normalisieren",
+      "normalizeLabelsHint": "Bereinigt von der API gelieferte Beschriftungen (z. B. GROSSBUCHSTABEN) zu einer einheitlichen, lesbaren Form. Manuell eingegebene Optionen sind nicht betroffen.",
       "objectMapping": "Objektzuordnung",
       "objectMappingDesc": "Eigenschaften des Quellobjekts auf eine neue Struktur abbilden",
       "optional": "Optional",

@@ -201,6 +201,8 @@
       "name": "Nom",
       "nameDescription": "Nom de champ personnalisé optionnel pour l'export du formulaire. Si vide, le libellé sera utilisé comme clé.",
       "noParentFieldsAvailable": "Aucun champ parent disponible",
+      "normalizeLabels": "Normaliser les libellés",
+      "normalizeLabelsHint": "Nettoie les libellés venant de l'API (ex : EN MAJUSCULES) pour un rendu uniforme et lisible. Les options saisies à la main ne sont pas affectées.",
       "objectMapping": "Mappage d'objet",
       "objectMappingDesc": "Mapper les propriétés de l'objet source vers une nouvelle structure",
       "optional": "Optionnel",
