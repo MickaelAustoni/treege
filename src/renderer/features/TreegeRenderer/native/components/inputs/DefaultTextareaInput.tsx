@@ -4,15 +4,12 @@ import { useTheme } from "@/shared/context/ThemeContext";
 
 const DefaultTextareaInput = ({ field, extra }: InputRenderProps<"textarea">) => {
   const { value, placeholder, name } = field;
-  const { node, setValue, error, label, helperText } = extra;
+  const { InputLabel, node, setValue, error, label, helperText } = extra;
   const { colors } = useTheme();
 
   return (
     <View style={styles.container}>
-      <Text style={[styles.label, { color: colors.textSecondary }]}>
-        {label || node.data.name}
-        {node.data.required && <Text style={{ color: colors.error }}>*</Text>}
-      </Text>
+      <InputLabel label={label} required={node.data.required} />
       <TextInput
         style={[
           styles.textarea,
@@ -45,11 +42,6 @@ const styles = StyleSheet.create({
   helperText: {
     fontSize: 12,
     marginTop: 4,
-  },
-  label: {
-    fontSize: 14,
-    fontWeight: "500",
-    marginBottom: 8,
   },
   textarea: {
     borderRadius: 6,

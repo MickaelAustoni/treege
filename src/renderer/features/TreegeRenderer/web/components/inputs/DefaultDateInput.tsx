@@ -5,13 +5,12 @@ import { InputRenderProps } from "@/renderer/types/renderer";
 import { Button } from "@/shared/components/ui/button";
 import { Calendar } from "@/shared/components/ui/calendar";
 import { FormDescription, FormError, FormItem } from "@/shared/components/ui/form";
-import { Label } from "@/shared/components/ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "@/shared/components/ui/popover";
 
 const DefaultDateInput = ({ field, extra }: InputRenderProps<"date">) => {
   const [open, setOpen] = useState(false);
   const { id, name, value, placeholder } = field;
-  const { node, setValue, error, label, helperText } = extra;
+  const { InputLabel, node, setValue, error, label, helperText } = extra;
   const t = useTranslate();
   const dateValue = value ? new Date(value) : undefined;
 
@@ -27,13 +26,16 @@ const DefaultDateInput = ({ field, extra }: InputRenderProps<"date">) => {
 
   return (
     <FormItem className="tg:mb-4">
-      <Label htmlFor={id}>
-        {label || node.data.name}
-        {node.data.required && <span className="tg:text-red-500">*</span>}
-      </Label>
+      <InputLabel htmlFor={id} label={label} required={node.data.required} />
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
-          <Button variant="outline" id={id} name={name} className="tg:w-full tg:justify-between tg:font-normal">
+          <Button
+            variant="outline"
+            id={id}
+            name={name}
+            aria-label={label || node.data.name}
+            className="tg:w-full tg:justify-between tg:font-normal"
+          >
             {dateValue ? dateValue.toLocaleDateString() : placeholder || t("renderer.defaultInputs.selectDate")}
             <ChevronDownIcon className="tg:size-4" />
           </Button>

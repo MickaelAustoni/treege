@@ -20,7 +20,6 @@ import { Button } from "@/shared/components/ui/button";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/shared/components/ui/command";
 import { FormDescription, FormError, FormItem } from "@/shared/components/ui/form";
 import { Input } from "@/shared/components/ui/input";
-import { Label } from "@/shared/components/ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "@/shared/components/ui/popover";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/shared/components/ui/select";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/shared/components/ui/tooltip";
@@ -70,7 +69,7 @@ const DefaultHttpInput = ({ field, extra }: InputRenderProps<"http">) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [comboboxOpen, setComboboxOpen] = useState(false);
   const { id, name, value, placeholder } = field;
-  const { node, setValue, error, label, helperText, missingDependencies: missing } = extra;
+  const { InputLabel, node, setValue, error, label, helperText, missingDependencies: missing } = extra;
   const { formValues, inputNodes, headers, baseUrl } = useTreegeRenderRuntime();
   const { httpConfig } = node.data;
   const hasFetchedOnMount = useRef(false);
@@ -452,10 +451,7 @@ const DefaultHttpInput = ({ field, extra }: InputRenderProps<"http">) => {
 
       return (
         <FormItem className="tg:mb-4">
-          <Label htmlFor={id}>
-            {label || node.data.name}
-            {node.data.required && <span className="tg:text-red-500">*</span>}
-          </Label>
+          <InputLabel htmlFor={id} label={label} required={node.data.required} />
           <DependencyHint missing={missing}>
             <div className="tg:relative">
               <Popover open={comboboxOpen} onOpenChange={setComboboxOpen}>
@@ -464,6 +460,7 @@ const DefaultHttpInput = ({ field, extra }: InputRenderProps<"http">) => {
                     id={id}
                     variant="outline"
                     role="combobox"
+                    aria-label={label || node.data.name}
                     aria-expanded={comboboxOpen}
                     disabled={missing.length > 0}
                     className={cn("tg:w-full tg:justify-between", (normalizedValue || isLoading) && "tg:pr-14")}
@@ -562,7 +559,12 @@ const DefaultHttpInput = ({ field, extra }: InputRenderProps<"http">) => {
     const selectElement = (
       <div className="tg:relative">
         <Select value={selectValue} onValueChange={(val) => setValue(val)} disabled={isLoading || options.length === 0} name={name}>
-          <SelectTrigger id={id} name={name} className={cn("tg:w-full", (selectValue || isLoading) && "tg:pr-14")}>
+          <SelectTrigger
+            id={id}
+            name={name}
+            aria-label={label || node.data.name}
+            className={cn("tg:w-full", (selectValue || isLoading) && "tg:pr-14")}
+          >
             <SelectValue placeholder={placeholder || t("renderer.defaultHttpInput.selectOption")} />
           </SelectTrigger>
           <SelectContent>
@@ -593,10 +595,7 @@ const DefaultHttpInput = ({ field, extra }: InputRenderProps<"http">) => {
 
     return (
       <FormItem className="tg:mb-4">
-        <Label htmlFor={id}>
-          {label || node.data.name}
-          {node.data.required && <span className="tg:text-red-500">*</span>}
-        </Label>
+        <InputLabel htmlFor={id} label={label} required={node.data.required} />
         <DependencyHint missing={missing}>
           {fetchHint ? (
             <TooltipProvider>
@@ -622,11 +621,16 @@ const DefaultHttpInput = ({ field, extra }: InputRenderProps<"http">) => {
   // If no responseMapping, render the value as text (hidden or display-only)
   return (
     <FormItem className="tg:mb-4">
-      <Label htmlFor={id}>
-        {label || node.data.name}
-        {node.data.required && <span className="tg:text-red-500">*</span>}
-      </Label>
-      <Input type="text" name={name} id={id} value={typeof value === "string" ? value : JSON.stringify(value)} readOnly disabled />
+      <InputLabel htmlFor={id} label={label} required={node.data.required} />
+      <Input
+        type="text"
+        name={name}
+        id={id}
+        aria-label={label || node.data.name}
+        value={typeof value === "string" ? value : JSON.stringify(value)}
+        readOnly
+        disabled
+      />
       {error && <FormError>{error}</FormError>}
       {helperText && !error && <FormDescription>{helperText}</FormDescription>}
     </FormItem>

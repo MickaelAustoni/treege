@@ -5,6 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { TreegeRenderRuntimeProvider } from "@/renderer/context/TreegeRenderRuntimeProvider";
 import { InputExtraProps, InputFieldProps } from "@/renderer/types/renderer";
 import { InputNodeData } from "@/shared/types/node";
+import DefaultInputLabel from "../../DefaultInputLabel";
 import DefaultHttpInput from "../DefaultHttpInput";
 
 const USERS = [
@@ -61,7 +62,7 @@ const buildNode = (): Node<InputNodeData> => ({
 
 const renderHttpInput = (node: Node<InputNodeData>) => {
   const field: InputFieldProps<"http"> = { id: node.id, name: "users", value: "" };
-  const extra: InputExtraProps<"http"> = { missingDependencies: [], node, setValue: vi.fn() };
+  const extra: InputExtraProps<"http"> = { InputLabel: DefaultInputLabel, missingDependencies: [], node, setValue: vi.fn() };
 
   return render(
     <StrictMode>
@@ -120,7 +121,7 @@ describe("DefaultHttpInput (web)", () => {
       url: "https://jsonplaceholder.typicode.com/people",
     } as InputNodeData["httpConfig"];
     const field: InputFieldProps<"http"> = { id: updated.id, name: "users", value: "" };
-    const extra: InputExtraProps<"http"> = { missingDependencies: [], node: updated, setValue: vi.fn() };
+    const extra: InputExtraProps<"http"> = { InputLabel: DefaultInputLabel, missingDependencies: [], node: updated, setValue: vi.fn() };
 
     rerender(
       <StrictMode>

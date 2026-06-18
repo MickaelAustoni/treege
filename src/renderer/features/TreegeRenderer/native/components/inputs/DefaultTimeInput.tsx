@@ -14,7 +14,7 @@ const DefaultTimeInput = ({ field, extra }: InputRenderProps<"time">) => {
   const [selectedHours, setSelectedHours] = useState(hours || 0);
   const [selectedMinutes, setSelectedMinutes] = useState(minutes || 0);
   const [isOpen, setIsOpen] = useState(false);
-  const { node, setValue, error, label, helperText } = extra;
+  const { InputLabel, node, setValue, error, label, helperText } = extra;
   const { colors } = useTheme();
   const hoursScrollRef = useRef<ScrollView>(null);
   const minutesScrollRef = useRef<ScrollView>(null);
@@ -42,10 +42,7 @@ const DefaultTimeInput = ({ field, extra }: InputRenderProps<"time">) => {
 
   return (
     <View style={styles.container}>
-      <Text style={[styles.label, { color: colors.textSecondary }]}>
-        {label || node.data.name}
-        {node.data.required && <Text style={{ color: colors.error }}>*</Text>}
-      </Text>
+      <InputLabel label={label} required={node.data.required} />
 
       <TouchableOpacity
         style={[styles.trigger, { backgroundColor: colors.input, borderColor: colors.border }, error && { borderColor: colors.error }]}
@@ -62,7 +59,7 @@ const DefaultTimeInput = ({ field, extra }: InputRenderProps<"time">) => {
         <TouchableOpacity style={styles.modalOverlay} activeOpacity={1} onPress={() => setIsOpen(false)}>
           <TouchableOpacity style={[styles.modalContent, { backgroundColor: colors.card }]} activeOpacity={1} onPress={() => {}}>
             <View style={[styles.modalHeader, { borderBottomColor: colors.separator }]}>
-              <Text style={[styles.modalTitle, { color: colors.text }]}>{label || node.data.name}</Text>
+              <Text style={[styles.modalTitle, { color: colors.text }]}>{label || placeholder || "Select time"}</Text>
               <TouchableOpacity onPress={() => setIsOpen(false)}>
                 <Text style={[styles.closeButton, { color: colors.textMuted }]}>✕</Text>
               </TouchableOpacity>
@@ -175,11 +172,6 @@ const styles = StyleSheet.create({
   },
   icon: {
     fontSize: 16,
-  },
-  label: {
-    fontSize: 14,
-    fontWeight: "500",
-    marginBottom: 8,
   },
   modalContent: {
     borderRadius: 12,

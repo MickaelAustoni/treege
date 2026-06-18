@@ -8,7 +8,7 @@ const DefaultTimeRangeInput = ({ field, extra }: InputRenderProps<"timerange">) 
   const [isOpen, setIsOpen] = useState(false);
   const [selectingStart, setSelectingStart] = useState(true);
   const { value } = field;
-  const { node, setValue, error, label, helperText } = extra;
+  const { InputLabel, node, setValue, error, label, helperText } = extra;
   const { colors } = useTheme();
   const t = useTranslate();
 
@@ -68,10 +68,7 @@ const DefaultTimeRangeInput = ({ field, extra }: InputRenderProps<"timerange">) 
 
   return (
     <View style={styles.container}>
-      <Text style={[styles.label, { color: colors.textSecondary }]}>
-        {label || node.data.name}
-        {node.data.required && <Text style={{ color: colors.error }}>*</Text>}
-      </Text>
+      <InputLabel label={label} required={node.data.required} />
 
       <TouchableOpacity
         style={[styles.trigger, { backgroundColor: colors.input, borderColor: colors.border }, error && { borderColor: colors.error }]}
@@ -88,7 +85,7 @@ const DefaultTimeRangeInput = ({ field, extra }: InputRenderProps<"timerange">) 
         <TouchableOpacity style={styles.modalOverlay} activeOpacity={1} onPress={() => setIsOpen(false)}>
           <TouchableOpacity style={[styles.modalContent, { backgroundColor: colors.card }]} activeOpacity={1} onPress={() => {}}>
             <View style={[styles.modalHeader, { borderBottomColor: colors.separator }]}>
-              <Text style={[styles.modalTitle, { color: colors.text }]}>{label || node.data.name}</Text>
+              <Text style={[styles.modalTitle, { color: colors.text }]}>{label || t("renderer.defaultInputs.selectDateRange")}</Text>
               <TouchableOpacity onPress={() => setIsOpen(false)}>
                 <Text style={[styles.closeButton, { color: colors.textMuted }]}>✕</Text>
               </TouchableOpacity>
@@ -197,11 +194,6 @@ const styles = StyleSheet.create({
   },
   icon: {
     fontSize: 16,
-  },
-  label: {
-    fontSize: 14,
-    fontWeight: "500",
-    marginBottom: 8,
   },
   modalContent: {
     borderRadius: 12,

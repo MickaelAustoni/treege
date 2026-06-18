@@ -8,6 +8,7 @@ import useFlowActions from "@/editor/hooks/useFlowActions";
 import useTranslate from "@/editor/hooks/useTranslate";
 import { getInputTypeIcon } from "@/editor/utils/inputTypeIcon";
 import { TreegeRenderRuntimeProvider } from "@/renderer/context/TreegeRenderRuntimeProvider";
+import DefaultInputLabel from "@/renderer/features/TreegeRenderer/web/components/DefaultInputLabel";
 import { defaultInputRenderers } from "@/renderer/features/TreegeRenderer/web/components/DefaultInputs";
 import DefaultSubmitButton from "@/renderer/features/TreegeRenderer/web/components/DefaultSubmitButton";
 import type { InputRenderer } from "@/renderer/types/renderer";
@@ -102,9 +103,10 @@ const NodeInputPreview = ({ nodeId, data }: NodeInputPreviewProps) => {
   // For the preview we strip:
   // - `required` so the renderer doesn't paint its red asterisk (already shown
   //   by `NodeRequiredButton` in the top-right actions),
-  // - `name` so the renderer's `label || node.data.name` fallback yields an
-  //   empty <label/>. Combined with the `[&_label:empty]:hidden` wrapper, this
-  //   removes the duplicate label rendered above the preview's input.
+  // - `name` so the control's `aria-label={label || node.data.name}` fallback
+  //   stays empty. The visible label itself is already absent: `extra.label` is
+  //   omitted below and `DefaultInputLabel` renders nothing without a label,
+  //   so the editor's `NodeLabelInput` remains the single source of truth.
   const previewNode: Node<InputNodeData> = {
     data: { ...data, name: undefined, required: undefined },
     id: nodeId,
@@ -307,6 +309,7 @@ const NodeInputPreview = ({ nodeId, data }: NodeInputPreviewProps) => {
             extra={{
               compactOptions: true,
               helperText: helperText || undefined,
+              InputLabel: DefaultInputLabel,
               missingDependencies: [],
               node: previewNode,
               renderOptionExtras: optionsSourceUrl ? undefined : renderOptionExtras,

@@ -6,13 +6,12 @@ import { InputRenderProps } from "@/renderer/types/renderer";
 import { Button } from "@/shared/components/ui/button";
 import { Calendar } from "@/shared/components/ui/calendar";
 import { FormDescription, FormError, FormItem } from "@/shared/components/ui/form";
-import { Label } from "@/shared/components/ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "@/shared/components/ui/popover";
 
 const DefaultDateRangeInput = ({ field, extra }: InputRenderProps<"daterange">) => {
   const [open, setOpen] = useState(false);
   const { id, value } = field;
-  const { node, setValue, error, label, helperText } = extra;
+  const { InputLabel, node, setValue, error, label, helperText } = extra;
   const t = useTranslate();
   const dateRange = Array.isArray(value) ? value : [];
   const startDate = dateRange[0] ? new Date(dateRange[0]) : undefined;
@@ -44,13 +43,10 @@ const DefaultDateRangeInput = ({ field, extra }: InputRenderProps<"daterange">) 
 
   return (
     <FormItem className="tg:mb-4">
-      <Label htmlFor={id}>
-        {label || node.data.name}
-        {node.data.required && <span className="tg:text-red-500">*</span>}
-      </Label>
+      <InputLabel htmlFor={id} label={label} required={node.data.required} />
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
-          <Button id={id} variant="outline" className="tg:w-full tg:justify-between tg:font-normal">
+          <Button id={id} variant="outline" aria-label={label || node.data.name} className="tg:w-full tg:justify-between tg:font-normal">
             {formatDateRange()}
             <ChevronDownIcon className="tg:size-4" />
           </Button>

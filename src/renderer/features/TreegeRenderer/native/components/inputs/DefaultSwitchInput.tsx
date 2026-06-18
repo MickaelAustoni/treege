@@ -4,7 +4,7 @@ import { useTheme } from "@/shared/context/ThemeContext";
 
 const DefaultSwitchInput = ({ field, extra }: InputRenderProps<"switch">) => {
   const { value } = field;
-  const { node, setValue, error, label, helperText } = extra;
+  const { InputLabel, node, setValue, error, label, helperText } = extra;
   const { colors } = useTheme();
   const isEnabled = Boolean(value);
 
@@ -12,10 +12,7 @@ const DefaultSwitchInput = ({ field, extra }: InputRenderProps<"switch">) => {
     <View style={styles.container}>
       <View style={styles.row}>
         <View style={styles.labelContainer}>
-          <Text style={[styles.label, { color: colors.textSecondary }]}>
-            {label || node.data.name}
-            {node.data.required && <Text style={{ color: colors.error }}>*</Text>}
-          </Text>
+          <InputLabel label={label} required={node.data.required} />
         </View>
         <Switch
           trackColor={{ false: colors.border, true: `${colors.primary}80` }}
@@ -42,10 +39,6 @@ const styles = StyleSheet.create({
   helperText: {
     fontSize: 12,
     marginTop: 4,
-  },
-  label: {
-    fontSize: 14,
-    fontWeight: "500",
   },
   labelContainer: {
     flex: 1,

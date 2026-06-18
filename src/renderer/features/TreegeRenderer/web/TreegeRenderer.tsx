@@ -2,6 +2,7 @@ import { FormEvent, useCallback, useMemo, useState } from "react";
 import { TreegeRenderRuntimeProvider } from "@/renderer/context/TreegeRenderRuntimeProvider";
 import { useTreegeRenderer } from "@/renderer/features/TreegeRenderer/useTreegeRenderer";
 import DefaultFormWrapper from "@/renderer/features/TreegeRenderer/web/components/DefaultFormWrapper";
+import DefaultInputLabel from "@/renderer/features/TreegeRenderer/web/components/DefaultInputLabel";
 import { defaultInputRenderers } from "@/renderer/features/TreegeRenderer/web/components/DefaultInputs";
 import DefaultInputWrapper from "@/renderer/features/TreegeRenderer/web/components/DefaultInputWrapper";
 import DefaultLoadingSkeleton from "@/renderer/features/TreegeRenderer/web/components/DefaultLoadingSkeleton";
@@ -82,6 +83,7 @@ const TreegeRenderer = ({
   const { FormWrapper, renderNode } = useRenderNode({
     config,
     DefaultFormWrapper,
+    DefaultInputLabel,
     DefaultInputWrapper,
     DefaultSubmitButton,
     DefaultSubmitButtonWrapper,

@@ -87,7 +87,7 @@ const DefaultAddressInput = ({ field, extra }: InputRenderProps<"address">) => {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [loading, setLoading] = useState(false);
   const { value, placeholder, id: _id, name: _name } = field;
-  const { node, setValue, error, label, helperText } = extra;
+  const { InputLabel, node, setValue, error, label, helperText } = extra;
   const { language, googleApiKey } = useTreegeRenderRuntime();
   const t = useTranslate();
   const { colors } = useTheme();
@@ -135,10 +135,7 @@ const DefaultAddressInput = ({ field, extra }: InputRenderProps<"address">) => {
 
   return (
     <View style={styles.container}>
-      <Text style={[styles.label, { color: colors.textSecondary }]}>
-        {label || node.data.name}
-        {node.data.required && <Text style={{ color: colors.error }}>*</Text>}
-      </Text>
+      <InputLabel label={label} required={node.data.required} />
 
       <TouchableOpacity
         style={[styles.trigger, { backgroundColor: colors.input, borderColor: colors.border }, error && { borderColor: colors.error }]}
@@ -155,7 +152,9 @@ const DefaultAddressInput = ({ field, extra }: InputRenderProps<"address">) => {
         <TouchableOpacity style={styles.modalOverlay} activeOpacity={1} onPress={handleClose}>
           <TouchableOpacity style={[styles.modalContent, { backgroundColor: colors.card }]} activeOpacity={1} onPress={() => {}}>
             <View style={[styles.modalHeader, { borderBottomColor: colors.separator }]}>
-              <Text style={[styles.modalTitle, { color: colors.text }]}>{label || node.data.name}</Text>
+              <Text style={[styles.modalTitle, { color: colors.text }]}>
+                {label || placeholder || t("renderer.defaultAddressInput.enterAddress")}
+              </Text>
               <TouchableOpacity onPress={handleClose}>
                 <Text style={[styles.closeButton, { color: colors.textMuted }]}>✕</Text>
               </TouchableOpacity>
@@ -245,11 +244,6 @@ const styles = StyleSheet.create({
   },
   icon: {
     fontSize: 16,
-  },
-  label: {
-    fontSize: 14,
-    fontWeight: "500",
-    marginBottom: 8,
   },
   loadingContainer: {
     alignItems: "center",

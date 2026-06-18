@@ -25,6 +25,7 @@ type UseRenderNodeParams = {
     language: string;
   };
   DefaultFormWrapper: AnyComponent;
+  DefaultInputLabel: AnyComponent;
   DefaultInputWrapper: ComponentType<{ node: Node<InputNodeData>; children: ReactNode }>;
   DefaultSubmitButton: AnyComponent;
   DefaultSubmitButtonWrapper?: AnyComponent;
@@ -50,6 +51,7 @@ type UseRenderNodeParams = {
  */
 export const useRenderNode = ({
   DefaultFormWrapper,
+  DefaultInputLabel,
   DefaultInputWrapper,
   DefaultSubmitButton,
   DefaultSubmitButtonWrapper,
@@ -73,6 +75,7 @@ export const useRenderNode = ({
     () => config.components.submitButtonWrapper || DefaultSubmitButtonWrapper || Fragment,
     [config.components.submitButtonWrapper, DefaultSubmitButtonWrapper],
   );
+  const InputLabel = useMemo(() => config.components.inputLabel || DefaultInputLabel, [config.components.inputLabel, DefaultInputLabel]);
 
   const renderNode = useCallback(
     function renderNode(node: Node<TreegeNodeData>): ReactNode {
@@ -117,6 +120,7 @@ export const useRenderNode = ({
           const extra: InputExtraProps = {
             error,
             helperText: safeHelperText,
+            InputLabel,
             isSubmitting,
             label: safeLabel,
             missingDependencies: getMissingDependencies(node, formValues, inputNodes, config.language),

@@ -1,5 +1,6 @@
 export { TreegeRendererProvider, useTreegeRendererConfig } from "@/renderer/context/TreegeRendererProvider";
 export * from "@/renderer/features/TreegeRenderer/native/components/DefaultFormWrapper";
+export { default as DefaultInputLabel } from "@/renderer/features/TreegeRenderer/native/components/DefaultInputLabel";
 export * from "@/renderer/features/TreegeRenderer/native/components/DefaultInputs";
 export * from "@/renderer/features/TreegeRenderer/native/components/DefaultStep";
 export * from "@/renderer/features/TreegeRenderer/native/components/DefaultSubmitButton";

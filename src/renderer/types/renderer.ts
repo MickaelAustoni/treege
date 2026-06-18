@@ -131,6 +131,14 @@ export type InputExtraProps<T extends InputType = InputType> = {
   /** Translated label (already processed with current language). */
   label?: string;
   /**
+   * Resolved input label component: the consumer's `components.inputLabel` when
+   * provided, otherwise the platform `DefaultInputLabel`. Default inputs render
+   * it as `<InputLabel label={label} required={node.data.required} htmlFor={id} />`;
+   * it renders nothing when no label is configured. Exposed so custom input
+   * renderers can reuse the same (overridable) label.
+   */
+  InputLabel: InputLabelRenderer;
+  /**
    * Translated helper text (already processed with current language).
    */
   helperText?: string;
@@ -185,6 +193,31 @@ export type InputRenderer<T extends InputType = InputType> = ComponentType<Input
 export type UiRenderProps = {
   node: Node<UINodeData>;
 };
+
+/**
+ * Props for the input label component shared by all default input renderers.
+ * `label` + `required` are platform-agnostic; the remaining fields are
+ * passthrough hints for the platform (web: `htmlFor`/`id`/`className`,
+ * native: `style`). Implementations should render nothing when `label` is empty
+ * so the technical node key never leaks into the form.
+ */
+export type InputLabelRenderProps = {
+  /** End-user-facing label. Render nothing when empty. */
+  label?: string;
+  /** Whether to render the required marker. */
+  required?: boolean;
+  /** Web: associates the label with the control. */
+  htmlFor?: string;
+  /** Web: id used for `aria-labelledby` on option groups. */
+  id?: string;
+  /** Web: extra class names. */
+  className?: string;
+  /** Native: extra style (typed loosely to avoid a react-native dependency here). */
+  style?: unknown;
+};
+
+/** Input label component (custom `components.inputLabel` or the platform default). */
+export type InputLabelRenderer = ComponentType<InputLabelRenderProps>;
 
 /**
  * Props for UI/Group components (use useTreegeContext for state)
@@ -277,6 +310,12 @@ export type TreegeRendererComponents = {
    * Custom UI node renderers by UI type
    */
   ui?: Partial<Record<UIType, (props: NodeRenderProps) => ReactNode>>;
+  /**
+   * Custom input label, shared by every default input renderer. Receives
+   * `{ label, required, ...platformProps }` and should render nothing when
+   * `label` is empty. Defaults to `DefaultInputLabel` (web/native).
+   */
+  inputLabel?: InputLabelRenderer;
   /**
    * Custom step renderer — wraps the current step's nodes and renders the
    * Back/Continue navigation. Defaults are provided by `DefaultStep` (web/native).

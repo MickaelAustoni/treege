@@ -5,27 +5,28 @@ import { useInputOptions } from "@/renderer/hooks/useInputOptions";
 import { useTranslate } from "@/renderer/hooks/useTranslate";
 import { InputRenderProps } from "@/renderer/types/renderer";
 import { FormDescription, FormError, FormItem } from "@/shared/components/ui/form";
-import { Label } from "@/shared/components/ui/label";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/shared/components/ui/select";
 import { cn } from "@/shared/lib/utils";
 
 const DefaultSelectInput = ({ field, extra }: InputRenderProps<"select">) => {
   const { id, name, value, placeholder } = field;
-  const { node, setValue, error, label, helperText, missingDependencies: missing } = extra;
+  const { InputLabel, node, setValue, error, label, helperText, missingDependencies: missing } = extra;
   const { options, isLoading, error: inputOptionsError } = useInputOptions(node);
   const t = useTranslate();
   const normalizedValue = value ? String(value) : "";
 
   return (
     <FormItem className="tg:mb-4">
-      <Label htmlFor={id}>
-        {label || node.data.name}
-        {node.data.required && <span className="tg:text-red-500">*</span>}
-      </Label>
+      <InputLabel htmlFor={id} label={label} required={node.data.required} />
       <DependencyHint missing={missing}>
         <div className="tg:relative">
           <Select name={name} value={normalizedValue} onValueChange={(val) => setValue(val)} disabled={isLoading || missing.length > 0}>
-            <SelectTrigger id={id} name={name} className={cn("tg:w-full", (normalizedValue || isLoading) && "tg:pr-14")}>
+            <SelectTrigger
+              id={id}
+              name={name}
+              aria-label={label || node.data.name}
+              className={cn("tg:w-full", (normalizedValue || isLoading) && "tg:pr-14")}
+            >
               <SelectValue placeholder={placeholder || t("renderer.defaultSelectInput.selectOption")} />
             </SelectTrigger>
             <SelectContent>

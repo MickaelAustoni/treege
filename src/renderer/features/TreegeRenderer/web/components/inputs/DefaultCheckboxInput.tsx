@@ -11,7 +11,7 @@ import { cn } from "@/shared/lib/utils";
 
 const DefaultCheckboxInput = ({ field, extra }: InputRenderProps<"checkbox">) => {
   const { id, name, value } = field;
-  const { node, setValue, error, label, helperText, renderOptionExtras, compactOptions, missingDependencies: missing } = extra;
+  const { InputLabel, node, setValue, error, label, helperText, renderOptionExtras, compactOptions, missingDependencies: missing } = extra;
   const { options, isLoading, error: inputOptionsError } = useInputOptions(node);
   const { optionsDisplayLimit } = useTreegeRenderRuntime();
   const t = useTranslate();
@@ -30,10 +30,7 @@ const DefaultCheckboxInput = ({ field, extra }: InputRenderProps<"checkbox">) =>
 
     return (
       <FormItem className="tg:mb-4">
-        <Label className="tg:mb-1" id={labelId}>
-          {label || node.data.name}
-          {node.data.required && <span className="tg:text-red-500">*</span>}
-        </Label>
+        <InputLabel className="tg:mb-1" id={labelId} label={label} required={node.data.required} />
         <DependencyHintMessage missing={missing} />
         {isLoading && (
           <div className="tg:flex tg:items-center tg:gap-2 tg:py-2 tg:text-muted-foreground tg:text-sm">
@@ -42,7 +39,12 @@ const DefaultCheckboxInput = ({ field, extra }: InputRenderProps<"checkbox">) =>
           </div>
         )}
         {/* biome-ignore lint/a11y/useSemanticElements: a fieldset would change layout/styling, same trade-off as the Field primitive */}
-        <div role="group" aria-labelledby={labelId} className="tg:min-w-0 tg:space-y-2">
+        <div
+          role="group"
+          aria-labelledby={label ? labelId : undefined}
+          aria-label={label ? undefined : node.data.name}
+          className="tg:min-w-0 tg:space-y-2"
+        >
           {visibleOptions.map((option, index) => {
             const optionDescription = t(option.description);
             return (
@@ -95,14 +97,12 @@ const DefaultCheckboxInput = ({ field, extra }: InputRenderProps<"checkbox">) =>
         <Checkbox
           id={id}
           name={name}
+          aria-label={label || node.data.name}
           checked={typeof value === "boolean" ? value : false}
           onCheckedChange={(checked) => setValue(Boolean(checked))}
         />
         <div>
-          <Label htmlFor={id} className="tg:cursor-pointer tg:font-medium tg:text-sm">
-            {label || node.data.name}
-            {node.data.required && <span className="tg:text-red-500">*</span>}
-          </Label>
+          <InputLabel htmlFor={id} label={label} required={node.data.required} className="tg:cursor-pointer tg:font-medium tg:text-sm" />
           {helperText && !error && <FormDescription>{helperText}</FormDescription>}
         </div>
       </div>

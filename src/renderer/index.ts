@@ -2,6 +2,7 @@ export { TreegeRendererProvider, useTreegeRendererConfig } from "@/renderer/cont
 export type { UseTreegeRendererReturn } from "@/renderer/features/TreegeRenderer/useTreegeRenderer";
 export { useTreegeRenderer } from "@/renderer/features/TreegeRenderer/useTreegeRenderer";
 export * from "@/renderer/features/TreegeRenderer/web/components/DefaultFormWrapper";
+export { default as DefaultInputLabel } from "@/renderer/features/TreegeRenderer/web/components/DefaultInputLabel";
 export * from "@/renderer/features/TreegeRenderer/web/components/DefaultInputs";
 export * from "@/renderer/features/TreegeRenderer/web/components/DefaultStep";
 export * from "@/renderer/features/TreegeRenderer/web/components/DefaultSubmitButton";

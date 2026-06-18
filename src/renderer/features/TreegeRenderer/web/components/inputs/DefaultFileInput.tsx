@@ -3,11 +3,10 @@ import { InputRenderProps } from "@/renderer/types/renderer";
 import { filesToSerializable, fileToSerializable } from "@/renderer/utils/file";
 import { FormDescription, FormError, FormItem } from "@/shared/components/ui/form";
 import { Input } from "@/shared/components/ui/input";
-import { Label } from "@/shared/components/ui/label";
 
 const DefaultFileInput = ({ field, extra }: InputRenderProps<"file">) => {
   const { id, name, placeholder } = field;
-  const { node, setValue, error, label, helperText } = extra;
+  const { InputLabel, node, setValue, error, label, helperText } = extra;
 
   const handleFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
     const { files } = e.target;
@@ -30,11 +29,16 @@ const DefaultFileInput = ({ field, extra }: InputRenderProps<"file">) => {
 
   return (
     <FormItem className="tg:mb-4">
-      <Label htmlFor={id}>
-        {label || node.data.name}
-        {node.data.required && <span className="tg:text-red-500">*</span>}
-      </Label>
-      <Input type="file" name={name} id={id} onChange={handleFileChange} multiple={node.data.multiple} placeholder={placeholder} />
+      <InputLabel htmlFor={id} label={label} required={node.data.required} />
+      <Input
+        type="file"
+        name={name}
+        id={id}
+        aria-label={label || node.data.name}
+        onChange={handleFileChange}
+        multiple={node.data.multiple}
+        placeholder={placeholder}
+      />
       {error && <FormError>{error}</FormError>}
       {helperText && !error && <FormDescription>{helperText}</FormDescription>}
     </FormItem>

@@ -1,4 +1,4 @@
-import { Eye, MoonStar, Sun } from "lucide-react";
+import { Eye, MoonStar, Sun, Form } from "lucide-react";
 import { useState } from "react";
 import TreegeEditor from "@/editor/features/TreegeEditor/TreegeEditor";
 import { FormValues, Meta, TreegeRenderer } from "@/renderer";
@@ -152,14 +152,7 @@ const RendererPanel = ({
         ) : (
           <div className="tg:flex tg:items-center tg:justify-center tg:h-full tg:text-gray-400">
             <div className="tg:text-center">
-              <svg className="tg:mx-auto tg:h-12 tg:w-12 tg:text-gray-300 tg:mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                />
-              </svg>
+              <Form size={50} className="tg:mx-auto tg:mb-4" />
               <p className="tg:text-lg">No form to display</p>
               <p className="tg:text-sm tg:mt-2">Create your form in the editor and click &quot;Save&quot;</p>
             </div>

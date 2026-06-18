@@ -2,6 +2,7 @@ import { useCallback, useMemo } from "react";
 import { ScrollView, StyleSheet, Text, View, ViewStyle } from "react-native";
 import { TreegeRenderRuntimeProvider } from "@/renderer/context/TreegeRenderRuntimeProvider";
 import DefaultFormWrapper from "@/renderer/features/TreegeRenderer/native/components/DefaultFormWrapper";
+import DefaultInputLabel from "@/renderer/features/TreegeRenderer/native/components/DefaultInputLabel";
 import { defaultInputRenderers } from "@/renderer/features/TreegeRenderer/native/components/DefaultInputs";
 import DefaultInputWrapper from "@/renderer/features/TreegeRenderer/native/components/DefaultInputWrapper";
 import DefaultLoadingSkeleton from "@/renderer/features/TreegeRenderer/native/components/DefaultLoadingSkeleton";
@@ -103,6 +104,7 @@ const TreegeRendererContent = ({
   const { FormWrapper, SubmitButtonWrapper, renderNode } = useRenderNode({
     config,
     DefaultFormWrapper,
+    DefaultInputLabel,
     DefaultInputWrapper,
     DefaultSubmitButton,
     DefaultSubmitButtonWrapper,

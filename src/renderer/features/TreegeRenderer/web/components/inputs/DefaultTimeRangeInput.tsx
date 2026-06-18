@@ -2,11 +2,10 @@ import { useTranslate } from "@/renderer/hooks/useTranslate";
 import { InputRenderProps } from "@/renderer/types/renderer";
 import { FormDescription, FormError, FormItem } from "@/shared/components/ui/form";
 import { Input } from "@/shared/components/ui/input";
-import { Label } from "@/shared/components/ui/label";
 
 const DefaultTimeRangeInput = ({ field, extra }: InputRenderProps<"timerange">) => {
   const { id, name, value } = field;
-  const { node, setValue, error, label, helperText } = extra;
+  const { InputLabel, node, setValue, error, label, helperText } = extra;
   const t = useTranslate();
   const timeRange = Array.isArray(value) ? value : [];
   const startTime = timeRange[0] || "";
@@ -22,10 +21,7 @@ const DefaultTimeRangeInput = ({ field, extra }: InputRenderProps<"timerange">) 
 
   return (
     <FormItem className="tg:mb-4">
-      <Label htmlFor={`${id}-start`}>
-        {label || node.data.name}
-        {node.data.required && <span className="tg:text-red-500">*</span>}
-      </Label>
+      <InputLabel htmlFor={`${id}-start`} label={label} required={node.data.required} />
       <div className="tg:flex tg:gap-2">
         <Input
           id={`${id}-start`}

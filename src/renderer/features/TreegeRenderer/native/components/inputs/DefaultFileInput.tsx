@@ -18,7 +18,7 @@ const DefaultFileInput = ({ field, extra }: InputRenderProps<"file">) => {
   const [pick, setPick] = useState<PickFunction | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const { value } = field;
-  const { node, setValue, error, label, helperText } = extra;
+  const { InputLabel, node, setValue, error, label, helperText } = extra;
   const { colors } = useTheme();
   const t = useTranslate();
   const files: SerializableFile[] = Array.isArray(value) ? value : value ? [value] : [];
@@ -101,10 +101,7 @@ const DefaultFileInput = ({ field, extra }: InputRenderProps<"file">) => {
   if (!pick) {
     return (
       <View style={styles.container}>
-        <Text style={[styles.label, { color: colors.textSecondary }]}>
-          {label || node.data.name}
-          {node.data.required && <Text style={{ color: colors.error }}>*</Text>}
-        </Text>
+        <InputLabel label={label} required={node.data.required} />
         <View style={[styles.unavailableContainer, { backgroundColor: colors.errorLight, borderColor: colors.error }]}>
           <Text style={[styles.unavailableText, { color: colors.error }]}>{t("renderer.defaultInputs.filePickerUnavailable")}</Text>
         </View>
@@ -115,10 +112,7 @@ const DefaultFileInput = ({ field, extra }: InputRenderProps<"file">) => {
 
   return (
     <View style={styles.container}>
-      <Text style={[styles.label, { color: colors.textSecondary }]}>
-        {label || node.data.name}
-        {node.data.required && <Text style={{ color: colors.error }}>*</Text>}
-      </Text>
+      <InputLabel label={label} required={node.data.required} />
 
       {files.length > 0 && (
         <View style={styles.filesList}>
@@ -203,11 +197,6 @@ const styles = StyleSheet.create({
   helperText: {
     fontSize: 12,
     marginTop: 4,
-  },
-  label: {
-    fontSize: 14,
-    fontWeight: "500",
-    marginBottom: 8,
   },
   pickButton: {
     alignItems: "center",

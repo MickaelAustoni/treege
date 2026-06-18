@@ -5,7 +5,7 @@ import { useTheme } from "@/shared/context/ThemeContext";
 
 const DefaultRadioInput = ({ field, extra }: InputRenderProps<"radio">) => {
   const { value } = field;
-  const { node, setValue, error, label, helperText } = extra;
+  const { InputLabel, node, setValue, error, label, helperText } = extra;
   const { colors } = useTheme();
   const t = useTranslate();
   const options = node.data.options || [];
@@ -18,10 +18,7 @@ const DefaultRadioInput = ({ field, extra }: InputRenderProps<"radio">) => {
 
   return (
     <View style={styles.container}>
-      <Text style={[styles.label, { color: colors.textSecondary }]}>
-        {label || node.data.name}
-        {node.data.required && <Text style={{ color: colors.error }}>*</Text>}
-      </Text>
+      <InputLabel label={label} required={node.data.required} />
 
       {options.map((option) => {
         const isSelected = selectedValue === option.value;
@@ -141,11 +138,6 @@ const styles = StyleSheet.create({
     height: 32,
     marginRight: 8,
     width: 32,
-  },
-  label: {
-    fontSize: 14,
-    fontWeight: "500",
-    marginBottom: 8,
   },
   option: {
     alignItems: "center",

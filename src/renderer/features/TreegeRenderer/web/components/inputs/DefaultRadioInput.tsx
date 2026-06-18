@@ -12,7 +12,7 @@ import { cn } from "@/shared/lib/utils";
 
 const DefaultRadioInput = ({ field, extra }: InputRenderProps<"radio">) => {
   const { id, name, value } = field;
-  const { node, setValue, error, label, helperText, renderOptionExtras, compactOptions, missingDependencies: missing } = extra;
+  const { InputLabel, node, setValue, error, label, helperText, renderOptionExtras, compactOptions, missingDependencies: missing } = extra;
   const { options, isLoading, error: inputOptionsError } = useInputOptions(node);
   const { optionsDisplayLimit } = useTreegeRenderRuntime();
   const t = useTranslate();
@@ -24,10 +24,7 @@ const DefaultRadioInput = ({ field, extra }: InputRenderProps<"radio">) => {
 
   return (
     <FormItem className="tg:mb-4">
-      <Label className="tg:mb-1" id={labelId}>
-        {label || node.data.name}
-        {node.data.required && <span className="tg:text-red-500">*</span>}
-      </Label>
+      <InputLabel className="tg:mb-1" id={labelId} label={label} required={node.data.required} />
       <DependencyHintMessage missing={missing} />
       {isLoading && (
         <div className="tg:flex tg:items-center tg:gap-2 tg:py-2 tg:text-muted-foreground tg:text-sm">
@@ -38,7 +35,8 @@ const DefaultRadioInput = ({ field, extra }: InputRenderProps<"radio">) => {
       <RadioGroup
         value={normalizedValue}
         onValueChange={(val) => setValue(val)}
-        aria-labelledby={labelId}
+        aria-labelledby={label ? labelId : undefined}
+        aria-label={label ? undefined : node.data.name}
         name={name}
         className={cn("tg:min-w-0", isCard && "tg:flex tg:flex-col tg:gap-2")}
       >

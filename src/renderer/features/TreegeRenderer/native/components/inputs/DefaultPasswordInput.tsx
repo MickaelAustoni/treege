@@ -6,15 +6,12 @@ import { useTheme } from "@/shared/context/ThemeContext";
 const DefaultPasswordInput = ({ field, extra }: InputRenderProps<"password">) => {
   const [showPassword, setShowPassword] = useState(false);
   const { value, placeholder, name } = field;
-  const { node, setValue, error, label, helperText } = extra;
+  const { InputLabel, node, setValue, error, label, helperText } = extra;
   const { colors } = useTheme();
 
   return (
     <View style={styles.container}>
-      <Text style={[styles.label, { color: colors.textSecondary }]}>
-        {label || node.data.name}
-        {node.data.required && <Text style={{ color: colors.error }}>*</Text>}
-      </Text>
+      <InputLabel label={label} required={node.data.required} />
       <View style={styles.inputWrapper}>
         <TextInput
           style={[
@@ -63,11 +60,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     flexDirection: "row",
     position: "relative",
-  },
-  label: {
-    fontSize: 14,
-    fontWeight: "500",
-    marginBottom: 8,
   },
   toggleButton: {
     paddingHorizontal: 12,

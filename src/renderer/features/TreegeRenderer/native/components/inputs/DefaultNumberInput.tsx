@@ -6,7 +6,7 @@ import { useTheme } from "@/shared/context/ThemeContext";
 const DefaultNumberInput = ({ field, extra }: InputRenderProps<"number">) => {
   const { value, placeholder, name } = field;
   const [textValue, setTextValue] = useState(value?.toString() ?? "");
-  const { node, setValue, error, label, helperText } = extra;
+  const { InputLabel, node, setValue, error, label, helperText } = extra;
   const { colors } = useTheme();
 
   /**
@@ -19,10 +19,7 @@ const DefaultNumberInput = ({ field, extra }: InputRenderProps<"number">) => {
 
   return (
     <View style={styles.container}>
-      <Text style={[styles.label, { color: colors.textSecondary }]}>
-        {label || node.data.name}
-        {node.data.required && <Text style={{ color: colors.error }}>*</Text>}
-      </Text>
+      <InputLabel label={label} required={node.data.required} />
       <TextInput
         style={[
           styles.input,
@@ -72,11 +69,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     paddingHorizontal: 12,
     paddingVertical: 8,
-  },
-  label: {
-    fontSize: 14,
-    fontWeight: "500",
-    marginBottom: 8,
   },
 });
 

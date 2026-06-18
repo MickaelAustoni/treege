@@ -8,7 +8,7 @@ import { useTheme } from "@/shared/context/ThemeContext";
 const DefaultSelectInput = ({ field, extra }: InputRenderProps<"select">) => {
   const [isOpen, setIsOpen] = useState(false);
   const { value, placeholder } = field;
-  const { node, setValue, error, label, helperText } = extra;
+  const { InputLabel, node, setValue, error, label, helperText } = extra;
   const { colors } = useTheme();
   const t = useTranslate();
   const options = node.data.options || [];
@@ -43,10 +43,7 @@ const DefaultSelectInput = ({ field, extra }: InputRenderProps<"select">) => {
 
   return (
     <View style={styles.container}>
-      <Text style={[styles.label, { color: colors.textSecondary }]}>
-        {label || node.data.name}
-        {node.data.required && <Text style={{ color: colors.error }}>*</Text>}
-      </Text>
+      <InputLabel label={label} required={node.data.required} />
 
       <TouchableOpacity
         style={[styles.trigger, { backgroundColor: colors.input, borderColor: colors.border }, error && { borderColor: colors.error }]}
@@ -72,7 +69,9 @@ const DefaultSelectInput = ({ field, extra }: InputRenderProps<"select">) => {
         <TouchableOpacity style={styles.modalOverlay} activeOpacity={1} onPress={() => setIsOpen(false)}>
           <View style={[styles.modalContent, { backgroundColor: colors.card }]} onStartShouldSetResponder={() => true}>
             <View style={[styles.modalHeader, { borderBottomColor: colors.border }]}>
-              <Text style={[styles.modalTitle, { color: colors.text }]}>{label || node.data.name}</Text>
+              <Text style={[styles.modalTitle, { color: colors.text }]}>
+                {label || placeholder || t("renderer.defaultSelectInput.selectOption")}
+              </Text>
               <TouchableOpacity onPress={() => setIsOpen(false)}>
                 <Text style={[styles.closeButton, { color: colors.textMuted }]}>✕</Text>
               </TouchableOpacity>
@@ -157,11 +156,6 @@ const styles = StyleSheet.create({
   helperText: {
     fontSize: 12,
     marginTop: 4,
-  },
-  label: {
-    fontSize: 14,
-    fontWeight: "500",
-    marginBottom: 8,
   },
   modalContent: {
     borderRadius: 12,

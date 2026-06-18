@@ -6,7 +6,7 @@ import { useTheme } from "@/shared/context/ThemeContext";
 const DefaultCheckboxInput = ({ field, extra }: InputRenderProps<"checkbox">) => {
   const t = useTranslate();
   const { value } = field;
-  const { node, setValue, error, label, helperText } = extra;
+  const { InputLabel, node, setValue, error, label, helperText } = extra;
   const { colors } = useTheme();
   const options = node.data.options || [];
   const hasOptions = options.length > 0;
@@ -32,10 +32,7 @@ const DefaultCheckboxInput = ({ field, extra }: InputRenderProps<"checkbox">) =>
 
   return (
     <View style={styles.container}>
-      <Text style={[styles.label, { color: colors.textSecondary }]}>
-        {label || node.data.name}
-        {node.data.required && <Text style={{ color: colors.error }}>*</Text>}
-      </Text>
+      <InputLabel label={label} required={node.data.required} />
 
       {options.length > 0 ? (
         options.map((option) => {
@@ -91,7 +88,7 @@ const DefaultCheckboxInput = ({ field, extra }: InputRenderProps<"checkbox">) =>
           >
             {isSingleChecked && <Text style={styles.checkmark}>✓</Text>}
           </View>
-          <Text style={[styles.optionLabel, { color: colors.textSecondary }]}>{label || node.data.name}</Text>
+          {label && <Text style={[styles.optionLabel, { color: colors.textSecondary }]}>{label}</Text>}
         </TouchableOpacity>
       )}
 
@@ -132,11 +129,6 @@ const styles = StyleSheet.create({
     height: 32,
     marginRight: 8,
     width: 32,
-  },
-  label: {
-    fontSize: 14,
-    fontWeight: "500",
-    marginBottom: 8,
   },
   option: {
     alignItems: "flex-start",

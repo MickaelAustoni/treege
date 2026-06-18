@@ -1,21 +1,18 @@
 import { InputRenderProps } from "@/renderer/types/renderer";
 import { FormDescription, FormError, FormItem } from "@/shared/components/ui/form";
-import { Label } from "@/shared/components/ui/label";
 import { Textarea } from "@/shared/components/ui/textarea";
 
 const DefaultTextAreaInput = ({ field, extra }: InputRenderProps<"textarea">) => {
   const { id, name, value, placeholder } = field;
-  const { node, setValue, error, label, helperText } = extra;
+  const { InputLabel, node, setValue, error, label, helperText } = extra;
 
   return (
     <FormItem className="tg:mb-4">
-      <Label htmlFor={id}>
-        {label || node.data.name}
-        {node.data.required && <span className="tg:text-red-500">*</span>}
-      </Label>
+      <InputLabel htmlFor={id} label={label} required={node.data.required} />
       <Textarea
         id={id}
         name={name}
+        aria-label={label || node.data.name}
         value={value ?? ""}
         onChange={(e) => setValue(e.target.value)}
         placeholder={placeholder}

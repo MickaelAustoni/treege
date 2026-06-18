@@ -58,7 +58,7 @@ const DefaultHttpInput = ({ field, extra }: InputRenderProps<"http">) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
   const { value, placeholder } = field;
-  const { node, setValue, error, label, helperText, missingDependencies: missing } = extra;
+  const { InputLabel, node, setValue, error, label, helperText, missingDependencies: missing } = extra;
   const { formValues, inputNodes, headers, baseUrl } = useTreegeRenderRuntime();
   const { colors } = useTheme();
   const { httpConfig } = node.data;
@@ -427,10 +427,7 @@ const DefaultHttpInput = ({ field, extra }: InputRenderProps<"http">) => {
 
       return (
         <View style={styles.container}>
-          <Text style={[styles.label, { color: colors.textSecondary }]}>
-            {label || node.data.name}
-            {node.data.required && <Text style={{ color: colors.error }}>*</Text>}
-          </Text>
+          <InputLabel label={label} required={node.data.required} />
 
           <DependencyHint missing={missing}>
             <TouchableOpacity
@@ -465,7 +462,9 @@ const DefaultHttpInput = ({ field, extra }: InputRenderProps<"http">) => {
             <TouchableOpacity style={styles.modalOverlay} activeOpacity={1} onPress={() => setModalOpen(false)}>
               <TouchableOpacity style={[styles.modalContent, { backgroundColor: colors.card }]} activeOpacity={1} onPress={() => {}}>
                 <View style={[styles.modalHeader, { borderBottomColor: colors.separator }]}>
-                  <Text style={[styles.modalTitle, { color: colors.text }]}>{label || node.data.name}</Text>
+                  <Text style={[styles.modalTitle, { color: colors.text }]}>
+                    {label || placeholder || t("renderer.defaultHttpInput.search")}
+                  </Text>
                   <TouchableOpacity onPress={() => setModalOpen(false)}>
                     <Text style={[styles.closeButton, { color: colors.textMuted }]}>✕</Text>
                   </TouchableOpacity>
@@ -550,10 +549,7 @@ const DefaultHttpInput = ({ field, extra }: InputRenderProps<"http">) => {
 
     return (
       <View style={styles.container}>
-        <Text style={[styles.label, { color: colors.textSecondary }]}>
-          {label || node.data.name}
-          {node.data.required && <Text style={{ color: colors.error }}>*</Text>}
-        </Text>
+        <InputLabel label={label} required={node.data.required} />
 
         <DependencyHint missing={missing}>
           <TouchableOpacity
@@ -586,7 +582,9 @@ const DefaultHttpInput = ({ field, extra }: InputRenderProps<"http">) => {
           <TouchableOpacity style={styles.modalOverlay} activeOpacity={1} onPress={() => setModalOpen(false)}>
             <TouchableOpacity style={[styles.modalContent, { backgroundColor: colors.card }]} activeOpacity={1} onPress={() => {}}>
               <View style={[styles.modalHeader, { borderBottomColor: colors.separator }]}>
-                <Text style={[styles.modalTitle, { color: colors.text }]}>{label || node.data.name}</Text>
+                <Text style={[styles.modalTitle, { color: colors.text }]}>
+                  {label || placeholder || t("renderer.defaultHttpInput.selectOption")}
+                </Text>
                 <TouchableOpacity onPress={() => setModalOpen(false)}>
                   <Text style={[styles.closeButton, { color: colors.textMuted }]}>✕</Text>
                 </TouchableOpacity>
@@ -628,10 +626,7 @@ const DefaultHttpInput = ({ field, extra }: InputRenderProps<"http">) => {
   // If no responseMapping, render the value as text (read-only)
   return (
     <View style={styles.container}>
-      <Text style={[styles.label, { color: colors.textSecondary }]}>
-        {label || node.data.name}
-        {node.data.required && <Text style={{ color: colors.error }}>*</Text>}
-      </Text>
+      <InputLabel label={label} required={node.data.required} />
       <TextInput
         style={[styles.input, { backgroundColor: colors.muted, borderColor: colors.border, color: colors.textMuted }]}
         value={typeof value === "string" ? value : JSON.stringify(value)}
@@ -698,11 +693,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     paddingHorizontal: 12,
     paddingVertical: 10,
-  },
-  label: {
-    fontSize: 14,
-    fontWeight: "500",
-    marginBottom: 8,
   },
   loadingContainer: {
     alignItems: "center",

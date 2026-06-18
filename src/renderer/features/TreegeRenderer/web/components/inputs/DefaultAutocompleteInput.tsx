@@ -8,14 +8,13 @@ import { InputRenderProps } from "@/renderer/types/renderer";
 import { Button } from "@/shared/components/ui/button";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/shared/components/ui/command";
 import { FormDescription, FormError, FormItem } from "@/shared/components/ui/form";
-import { Label } from "@/shared/components/ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "@/shared/components/ui/popover";
 import { cn } from "@/shared/lib/utils";
 
 const DefaultAutocompleteInput = ({ field, extra }: InputRenderProps<"autocomplete">) => {
   const [open, setOpen] = useState(false);
   const { id, value, placeholder } = field;
-  const { node, setValue, error, label, helperText, missingDependencies: missing } = extra;
+  const { InputLabel, node, setValue, error, label, helperText, missingDependencies: missing } = extra;
   const { options, isLoading, error: inputOptionsError } = useInputOptions(node);
   const t = useTranslate();
   const triggerId = `${id}-trigger`;
@@ -24,10 +23,7 @@ const DefaultAutocompleteInput = ({ field, extra }: InputRenderProps<"autocomple
 
   return (
     <FormItem className="tg:mb-4">
-      <Label htmlFor={triggerId}>
-        {label || node.data.name}
-        {node.data.required && <span className="tg:text-red-500">*</span>}
-      </Label>
+      <InputLabel htmlFor={triggerId} label={label} required={node.data.required} />
       <DependencyHint missing={missing}>
         <div className="tg:relative">
           <Popover open={open} onOpenChange={setOpen}>
@@ -36,6 +32,7 @@ const DefaultAutocompleteInput = ({ field, extra }: InputRenderProps<"autocomple
                 id={triggerId}
                 variant="outline"
                 role="combobox"
+                aria-label={label || node.data.name}
                 aria-expanded={open}
                 aria-invalid={Boolean(error) || undefined}
                 aria-describedby={error ? errorId : undefined}
