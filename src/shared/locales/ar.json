@@ -435,6 +435,8 @@
       "selectDateRange": "اختر نطاق التاريخ",
       "selectFile": "اختر ملف",
       "selectFiles": "اختر ملفات",
+      "selectTime": "اختر الوقت",
+      "selectTimeRange": "اختر نطاق الوقت",
       "startDate": "تاريخ البدء",
       "startTime": "وقت البدء"
     },

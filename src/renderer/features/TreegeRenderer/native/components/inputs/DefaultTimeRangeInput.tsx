@@ -41,7 +41,7 @@ const DefaultTimeRangeInput = ({ field, extra }: InputRenderProps<"timerange">) 
     if (startTime) {
       return startTime;
     }
-    return t("renderer.defaultInputs.selectDateRange");
+    return t("renderer.defaultInputs.selectTimeRange");
   };
 
   const handleConfirm = useCallback(() => {
@@ -85,7 +85,7 @@ const DefaultTimeRangeInput = ({ field, extra }: InputRenderProps<"timerange">) 
         <TouchableOpacity style={styles.modalOverlay} activeOpacity={1} onPress={() => setIsOpen(false)}>
           <TouchableOpacity style={[styles.modalContent, { backgroundColor: colors.card }]} activeOpacity={1} onPress={() => {}}>
             <View style={[styles.modalHeader, { borderBottomColor: colors.separator }]}>
-              <Text style={[styles.modalTitle, { color: colors.text }]}>{label || t("renderer.defaultInputs.selectDateRange")}</Text>
+              <Text style={[styles.modalTitle, { color: colors.text }]}>{label || t("renderer.defaultInputs.selectTimeRange")}</Text>
               <TouchableOpacity onPress={() => setIsOpen(false)}>
                 <Text style={[styles.closeButton, { color: colors.textMuted }]}>✕</Text>
               </TouchableOpacity>

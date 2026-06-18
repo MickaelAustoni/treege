@@ -435,6 +435,8 @@
       "selectDateRange": "Select date range",
       "selectFile": "Select file",
       "selectFiles": "Select files",
+      "selectTime": "Select time",
+      "selectTimeRange": "Select time range",
       "startDate": "Start date",
       "startTime": "Start time"
     },

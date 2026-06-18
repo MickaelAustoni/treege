@@ -1,5 +1,6 @@
 import { useCallback, useRef, useState } from "react";
 import { Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { useTranslate } from "@/renderer/hooks/useTranslate";
 import { InputRenderProps } from "@/renderer/types/renderer";
 import { useTheme } from "@/shared/context/ThemeContext";
 
@@ -16,6 +17,7 @@ const DefaultTimeInput = ({ field, extra }: InputRenderProps<"time">) => {
   const [isOpen, setIsOpen] = useState(false);
   const { InputLabel, node, setValue, error, label, helperText } = extra;
   const { colors } = useTheme();
+  const t = useTranslate();
   const hoursScrollRef = useRef<ScrollView>(null);
   const minutesScrollRef = useRef<ScrollView>(null);
   const hoursList = Array.from({ length: 24 }, (_, i) => i);
@@ -23,7 +25,7 @@ const DefaultTimeInput = ({ field, extra }: InputRenderProps<"time">) => {
 
   const formatTime = () => {
     if (!value) {
-      return placeholder || "Select time";
+      return placeholder || t("renderer.defaultInputs.selectTime");
     }
     return value;
   };
@@ -59,7 +61,9 @@ const DefaultTimeInput = ({ field, extra }: InputRenderProps<"time">) => {
         <TouchableOpacity style={styles.modalOverlay} activeOpacity={1} onPress={() => setIsOpen(false)}>
           <TouchableOpacity style={[styles.modalContent, { backgroundColor: colors.card }]} activeOpacity={1} onPress={() => {}}>
             <View style={[styles.modalHeader, { borderBottomColor: colors.separator }]}>
-              <Text style={[styles.modalTitle, { color: colors.text }]}>{label || placeholder || "Select time"}</Text>
+              <Text style={[styles.modalTitle, { color: colors.text }]}>
+                {label || placeholder || t("renderer.defaultInputs.selectTime")}
+              </Text>
               <TouchableOpacity onPress={() => setIsOpen(false)}>
                 <Text style={[styles.closeButton, { color: colors.textMuted }]}>✕</Text>
               </TouchableOpacity>

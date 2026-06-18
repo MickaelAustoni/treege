@@ -435,6 +435,8 @@
       "selectDateRange": "Seleccionar rango de fechas",
       "selectFile": "Seleccionar archivo",
       "selectFiles": "Seleccionar archivos",
+      "selectTime": "Seleccionar hora",
+      "selectTimeRange": "Seleccionar rango de horas",
       "startDate": "Fecha de inicio",
       "startTime": "Hora de inicio"
     },
