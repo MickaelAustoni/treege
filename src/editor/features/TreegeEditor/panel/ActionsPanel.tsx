@@ -10,6 +10,7 @@ import AuthorizeDialog from "@/editor/features/TreegeEditor/dialogs/AuthorizeDia
 import HeadersDialog from "@/editor/features/TreegeEditor/dialogs/HeadersDialog";
 import OpenApiDialog from "@/editor/features/TreegeEditor/dialogs/OpenApiDialog";
 import { AIGeneratorDialog } from "@/editor/features/TreegeEditor/panel/AIGeneratorDialog";
+import { useFlowContent } from "@/editor/hooks/useFlowContent";
 import useTranslate from "@/editor/hooks/useTranslate";
 import { ExtraMenuItem } from "@/editor/types/editor";
 import { stripSensitiveHeadersFromFlow } from "@/editor/utils/sensitiveHeaders";
@@ -54,6 +55,7 @@ const ActionsPanel = ({ onExportJson, onSave, extraMenuItems, onAuthorize, heade
   const id = flowId || uniqueId;
   const nodes = useNodes();
   const edges = useEdges();
+  const { hasInputNodes, isEmpty } = useFlowContent();
   const inputFileRef = useRef<HTMLInputElement>(null);
   const showAuthorizeDot = Boolean(openApiDocument) && !authorizeAcknowledged;
   const t = useTranslate();
@@ -225,7 +227,7 @@ const ActionsPanel = ({ onExportJson, onSave, extraMenuItems, onAuthorize, heade
         <Plus /> <span className="tg:hidden tg:md:inline">{t("editor.actionsPanel.addNode")}</span>
       </Button>
 
-      <Button variant="outline" size="sm" onClick={handleSave} disabled={nodes.length === 0}>
+      <Button variant="outline" size="sm" onClick={handleSave} disabled={!hasInputNodes}>
         <Save /> <span className="tg:hidden tg:md:inline">{t("common.save")}</span>
       </Button>
 
@@ -246,7 +248,7 @@ const ActionsPanel = ({ onExportJson, onSave, extraMenuItems, onAuthorize, heade
             <DropdownMenuItem onClick={() => inputFileRef?.current?.click()}>
               <Download /> {t("editor.actionsPanel.importJson")}
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={handleExport} disabled={nodes.length === 0}>
+            <DropdownMenuItem onClick={handleExport} disabled={!hasInputNodes}>
               <ArrowRightFromLine /> {t("editor.actionsPanel.exportJson")}
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => setOpenApiDialogOpen(true)}>
@@ -307,11 +309,7 @@ const ActionsPanel = ({ onExportJson, onSave, extraMenuItems, onAuthorize, heade
           <DropdownMenuSeparator />
 
           <DropdownMenuGroup>
-            <DropdownMenuItem
-              onClick={handleClear}
-              disabled={nodes.length === 0 && edges.length === 0}
-              className="tg:text-destructive tg:focus:text-destructive"
-            >
+            <DropdownMenuItem onClick={handleClear} disabled={isEmpty} className="tg:text-destructive tg:focus:text-destructive">
               <Trash2 className="tg:text-destructive" /> {t("editor.actionsPanel.clear")}
             </DropdownMenuItem>
           </DropdownMenuGroup>
