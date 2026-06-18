@@ -48,7 +48,7 @@ Treege is a modern React library for creating and rendering interactive decision
 - **Multi-Step Forms**: Group nodes are automatically turned into navigable steps with Back/Continue controls, an `onBack` bridge to outer flows, and external-button submission via `formId`
 - **Edit Mode**: Pre-fill with `initialValues` (accepts name keys, reactive) to round-trip and edit previously submitted records
 - **Loading State**: Built-in `isLoading` prop renders a customizable skeleton while the flow is being fetched, plus `isSubmitting` to drive the button's loading state from async submits
-- **Fully Customizable**: Override any component (form, inputs, ui, step, submitButton, submitButtonWrapper, loadingSkeleton)
+- **Fully Customizable**: Override any component (form, inputs, inputLabel, ui, step, submitButton, submitButtonWrapper, loadingSkeleton)
 - **Optional Dependencies**: Graceful degradation when optional packages like `react-native-document-picker` aren't installed
 - **Theme Support**: Dark/light mode out of the box
 - **Google API Integration**: Address autocomplete support
@@ -167,6 +167,28 @@ function App() {
 }
 ```
 
+### Live Preview (Editor → Renderer)
+
+Use the editor's `onChange` (debounced) to render the form **live** next to the editor — no Save click needed. Because `onChange` isn't gated on having input nodes, the preview also reflects an emptied canvas after Clear. Omit `onSave` to hide the Save button entirely when you rely solely on live updates:
+
+```tsx
+import { TreegeEditor } from "treege/editor";
+import { TreegeRenderer } from "treege/renderer";
+import { useState } from "react";
+import type { Flow } from "treege";
+
+function App() {
+  const [flow, setFlow] = useState<Flow | null>(null);
+
+  return (
+    <div style={{ display: "flex" }}>
+      <TreegeEditor onChange={setFlow} /> {/* live, no Save button */}
+      <TreegeRenderer flow={flow} onSubmit={console.log} />
+    </div>
+  );
+}
+```
+
 ## Module Structure
 
 Treege provides multiple import paths for optimal bundle size:
@@ -270,7 +292,7 @@ Override default components with your own React Native components.
 Each input renderer is a **React component** receiving a single props object with two keys:
 
 1. `field` — DOM-safe props (`id`, `name`, `value`, `placeholder`, `required`, `aria-invalid`). On the web you can spread them onto an element (`<input {...field} />`); on React Native pick the ones you need.
-2. `extra` — Treege-specific props: `setValue`, `error`, `label`, `helperText`, `node`, and `missingDependencies` (the unfilled fields this input's dynamic options depend on).
+2. `extra` — Treege-specific props: `setValue`, `error`, `label`, `helperText`, `node`, `InputLabel` (the resolved, overridable label component), and `missingDependencies` (the unfilled fields this input's dynamic options depend on).
 
 ```tsx
 import { Text, TextInput, View } from "react-native";
@@ -458,7 +480,7 @@ Treege supports multiple languages out of the box:
 Override default input renderers with your own. A renderer is a React component
 receiving a single props object: `field` (DOM-safe props, spreadable onto an
 element) and `extra` (`setValue`, `error`, `label`, `helperText`, `node`,
-`missingDependencies`).
+`InputLabel`, `missingDependencies`).
 
 ```tsx
 import { TreegeRenderer } from "treege/renderer";
@@ -486,6 +508,27 @@ const CustomTextInput = ({ field, extra }) => {
   }}
 />
 ```
+
+### Custom Input Label
+
+All default inputs render their label through a single shared component, `DefaultInputLabel`. Override it once via `components.inputLabel` to restyle every field label at once. It receives `{ label, required, htmlFor }` (web) and **renders nothing when the field has no label** — so the technical `name` key never leaks into the form. Each input also exposes the resolved label as `extra.InputLabel`, so custom inputs can reuse it:
+
+```tsx
+<TreegeRenderer
+  flow={flow}
+  components={{
+    inputLabel: ({ label, required, htmlFor }) =>
+      label ? (
+        <label htmlFor={htmlFor} className="my-label">
+          {label}
+          {required && <span className="text-red-500"> *</span>}
+        </label>
+      ) : null,
+  }}
+/>
+```
+
+Accessibility is preserved even without a visible label: the default inputs fall back to `aria-label={label || node.data.name}` on the control itself.
 
 ### Custom Validation
 
@@ -732,21 +775,22 @@ Once the development server is running, you can access these examples:
 
 ### TreegeEditor Props
 
-| Prop              | Type                                     | Default  | Description                                                                                                                                                                                                         |
-|-------------------|------------------------------------------|----------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `flow`            | `Flow \| null`                           | `null`   | Initial decision tree                                                                                                                                                                                               |
-| `onSave`          | `(flow: Flow) => void`                   | -        | Callback when tree is saved                                                                                                                                                                                         |
-| `onExportJson`    | `() => { nodes: Node[]; edges: Edge[] }` | -        | Callback for exporting JSON data                                                                                                                                                                                    |
-| `language`        | `string`                                 | `"en"`   | UI language                                                                                                                                                                                                         |
-| `theme`           | `"light" \| "dark"`                      | `"dark"` | Editor theme                                                                                                                                                                                                        |
-| `aiConfig`        | `AIConfig`                               | -        | AI configuration for tree generation (see [AI Generation](./AI_GENERATION.md))                                                                                                                                      |
-| `className`       | `string`                                 | -        | Additional CSS class names for custom styling                                                                                                                                                                       |
-| `extraMenuItems`  | `ExtraMenuItem[]`                        | -        | Extra entries appended to the actions panel "more" dropdown                                                                                                                                                         |
-| `openApi`         | `OpenApiDocument \| string`              | -        | OpenAPI 3.x source used to power URL/route suggestions and the Authorize flow. Accepts a pre-parsed document or a URL string (the editor fetches it on mount and toasts on failure)                                 |
-| `baseUrl`         | `string`                                 | -        | Base URL the tree runs against. HTTP/options-source urls are stored relative to it, shown as a read-only prefix, and used to resolve the "Detect fields" probe. Pass the same value as `TreegeRenderer`'s `baseUrl` |
-| `headers`         | `HttpHeaders`                            | -        | Global HTTP headers applied to in-editor requests (e.g. the "Detect fields" button). Pass the same value you give to `TreegeRenderer` so editor previews use the same auth/headers as runtime                       |
-| `onAuthorize`     | `(headers: HttpHeaders) => void`         | -        | Called when the user submits the Authorize dialog. Forward the resulting headers to `TreegeRenderer` (or `TreegeRendererProvider`) so every form request is authenticated                                           |
-| `onHeadersChange` | `(headers: HttpHeaders) => void`         | -        | Called when the user edits headers in the built-in "Global headers" dialog. The component is controlled — update your `headers` state in response and pass the new object back via the `headers` prop               |
+| Prop              | Type                                     | Default  | Description                                                                                                                                                                                                                                                                                              |
+|-------------------|------------------------------------------|----------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `flow`            | `Flow \| null`                           | `null`   | Initial decision tree                                                                                                                                                                                                                                                                                    |
+| `onSave`          | `(flow: Flow) => void`                   | -        | Callback when the user saves the tree. The **Save button is only rendered when this prop is provided**, and is no longer disabled on an empty canvas (so a cleared flow can be saved)                                                                                                                    |
+| `onChange`        | `(flow: Flow) => void`                   | -        | Called (debounced ~150 ms) on every canvas change with the current flow. Use it for **live preview / autosave**. Unlike `onSave` it isn't gated on having input nodes, so it also reports an emptied canvas after Clear, and it does **not** strip sensitive headers (live consumers need the real flow) |
+| `onExportJson`    | `() => { nodes: Node[]; edges: Edge[] }` | -        | Callback for exporting JSON data                                                                                                                                                                                                                                                                         |
+| `language`        | `string`                                 | `"en"`   | UI language                                                                                                                                                                                                                                                                                              |
+| `theme`           | `"light" \| "dark"`                      | `"dark"` | Editor theme                                                                                                                                                                                                                                                                                             |
+| `aiConfig`        | `AIConfig`                               | -        | AI configuration for tree generation (see [AI Generation](./AI_GENERATION.md))                                                                                                                                                                                                                           |
+| `className`       | `string`                                 | -        | Additional CSS class names for custom styling                                                                                                                                                                                                                                                            |
+| `extraMenuItems`  | `ExtraMenuItem[]`                        | -        | Extra entries appended to the actions panel "more" dropdown                                                                                                                                                                                                                                              |
+| `openApi`         | `OpenApiDocument \| string`              | -        | OpenAPI 3.x source used to power URL/route suggestions and the Authorize flow. Accepts a pre-parsed document or a URL string (the editor fetches it on mount and toasts on failure)                                                                                                                      |
+| `baseUrl`         | `string`                                 | -        | Base URL the tree runs against. HTTP/options-source urls are stored relative to it, shown as a read-only prefix, and used to resolve the "Detect fields" probe. Pass the same value as `TreegeRenderer`'s `baseUrl`                                                                                      |
+| `headers`         | `HttpHeaders`                            | -        | Global HTTP headers applied to in-editor requests (e.g. the "Detect fields" button). Pass the same value you give to `TreegeRenderer` so editor previews use the same auth/headers as runtime                                                                                                            |
+| `onAuthorize`     | `(headers: HttpHeaders) => void`         | -        | Called when the user submits the Authorize dialog. Forward the resulting headers to `TreegeRenderer` (or `TreegeRendererProvider`) so every form request is authenticated                                                                                                                                |
+| `onHeadersChange` | `(headers: HttpHeaders) => void`         | -        | Called when the user edits headers in the built-in "Global headers" dialog. The component is controlled — update your `headers` state in response and pass the new object back via the `headers` prop                                                                                                    |
 
 ### TreegeRenderer Props
 
