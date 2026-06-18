@@ -19,6 +19,7 @@ import {
   DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuItem,
+  DropdownMenuLabel,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
   DropdownMenuSeparator,
@@ -314,6 +315,10 @@ const ActionsPanel = ({ onExportJson, onSave, extraMenuItems, onAuthorize, heade
               <Trash2 className="tg:text-destructive" /> {t("editor.actionsPanel.clear")}
             </DropdownMenuItem>
           </DropdownMenuGroup>
+
+          <DropdownMenuSeparator />
+
+          <DropdownMenuLabel className="tg:font-normal tg:text-muted-foreground tg:text-xs">v{__APP_VERSION__}</DropdownMenuLabel>
         </DropdownMenuContent>
       </DropdownMenu>
 

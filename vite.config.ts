@@ -3,7 +3,7 @@ import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 import dts from "unplugin-dts/vite";
 import { defineConfig } from "vite";
-import { dependencies, name, peerDependencies } from "./package.json";
+import { dependencies, name, peerDependencies, version } from "./package.json";
 
 const external = [
   ...Object.keys(dependencies ?? {}).filter((dep) => dep !== "nanoid"),
@@ -15,6 +15,9 @@ const external = [
 // https://vitejs.dev/config/
 const config = () =>
   defineConfig({
+    define: {
+      __APP_VERSION__: JSON.stringify(version),
+    },
     build: {
       cssCodeSplit: false,
       lib: {

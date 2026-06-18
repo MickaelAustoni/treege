@@ -2,6 +2,9 @@
 
 declare module "*.svg";
 
+/** Package version injected at build time from package.json (see `define` in vite.config.ts). */
+declare const __APP_VERSION__: string;
+
 interface ImportMetaEnv {
   /** API key for the AI tree generator (Gemini / OpenAI / DeepSeek / Claude). */
   readonly VITE_AI_API_KEY?: string;
