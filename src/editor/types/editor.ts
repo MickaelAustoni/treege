@@ -39,6 +39,15 @@ export interface TreegeEditorProps {
    */
   onSave?: (data: Flow) => void;
   /**
+   * Called (debounced) whenever the canvas changes, with the current flow
+   * (id + nodes + edges). Use it for live preview or autosave. Unlike `onSave`
+   * it is not gated on having input nodes, so it also reports an emptied canvas
+   * after Clear. Unlike `onSave`/`onExportJson` it does NOT strip sensitive
+   * headers — live consumers (e.g. `TreegeRenderer`) need the real flow, so do
+   * not persist its output verbatim if that matters to you.
+   */
+  onChange?: (data: Flow) => void;
+  /**
    * Theme for the editor interface.
    */
   theme?: "dark" | "light";

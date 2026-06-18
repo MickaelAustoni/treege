@@ -10,6 +10,7 @@ import MiniMapControl from "@/editor/features/TreegeEditor/controls/MiniMapContr
 import ChangeNodeTypeDialog from "@/editor/features/TreegeEditor/dialogs/ChangeNodeTypeDialog";
 import DeleteNodeDialog from "@/editor/features/TreegeEditor/dialogs/DeleteNodeDialog";
 import AutoLayout from "@/editor/features/TreegeEditor/layout/AutoLayout";
+import FlowChangeEmitter from "@/editor/features/TreegeEditor/listeners/FlowChangeEmitter";
 import ActionsPanel from "@/editor/features/TreegeEditor/panel/ActionsPanel";
 import MultiSelectionPanel from "@/editor/features/TreegeEditor/panel/MultiSelectionPanel";
 import NodeActionsSheet from "@/editor/features/TreegeEditor/sheets/NodeActionsSheet";
@@ -26,6 +27,7 @@ const Flow = ({
   flow,
   onExportJson,
   onSave,
+  onChange,
   theme,
   className,
   extraMenuItems,
@@ -64,6 +66,7 @@ const Flow = ({
         className={cn(className, "treege treege-editor")}
       >
         <AutoLayout />
+        <FlowChangeEmitter onChange={onChange} />
         <Background gap={10} variant={BackgroundVariant.Dots} />
         <ActionsPanel
           onExportJson={onExportJson}
@@ -91,6 +94,7 @@ const TreegeEditor = ({
   flow,
   onExportJson,
   onSave,
+  onChange,
   onLanguageChange,
   aiConfig,
   extraMenuItems,
@@ -103,10 +107,8 @@ const TreegeEditor = ({
   theme = "dark",
   defaultLanguage = "en",
 }: TreegeEditorProps) => {
-  // Controlled/uncontrolled language: `language` (when defined) always wins;
-  // otherwise the editor owns the value internally, seeded by `defaultLanguage`.
-  const isControlled = controlledLanguage !== undefined;
   const [internalLanguage, setInternalLanguage] = useState(defaultLanguage);
+  const isControlled = controlledLanguage !== undefined;
   const language = isControlled ? controlledLanguage : internalLanguage;
 
   const handleLanguageChange = useCallback(
@@ -130,6 +132,7 @@ const TreegeEditor = ({
               <Flow
                 onExportJson={onExportJson}
                 onSave={onSave}
+                onChange={onChange}
                 flow={flow}
                 theme={theme}
                 extraMenuItems={extraMenuItems}

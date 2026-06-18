@@ -159,6 +159,12 @@ const ActionsPanel = ({ onExportJson, onSave, extraMenuItems, onAuthorize, heade
   };
 
   const handleSave = useCallback(() => {
+    // No-op (also for the Ctrl/Cmd+S shortcut) when the consumer didn't wire a
+    // Save handler — e.g. it relies on the live `onChange` channel instead.
+    if (!onSave) {
+      return;
+    }
+
     if (!flowId) {
       setFlowId?.(id);
     }
@@ -227,9 +233,11 @@ const ActionsPanel = ({ onExportJson, onSave, extraMenuItems, onAuthorize, heade
         <Plus /> <span className="tg:hidden tg:md:inline">{t("editor.actionsPanel.addNode")}</span>
       </Button>
 
-      <Button variant="outline" size="sm" onClick={handleSave} disabled={!hasInputNodes}>
-        <Save /> <span className="tg:hidden tg:md:inline">{t("common.save")}</span>
-      </Button>
+      {onSave && (
+        <Button variant="outline" size="sm" onClick={handleSave}>
+          <Save /> <span className="tg:hidden tg:md:inline">{t("common.save")}</span>
+        </Button>
+      )}
 
       <DropdownMenu onOpenChange={(open) => !open && setAuthorizeAcknowledged(true)}>
         <DropdownMenuTrigger asChild>

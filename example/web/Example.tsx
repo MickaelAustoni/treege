@@ -15,7 +15,7 @@ const baseUrl = import.meta.env.VITE_BASE_URL || import.meta.env.VITE_OPENAPI_BA
 
 const EditorPanel = ({
   flow,
-  onSave,
+  onChange,
   theme,
   onTogglePreview,
   onAuthorize,
@@ -23,7 +23,7 @@ const EditorPanel = ({
   onHeadersChange,
 }: {
   flow?: Flow;
-  onSave: (data: Flow) => void;
+  onChange: (data: Flow) => void;
   theme: "light" | "dark";
   language: Language;
   onTogglePreview: () => void;
@@ -39,7 +39,7 @@ const EditorPanel = ({
     <div className="tg:h-full tg:flex tg:flex-col">
       <div className="tg:flex-1">
         <TreegeEditor
-          onSave={onSave}
+          onChange={onChange}
           flow={flow}
           theme={theme}
           onAuthorize={onAuthorize}
@@ -103,7 +103,7 @@ const RendererPanel = ({
         <div>
           <h2 className="tg:text-lg tg:font-semibold">Form Preview</h2>
           <p className="tg:text-sm tg:text-muted-foreground tg:mt-1">
-            {hasNodes ? `${flow.nodes.length} nodes, ${flow.edges.length} edges` : "Save to see the render"}
+            {hasNodes ? `${flow.nodes.length} nodes, ${flow.edges.length} edges` : "Add a field in the editor to see it live"}
           </p>
         </div>
         <div className={`tg:flex tg:gap-4 tg:items-center ${inSheet ? "tg:pr-10" : ""}`}>
@@ -154,7 +154,7 @@ const RendererPanel = ({
             <div className="tg:text-center">
               <Form size={50} className="tg:mx-auto tg:mb-4" />
               <p className="tg:text-lg">No form to display</p>
-              <p className="tg:text-sm tg:mt-2">Create your form in the editor and click &quot;Save&quot;</p>
+              <p className="tg:text-sm tg:mt-2">Add a field in the editor to see it render live</p>
             </div>
           </div>
         )}
@@ -193,7 +193,7 @@ const initialHeaders = (): HttpHeaders => {
 };
 
 const Layout = ({ flow }: { flow?: Flow }) => {
-  const [savedFlow, setSavedFlow] = useState<Flow | null>(null);
+  const [liveFlow, setLiveFlow] = useState<Flow | null>(null);
   const [theme, setTheme] = useState<"light" | "dark">("dark");
   const [language, setLanguage] = useState<Language>("en");
   const [showPreview, setShowPreview] = useState<boolean | null>(null);
@@ -202,10 +202,7 @@ const Layout = ({ flow }: { flow?: Flow }) => {
   const isDesktop = useMediaQuery("desktop");
   const previewOpen = showPreview ?? isDesktop;
   const mergedHeaders = mergeHeaders(headers, authHeaders);
-
-  const handleSave = (flowData: Flow) => {
-    setSavedFlow(flowData);
-  };
+  const previewFlow = liveFlow ?? flow ?? null;
 
   const togglePreview = () => setShowPreview((prev) => !(prev ?? isDesktop));
 
@@ -213,7 +210,7 @@ const Layout = ({ flow }: { flow?: Flow }) => {
     <div className="tg:h-screen tg:w-screen tg:flex tg:bg-background">
       <div className={`${isDesktop && previewOpen ? "tg:w-8/12 tg:border-r" : "tg:w-full"}`}>
         <EditorPanel
-          onSave={handleSave}
+          onChange={setLiveFlow}
           flow={flow}
           theme={theme}
           language={language}
@@ -227,7 +224,7 @@ const Layout = ({ flow }: { flow?: Flow }) => {
       {isDesktop && previewOpen && (
         <div className="tg:w-4/12">
           <RendererPanel
-            flow={savedFlow || flow}
+            flow={previewFlow}
             theme={theme}
             setTheme={setTheme}
             language={language}
@@ -242,7 +239,7 @@ const Layout = ({ flow }: { flow?: Flow }) => {
           <SheetTitle className="tg:sr-only">Form Preview</SheetTitle>
           <RendererPanel
             inSheet
-            flow={savedFlow || flow}
+            flow={previewFlow}
             theme={theme}
             setTheme={setTheme}
             language={language}
