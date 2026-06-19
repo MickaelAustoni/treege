@@ -1,5 +1,6 @@
 import { useForm } from "@tanstack/react-form";
 import { Plus, Variable, X } from "lucide-react";
+import type { ReactNode } from "react";
 import JsonTemplateEditor from "@/editor/features/TreegeEditor/forms/JsonTemplateEditor";
 import OptionsMappingFields from "@/editor/features/TreegeEditor/forms/OptionsMappingFields";
 import SensitiveHeaderWarning from "@/editor/features/TreegeEditor/forms/SensitiveHeaderWarning";
@@ -22,6 +23,8 @@ const METHODS_NEEDING_BODY = ["POST", "PUT", "PATCH"];
 interface HttpConfigFormProps {
   value: HttpConfig | undefined;
   onChange: (config: HttpConfig | undefined) => void;
+  /** Rendered right under the response mapping fields (label/value/description/image). */
+  afterMapping?: ReactNode;
 }
 
 /**
@@ -34,7 +37,7 @@ type HttpConfigFormValues = Omit<HttpConfig, "headers" | "queryParams"> & {
   queryParams: KeyValueEntry[];
 };
 
-const HttpConfigForm = ({ value, onChange }: HttpConfigFormProps) => {
+const HttpConfigForm = ({ value, onChange, afterMapping }: HttpConfigFormProps) => {
   const { selectedNode } = useNodesSelection<InputNodeData>();
   const t = useTranslate();
   const availableParentFields = useAvailableParentFields(selectedNode?.id);
@@ -128,6 +131,24 @@ const HttpConfigForm = ({ value, onChange }: HttpConfigFormProps) => {
                 </DropdownMenu>
               </ApiUrlCombobox>
               <FormDescription>{t("editor.httpConfigForm.apiUrlDesc")}</FormDescription>
+            </FormItem>
+          )}
+        />
+
+        <Field
+          name="searchParam"
+          children={(field) => (
+            <FormItem>
+              <Label htmlFor={field.name}>{t("editor.httpConfigForm.searchParameter")}</Label>
+              <Input
+                id={field.name}
+                name={field.name}
+                value={field.state.value}
+                onBlur={field.handleBlur}
+                onChange={({ target }) => field.handleChange(target.value)}
+                placeholder={t("editor.httpConfigForm.searchParameterPlaceholder")}
+              />
+              <FormDescription>{t("editor.httpConfigForm.searchParameterDesc")}</FormDescription>
             </FormItem>
           )}
         />
@@ -364,25 +385,9 @@ const HttpConfigForm = ({ value, onChange }: HttpConfigFormProps) => {
                 </Subscribe>
               )}
             </Field>
-          </div>
 
-          <Field
-            name="searchParam"
-            children={(field) => (
-              <FormItem>
-                <Label htmlFor={field.name}>{t("editor.httpConfigForm.searchParameter")}</Label>
-                <Input
-                  id={field.name}
-                  name={field.name}
-                  value={field.state.value}
-                  onBlur={field.handleBlur}
-                  onChange={({ target }) => field.handleChange(target.value)}
-                  placeholder={t("editor.httpConfigForm.searchParameterPlaceholder")}
-                />
-                <FormDescription>{t("editor.httpConfigForm.searchParameterDesc")}</FormDescription>
-              </FormItem>
-            )}
-          />
+            {afterMapping}
+          </div>
         </div>
 
         <div className="tg:space-y-4">

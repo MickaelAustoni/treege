@@ -10,6 +10,7 @@ import { useMediaQuery } from "@/shared/hooks/useMediaQuery";
 import { Flow, HttpHeaders } from "@/shared/types/node";
 import flow from "~/example/json/treege.json";
 import flowComplex from "~/example/json/treege-all-inputs.json";
+import { Separator } from "@/shared/components/ui/separator"
 
 const baseUrl = import.meta.env.VITE_BASE_URL || import.meta.env.VITE_OPENAPI_BASE_URL || undefined;
 
@@ -144,8 +145,11 @@ const RendererPanel = ({
               onSubmit={handleSubmit}
               onChange={setFormValues}
             />
-            <div className="tg:mt-8 tg:p-4 tg:border tg:rounded-lg">
-              <h3 className="tg:font-semibold tg:mb-2">Current values:</h3>
+
+            <Separator className="tg:max-w-2xl tg:mx-auto tg:my-10"/>
+
+            <div className="tg:mt-8 tg:p-4 tg:border tg:rounded-lg tg:max-w-2xl tg:mx-auto">
+              <h3 className="tg:font-semibold tg:mb-2">Current values :</h3>
               <pre className="tg:text-xs tg:p-2 tg:rounded tg:overflow-auto">{JSON.stringify(formValues, null, 2)}</pre>
             </div>
           </>

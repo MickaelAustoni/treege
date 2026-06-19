@@ -68,6 +68,24 @@ const InputNodeForm = () => {
     },
   });
 
+  // Shared "normalize option labels" switch — relevant whenever options come from
+  // a remote source (HTTP response mapping or `optionsSource`). Defined once so the
+  // two render sites (HTTP config / Options sections) stay in sync.
+  const normalizeOptionLabelsField = (
+    <Field
+      name="normalizeOptionLabels"
+      children={(field) => (
+        <FormItem>
+          <div className="tg:flex tg:items-center tg:space-x-2">
+            <Switch id={field.name} checked={field.state.value !== false} onCheckedChange={(newValue) => field.handleChange(newValue)} />
+            <Label htmlFor={field.name}>{t("editor.inputNodeForm.normalizeLabels")}</Label>
+          </div>
+          <FormDescription>{t("editor.inputNodeForm.normalizeLabelsHint")}</FormDescription>
+        </FormItem>
+      )}
+    />
+  );
+
   return (
     <form
       onSubmit={(e) => {
@@ -178,39 +196,21 @@ const InputNodeForm = () => {
                       field.handleChange(newConfig);
                       handleSubmit().then();
                     }}
+                    afterMapping={
+                      <Subscribe selector={(state) => Boolean(state.values.httpConfig?.responseMapping)}>
+                        {(hasResponseMapping) => hasResponseMapping && normalizeOptionLabelsField}
+                      </Subscribe>
+                    }
                   />
                 )}
               </Field>
-
-              <Subscribe selector={(state) => Boolean(state.values.httpConfig?.responseMapping)}>
-                {(hasResponseMapping) =>
-                  hasResponseMapping && (
-                    <Field
-                      name="normalizeOptionLabels"
-                      children={(field) => (
-                        <FormItem>
-                          <div className="tg:flex tg:items-center tg:space-x-2">
-                            <Switch
-                              id={field.name}
-                              checked={field.state.value !== false}
-                              onCheckedChange={(newValue) => field.handleChange(newValue)}
-                            />
-                            <Label htmlFor={field.name}>{t("editor.inputNodeForm.normalizeLabels")}</Label>
-                          </div>
-                          <FormDescription>{t("editor.inputNodeForm.normalizeLabelsHint")}</FormDescription>
-                        </FormItem>
-                      )}
-                    />
-                  )
-                }
-              </Subscribe>
             </CollapsibleContent>
           </Collapsible>
         )}
 
         {/* Submit config */}
         {isSubmitType && (
-          <Collapsible className="tg:flex tg:w-full tg:max-w-87.5 tg:flex-col tg:gap-2">
+          <Collapsible defaultOpen className="tg:flex tg:w-full tg:max-w-87.5 tg:flex-col tg:gap-2">
             <CollapsibleTrigger asChild>
               <div className="tg:flex tg:items-center tg:justify-between tg:gap-4">
                 <h4 className="tg:font-semibold tg:text-sm">{t("editor.inputNodeForm.submitConfiguration")}</h4>
@@ -372,26 +372,7 @@ const InputNodeForm = () => {
               </Subscribe>
 
               <Subscribe selector={(state) => Boolean(state.values.optionsSource)}>
-                {(hasOptionsSource) =>
-                  hasOptionsSource && (
-                    <Field
-                      name="normalizeOptionLabels"
-                      children={(field) => (
-                        <FormItem>
-                          <div className="tg:flex tg:items-center tg:space-x-2">
-                            <Switch
-                              id={field.name}
-                              checked={field.state.value !== false}
-                              onCheckedChange={(newValue) => field.handleChange(newValue)}
-                            />
-                            <Label htmlFor={field.name}>{t("editor.inputNodeForm.normalizeLabels")}</Label>
-                          </div>
-                          <FormDescription>{t("editor.inputNodeForm.normalizeLabelsHint")}</FormDescription>
-                        </FormItem>
-                      )}
-                    />
-                  )
-                }
+                {(hasOptionsSource) => hasOptionsSource && normalizeOptionLabelsField}
               </Subscribe>
 
               {selectedNode?.data?.type === "select" && (

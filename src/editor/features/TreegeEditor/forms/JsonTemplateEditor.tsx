@@ -174,9 +174,9 @@ const JsonTemplateEditor = ({ value, onChange, fields }: JsonTemplateEditorProps
         />
       </div>
 
-      <p className="tg:text-muted-foreground tg:text-xs">{t("editor.jsonTemplate.hint")}</p>
-
       {isInvalid && <p className="tg:text-destructive tg:text-xs">{t("editor.jsonTemplate.invalidJson")}</p>}
+
+      <p className="tg:text-muted-foreground tg:text-xs">{t("editor.jsonTemplate.hint")}</p>
     </div>
   );
 };

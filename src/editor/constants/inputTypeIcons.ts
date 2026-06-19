@@ -1,5 +1,4 @@
 import {
-  AlignLeft,
   Calendar,
   CalendarRange,
   CaseSensitive,
@@ -18,6 +17,7 @@ import {
   Minus,
   Paperclip,
   RectangleEllipsis,
+  ScanText,
   Search,
   Send,
   ToggleLeft,
@@ -41,7 +41,7 @@ export const INPUT_TYPE_ICONS: Record<string, LucideIcon> = {
   [INPUT_TYPE.submit]: Send,
   [INPUT_TYPE.switch]: ToggleLeft,
   [INPUT_TYPE.text]: CaseSensitive,
-  [INPUT_TYPE.textarea]: AlignLeft,
+  [INPUT_TYPE.textarea]: ScanText,
   [INPUT_TYPE.time]: Clock,
   [INPUT_TYPE.timerange]: ClockFading,
   [UI_TYPE.divider]: Minus,
