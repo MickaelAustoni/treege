@@ -1,4 +1,5 @@
 import { Trash2 } from "lucide-react";
+import type { KeyboardEvent } from "react";
 import { useTreegeEditorRuntime } from "@/editor/context/TreegeEditorRuntimeProvider";
 import GroupNodeForm from "@/editor/features/TreegeEditor/forms/GroupNodeForm";
 import InputNodeForm from "@/editor/features/TreegeEditor/forms/InputNodeForm";
@@ -39,9 +40,26 @@ const NodeActionsSheet = () => {
     }
   };
 
+  // Mirror Radix's native Escape-to-close on Enter as a "done editing" gesture.
+  // Forms here auto-save on change, so closing just commits the current values.
+  // Guarded so we never steal Enter from a control that already used it: skip if
+  // it was consumed (Select/combobox option pick — handled on inner elements
+  // during bubbling) or if focus isn't a plain <input> (e.g. the CodeMirror JSON
+  // editor, where Enter inserts a newline).
+  const handleKeyDown = (event: KeyboardEvent) => {
+    if (event.key !== "Enter" || event.defaultPrevented) {
+      return;
+    }
+    if ((event.target as HTMLElement).tagName !== "INPUT") {
+      return;
+    }
+    event.preventDefault();
+    handleClose();
+  };
+
   return (
     <Sheet open={isNodeSheetOpen && !!selectedNode} onOpenChange={handleOpenChange}>
-      <SheetContent className="tg:flex tg:flex-col tg:gap-0">
+      <SheetContent className="tg:flex tg:flex-col tg:gap-0" onKeyDown={handleKeyDown}>
         <SheetHeader>
           <SheetTitle>
             {t("editor.nodeActionsSheet.editNode")}{" "}
