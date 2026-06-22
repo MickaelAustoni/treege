@@ -39,8 +39,8 @@ describe("cleanConfigForSubType", () => {
     expect(result).toEqual({ type: "text" });
   });
 
-  it("returns the same reference when nothing needs cleaning", () => {
+  it("keeps non-config keys untouched when nothing needs cleaning", () => {
     const data = { label: { en: "Hi" }, type: "text" };
-    expect(cleanConfigForSubType(data, "text")).toBe(data);
+    expect(cleanConfigForSubType(data, "text")).toEqual(data);
   });
 });

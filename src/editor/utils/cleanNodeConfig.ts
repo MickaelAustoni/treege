@@ -14,19 +14,17 @@ const CONFIG_BLOCKS: readonly { key: "httpConfig" | "optionsSource" | "submitCon
   { keepFor: (subType) => subType === INPUT_TYPE.submit, key: "submitConfig" },
 ];
 
+/** True when `key` is a config block that no longer belongs to `subType`. */
+const isStaleConfigBlock = (key: string, subType: string): boolean =>
+  CONFIG_BLOCKS.some(({ key: blockKey, keepFor }) => blockKey === key && !keepFor(subType));
+
 /**
- * Returns a copy of `data` with config blocks that don't belong to `subType`
- * removed. Pure — returns the same reference when nothing is dropped.
+ * Returns a copy of `data` keeping only the config blocks that belong to
+ * `subType` (non-config keys are always kept).
  */
-export const cleanConfigForSubType = <T extends Record<string, unknown>>(data: T, subType: string): T => {
-  let next: T | undefined;
+export const cleanConfigForSubType = (data: Record<string, unknown>, subType: string): Record<string, unknown> => {
+  const entries = Object.entries(data);
+  const relevantEntries = entries.filter(([key]) => !isStaleConfigBlock(key, subType));
 
-  for (const { key, keepFor } of CONFIG_BLOCKS) {
-    if (data[key] !== undefined && !keepFor(subType)) {
-      next ??= { ...data };
-      delete next[key];
-    }
-  }
-
-  return next ?? data;
+  return Object.fromEntries(relevantEntries);
 };

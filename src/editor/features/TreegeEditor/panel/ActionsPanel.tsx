@@ -13,6 +13,7 @@ import { AIGeneratorDialog } from "@/editor/features/TreegeEditor/panel/AIGenera
 import { useFlowContent } from "@/editor/hooks/useFlowContent";
 import useTranslate from "@/editor/hooks/useTranslate";
 import { ExtraMenuItem } from "@/editor/types/editor";
+import { cleanFlowData } from "@/editor/utils/cleanEmptyData";
 import { stripSensitiveHeadersFromFlow } from "@/editor/utils/sensitiveHeaders";
 import { Button } from "@/shared/components/ui/button";
 import {
@@ -131,7 +132,7 @@ const ActionsPanel = ({ onExportJson, onSave, extraMenuItems, onAuthorize, heade
       });
     }
 
-    return flow;
+    return cleanFlowData(flow);
   };
 
   const handleExport = () => {
@@ -177,7 +178,7 @@ const ActionsPanel = ({ onExportJson, onSave, extraMenuItems, onAuthorize, heade
       });
     }
 
-    onSave?.(flow);
+    onSave?.(cleanFlowData(flow));
   }, [edges, flowId, id, nodes, onSave, setFlowId, t]);
 
   const handleClear = () => {
