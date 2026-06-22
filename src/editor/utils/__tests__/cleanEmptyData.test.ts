@@ -72,4 +72,29 @@ describe("cleanFlowData", () => {
     expect(flow.nodes[0].data).toHaveProperty("pattern", "");
     expect(result).not.toBe(flow);
   });
+
+  it("drops transient editor UI state (selected/dragging/measured)", () => {
+    const flow = {
+      edges: [],
+      id: "flow-1",
+      nodes: [
+        {
+          data: { label: { en: "First name" }, type: "text" },
+          dragging: false,
+          id: "node-1",
+          measured: { height: 146, width: 270 },
+          position: { x: 0, y: 0 },
+          selected: true,
+          type: "input",
+        },
+      ],
+    } as unknown as Flow;
+
+    const result = cleanFlowData(flow);
+
+    expect(result.nodes[0]).not.toHaveProperty("selected");
+    expect(result.nodes[0]).not.toHaveProperty("dragging");
+    expect(result.nodes[0]).not.toHaveProperty("measured");
+    expect(result.nodes[0]).toMatchObject({ data: { label: { en: "First name" }, type: "text" }, id: "node-1" });
+  });
 });
