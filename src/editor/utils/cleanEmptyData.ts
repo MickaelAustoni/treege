@@ -61,12 +61,13 @@ export const cleanEmptyData = (data: Record<string, unknown>): Record<string, un
 /**
  * Returns a copy of the flow trimmed for export: every node's `data` is cleaned
  * of empty values and field defaults (see `cleanEmptyData`), and transient
- * editor UI state (`selected`/`dragging`/`measured`) is dropped — xyflow
- * recomputes these on mount. The input flow is never mutated, so the live editor
- * canvas keeps its values — only the exported/saved artifact is trimmed,
- * mirroring `stripSensitiveHeadersFromFlow`.
+ * editor UI state is dropped — nodes lose `selected`/`dragging`/`measured` and
+ * edges lose `selected`, all of which xyflow recomputes on mount. The input flow
+ * is never mutated, so the live editor canvas keeps its values — only the
+ * exported/saved artifact is trimmed, mirroring `stripSensitiveHeadersFromFlow`.
  */
 export const cleanFlowData = (flow: Flow): Flow => ({
   ...flow,
+  edges: flow.edges.map(({ selected, ...edge }) => edge),
   nodes: flow.nodes.map(({ selected, dragging, measured, ...node }) => (node.data ? { ...node, data: cleanEmptyData(node.data) } : node)),
 });

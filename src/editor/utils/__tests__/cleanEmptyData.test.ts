@@ -97,4 +97,17 @@ describe("cleanFlowData", () => {
     expect(result.nodes[0]).not.toHaveProperty("measured");
     expect(result.nodes[0]).toMatchObject({ data: { label: { en: "First name" }, type: "text" }, id: "node-1" });
   });
+
+  it("drops the transient `selected` flag from edges", () => {
+    const flow = {
+      edges: [{ id: "edge-1", selected: true, source: "node-1", target: "node-2" }],
+      id: "flow-1",
+      nodes: [],
+    } as unknown as Flow;
+
+    const result = cleanFlowData(flow);
+
+    expect(result.edges[0]).not.toHaveProperty("selected");
+    expect(result.edges[0]).toMatchObject({ id: "edge-1", source: "node-1", target: "node-2" });
+  });
 });
