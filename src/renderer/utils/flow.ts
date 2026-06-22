@@ -158,6 +158,23 @@ export const findStartNode = (nodes: Node<TreegeNodeData>[], edges: Edge[]): Nod
 };
 
 /**
+ * Walks the parent chain starting at `parentId` and returns the ancestor group
+ * IDs in order (closest first). `seen` guards against parent cycles.
+ */
+const collectAncestorGroupIds = (
+  parentId: string | undefined,
+  nodeMap: Map<string, Node<TreegeNodeData>>,
+  seen: Set<string> = new Set<string>(),
+): string[] => {
+  if (!parentId || seen.has(parentId)) {
+    return [];
+  }
+
+  seen.add(parentId);
+  return [parentId, ...collectAncestorGroupIds(nodeMap.get(parentId)?.parentId, nodeMap, seen)];
+};
+
+/**
  * Add parent groups to visible node IDs and assign them order indices
  * Mutates visibleNodeIds and orderIndex for efficiency
  */
@@ -168,28 +185,16 @@ const addParentGroupsToVisibleNodes = (
   nodeMap: Map<string, Node<TreegeNodeData>>,
 ): void => {
   orderedNodeIds.forEach((nodeId) => {
-    const node = nodeMap.get(nodeId);
-    if (!node) {
-      return;
-    }
+    const childOrder = orderIndex.get(nodeId);
+    const ancestorGroupIds = collectAncestorGroupIds(nodeMap.get(nodeId)?.parentId, nodeMap);
 
-    let { parentId } = node;
-    const seen = new Set<string>();
-    while (parentId) {
-      if (seen.has(parentId)) {
-        break; // cycle guard
-      }
-      seen.add(parentId);
+    ancestorGroupIds.forEach((parentId) => {
       visibleNodeIds.add(parentId);
       // If this parent group doesn't have an order yet, use this child's order
-      if (!orderIndex.has(parentId)) {
-        const childOrder = orderIndex.get(nodeId);
-        if (childOrder !== undefined) {
-          orderIndex.set(parentId, childOrder);
-        }
+      if (!orderIndex.has(parentId) && childOrder !== undefined) {
+        orderIndex.set(parentId, childOrder);
       }
-      parentId = nodeMap.get(parentId)?.parentId;
-    }
+    });
   });
 };
 

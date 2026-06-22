@@ -131,16 +131,11 @@ export const evaluateCondition = (
     return true;
   }
 
-  // Try to get the field value directly from formValues
-  let fieldValue = formValues[field];
-
-  // If not found, and we have a nodeMap, try to resolve field as a node ID
-  if (fieldValue === undefined && nodeMap) {
-    const node = nodeMap.get(field);
-    if (node && isInputNode(node)) {
-      fieldValue = formValues[node.id];
-    }
-  }
+  // Try to get the field value directly from formValues; if not found and we
+  // have a nodeMap, resolve `field` as a node ID and read that node's value.
+  const directValue = formValues[field];
+  const fallbackNode = directValue === undefined && nodeMap ? nodeMap.get(field) : undefined;
+  const fieldValue = fallbackNode && isInputNode(fallbackNode) ? formValues[fallbackNode.id] : directValue;
 
   // Multi-value fields (checkbox group, multi-select autocomplete) store
   // their value as an array. Match element-wise so a single condition like
