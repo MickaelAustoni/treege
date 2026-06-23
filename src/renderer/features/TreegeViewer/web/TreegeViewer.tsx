@@ -1,5 +1,6 @@
 import { File as FileIcon } from "lucide-react";
 import { ReactNode, useMemo } from "react";
+import RendererStyles from "@/renderer/features/TreegeRenderer/web/components/styles/RendererStyles";
 import { getViewerFields, isImageFile, ViewerField } from "@/renderer/features/TreegeViewer/utils/viewerFields";
 import { FormValues } from "@/renderer/types/renderer";
 import { Badge } from "@/shared/components/ui/badge";
@@ -176,21 +177,24 @@ const TreegeViewer = ({
   );
 
   return (
-    <dl className={cn("tg:flex tg:flex-col tg:gap-4", className)}>
-      {visibleFields.map((field) => {
-        const override = renderField?.[field.type];
-        const value = override ? override(field) : <DefaultValue field={field} emptyText={emptyText} />;
+    <>
+      <RendererStyles />
+      <dl className={cn("tg:flex tg:flex-col tg:gap-4", className)}>
+        {visibleFields.map((field) => {
+          const override = renderField?.[field.type];
+          const value = override ? override(field) : <DefaultValue field={field} emptyText={emptyText} />;
 
-        const row = (
-          <div className="tg:flex tg:flex-col tg:gap-1">
-            <dt className="tg:font-medium tg:text-muted-foreground tg:text-sm">{field.label}</dt>
-            <dd className="tg:m-0">{value}</dd>
-          </div>
-        );
+          const row = (
+            <div className="tg:flex tg:flex-col tg:gap-1">
+              <dt className="tg:font-medium tg:text-muted-foreground tg:text-sm">{field.label}</dt>
+              <dd className="tg:m-0">{value}</dd>
+            </div>
+          );
 
-        return <div key={field.id}>{renderRow ? renderRow(field, row) : row}</div>;
-      })}
-    </dl>
+          return <div key={field.id}>{renderRow ? renderRow(field, row) : row}</div>;
+        })}
+      </dl>
+    </>
   );
 };
 
