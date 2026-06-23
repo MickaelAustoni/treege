@@ -26,9 +26,13 @@ export interface TreegeViewerProps {
    * Field names (or ids) to hide from the view.
    */
   excludedFields?: string[];
-  /** Text shown when a field has no submitted value (defaults to `"—"`). */
+  /**
+   * Text shown when a field has no submitted value (defaults to `"—"`).
+   */
   emptyText?: string;
-  /** Extra class names on the root element. */
+  /**
+   * Extra class names on the root element. *
+   */
   className?: string;
   /**
    * Per-type rendering overrides for the value cell. Use this for app-specific
