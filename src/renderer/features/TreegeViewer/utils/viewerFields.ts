@@ -126,15 +126,16 @@ const resolveFileData = (data: string, baseUrl?: string): string =>
 const toViewerFiles = (value: unknown, baseUrl?: string): SerializableFile[] => {
   const entries = Array.isArray(value) ? value : [value];
 
-  return entries.reduce<SerializableFile[]>((files, entry) => {
+  return entries.flatMap((entry): SerializableFile[] => {
     if (typeof entry === "string" && entry.trim() !== "") {
-      files.push({ data: resolveFileData(entry, baseUrl), lastModified: 0, name: fileNameFromUrl(entry), size: 0, type: "" });
-    } else if (entry && typeof entry === "object" && "data" in entry) {
-      const file = entry as SerializableFile;
-      files.push({ ...file, data: resolveFileData(file.data, baseUrl) });
+      return [{ data: resolveFileData(entry, baseUrl), lastModified: 0, name: fileNameFromUrl(entry), size: 0, type: "" }];
     }
-    return files;
-  }, []);
+    if (entry && typeof entry === "object" && "data" in entry) {
+      const file = entry as SerializableFile;
+      return [{ ...file, data: resolveFileData(file.data, baseUrl) }];
+    }
+    return [];
+  });
 };
 
 const computeDisplay = (node: Node<InputNodeData>, value: unknown, language: string, baseUrl?: string): ViewerFieldDisplay => {
