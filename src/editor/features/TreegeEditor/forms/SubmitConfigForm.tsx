@@ -48,7 +48,7 @@ const SubmitConfigForm = ({ value, onChange }: SubmitConfigFormProps) => {
 
   const { Field, Subscribe, setFieldValue } = useForm({
     defaultValues: {
-      errorMessage: value?.errorMessage || { en: "" },
+      errorMessage: value?.errorMessage || {},
       headers: recordToEntries(value?.headers),
       method: value?.method || "POST",
       payloadTemplate: value?.payloadTemplate || "",
@@ -56,7 +56,7 @@ const SubmitConfigForm = ({ value, onChange }: SubmitConfigFormProps) => {
       redirectUrl: value?.redirectUrl || "",
       sendAllFormValues: !!value?.sendAllFormValues,
       showLoading: value?.showLoading !== false,
-      successMessage: value?.successMessage || { en: "" },
+      successMessage: value?.successMessage || {},
       url: value?.url || "",
     } as SubmitConfigFormValues,
     listeners: {

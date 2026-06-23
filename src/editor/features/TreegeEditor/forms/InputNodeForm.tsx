@@ -44,17 +44,17 @@ const InputNodeForm = () => {
     defaultValues: {
       defaultValue: selectedNode?.data?.defaultValue,
       disablePast: selectedNode?.data?.disablePast,
-      errorMessage: selectedNode?.data?.errorMessage || { en: "" },
-      helperText: selectedNode?.data?.helperText || { en: "" },
+      errorMessage: selectedNode?.data?.errorMessage || {},
+      helperText: selectedNode?.data?.helperText || {},
       httpConfig: selectedNode?.data?.httpConfig,
-      label: selectedNode?.data?.label || { en: "" },
+      label: selectedNode?.data?.label || {},
       multiple: selectedNode?.data?.multiple,
       name: selectedNode?.data?.name || "",
       normalizeOptionLabels: selectedNode?.data?.normalizeOptionLabels,
       options: selectedNode?.data?.options || [],
       optionsSource: selectedNode?.data?.optionsSource,
       pattern: selectedNode?.data?.pattern || "",
-      placeholder: selectedNode?.data?.placeholder || { en: "" },
+      placeholder: selectedNode?.data?.placeholder || {},
       required: selectedNode?.data?.required,
       submitConfig: selectedNode?.data?.submitConfig,
       variant: selectedNode?.data?.variant || "card",
@@ -333,7 +333,7 @@ const InputNodeForm = () => {
                             variant="outline"
                             size="sm"
                             onClick={() => {
-                              field.pushValue({ label: { en: "" }, value: "" });
+                              field.pushValue({ label: {}, value: "" });
                               handleSubmit().then();
                             }}
                           >
