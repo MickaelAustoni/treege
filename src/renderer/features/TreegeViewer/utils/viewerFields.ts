@@ -163,7 +163,6 @@ export const getViewerFields = (
   const nodes = flow?.nodes ?? [];
   const edges = flow?.edges ?? [];
   const inputNodes = getInputNodes(nodes);
-
   // Normalize to node-id keys (accepts name- or id-keyed input) so visibility
   // and value lookups share one keying, exactly like the renderer at mount.
   const idValues = buildInitialFormValues(values ?? {}, inputNodes);
