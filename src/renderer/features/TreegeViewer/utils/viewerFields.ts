@@ -1,5 +1,6 @@
 import { Node } from "@xyflow/react";
 import { FormValues } from "@/renderer/types/renderer";
+import { normalizeSerializableFiles } from "@/renderer/utils/file";
 import { getFlowRenderState } from "@/renderer/utils/flow";
 import { buildInitialFormValues } from "@/renderer/utils/form";
 import { resolveUrl } from "@/renderer/utils/http";
@@ -101,42 +102,20 @@ const IMAGE_URL_EXTENSION = /\.(png|jpe?g|gif|webp|svg|avif|bmp|ico)(\?|#|$)/i;
 export const isImageFile = (file: SerializableFile): boolean =>
   Boolean(file.type?.startsWith("image/")) || Boolean(file.data?.startsWith("data:image/")) || IMAGE_URL_EXTENSION.test(file.data ?? "");
 
-/** Derive a readable file name from a URL's last path segment (query/hash stripped). */
-const fileNameFromUrl = (url: string): string => {
-  try {
-    const { pathname } = new URL(url, "http://_");
-    const last = pathname.split("/").filter(Boolean).pop();
-    return last ? decodeURIComponent(last) : url;
-  } catch {
-    return url;
-  }
-};
-
 /** Resolve a file's `data` against `baseUrl`, leaving `data:`/`blob:` URLs untouched. */
 const resolveFileData = (data: string, baseUrl?: string): string =>
   !data || data.startsWith("data:") || data.startsWith("blob:") ? data : resolveUrl(data, baseUrl);
 
 /**
- * Normalize a `file` field value into a uniform list. A file may be submitted as
- * a `SerializableFile` (base64/URI in `data`) or, when the document lives on a
- * server, simply as a URL string — both are accepted here (and any mix of them),
- * so a viewer can render a stored document straight from its URL. Relative paths
- * are resolved against `baseUrl`.
+ * Normalize a `file` field value into a uniform list (accepting `SerializableFile`s,
+ * bare URL strings, or a mix — see {@link normalizeSerializableFiles}), then
+ * resolve any relative `data` path against `baseUrl`.
  */
-const toViewerFiles = (value: unknown, baseUrl?: string): SerializableFile[] => {
-  const entries = Array.isArray(value) ? value : [value];
-
-  return entries.flatMap((entry): SerializableFile[] => {
-    if (typeof entry === "string" && entry.trim() !== "") {
-      return [{ data: resolveFileData(entry, baseUrl), lastModified: 0, name: fileNameFromUrl(entry), size: 0, type: "" }];
-    }
-    if (entry && typeof entry === "object" && "data" in entry) {
-      const file = entry as SerializableFile;
-      return [{ ...file, data: resolveFileData(file.data, baseUrl) }];
-    }
-    return [];
-  });
-};
+const toViewerFiles = (value: unknown, baseUrl?: string): SerializableFile[] =>
+  normalizeSerializableFiles(value as Parameters<typeof normalizeSerializableFiles>[0]).map((file) => ({
+    ...file,
+    data: resolveFileData(file.data, baseUrl),
+  }));
 
 const computeDisplay = (node: Node<InputNodeData>, value: unknown, language: string, baseUrl?: string): ViewerFieldDisplay => {
   if (isEmptyValue(value)) {

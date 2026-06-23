@@ -2,7 +2,13 @@ import { File as FileIcon, FileUp, X } from "lucide-react";
 import { ChangeEvent, useRef } from "react";
 import { useTranslate } from "@/renderer/hooks/useTranslate";
 import { InputRenderProps } from "@/renderer/types/renderer";
-import { filesToSerializable, fileToSerializable, formatFileSize, normalizeSerializableFiles } from "@/renderer/utils/file";
+import {
+  filesToSerializable,
+  fileToSerializable,
+  formatFileSize,
+  isRemoteFileData,
+  normalizeSerializableFiles,
+} from "@/renderer/utils/file";
 import { Button } from "@/shared/components/ui/button";
 import { FormDescription, FormError, FormItem } from "@/shared/components/ui/form";
 
@@ -50,9 +56,21 @@ const DefaultFileInput = ({ field, extra }: InputRenderProps<"file">) => {
               className="tg:flex tg:items-center tg:gap-2 tg:rounded-md tg:border tg:bg-card tg:px-3 tg:py-2 tg:text-sm"
             >
               <FileIcon className="tg:size-4 tg:shrink-0 tg:text-muted-foreground" />
-              <span className="tg:flex-1 tg:truncate" title={file.name}>
-                {file.name}
-              </span>
+              {isRemoteFileData(file.data) ? (
+                <a
+                  href={file.data}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="tg:flex-1 tg:truncate tg:text-primary tg:underline tg:underline-offset-2"
+                  title={file.name}
+                >
+                  {file.name}
+                </a>
+              ) : (
+                <span className="tg:flex-1 tg:truncate" title={file.name}>
+                  {file.name}
+                </span>
+              )}
               {file.size > 0 && <span className="tg:shrink-0 tg:text-muted-foreground tg:text-xs">{formatFileSize(file.size)}</span>}
               <Button
                 type="button"

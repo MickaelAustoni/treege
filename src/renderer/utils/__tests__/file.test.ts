@@ -1,5 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { filesToSerializable, fileToSerializable, serializableToFile } from "@/renderer/utils/file";
+import {
+  fileNameFromUrl,
+  filesToSerializable,
+  fileToSerializable,
+  isRemoteFileData,
+  normalizeSerializableFiles,
+  serializableToFile,
+} from "@/renderer/utils/file";
 
 describe("File Utils", () => {
   describe("fileToSerializable", () => {
@@ -192,6 +199,61 @@ describe("File Utils", () => {
 
       expect(serialized.type).toBe("");
       expect(serialized.data).toBeDefined();
+    });
+  });
+
+  describe("fileNameFromUrl", () => {
+    it("derives the name from the last path segment", () => {
+      expect(fileNameFromUrl("https://cdn.example.com/files/report.pdf")).toBe("report.pdf");
+    });
+
+    it("ignores query and hash", () => {
+      expect(fileNameFromUrl("https://cdn.example.com/a/b/photo.png?token=x#frag")).toBe("photo.png");
+    });
+
+    it("handles relative paths and decodes the name", () => {
+      expect(fileNameFromUrl("uploads/my%20doc.pdf")).toBe("my doc.pdf");
+    });
+  });
+
+  describe("isRemoteFileData", () => {
+    it("is true for http(s) and relative URLs", () => {
+      expect(isRemoteFileData("https://x/y.png")).toBe(true);
+      expect(isRemoteFileData("uploads/y.png")).toBe(true);
+    });
+
+    it("is false for data:/blob: and empty values", () => {
+      expect(isRemoteFileData("data:image/png;base64,AA")).toBe(false);
+      expect(isRemoteFileData("blob:https://x/abc")).toBe(false);
+      expect(isRemoteFileData("")).toBe(false);
+      expect(isRemoteFileData(undefined)).toBe(false);
+    });
+  });
+
+  describe("normalizeSerializableFiles", () => {
+    it("wraps a single file and passes arrays through", () => {
+      const file = { data: "data:x", lastModified: 0, name: "a.txt", size: 1, type: "text/plain" };
+      expect(normalizeSerializableFiles(file)).toEqual([file]);
+      expect(normalizeSerializableFiles([file])).toEqual([file]);
+    });
+
+    it("returns an empty array for empty values", () => {
+      expect(normalizeSerializableFiles(null)).toEqual([]);
+      expect(normalizeSerializableFiles(undefined)).toEqual([]);
+      expect(normalizeSerializableFiles("")).toEqual([]);
+      expect(normalizeSerializableFiles([])).toEqual([]);
+    });
+
+    it("coerces a URL string into a SerializableFile with a derived name", () => {
+      expect(normalizeSerializableFiles("https://cdn.example.com/files/report.pdf")).toEqual([
+        { data: "https://cdn.example.com/files/report.pdf", lastModified: 0, name: "report.pdf", size: 0, type: "" },
+      ]);
+    });
+
+    it("coerces a mix of URL strings and files", () => {
+      const file = { data: "data:x", lastModified: 0, name: "a.txt", size: 1, type: "text/plain" };
+      const result = normalizeSerializableFiles(["https://x/photo.png", file]);
+      expect(result).toEqual([{ data: "https://x/photo.png", lastModified: 0, name: "photo.png", size: 0, type: "" }, file]);
     });
   });
 });
