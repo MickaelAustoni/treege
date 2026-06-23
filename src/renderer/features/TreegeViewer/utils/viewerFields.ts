@@ -1,6 +1,5 @@
 import { Node } from "@xyflow/react";
 import { FormValues } from "@/renderer/types/renderer";
-import { normalizeSerializableFiles } from "@/renderer/utils/file";
 import { getFlowRenderState } from "@/renderer/utils/flow";
 import { buildInitialFormValues } from "@/renderer/utils/form";
 import { getInputNodes, resolveNodeKey } from "@/renderer/utils/node";
@@ -86,6 +85,45 @@ const resolveOptionLabel = (options: InputOption[] | undefined, value: unknown, 
   return option ? getTranslatedText(option.label, language) || option.value : String(value ?? "");
 };
 
+const IMAGE_URL_EXTENSION = /\.(png|jpe?g|gif|webp|svg|avif|bmp|ico)(\?|#|$)/i;
+
+/**
+ * Whether a file should be previewed inline as an image — detected by MIME type
+ * (`image/*`), a `data:image/` data-URL, or a recognized image URL extension.
+ */
+export const isImageFile = (file: SerializableFile): boolean =>
+  Boolean(file.type?.startsWith("image/")) || Boolean(file.data?.startsWith("data:image/")) || IMAGE_URL_EXTENSION.test(file.data ?? "");
+
+/** Derive a readable file name from a URL's last path segment (query/hash stripped). */
+const fileNameFromUrl = (url: string): string => {
+  try {
+    const { pathname } = new URL(url, "http://_");
+    const last = pathname.split("/").filter(Boolean).pop();
+    return last ? decodeURIComponent(last) : url;
+  } catch {
+    return url;
+  }
+};
+
+/**
+ * Normalize a `file` field value into a uniform list. A file may be submitted as
+ * a `SerializableFile` (base64/URI in `data`) or, when the document lives on a
+ * server, simply as a URL string — both are accepted here (and any mix of them),
+ * so a viewer can render a stored document straight from its URL.
+ */
+const toViewerFiles = (value: unknown): SerializableFile[] => {
+  const entries = Array.isArray(value) ? value : [value];
+
+  return entries.reduce<SerializableFile[]>((files, entry) => {
+    if (typeof entry === "string" && entry.trim() !== "") {
+      files.push({ data: entry, lastModified: 0, name: fileNameFromUrl(entry), size: 0, type: "" });
+    } else if (entry && typeof entry === "object" && "data" in entry) {
+      files.push(entry as SerializableFile);
+    }
+    return files;
+  }, []);
+};
+
 const computeDisplay = (node: Node<InputNodeData>, value: unknown, language: string): ViewerFieldDisplay => {
   if (isEmptyValue(value)) {
     return { kind: "empty" };
@@ -127,7 +165,7 @@ const computeDisplay = (node: Node<InputNodeData>, value: unknown, language: str
     }
 
     case INPUT_TYPE.file: {
-      const files = normalizeSerializableFiles(value as SerializableFile | SerializableFile[] | null | undefined);
+      const files = toViewerFiles(value);
       return files.length ? { files, kind: "files" } : { kind: "empty" };
     }
 
@@ -172,6 +210,7 @@ export const getViewerFields = (
     .filter((node) => !NON_DISPLAYABLE_TYPES.has(node.data.type ?? ""))
     .map((node) => {
       const rawValue = idValues[node.id];
+
       return {
         display: computeDisplay(node, rawValue, language),
         id: node.id,

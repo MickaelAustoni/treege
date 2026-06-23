@@ -1,7 +1,17 @@
 import { Edge, Node } from "@xyflow/react";
 import { describe, expect, it } from "vitest";
-import { getViewerFields } from "@/renderer/features/TreegeViewer/utils/viewerFields";
+import { getViewerFields, isImageFile } from "@/renderer/features/TreegeViewer/utils/viewerFields";
+import { SerializableFile } from "@/shared/types/file";
 import { Flow } from "@/shared/types/node";
+
+const makeFile = (overrides: Partial<SerializableFile>): SerializableFile => ({
+  data: "",
+  lastModified: 0,
+  name: "f",
+  size: 0,
+  type: "",
+  ...overrides,
+});
 
 /**
  * A small two-branch flow: a `root` radio selects between the `a` and `b`
@@ -135,6 +145,22 @@ describe("getViewerFields", () => {
     expect(field?.display).toMatchObject({ files: [{ name: "contract.pdf" }] });
   });
 
+  it("accepts a file given as a URL string (name derived from the URL)", () => {
+    const field = getViewerFields(flow, { ...values, docs: "https://cdn.example.com/files/report.pdf?token=abc" }).find(
+      (entry) => entry.name === "docs",
+    );
+    expect(field?.display).toMatchObject({ files: [{ data: "https://cdn.example.com/files/report.pdf?token=abc", name: "report.pdf" }] });
+  });
+
+  it("accepts a mix of URL strings and SerializableFiles", () => {
+    const field = getViewerFields(flow, {
+      ...values,
+      docs: ["https://cdn.example.com/a.png", { data: "data:application/pdf;base64,AA", name: "b.pdf", size: 1, type: "application/pdf" }],
+    }).find((entry) => entry.name === "docs");
+    expect(field?.display.kind).toBe("files");
+    expect(field?.display).toMatchObject({ files: [{ name: "a.png" }, { name: "b.pdf" }] });
+  });
+
   it("marks an absent value as empty", () => {
     const field = getViewerFields(flow, { ...values, active: undefined }).find((entry) => entry.name === "active");
     expect(field?.display).toEqual({ kind: "empty" });
@@ -143,5 +169,23 @@ describe("getViewerFields", () => {
   it("accepts node-id-keyed values too", () => {
     const fields = getViewerFields(flow, { "a-select": "broken", root: "a" });
     expect(fields.find((entry) => entry.name === "reason")?.display).toEqual({ kind: "text", text: "Broken" });
+  });
+});
+
+describe("isImageFile", () => {
+  it("detects images by MIME type", () => {
+    expect(isImageFile(makeFile({ type: "image/png" }))).toBe(true);
+    expect(isImageFile(makeFile({ type: "application/pdf" }))).toBe(false);
+  });
+
+  it("detects images by data-URL", () => {
+    expect(isImageFile(makeFile({ data: "data:image/jpeg;base64,AA" }))).toBe(true);
+    expect(isImageFile(makeFile({ data: "data:application/pdf;base64,AA" }))).toBe(false);
+  });
+
+  it("detects images by URL extension (ignoring query/hash)", () => {
+    expect(isImageFile(makeFile({ data: "https://cdn.example.com/a.png" }))).toBe(true);
+    expect(isImageFile(makeFile({ data: "https://cdn.example.com/a.jpg?token=x" }))).toBe(true);
+    expect(isImageFile(makeFile({ data: "https://cdn.example.com/doc.pdf" }))).toBe(false);
   });
 });

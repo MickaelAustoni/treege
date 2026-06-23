@@ -32,7 +32,7 @@ const SAMPLE_VALUES: FormValues = {
   "question-3": ["option-1", "option-3"], // checkbox (multi)
   "question-4": "2026-06-01T00:00:00.000Z", // date
   "question-5": ["2026-06-01T00:00:00.000Z", "2026-07-15T00:00:00.000Z"], // daterange
-  // file — an image (previewed inline) + a document (download link)
+  // file — accepts SerializableFiles (base64 image, document) and bare URL strings
   "question-6": [
     {
       data: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Crect width='64' height='64' fill='%234f46e5'/%3E%3Ctext x='32' y='38' font-size='10' fill='white' text-anchor='middle'%3EIMG%3C/text%3E%3C/svg%3E",
@@ -41,6 +41,8 @@ const SAMPLE_VALUES: FormValues = {
       type: "image/svg+xml",
     },
     { data: "data:application/pdf;base64,JVBERi0xLjQK", name: "contrat.pdf", size: 12345, type: "application/pdf" },
+    "https://www.example.com/files/rapport-annuel.pdf", // A remote document, given as a plain URL
+    "https://fastly.picsum.photos/id/940/200/300.jpg?hmac=H13hOo0ZH4iX7fShH_p1dNg8gyZKXZIUNFfR74kIO7k", // Image from url
   ],
   "question-8": "42", // number
   "question-9": "hunter2", // password

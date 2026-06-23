@@ -1,16 +1,12 @@
-import { Download, File as FileIcon } from "lucide-react";
+import { File as FileIcon } from "lucide-react";
 import { ReactNode, useMemo } from "react";
-import { getViewerFields, ViewerField } from "@/renderer/features/TreegeViewer/utils/viewerFields";
+import { getViewerFields, isImageFile, ViewerField } from "@/renderer/features/TreegeViewer/utils/viewerFields";
 import { FormValues } from "@/renderer/types/renderer";
 import { Badge } from "@/shared/components/ui/badge";
 import { Checkbox } from "@/shared/components/ui/checkbox";
 import { cn } from "@/shared/lib/utils";
 import { SerializableFile } from "@/shared/types/file";
 import { Flow, InputType } from "@/shared/types/node";
-
-/** Whether a serialized file should be previewed inline as an image. */
-const isImageFile = (file: SerializableFile): boolean =>
-  Boolean(file.type?.startsWith("image/")) || Boolean(file.data?.startsWith("data:image/"));
 
 /**
  * Read-only rendering of a single uploaded file: an inline thumbnail for images
@@ -39,7 +35,6 @@ const ViewerFile = ({ file }: { file: SerializableFile }): ReactNode => {
     >
       <FileIcon className="tg:size-4 tg:shrink-0" />
       <span className="tg:break-all">{file.name}</span>
-      <Download className="tg:size-3.5 tg:shrink-0 tg:text-muted-foreground" />
     </a>
   );
 };

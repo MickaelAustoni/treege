@@ -9,7 +9,9 @@ export * from "@/renderer/features/TreegeRenderer/web/components/DefaultSubmitBu
 export * from "@/renderer/features/TreegeRenderer/web/components/DefaultUI";
 export * from "@/renderer/features/TreegeRenderer/web/TreegeRenderer";
 export { default as TreegeRenderer } from "@/renderer/features/TreegeRenderer/web/TreegeRenderer";
-export * from "@/renderer/features/TreegeViewer";
+export * from "@/renderer/features/TreegeViewer/utils/viewerFields";
+export * from "@/renderer/features/TreegeViewer/web/TreegeViewer";
+export { default as TreegeViewer } from "@/renderer/features/TreegeViewer/web/TreegeViewer";
 export type { TreegeRendererConfig } from "@/renderer/types/renderer";
 export * from "@/renderer/types/renderer";
 export * from "@/renderer/utils/conditions";
