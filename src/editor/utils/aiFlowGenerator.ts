@@ -14,6 +14,7 @@ IMPORTANT RULES:
 6. AVOID using "pattern" field unless specifically requested - prefer using simple validation
 7. For submit buttons, use type "input" with data.type "submit"
 8. For conditional logic, use conditional edges with proper operators (===, !==, >, <, >=, <=)
+9. TRANSLATABLE TEXT: every node/option translatable text field — "label", "placeholder", "helperText", "errorMessage", and each option's "label" — MUST be an object keyed by language code, e.g. { "en": "First name" }. NEVER a bare string. Use the language code that matches the language of the user's request (e.g. "fr" for a French request). The ONLY exception is the conditional edge "label" (data.label on edges), which stays a plain string.
 
 NODE TYPES:
 - "input": Form input fields (text, number, select, checkbox, etc.)
@@ -32,15 +33,15 @@ INPUT NODE DATA STRUCTURE:
   "type": "input",
   "position": { "x": 0, "y": 0 },
   "data": {
-    "label": "Field Label",
+    "label": { "en": "Field Label" },
     "name": "fieldName",
     "type": "text",
     "required": true,
-    "placeholder": "Enter value...",
-    "helperText": "Optional helper text",
+    "placeholder": { "en": "Enter value..." },
+    "helperText": { "en": "Optional helper text" },
     "pattern": "regex pattern (optional)",
-    "errorMessage": "Error message if validation fails",
-    "options": [{ "value": "val", "label": "Label" }], // for select/radio/checkbox
+    "errorMessage": { "en": "Error message if validation fails" },
+    "options": [{ "value": "val", "label": { "en": "Label" } }], // for select/radio/checkbox
     "multiple": false // for select/checkbox
   }
 }
@@ -55,7 +56,7 @@ UI NODE DATA STRUCTURE:
   "type": "ui",
   "position": { "x": 0, "y": 0 },
   "data": {
-    "label": "UI Element Label",
+    "label": { "en": "UI Element Label" },
     "type": "title" // or "divider"
   }
 }
@@ -66,7 +67,7 @@ GROUP NODE DATA STRUCTURE:
   "type": "group",
   "position": { "x": 0, "y": 0 },
   "data": {
-    "label": "Group Label"
+    "label": { "en": "Group Label" }
   }
 }
 
@@ -119,18 +120,18 @@ Response:
       "id": "title-1",
       "type": "ui",
       "position": { "x": 0, "y": 0 },
-      "data": { "label": "Contact Form", "type": "title" }
+      "data": { "label": { "en": "Contact Form" }, "type": "title" }
     },
     {
       "id": "name-1",
       "type": "input",
       "position": { "x": 0, "y": 250 },
       "data": {
-        "label": "Name",
+        "label": { "en": "Name" },
         "name": "name",
         "type": "text",
         "required": true,
-        "placeholder": "Enter your name"
+        "placeholder": { "en": "Enter your name" }
       }
     },
     {
@@ -138,11 +139,11 @@ Response:
       "type": "input",
       "position": { "x": 0, "y": 500 },
       "data": {
-        "label": "Email",
+        "label": { "en": "Email" },
         "name": "email",
         "type": "text",
         "required": true,
-        "placeholder": "your@email.com"
+        "placeholder": { "en": "your@email.com" }
       }
     },
     {
@@ -150,11 +151,11 @@ Response:
       "type": "input",
       "position": { "x": 0, "y": 750 },
       "data": {
-        "label": "Message",
+        "label": { "en": "Message" },
         "name": "message",
         "type": "textarea",
         "required": true,
-        "placeholder": "Enter your message"
+        "placeholder": { "en": "Enter your message" }
       }
     }
   ],
@@ -173,18 +174,18 @@ Response:
       "id": "title-1",
       "type": "ui",
       "position": { "x": 0, "y": 0 },
-      "data": { "label": "User Registration", "type": "title" }
+      "data": { "label": { "en": "User Registration" }, "type": "title" }
     },
     {
       "id": "age-1",
       "type": "input",
       "position": { "x": 0, "y": 250 },
       "data": {
-        "label": "Age",
+        "label": { "en": "Age" },
         "name": "age",
         "type": "number",
         "required": true,
-        "placeholder": "Enter your age"
+        "placeholder": { "en": "Enter your age" }
       }
     },
     {
@@ -192,11 +193,11 @@ Response:
       "type": "input",
       "position": { "x": 0, "y": 500 },
       "data": {
-        "label": "Address",
+        "label": { "en": "Address" },
         "name": "address",
         "type": "address",
         "required": true,
-        "placeholder": "Enter your address"
+        "placeholder": { "en": "Enter your address" }
       }
     },
     {
@@ -204,16 +205,16 @@ Response:
       "type": "input",
       "position": { "x": 0, "y": 750 },
       "data": {
-        "label": "Country",
+        "label": { "en": "Country" },
         "name": "country",
         "type": "select",
         "required": true,
         "options": [
-          { "value": "us", "label": "United States" },
-          { "value": "ca", "label": "Canada" },
-          { "value": "uk", "label": "United Kingdom" },
-          { "value": "fr", "label": "France" },
-          { "value": "de", "label": "Germany" }
+          { "value": "us", "label": { "en": "United States" } },
+          { "value": "ca", "label": { "en": "Canada" } },
+          { "value": "uk", "label": { "en": "United Kingdom" } },
+          { "value": "fr", "label": { "en": "France" } },
+          { "value": "de", "label": { "en": "Germany" } }
         ]
       }
     },
@@ -222,7 +223,7 @@ Response:
       "type": "input",
       "position": { "x": 0, "y": 1000 },
       "data": {
-        "label": "Submit",
+        "label": { "en": "Submit" },
         "type": "submit"
       }
     }
@@ -243,18 +244,18 @@ Response:
       "id": "title-1",
       "type": "ui",
       "position": { "x": 0, "y": 0 },
-      "data": { "label": "Survey Form", "type": "title" }
+      "data": { "label": { "en": "Survey Form" }, "type": "title" }
     },
     {
       "id": "name-1",
       "type": "input",
       "position": { "x": 0, "y": 250 },
       "data": {
-        "label": "Name",
+        "label": { "en": "Name" },
         "name": "name",
         "type": "text",
         "required": true,
-        "placeholder": "Enter your name"
+        "placeholder": { "en": "Enter your name" }
       }
     },
     {
@@ -262,11 +263,11 @@ Response:
       "type": "input",
       "position": { "x": 0, "y": 500 },
       "data": {
-        "label": "Age",
+        "label": { "en": "Age" },
         "name": "age",
         "type": "number",
         "required": true,
-        "placeholder": "Enter your age"
+        "placeholder": { "en": "Enter your age" }
       }
     },
     {
@@ -274,11 +275,11 @@ Response:
       "type": "input",
       "position": { "x": -350, "y": 750 },
       "data": {
-        "label": "Favorite Movie",
+        "label": { "en": "Favorite Movie" },
         "name": "favoriteMovie",
         "type": "text",
         "required": true,
-        "helperText": "For adults 18 and over"
+        "helperText": { "en": "For adults 18 and over" }
       }
     },
     {
@@ -286,11 +287,11 @@ Response:
       "type": "input",
       "position": { "x": 350, "y": 750 },
       "data": {
-        "label": "Favorite Color",
+        "label": { "en": "Favorite Color" },
         "name": "favoriteColor",
         "type": "text",
         "required": true,
-        "helperText": "For those under 18"
+        "helperText": { "en": "For those under 18" }
       }
     },
     {
@@ -298,7 +299,7 @@ Response:
       "type": "input",
       "position": { "x": 0, "y": 1000 },
       "data": {
-        "label": "Submit",
+        "label": { "en": "Submit" },
         "type": "submit"
       }
     }

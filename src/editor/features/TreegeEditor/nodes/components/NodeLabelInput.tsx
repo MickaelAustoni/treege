@@ -4,6 +4,7 @@ import useFlowActions from "@/editor/hooks/useFlowActions";
 import useTranslate from "@/editor/hooks/useTranslate";
 import { cn } from "@/shared/lib/utils";
 import { Translatable } from "@/shared/types/translate";
+import { getTranslatableValue, setTranslatableValue } from "@/shared/utils/translations";
 
 interface NodeLabelInputProps {
   nodeId: string;
@@ -18,12 +19,12 @@ const NodeLabelInput = ({ nodeId, label, placeholder, className, autoFocus }: No
   const { updateNodeData, clearSelection } = useFlowActions();
   const t = useTranslate();
   const inputRef = useRef<HTMLInputElement>(null);
-  const value = label?.[language] ?? "";
+  const value = getTranslatableValue(label, language);
   const resolvedPlaceholder = placeholder || t("editor.treegeNode.labelPlaceholder");
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     updateNodeData(nodeId, {
-      label: { ...label, [language]: event.target.value },
+      label: setTranslatableValue(label, language, event.target.value),
     });
   };
 

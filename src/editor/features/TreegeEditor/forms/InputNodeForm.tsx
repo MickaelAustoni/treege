@@ -9,6 +9,7 @@ import ComboboxPattern from "@/editor/features/TreegeEditor/inputs/ComboboxPatte
 import DefaultFileValueField from "@/editor/features/TreegeEditor/inputs/DefaultFileValueField";
 import OptionImageField from "@/editor/features/TreegeEditor/inputs/OptionImageField";
 import SelectLanguage from "@/editor/features/TreegeEditor/inputs/SelectLanguage";
+import TranslatableInput from "@/editor/features/TreegeEditor/inputs/TranslatableInput";
 import useAvailableParentFields from "@/editor/hooks/useAvailableParentFields";
 import useFlowActions from "@/editor/hooks/useFlowActions";
 import useNodesSelection from "@/editor/hooks/useNodesSelection";
@@ -102,18 +103,14 @@ const InputNodeForm = () => {
             children={(field) => (
               <FormItem className="tg:flex-1">
                 <Label htmlFor={field.name}>{t("editor.inputNodeForm.label")}</Label>
-                <Input
+                <TranslatableInput
                   autoFocus
                   id={field.name}
                   name={field.name}
-                  value={field.state.value?.[selectedLanguage] || ""}
+                  value={field.state.value}
+                  language={selectedLanguage}
+                  onChange={field.handleChange}
                   onBlur={field.handleBlur}
-                  onChange={({ target }) => {
-                    field.handleChange({
-                      ...(typeof field.state.value === "object" && field.state.value !== null ? field.state.value : {}),
-                      [selectedLanguage]: target.value,
-                    });
-                  }}
                 />
               </FormItem>
             )}
@@ -129,17 +126,13 @@ const InputNodeForm = () => {
               children={(field) => (
                 <FormItem className="tg:flex-1">
                   <Label htmlFor={field.name}>{t("editor.inputNodeForm.placeholder")}</Label>
-                  <Input
+                  <TranslatableInput
                     id={field.name}
                     name={field.name}
-                    value={field.state.value?.[selectedLanguage] || ""}
+                    value={field.state.value}
+                    language={selectedLanguage}
+                    onChange={field.handleChange}
                     onBlur={field.handleBlur}
-                    onChange={({ target }) => {
-                      field.handleChange({
-                        ...(typeof field.state.value === "object" && field.state.value !== null ? field.state.value : {}),
-                        [selectedLanguage]: target.value,
-                      });
-                    }}
                   />
                 </FormItem>
               )}
@@ -156,17 +149,13 @@ const InputNodeForm = () => {
               children={(field) => (
                 <FormItem className="tg:flex-1">
                   <Label htmlFor={field.name}>{t("editor.inputNodeForm.helperText")}</Label>
-                  <Input
+                  <TranslatableInput
                     id={field.name}
                     name={field.name}
-                    value={field.state.value?.[selectedLanguage] || ""}
+                    value={field.state.value}
+                    language={selectedLanguage}
+                    onChange={field.handleChange}
                     onBlur={field.handleBlur}
-                    onChange={({ target }) => {
-                      field.handleChange({
-                        ...(typeof field.state.value === "object" && field.state.value !== null ? field.state.value : {}),
-                        [selectedLanguage]: target.value,
-                      });
-                    }}
                   />
                 </FormItem>
               )}
@@ -293,17 +282,11 @@ const InputNodeForm = () => {
 
                                   <Field name={`options[${index}].label`}>
                                     {(subField) => (
-                                      <Input
+                                      <TranslatableInput
                                         placeholder={t("editor.inputNodeForm.optionLabel")}
-                                        value={subField.state.value?.[selectedLanguage] || ""}
-                                        onChange={({ target }) => {
-                                          subField.handleChange({
-                                            ...(typeof subField.state.value === "object" && subField.state.value !== null
-                                              ? subField.state.value
-                                              : {}),
-                                            [selectedLanguage]: target.value,
-                                          });
-                                        }}
+                                        value={subField.state.value}
+                                        language={selectedLanguage}
+                                        onChange={subField.handleChange}
                                       />
                                     )}
                                   </Field>
@@ -333,20 +316,11 @@ const InputNodeForm = () => {
 
                                 <Field name={`options[${index}].description`}>
                                   {(subField) => (
-                                    <Input
+                                    <TranslatableInput
                                       placeholder={t("editor.inputNodeForm.optionDescription")}
-                                      value={
-                                        (subField.state.value as { [key: string]: string | undefined } | undefined)?.[selectedLanguage] ||
-                                        ""
-                                      }
-                                      onChange={({ target }) => {
-                                        subField.handleChange({
-                                          ...(typeof subField.state.value === "object" && subField.state.value !== null
-                                            ? subField.state.value
-                                            : {}),
-                                          [selectedLanguage]: target.value,
-                                        } as never);
-                                      }}
+                                      value={subField.state.value}
+                                      language={selectedLanguage}
+                                      onChange={subField.handleChange}
                                     />
                                   )}
                                 </Field>
@@ -470,17 +444,13 @@ const InputNodeForm = () => {
                   children={(field) => (
                     <FormItem className="tg:flex-1">
                       <Label htmlFor={field.name}>{t("editor.inputNodeForm.errorMessage")}</Label>
-                      <Input
+                      <TranslatableInput
                         id={field.name}
                         name={field.name}
-                        value={field.state.value?.[selectedLanguage] || ""}
+                        value={field.state.value}
+                        language={selectedLanguage}
+                        onChange={field.handleChange}
                         onBlur={field.handleBlur}
-                        onChange={({ target }) => {
-                          field.handleChange({
-                            ...(typeof field.state.value === "object" && field.state.value !== null ? field.state.value : {}),
-                            [selectedLanguage]: target.value,
-                          });
-                        }}
                       />
                     </FormItem>
                   )}

@@ -1,7 +1,7 @@
 import { Node } from "@xyflow/react";
 import { InputNodeData, InputType, TreegeNodeData } from "@/shared/types/node";
 import { isInputNode } from "@/shared/utils/nodeTypeGuards";
-import { getStaticTranslations, getTranslatedText } from "@/shared/utils/translations";
+import { getStaticTranslations, getTranslatableValue, getTranslatedText } from "@/shared/utils/translations";
 
 /**
  * Input types that fall back to the "newAnswer" static translation
@@ -28,17 +28,11 @@ export const resolveNodeKey = (node: Node<InputNodeData>): string => {
     return node.data.name;
   }
 
-  if (node.data.label) {
-    // Try English first
-    if (node.data.label.en) {
-      return node.data.label.en;
-    }
-
-    // Fallback to first available language
-    const firstAvailableLabel = Object.values(node.data.label).find(Boolean);
-    if (firstAvailableLabel) {
-      return firstAvailableLabel;
-    }
+  // English first, then any available language (getTranslatedText handles both
+  // a per-language object and a plain-string label).
+  const labelText = getTranslatedText(node.data.label);
+  if (labelText) {
+    return labelText;
   }
 
   // Final fallback to node ID
@@ -68,7 +62,7 @@ export const resolveNodeLabel = (node: Node<InputNodeData>, language: string): s
  */
 export const resolveInputPlaceholder = (data: InputNodeData, language: string): string => {
   const inputType = data.type ?? "text";
-  const hasPlaceholderForLanguage = !!data.placeholder?.[language];
+  const hasPlaceholderForLanguage = !!getTranslatableValue(data.placeholder, language);
 
   if (!hasPlaceholderForLanguage && TEXTFIELD_INPUT_TYPES.has(inputType)) {
     return getStaticTranslations(language)["renderer.defaultInputs.newAnswer"] ?? "";

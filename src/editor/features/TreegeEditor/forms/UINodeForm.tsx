@@ -1,10 +1,10 @@
 import { useForm } from "@tanstack/react-form";
 import { useState } from "react";
 import SelectLanguage from "@/editor/features/TreegeEditor/inputs/SelectLanguage";
+import TranslatableInput from "@/editor/features/TreegeEditor/inputs/TranslatableInput";
 import useFlowActions from "@/editor/hooks/useFlowActions";
 import useNodesSelection from "@/editor/hooks/useNodesSelection";
 import { FormItem } from "@/shared/components/ui/form";
-import { Input } from "@/shared/components/ui/input";
 import { Label } from "@/shared/components/ui/label";
 import { Language } from "@/shared/types/languages";
 import { UINodeData } from "@/shared/types/node";
@@ -43,17 +43,13 @@ const UINodeForm = () => {
             children={(field) => (
               <FormItem className="tg:flex-1">
                 <Label htmlFor={field.name}>Label</Label>
-                <Input
+                <TranslatableInput
                   id={field.name}
                   name={field.name}
-                  value={field.state.value?.[selectedLanguage] || ""}
+                  value={field.state.value}
+                  language={selectedLanguage}
+                  onChange={field.handleChange}
                   onBlur={field.handleBlur}
-                  onChange={({ target }) => {
-                    field.handleChange({
-                      ...field.state.value,
-                      [selectedLanguage]: target.value,
-                    });
-                  }}
                 />
               </FormItem>
             )}

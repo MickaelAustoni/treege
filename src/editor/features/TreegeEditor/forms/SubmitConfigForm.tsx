@@ -5,6 +5,7 @@ import { useOpenApi } from "@/editor/context/OpenApiContext";
 import JsonTemplateEditor from "@/editor/features/TreegeEditor/forms/JsonTemplateEditor";
 import ApiUrlCombobox from "@/editor/features/TreegeEditor/inputs/ApiUrlCombobox";
 import SelectLanguage from "@/editor/features/TreegeEditor/inputs/SelectLanguage";
+import TranslatableInput from "@/editor/features/TreegeEditor/inputs/TranslatableInput";
 import useAvailableParentFields from "@/editor/hooks/useAvailableParentFields";
 import useNodesSelection from "@/editor/hooks/useNodesSelection";
 import useTranslate from "@/editor/hooks/useTranslate";
@@ -359,17 +360,13 @@ const SubmitConfigForm = ({ value, onChange }: SubmitConfigFormProps) => {
               children={(field) => (
                 <FormItem className="tg:flex-1">
                   <Label htmlFor={field.name}>{t("editor.submitConfigForm.successMessage")}</Label>
-                  <Input
+                  <TranslatableInput
                     id={field.name}
                     name={field.name}
-                    value={field.state.value?.[selectedLanguage] || ""}
+                    value={field.state.value}
+                    language={selectedLanguage}
+                    onChange={field.handleChange}
                     onBlur={field.handleBlur}
-                    onChange={({ target }) => {
-                      field.handleChange({
-                        ...(typeof field.state.value === "object" && field.state.value !== null ? field.state.value : {}),
-                        [selectedLanguage]: target.value,
-                      });
-                    }}
                     placeholder={t("editor.submitConfigForm.successMessagePlaceholder")}
                   />
                   <FormDescription>{t("editor.submitConfigForm.successMessageDesc")}</FormDescription>
@@ -385,17 +382,13 @@ const SubmitConfigForm = ({ value, onChange }: SubmitConfigFormProps) => {
               children={(field) => (
                 <FormItem className="tg:flex-1">
                   <Label htmlFor={field.name}>{t("editor.submitConfigForm.errorMessage")}</Label>
-                  <Input
+                  <TranslatableInput
                     id={field.name}
                     name={field.name}
-                    value={field.state.value?.[selectedLanguage] || ""}
+                    value={field.state.value}
+                    language={selectedLanguage}
+                    onChange={field.handleChange}
                     onBlur={field.handleBlur}
-                    onChange={({ target }) => {
-                      field.handleChange({
-                        ...(typeof field.state.value === "object" && field.state.value !== null ? field.state.value : {}),
-                        [selectedLanguage]: target.value,
-                      });
-                    }}
                     placeholder={t("editor.submitConfigForm.errorMessagePlaceholder")}
                   />
                   <FormDescription>{t("editor.submitConfigForm.errorMessageDesc")}</FormDescription>

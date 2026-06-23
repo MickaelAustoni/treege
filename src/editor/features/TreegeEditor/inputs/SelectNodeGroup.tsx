@@ -11,7 +11,9 @@ import { Label } from "@/shared/components/ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "@/shared/components/ui/popover";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/shared/components/ui/select";
 import { TreegeNode } from "@/shared/types/node";
+import { Translatable } from "@/shared/types/translate";
 import { isGroupNode } from "@/shared/utils/nodeTypeGuards";
+import { getTranslatedText, setTranslatableValue } from "@/shared/utils/translations";
 
 interface SelectNodeGroupProps {
   /**
@@ -53,7 +55,7 @@ const SelectNodeGroup = ({ targetNodes, hideLabel, onChange }: SelectNodeGroupPr
   const isMixed = distinctParentIds.size > 1;
   const sharedParentId = !isMixed && nodes[0] ? nodes[0].parentId : undefined;
   const currentParentGroup = sharedParentId ? groupNodes.find((node) => node.id === sharedParentId) : undefined;
-  const currentParentLabel = currentParentGroup?.data?.label?.en ?? "";
+  const currentParentLabel = getTranslatedText(currentParentGroup?.data?.label);
   const selectValue = isMixed ? "" : (sharedParentId ?? "none");
   const placeholder = isMixed ? t("editor.selectNodeGroup.mixed") : t("editor.selectNodeGroup.noGroup");
 
@@ -96,10 +98,7 @@ const SelectNodeGroup = ({ targetNodes, hideLabel, onChange }: SelectNodeGroupPr
       return;
     }
 
-    const existingGroup = groupNodes.find((node) => {
-      const groupLabel = node.data?.label?.en || node.data?.label;
-      return String(groupLabel).toLowerCase() === label.toLowerCase();
-    });
+    const existingGroup = groupNodes.find((node) => getTranslatedText(node.data?.label).toLowerCase() === label.toLowerCase());
 
     if (existingGroup) {
       toast.error("This group already exists", {
@@ -148,7 +147,7 @@ const SelectNodeGroup = ({ targetNodes, hideLabel, onChange }: SelectNodeGroupPr
 
     const trimmed = renameLabel.trim();
     const conflict = groupNodes.find(
-      (node) => node.id !== currentParentGroup.id && String(node.data?.label?.en ?? "").toLowerCase() === trimmed.toLowerCase(),
+      (node) => node.id !== currentParentGroup.id && getTranslatedText(node.data?.label).toLowerCase() === trimmed.toLowerCase(),
     );
     if (conflict) {
       toast.error("This group already exists", {
@@ -164,10 +163,7 @@ const SelectNodeGroup = ({ targetNodes, hideLabel, onChange }: SelectNodeGroupPr
             ...node,
             data: {
               ...node.data,
-              label: {
-                ...(node.data?.label as Record<string, string> | undefined),
-                en: trimmed,
-              },
+              label: setTranslatableValue(node.data?.label as Translatable | undefined, "en", trimmed),
             },
           };
         }
@@ -204,7 +200,7 @@ const SelectNodeGroup = ({ targetNodes, hideLabel, onChange }: SelectNodeGroupPr
               <SelectItem value="none">{t("editor.selectNodeGroup.noGroup")}</SelectItem>
               {groupNodes.map((node) => (
                 <SelectItem key={node.id} value={node.id}>
-                  {node.data.label?.en ? String(node.data.label?.en) : node.id}
+                  {getTranslatedText(node.data.label) || node.id}
                 </SelectItem>
               ))}
             </SelectGroup>

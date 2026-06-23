@@ -47,9 +47,6 @@ const resolveTranslatable = (label: Translatable | undefined, language: string):
   if (label === undefined) {
     return "";
   }
-  if (typeof label === "string") {
-    return label;
-  }
   return label[language as keyof typeof label] ?? label.en ?? "";
 };
 

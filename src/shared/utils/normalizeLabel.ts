@@ -31,7 +31,8 @@ export const normalizeLabel = (text: string): string => {
 
 /**
  * Applies {@link normalizeLabel} to every language entry of a `Translatable`
- * label, preserving its shape.
+ * label, preserving its shape. Labels are always the object form here — plain
+ * strings are coerced upstream by `normalizeFlowLabels` on ingestion.
  */
 export const normalizeTranslatableLabel = (label: Translatable): Translatable =>
   Object.fromEntries(Object.entries(label).map(([lang, value]) => [lang, typeof value === "string" ? normalizeLabel(value) : value]));

@@ -39,17 +39,38 @@ export type TranslationKey = DotNotationKeys<typeof en>;
  * @param language - Optional preferred language (defaults to 'en')
  * @returns The translated string or empty string if none available
  */
-export const getTranslatedText = (text?: Translatable | string, language: string = "en"): string => {
+export const getTranslatedText = (text?: Translatable, language: string = "en"): string => {
   if (!text) {
     return "";
   }
 
-  if (typeof text === "string") {
-    return text;
-  }
-
   return text[language] || text.en || Object.values(text).find(Boolean) || "";
 };
+
+/**
+ * Reads the value of a translatable field for a given language while tolerating a
+ * value for a language. Returns "" when the value or the language entry is absent.
+ *
+ * Use this for editor inputs instead of `value?.[language]` so reads/writes stay
+ * consistent with {@link setTranslatableValue}.
+ */
+export const getTranslatableValue = (value: Translatable | undefined, language: string): string => value?.[language] ?? "";
+
+/**
+ * Sets `language` to `next` on a translatable field and returns a NEW Translatable,
+ * preserving the other language entries. Always use this when writing a
+ * translatable field from the editor rather than spreading the previous value
+ * inline.
+ *
+ * The `typeof === "object"` guard is purely defensive: the type system guarantees
+ * an object, but should a stray non-object (e.g. unsupported legacy string data)
+ * reach this at runtime, it is dropped rather than spread into indexed character
+ * keys (`"Hi"` → `{ "0": "H", "1": "i" }`).
+ */
+export const setTranslatableValue = (value: Translatable | undefined, language: string, next: string): Translatable => ({
+  ...(value && typeof value === "object" ? value : {}),
+  [language]: next,
+});
 
 /**
  * Available locales

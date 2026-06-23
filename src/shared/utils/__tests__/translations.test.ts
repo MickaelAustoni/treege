@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getStaticTranslations, getTranslatedText } from "@/shared/utils/translations";
+import { getStaticTranslations, getTranslatableValue, getTranslatedText, setTranslatableValue } from "@/shared/utils/translations";
 
 describe("Translation Utilities", () => {
   describe("getTranslatedText", () => {
@@ -9,10 +9,6 @@ describe("Translation Utilities", () => {
 
     it("should return empty string when text is null", () => {
       expect(getTranslatedText(null as never)).toBe("");
-    });
-
-    it("should return the plain string when text is a string", () => {
-      expect(getTranslatedText("Hello World")).toBe("Hello World");
     });
 
     it("should return English translation by default", () => {
@@ -80,6 +76,42 @@ describe("Translation Utilities", () => {
       expect(getTranslatedText(text, "de")).toBe("Hallo");
       expect(getTranslatedText(text, "it")).toBe("Ciao");
       expect(getTranslatedText(text, "pt")).toBe("Olá");
+    });
+  });
+
+  describe("getTranslatableValue", () => {
+    it("returns the value for the requested language", () => {
+      expect(getTranslatableValue({ en: "Hello", fr: "Bonjour" }, "fr")).toBe("Bonjour");
+    });
+
+    it("returns empty string when undefined or language is missing", () => {
+      expect(getTranslatableValue(undefined, "fr")).toBe("");
+      expect(getTranslatableValue({ en: "Hello" }, "fr")).toBe("");
+    });
+  });
+
+  describe("setTranslatableValue", () => {
+    it("sets the value for the requested language while keeping the others", () => {
+      expect(setTranslatableValue({ en: "Hello", fr: "Bonjour" }, "en", "Hi")).toEqual({ en: "Hi", fr: "Bonjour" });
+    });
+
+    it("adds a new language entry on an object", () => {
+      expect(setTranslatableValue({ en: "Hello" }, "fr", "Bonjour")).toEqual({ en: "Hello", fr: "Bonjour" });
+    });
+
+    it("treats undefined as an empty object", () => {
+      expect(setTranslatableValue(undefined, "en", "Hello")).toEqual({ en: "Hello" });
+    });
+
+    it("does not mutate the input object", () => {
+      const input = { en: "Hello" };
+      setTranslatableValue(input, "fr", "Bonjour");
+      expect(input).toEqual({ en: "Hello" });
+    });
+
+    it("defensively drops a stray non-object value instead of exploding it into character keys", () => {
+      // The type forbids a string, but a stray runtime value must not become { "0": "H", … }.
+      expect(setTranslatableValue("Hi" as never, "fr", "Bonjour")).toEqual({ fr: "Bonjour" });
     });
   });
 
