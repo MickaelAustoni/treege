@@ -2,6 +2,7 @@ import { Node } from "@xyflow/react";
 import { FormValues } from "@/renderer/types/renderer";
 import { getFlowRenderState } from "@/renderer/utils/flow";
 import { buildInitialFormValues } from "@/renderer/utils/form";
+import { resolveUrl } from "@/renderer/utils/http";
 import { getInputNodes, resolveNodeKey } from "@/renderer/utils/node";
 import { INPUT_TYPE } from "@/shared/constants/inputType";
 import { SerializableFile } from "@/shared/types/file";
@@ -45,6 +46,12 @@ export interface ViewerField {
 export interface GetViewerFieldsOptions {
   /** Language used to resolve translatable labels/options (defaults to `en`). */
   language?: string;
+  /**
+   * Base URL used to resolve relative file paths (e.g. `uploads/x.png`) into
+   * absolute URLs — same role as on `TreegeRenderer`/`TreegeEditor`. Absolute,
+   * `data:` and `blob:` URLs are left untouched.
+   */
+  baseUrl?: string;
 }
 
 /** Field types that never carry a user-facing value in a read-only view. */
@@ -105,26 +112,32 @@ const fileNameFromUrl = (url: string): string => {
   }
 };
 
+/** Resolve a file's `data` against `baseUrl`, leaving `data:`/`blob:` URLs untouched. */
+const resolveFileData = (data: string, baseUrl?: string): string =>
+  !data || data.startsWith("data:") || data.startsWith("blob:") ? data : resolveUrl(data, baseUrl);
+
 /**
  * Normalize a `file` field value into a uniform list. A file may be submitted as
  * a `SerializableFile` (base64/URI in `data`) or, when the document lives on a
  * server, simply as a URL string — both are accepted here (and any mix of them),
- * so a viewer can render a stored document straight from its URL.
+ * so a viewer can render a stored document straight from its URL. Relative paths
+ * are resolved against `baseUrl`.
  */
-const toViewerFiles = (value: unknown): SerializableFile[] => {
+const toViewerFiles = (value: unknown, baseUrl?: string): SerializableFile[] => {
   const entries = Array.isArray(value) ? value : [value];
 
   return entries.reduce<SerializableFile[]>((files, entry) => {
     if (typeof entry === "string" && entry.trim() !== "") {
-      files.push({ data: entry, lastModified: 0, name: fileNameFromUrl(entry), size: 0, type: "" });
+      files.push({ data: resolveFileData(entry, baseUrl), lastModified: 0, name: fileNameFromUrl(entry), size: 0, type: "" });
     } else if (entry && typeof entry === "object" && "data" in entry) {
-      files.push(entry as SerializableFile);
+      const file = entry as SerializableFile;
+      files.push({ ...file, data: resolveFileData(file.data, baseUrl) });
     }
     return files;
   }, []);
 };
 
-const computeDisplay = (node: Node<InputNodeData>, value: unknown, language: string): ViewerFieldDisplay => {
+const computeDisplay = (node: Node<InputNodeData>, value: unknown, language: string, baseUrl?: string): ViewerFieldDisplay => {
   if (isEmptyValue(value)) {
     return { kind: "empty" };
   }
@@ -165,7 +178,7 @@ const computeDisplay = (node: Node<InputNodeData>, value: unknown, language: str
     }
 
     case INPUT_TYPE.file: {
-      const files = toViewerFiles(value);
+      const files = toViewerFiles(value, baseUrl);
       return files.length ? { files, kind: "files" } : { kind: "empty" };
     }
 
@@ -189,7 +202,7 @@ const computeDisplay = (node: Node<InputNodeData>, value: unknown, language: str
  *
  * @param flow - The flow definition the values were submitted against
  * @param values - The submitted values (`name`- or `id`-keyed)
- * @param options - Resolution options (language)
+ * @param options - Resolution options (language, baseUrl)
  * @returns The ordered, visible, display-ready fields
  */
 export const getViewerFields = (
@@ -197,7 +210,7 @@ export const getViewerFields = (
   values: FormValues | null | undefined,
   options: GetViewerFieldsOptions = {},
 ): ViewerField[] => {
-  const { language = "en" } = options;
+  const { language = "en", baseUrl } = options;
   const nodes = flow?.nodes ?? [];
   const edges = flow?.edges ?? [];
   const inputNodes = getInputNodes(nodes);
@@ -212,7 +225,7 @@ export const getViewerFields = (
       const rawValue = idValues[node.id];
 
       return {
-        display: computeDisplay(node, rawValue, language),
+        display: computeDisplay(node, rawValue, language, baseUrl),
         id: node.id,
         label: getTranslatedText(node.data.label, language) || node.data.name || node.id,
         name: resolveNodeKey(node),

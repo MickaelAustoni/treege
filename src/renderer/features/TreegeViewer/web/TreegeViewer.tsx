@@ -15,7 +15,7 @@ import { Flow, InputType } from "@/shared/types/node";
  */
 const ViewerFile = ({ file }: { file: SerializableFile }): ReactNode => {
   if (!file.data) {
-    return <span className="tg:break-words tg:text-foreground tg:text-sm">{file.name}</span>;
+    return <span className="tg:wrap-break-word tg:text-foreground tg:text-sm">{file.name}</span>;
   }
 
   if (isImageFile(file)) {
@@ -55,6 +55,12 @@ export interface TreegeViewerProps {
    *  Language used to resolve translatable labels/options (defaults to `en`).
    */
   language?: string;
+  /**
+   * Base URL used to resolve relative file paths into absolute URLs — same role
+   * as on `TreegeRenderer`/`TreegeEditor`. `data:`/`blob:`/absolute URLs are
+   * left untouched.
+   */
+  baseUrl?: string;
   /**
    * Field names (or ids) to hide from the view.
    */
@@ -140,14 +146,15 @@ const DefaultValue = ({ field, emptyText }: { field: ViewerField; emptyText: str
 const TreegeViewer = ({
   flow,
   values,
-  language = "en",
+  baseUrl,
   excludedFields,
-  emptyText = "—",
   className,
   renderField,
   renderRow,
+  emptyText = "—",
+  language = "en",
 }: TreegeViewerProps) => {
-  const fields = useMemo(() => getViewerFields(flow, values, { language }), [flow, values, language]);
+  const fields = useMemo(() => getViewerFields(flow, values, { baseUrl, language }), [flow, values, language, baseUrl]);
 
   const visibleFields = useMemo(
     () => fields.filter((field) => !(excludedFields?.includes(field.name) || excludedFields?.includes(field.id))),

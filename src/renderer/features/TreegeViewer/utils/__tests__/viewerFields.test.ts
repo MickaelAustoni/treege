@@ -161,6 +161,30 @@ describe("getViewerFields", () => {
     expect(field?.display).toMatchObject({ files: [{ name: "a.png" }, { name: "b.pdf" }] });
   });
 
+  it("resolves relative file paths against baseUrl, leaving data-URLs untouched", () => {
+    const field = getViewerFields(
+      flow,
+      {
+        ...values,
+        docs: ["uploads/photo.png", { data: "data:application/pdf;base64,AA", name: "b.pdf", size: 1, type: "application/pdf" }],
+      },
+      { baseUrl: "https://api.example.com/" },
+    ).find((entry) => entry.name === "docs");
+    expect(field?.display).toMatchObject({
+      files: [
+        { data: "https://api.example.com/uploads/photo.png", name: "photo.png" },
+        { data: "data:application/pdf;base64,AA", name: "b.pdf" },
+      ],
+    });
+  });
+
+  it("leaves absolute file URLs untouched even with a baseUrl", () => {
+    const field = getViewerFields(flow, { ...values, docs: "https://cdn.example.com/a.png" }, { baseUrl: "https://api.example.com" }).find(
+      (entry) => entry.name === "docs",
+    );
+    expect(field?.display).toMatchObject({ files: [{ data: "https://cdn.example.com/a.png" }] });
+  });
+
   it("marks an absent value as empty", () => {
     const field = getViewerFields(flow, { ...values, active: undefined }).find((entry) => entry.name === "active");
     expect(field?.display).toEqual({ kind: "empty" });

@@ -129,7 +129,7 @@ const ViewerExample = () => {
         <section>
           <h3 className="tg:mb-4 tg:font-semibold">Viewer (read-only)</h3>
           <div className="tg:rounded-lg tg:border tg:p-4">
-            <TreegeViewer flow={flow} values={values} language={language} />
+            <TreegeViewer flow={flow} values={values} language={language} baseUrl={baseUrl} />
           </div>
         </section>
       </div>
