@@ -17,8 +17,18 @@ const DefaultDateRangeInput = ({ field, extra }: InputRenderProps<"daterange">) 
   const startDate = dateRange[0] ? new Date(dateRange[0]) : undefined;
   const endDate = dateRange[1] ? new Date(dateRange[1]) : undefined;
 
-  const handleDateRangeSelect = (range: DateRange | undefined) => {
+  const handleDateRangeSelect = (range: DateRange | undefined, selectedDay: Date) => {
+    // When a complete range already exists, the first click starts a brand new
+    // selection from the clicked day instead of just extending the existing `to`.
+    if (startDate && endDate) {
+      setValue([selectedDay.toISOString(), undefined]);
+      return;
+    }
+
     setValue([range?.from ? range.from.toISOString() : undefined, range?.to ? range.to.toISOString() : undefined]);
+    if (range?.from && range?.to) {
+      setOpen(false);
+    }
   };
 
   const formatDateRange = () => {
@@ -54,6 +64,7 @@ const DefaultDateRangeInput = ({ field, extra }: InputRenderProps<"daterange">) 
         <PopoverContent className="tg:w-auto tg:overflow-hidden tg:p-0" align="start">
           <Calendar
             mode="range"
+            min={1}
             selected={{ from: startDate, to: endDate }}
             captionLayout="dropdown"
             disabled={isDateDisabled}
