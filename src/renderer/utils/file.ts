@@ -1,13 +1,6 @@
-/**
- * Represents a serializable file object with base64 data
- */
-export interface SerializableFile {
-  name: string;
-  size: number;
-  type: string;
-  lastModified: number;
-  data: string; // base64 encoded
-}
+import type { SerializableFile } from "@/shared/types/file";
+
+export type { SerializableFile };
 
 /**
  * Converts a File object to a serializable format with base64 data
@@ -62,4 +55,28 @@ export const serializableToFile = (serializable: SerializableFile): File => {
  */
 export const filesToSerializable = (files: File[]): Promise<SerializableFile[]> => {
   return Promise.all(files.map((file) => fileToSerializable(file)));
+};
+
+/**
+ * Normalizes a file field value into an array of `SerializableFile`.
+ * Handles single file, array of files, and empty (`null`/`undefined`) values.
+ */
+export const normalizeSerializableFiles = (value: SerializableFile | SerializableFile[] | null | undefined): SerializableFile[] => {
+  if (Array.isArray(value)) {
+    return value;
+  }
+  return value ? [value] : [];
+};
+
+/**
+ * Formats a byte size into a human-readable string (B / KB / MB)
+ */
+export const formatFileSize = (size: number): string => {
+  if (size < 1024) {
+    return `${size} B`;
+  }
+  if (size < 1024 * 1024) {
+    return `${(size / 1024).toFixed(1)} KB`;
+  }
+  return `${(size / (1024 * 1024)).toFixed(1)} MB`;
 };

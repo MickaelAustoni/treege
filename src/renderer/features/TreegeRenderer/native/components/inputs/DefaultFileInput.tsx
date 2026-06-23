@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useTranslate } from "@/renderer/hooks/useTranslate";
 import { InputRenderProps } from "@/renderer/types/renderer";
-import { SerializableFile } from "@/renderer/utils/file";
+import { formatFileSize, normalizeSerializableFiles, SerializableFile } from "@/renderer/utils/file";
 import { useTheme } from "@/shared/context/ThemeContext";
 
 type PickResult = {
@@ -21,7 +21,7 @@ const DefaultFileInput = ({ field, extra }: InputRenderProps<"file">) => {
   const { InputLabel, node, setValue, error, label, helperText } = extra;
   const { colors } = useTheme();
   const t = useTranslate();
-  const files: SerializableFile[] = Array.isArray(value) ? value : value ? [value] : [];
+  const files = normalizeSerializableFiles(value);
   const isMultiple = node.data.multiple;
 
   const handlePickFile = useCallback(async () => {
@@ -61,16 +61,6 @@ const DefaultFileInput = ({ field, extra }: InputRenderProps<"file">) => {
     },
     [files, setValue],
   );
-
-  const formatFileSize = (size: number) => {
-    if (size < 1024) {
-      return `${size} B`;
-    }
-    if (size < 1024 * 1024) {
-      return `${(size / 1024).toFixed(1)} KB`;
-    }
-    return `${(size / (1024 * 1024)).toFixed(1)} MB`;
-  };
 
   /**
    * Lazy-load `react-native-document-picker` once on mount. The package is an
@@ -127,7 +117,12 @@ const DefaultFileInput = ({ field, extra }: InputRenderProps<"file">) => {
                 </Text>
                 {file.size > 0 && <Text style={[styles.fileSize, { color: colors.textMuted }]}>{formatFileSize(file.size)}</Text>}
               </View>
-              <TouchableOpacity style={styles.removeButton} onPress={() => handleRemoveFile(index)} activeOpacity={0.7}>
+              <TouchableOpacity
+                style={styles.removeButton}
+                onPress={() => handleRemoveFile(index)}
+                activeOpacity={0.7}
+                accessibilityLabel={t("renderer.defaultInputs.removeFile")}
+              >
                 <Text style={[styles.removeButtonText, { color: colors.textMuted }]}>✕</Text>
               </TouchableOpacity>
             </View>

@@ -651,6 +651,32 @@ const { data } = useQuery(/* ... */);
 <TreegeRenderer flow={flow} initialValues={data ?? {}} onSubmit={handleSubmit} />
 ```
 
+#### Pre-filling file fields
+
+A `file` field's value is a serializable object (never a DOM `File`, so it round-trips through JSON):
+
+```ts
+type SerializableFile = {
+  name: string;
+  size: number;
+  type: string;
+  lastModified: number;
+  data: string; // base64 data-URL (web) or file URI (native)
+};
+```
+
+The stored value is a single `SerializableFile` (or an array when the field is `multiple`, or `null`). Pass the same shape in `initialValues` to pre-fill a file field when editing — the renderer lists the files and lets the user remove them or add more. Only `name`/`size` are needed for display, so `data` can hold a server URL for already-uploaded files:
+
+```tsx
+<TreegeRenderer
+  flow={flow}
+  initialValues={{
+    attachment: { name: "contract.pdf", size: 24576, type: "application/pdf", lastModified: 0, data: "https://cdn.example.com/contract.pdf" },
+  }}
+  onSubmit={handleSubmit}
+/>
+```
+
 ### Submitting State
 
 Pass `isSubmitting` to keep the submit/continue button in its loading state (spinner + disabled) while an async `onSubmit` resolves on your side. It's OR-ed with the renderer's own internal submitting state (e.g. during an HTTP `submitConfig` call):

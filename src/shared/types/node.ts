@@ -1,6 +1,7 @@
 import { Edge, Node } from "@xyflow/react";
 import { INPUT_TYPE } from "@/shared/constants/inputType";
 import { UI_TYPE } from "@/shared/constants/uiType";
+import { SerializableFile } from "@/shared/types/file";
 import { Translatable } from "@/shared/types/translate";
 
 export type UIType = (typeof UI_TYPE)[keyof typeof UI_TYPE];
@@ -267,7 +268,7 @@ export type InputNodeData = BaseNodeData & {
    */
   defaultValue?: null | {
     type?: "static" | "reference";
-    staticValue?: string | string[] | boolean;
+    staticValue?: string | string[] | boolean | SerializableFile | SerializableFile[];
     referenceField?: string;
     transformFunction?: null | "toString" | "toNumber" | "toBoolean" | "toArray" | "toObject";
     objectMapping?: Array<{

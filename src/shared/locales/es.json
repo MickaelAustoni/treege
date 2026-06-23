@@ -429,6 +429,7 @@
       "filePickerError": "Error al seleccionar archivo",
       "filePickerUnavailable": "Selección de archivos no disponible. Instale react-native-document-picker.",
       "newAnswer": "Nueva respuesta...",
+      "removeFile": "Eliminar archivo",
       "replaceFile": "Reemplazar archivo",
       "required": "*",
       "selectDate": "Seleccionar fecha",

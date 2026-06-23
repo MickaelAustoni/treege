@@ -1,18 +1,27 @@
-import { File as FileIcon, FileUp, X } from "lucide-react";
+import { File as FileIcon, Upload, X } from "lucide-react";
 import { ChangeEvent, useRef } from "react";
-import { useTranslate } from "@/renderer/hooks/useTranslate";
-import { InputRenderProps } from "@/renderer/types/renderer";
+import useTranslate from "@/editor/hooks/useTranslate";
 import { filesToSerializable, fileToSerializable, formatFileSize, normalizeSerializableFiles } from "@/renderer/utils/file";
 import { Button } from "@/shared/components/ui/button";
-import { FormDescription, FormError, FormItem } from "@/shared/components/ui/form";
+import { Label } from "@/shared/components/ui/label";
+import { SerializableFile } from "@/shared/types/file";
 
-const DefaultFileInput = ({ field, extra }: InputRenderProps<"file">) => {
-  const { id, name, value } = field;
-  const { InputLabel, node, setValue, error, label, helperText } = extra;
+type DefaultFileValueFieldProps = {
+  id: string;
+  multiple?: boolean;
+  value: SerializableFile | SerializableFile[] | null | undefined;
+  onChange: (value: SerializableFile | SerializableFile[] | null) => void;
+};
+
+/**
+ * Editor control for configuring a static default value on a `file` input.
+ * Lets a non-dev pick one or more files visually, see them listed, and remove
+ * them — producing `SerializableFile` objects stored in `defaultValue.staticValue`.
+ */
+const DefaultFileValueField = ({ id, multiple, value, onChange }: DefaultFileValueFieldProps) => {
   const t = useTranslate();
   const inputRef = useRef<HTMLInputElement>(null);
   const files = normalizeSerializableFiles(value);
-  const isMultiple = node.data.multiple;
 
   const handleFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
     const { files: selected } = e.target;
@@ -21,26 +30,25 @@ const DefaultFileInput = ({ field, extra }: InputRenderProps<"file">) => {
       return;
     }
 
-    if (isMultiple) {
+    if (multiple) {
       const serializableFiles = await filesToSerializable(Array.from(selected));
-      setValue([...files, ...serializableFiles]);
+      onChange([...files, ...serializableFiles]);
     } else {
       const serializableFile = await fileToSerializable(selected[0]);
-      setValue(serializableFile);
+      onChange(serializableFile);
     }
 
-    // Reset the native input so selecting the same file again still fires `change`
     e.target.value = "";
   };
 
   const handleRemoveFile = (index: number) => {
     const newFiles = files.filter((_, i) => i !== index);
-    setValue(newFiles.length > 0 ? newFiles : null);
+    onChange(newFiles.length > 0 ? newFiles : null);
   };
 
   return (
-    <FormItem className="tg:mb-4">
-      <InputLabel htmlFor={id} label={label} required={node.data.required} />
+    <div className="tg:flex tg:flex-col tg:gap-2">
+      <Label htmlFor={id}>{t("editor.inputNodeForm.staticValue")}</Label>
 
       {files.length > 0 && (
         <ul className="tg:flex tg:flex-col tg:gap-2">
@@ -68,19 +76,16 @@ const DefaultFileInput = ({ field, extra }: InputRenderProps<"file">) => {
         </ul>
       )}
 
-      <input ref={inputRef} type="file" name={name} id={id} className="tg:hidden" onChange={handleFileChange} multiple={isMultiple} />
+      <input ref={inputRef} type="file" id={id} className="tg:hidden" onChange={handleFileChange} multiple={multiple} />
 
-      <Button type="button" variant="outline" onClick={() => inputRef.current?.click()} aria-label={label || node.data.name}>
-        <FileUp className="tg:size-4" />
+      <Button type="button" variant="outline" onClick={() => inputRef.current?.click()}>
+        <Upload className="tg:size-4" />
         {files.length === 0
-          ? t(isMultiple ? "renderer.defaultInputs.selectFiles" : "renderer.defaultInputs.selectFile")
-          : t(isMultiple ? "renderer.defaultInputs.addMoreFiles" : "renderer.defaultInputs.replaceFile")}
+          ? t(multiple ? "renderer.defaultInputs.selectFiles" : "renderer.defaultInputs.selectFile")
+          : t(multiple ? "renderer.defaultInputs.addMoreFiles" : "renderer.defaultInputs.replaceFile")}
       </Button>
-
-      {error && <FormError>{error}</FormError>}
-      {helperText && !error && <FormDescription>{helperText}</FormDescription>}
-    </FormItem>
+    </div>
   );
 };
 
-export default DefaultFileInput;
+export default DefaultFileValueField;

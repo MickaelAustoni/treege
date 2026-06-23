@@ -185,11 +185,15 @@ const NodeInputPreview = ({ nodeId, data }: NodeInputPreviewProps) => {
     const SubTypeIcon = getInputTypeIcon(inputType);
     const staticValue = data.defaultValue?.type === "static" ? data.defaultValue.staticValue : undefined;
     const referenceField = data.defaultValue?.type === "reference" ? data.defaultValue.referenceField : undefined;
+    const fileName = (value: unknown): string =>
+      value && typeof value === "object" && "name" in value ? String(value.name) : String(value);
     const displayValue = Array.isArray(staticValue)
-      ? staticValue.join(", ")
+      ? staticValue.map(fileName).join(", ")
       : typeof staticValue === "boolean"
         ? String(staticValue)
-        : (staticValue ?? (referenceField ? `→ ${referenceField}` : ""));
+        : typeof staticValue === "object" && staticValue !== null
+          ? fileName(staticValue)
+          : (staticValue ?? (referenceField ? `→ ${referenceField}` : ""));
 
     return (
       <div className="tg:pointer-events-none tg:flex tg:select-none tg:flex-col tg:gap-1 tg:text-sm">

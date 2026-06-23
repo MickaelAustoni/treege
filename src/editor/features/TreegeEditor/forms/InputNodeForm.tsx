@@ -6,6 +6,7 @@ import HttpConfigForm from "@/editor/features/TreegeEditor/forms/HttpConfigForm"
 import OptionsSourceForm from "@/editor/features/TreegeEditor/forms/OptionsSourceForm";
 import SubmitConfigForm from "@/editor/features/TreegeEditor/forms/SubmitConfigForm";
 import ComboboxPattern from "@/editor/features/TreegeEditor/inputs/ComboboxPattern";
+import DefaultFileValueField from "@/editor/features/TreegeEditor/inputs/DefaultFileValueField";
 import OptionImageField from "@/editor/features/TreegeEditor/inputs/OptionImageField";
 import SelectLanguage from "@/editor/features/TreegeEditor/inputs/SelectLanguage";
 import useAvailableParentFields from "@/editor/hooks/useAvailableParentFields";
@@ -564,6 +565,20 @@ const InputNodeForm = () => {
                                       .filter(Boolean);
                                     field.handleChange(values.length > 0 ? values : null);
                                   }}
+                                />
+                              </FormItem>
+                            );
+                          }
+
+                          // File input - show a visual file picker
+                          if (inputType === "file") {
+                            return (
+                              <FormItem>
+                                <DefaultFileValueField
+                                  id={field.name}
+                                  multiple={selectedNode?.data?.multiple}
+                                  value={field.state.value as never}
+                                  onChange={(value) => field.handleChange(value as never)}
                                 />
                               </FormItem>
                             );
