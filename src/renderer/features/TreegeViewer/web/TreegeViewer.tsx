@@ -66,6 +66,11 @@ export interface TreegeViewerProps {
    */
   excludedFields?: string[];
   /**
+   * Hide fields that have no submitted value (instead of showing `emptyText`).
+   * Useful to render a compact recap of only the filled-in fields.
+   */
+  excludeEmptyFields?: boolean;
+  /**
    * Text shown when a field has no submitted value (defaults to `"—"`).
    */
   emptyText?: string;
@@ -148,6 +153,7 @@ const TreegeViewer = ({
   values,
   baseUrl,
   excludedFields,
+  excludeEmptyFields,
   className,
   renderField,
   renderRow,
@@ -157,8 +163,16 @@ const TreegeViewer = ({
   const fields = useMemo(() => getViewerFields(flow, values, { baseUrl, language }), [flow, values, language, baseUrl]);
 
   const visibleFields = useMemo(
-    () => fields.filter((field) => !(excludedFields?.includes(field.name) || excludedFields?.includes(field.id))),
-    [fields, excludedFields],
+    () =>
+      fields.filter(
+        (field) =>
+          !(
+            excludedFields?.includes(field.name) ||
+            excludedFields?.includes(field.id) ||
+            (excludeEmptyFields && field.display.kind === "empty")
+          ),
+      ),
+    [fields, excludedFields, excludeEmptyFields],
   );
 
   return (

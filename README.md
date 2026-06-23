@@ -52,6 +52,7 @@ Treege is a modern React library for creating and rendering interactive decision
 - **Optional Dependencies**: Graceful degradation when optional packages like `react-native-document-picker` aren't installed
 - **Theme Support**: Dark/light mode out of the box
 - **Google API Integration**: Address autocomplete support
+- **Read-Only Viewer**: `TreegeViewer` renders a submitted flow as a label/value recap — same branch-visibility and formatting as the form, with a headless `getViewerFields` core for custom layouts
 
 ### Developer Experience
 - **Modular**: Import only what you need (editor, renderer, or both)
@@ -187,6 +188,73 @@ function App() {
     </div>
   );
 }
+```
+
+## Read-Only Viewer (`TreegeViewer`)
+
+Once a form has been submitted, `TreegeViewer` renders the result as a read-only **label / value recap** — no inputs, no validation. It takes the same `flow` and the submitted `values` (the `onSubmit` payload) and replays them through the renderer's branch-visibility logic, so only the fields that were actually reachable for those values are shown. Option values resolve to their labels, dates/ranges and i18n labels are formatted exactly like the form, and `hidden`/`submit` fields are excluded.
+
+```tsx
+import { TreegeRenderer } from "treege/renderer";
+import { TreegeViewer } from "treege/renderer";
+import { useState } from "react";
+import type { Flow, FormValues } from "treege";
+
+function App({ flow }: { flow: Flow }) {
+  const [submitted, setSubmitted] = useState<FormValues | null>(null);
+
+  if (submitted) {
+    return <TreegeViewer flow={flow} values={submitted} language="en" />;
+  }
+
+  return <TreegeRenderer flow={flow} onSubmit={setSubmitted} />;
+}
+```
+
+### Props
+
+| Prop                 | Type                                                | Default | Description                                                                                                  |
+|----------------------|-----------------------------------------------------|---------|--------------------------------------------------------------------------------------------------------------|
+| `flow`               | `Flow`                                              | -       | The flow the values were submitted against                                                                   |
+| `values`             | `FormValues`                                        | -       | The submitted values (`name`- or `id`-keyed, e.g. the `onSubmit` payload)                                    |
+| `language`           | `string`                                            | `"en"`  | Language used to resolve translatable labels/options                                                         |
+| `baseUrl`            | `string`                                            | -       | Resolves relative file paths into absolute URLs (same role as on `TreegeRenderer`); `data:`/`blob:`/absolute URLs are left untouched |
+| `excludedFields`     | `string[]`                                          | -       | Field names (or ids) to hide from the view                                                                   |
+| `excludeEmptyFields` | `boolean`                                           | `false` | Hide fields that have no submitted value (instead of showing `emptyText`)                                    |
+| `emptyText`          | `string`                                            | `"—"`   | Text shown when a field has no submitted value                                                               |
+| `className`          | `string`                                            | -       | Extra class names on the root element                                                                        |
+| `renderField`        | `Partial<Record<InputType, (field) => ReactNode>>` | -       | Per-type rendering overrides for the value cell (typically `file`)                                          |
+| `renderRow`          | `(field, defaultRow) => ReactNode`                  | -       | Wrap or replace a whole field row (label + value)                                                            |
+
+### Customizing rendering
+
+Use `renderField` to override the value cell for a specific input type — most often `file`, to render thumbnails from your own storage — while every other type keeps its built-in rendering. Use `renderRow` to control the whole row layout (label + value):
+
+```tsx
+<TreegeViewer
+  flow={flow}
+  values={submitted}
+  language="fr"
+  excludedFields={["internalNote"]}
+  renderField={{ file: ({ rawValue }) => <Thumbnails files={rawValue} /> }}
+/>
+```
+
+### Headless usage (`getViewerFields`)
+
+`TreegeViewer` is a thin layer over `getViewerFields`, which returns the ordered, visible, display-ready fields. Use it directly when you want a fully custom layout (a table, a PDF, columns…):
+
+```tsx
+import { getViewerFields } from "treege/renderer";
+
+const fields = getViewerFields(flow, values, { language: "en", baseUrl });
+
+fields.forEach((field) => {
+  // field.label, field.type, field.rawValue
+  // field.display — normalized, render-ready value:
+  //   { kind: "text", text }   | { kind: "boolean", checked }
+  //   { kind: "tags", tags }   | { kind: "files", files } | { kind: "empty" }
+});
 ```
 
 ## Module Structure
