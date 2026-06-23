@@ -1,10 +1,48 @@
+import { Download, File as FileIcon } from "lucide-react";
 import { ReactNode, useMemo } from "react";
 import { getViewerFields, ViewerField } from "@/renderer/features/TreegeViewer/utils/viewerFields";
 import { FormValues } from "@/renderer/types/renderer";
 import { Badge } from "@/shared/components/ui/badge";
 import { Checkbox } from "@/shared/components/ui/checkbox";
 import { cn } from "@/shared/lib/utils";
+import { SerializableFile } from "@/shared/types/file";
 import { Flow, InputType } from "@/shared/types/node";
+
+/** Whether a serialized file should be previewed inline as an image. */
+const isImageFile = (file: SerializableFile): boolean =>
+  Boolean(file.type?.startsWith("image/")) || Boolean(file.data?.startsWith("data:image/"));
+
+/**
+ * Read-only rendering of a single uploaded file: an inline thumbnail for images
+ * (click to open full size), a labelled download link for anything else. Files
+ * with no `data` (URL/base64) fall back to their name as plain text.
+ */
+const ViewerFile = ({ file }: { file: SerializableFile }): ReactNode => {
+  if (!file.data) {
+    return <span className="tg:break-words tg:text-foreground tg:text-sm">{file.name}</span>;
+  }
+
+  if (isImageFile(file)) {
+    return (
+      <a href={file.data} target="_blank" rel="noreferrer" title={file.name} className="tg:inline-flex">
+        <img src={file.data} alt={file.name} className="tg:size-16 tg:rounded tg:border tg:object-cover" />
+      </a>
+    );
+  }
+
+  return (
+    <a
+      href={file.data}
+      download={file.name}
+      title={file.name}
+      className="tg:inline-flex tg:items-center tg:gap-1.5 tg:rounded tg:border tg:px-2 tg:py-1 tg:text-foreground tg:text-sm tg:no-underline tg:hover:bg-accent"
+    >
+      <FileIcon className="tg:size-4 tg:shrink-0" />
+      <span className="tg:break-all">{file.name}</span>
+      <Download className="tg:size-3.5 tg:shrink-0 tg:text-muted-foreground" />
+    </a>
+  );
+};
 
 /** Per-type override map: `{ file: (field) => <Thumbnails /> }`. */
 export type ViewerFieldRenderers = Partial<Record<InputType, (field: ViewerField) => ReactNode>>;
@@ -73,11 +111,9 @@ const DefaultValue = ({ field, emptyText }: { field: ViewerField; emptyText: str
 
     case "files":
       return (
-        <div className="tg:flex tg:flex-col tg:gap-1">
+        <div className="tg:flex tg:flex-wrap tg:gap-2">
           {display.files.map((file, index) => (
-            <span key={`${file.name}-${index}`} className="tg:break-words tg:text-foreground tg:text-sm">
-              {file.name}
-            </span>
+            <ViewerFile key={`${file.name}-${index}`} file={file} />
           ))}
         </div>
       );
