@@ -1,10 +1,12 @@
 import { File as FileIcon } from "lucide-react";
 import { ReactNode, useMemo } from "react";
+import { useTreegeRendererConfig } from "@/renderer/context/TreegeRendererProvider";
 import RendererStyles from "@/renderer/features/TreegeRenderer/web/components/styles/RendererStyles";
 import { getViewerFields, isImageFile, ViewerField } from "@/renderer/features/TreegeViewer/utils/viewerFields";
 import { FormValues } from "@/renderer/types/renderer";
 import { Badge } from "@/shared/components/ui/badge";
 import { Checkbox } from "@/shared/components/ui/checkbox";
+import { ThemeProvider } from "@/shared/context/ThemeContext";
 import { cn } from "@/shared/lib/utils";
 import { SerializableFile } from "@/shared/types/file";
 import { Flow, InputType } from "@/shared/types/node";
@@ -56,6 +58,11 @@ export interface TreegeViewerProps {
    *  Language used to resolve translatable labels/options (defaults to `en`).
    */
   language?: string;
+  /**
+   * Light/dark theme. Falls back to the `TreegeRendererProvider` config, then
+   * `"dark"` — same resolution as `TreegeRenderer`.
+   */
+  theme?: "light" | "dark";
   /**
    * Base URL used to resolve relative file paths into absolute URLs — same role
    * as on `TreegeRenderer`/`TreegeEditor`. `data:`/`blob:`/absolute URLs are
@@ -153,15 +160,26 @@ const TreegeViewer = ({
   flow,
   values,
   baseUrl,
+  theme,
   excludedFields,
   excludeEmptyFields,
   className,
   renderField,
   renderRow,
+  language,
   emptyText = "—",
-  language = "en",
 }: TreegeViewerProps) => {
-  const fields = useMemo(() => getViewerFields(flow, values, { baseUrl, language }), [flow, values, language, baseUrl]);
+  // Theme, baseUrl and language fall back to the (optional) provider config, so a
+  // `TreegeViewerProvider` can supply them once for every viewer underneath.
+  const globalConfig = useTreegeRendererConfig();
+  const resolvedTheme = theme ?? globalConfig?.theme ?? "dark";
+  const resolvedBaseUrl = baseUrl ?? globalConfig?.baseUrl;
+  const resolvedLanguage = language ?? globalConfig?.language ?? "en";
+
+  const fields = useMemo(
+    () => getViewerFields(flow, values, { baseUrl: resolvedBaseUrl, language: resolvedLanguage }),
+    [flow, values, resolvedLanguage, resolvedBaseUrl],
+  );
 
   const visibleFields = useMemo(
     () =>
@@ -177,7 +195,7 @@ const TreegeViewer = ({
   );
 
   return (
-    <>
+    <ThemeProvider theme={resolvedTheme} storageKey="treege-renderer-theme">
       <RendererStyles />
       <dl className={cn("tg:flex tg:flex-col tg:gap-4", className)}>
         {visibleFields.map((field) => {
@@ -194,7 +212,7 @@ const TreegeViewer = ({
           return <div key={field.id}>{renderRow ? renderRow(field, row) : row}</div>;
         })}
       </dl>
-    </>
+    </ThemeProvider>
   );
 };
 

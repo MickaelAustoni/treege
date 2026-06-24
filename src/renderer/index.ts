@@ -1,4 +1,6 @@
 export { TreegeRendererProvider, useTreegeRendererConfig } from "@/renderer/context/TreegeRendererProvider";
+export type { TreegeViewerProviderProps } from "@/renderer/context/TreegeViewerProvider";
+export { default as TreegeViewerProvider } from "@/renderer/context/TreegeViewerProvider";
 export type { UseTreegeRendererReturn } from "@/renderer/features/TreegeRenderer/useTreegeRenderer";
 export { useTreegeRenderer } from "@/renderer/features/TreegeRenderer/useTreegeRenderer";
 export * from "@/renderer/features/TreegeRenderer/web/components/DefaultFormWrapper";
