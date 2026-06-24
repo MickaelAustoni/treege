@@ -2,7 +2,13 @@ import { File as FileIcon } from "lucide-react";
 import { ReactNode, useMemo } from "react";
 import { useTreegeRendererConfig } from "@/renderer/context/TreegeRendererProvider";
 import RendererStyles from "@/renderer/features/TreegeRenderer/web/components/styles/RendererStyles";
-import { getViewerFields, isImageFile, ViewerField } from "@/renderer/features/TreegeViewer/utils/viewerFields";
+import {
+  FlowResponseEntry,
+  getViewerFields,
+  isImageFile,
+  ViewerField,
+  viewerFieldsFromResponse,
+} from "@/renderer/features/TreegeViewer/utils/viewerFields";
 import { FormValues } from "@/renderer/types/renderer";
 import { Badge } from "@/shared/components/ui/badge";
 import { Checkbox } from "@/shared/components/ui/checkbox";
@@ -45,45 +51,41 @@ const ViewerFile = ({ file }: { file: SerializableFile }): ReactNode => {
 /** Per-type override map: `{ file: (field) => <Thumbnails /> }`. */
 export type ViewerFieldRenderers = Partial<Record<InputType, (field: ViewerField) => ReactNode>>;
 
-export interface TreegeViewerProps {
+interface TreegeViewerBaseProps {
   /**
-   * The flow the values were submitted against
-   */
-  flow: Flow;
-  /**
-   * The submitted values (`name`- or `id`-keyed, e.g. the `onSubmit` payload).
-   */
-  values: FormValues;
-  /**
-   *  Language used to resolve translatable labels/options (defaults to `en`).
+   * Language used to resolve translatable labels/options (defaults to the provider config, then `en`).
    */
   language?: string;
   /**
-   * Light/dark theme. Falls back to the `TreegeRendererProvider` config, then
-   * `"dark"` — same resolution as `TreegeRenderer`.
+   * Light/dark theme. Falls back to the `TreegeRendererProvider` config, then `"dark"`.
    */
   theme?: "light" | "dark";
   /**
-   * Base URL used to resolve relative file paths into absolute URLs — same role
-   * as on `TreegeRenderer`/`TreegeEditor`. `data:`/`blob:`/absolute URLs are
-   * left untouched.
+   * Base URL to resolve relative file paths into absolute URLs. `data:`/`blob:`/absolute URLs are left untouched.
    */
   baseUrl?: string;
   /**
-   * Field names (or ids) to hide from the view.
+   *  Field names (or ids) to hide from the view.
    */
   excludedFields?: string[];
   /**
    * Hide fields that have no submitted value (instead of showing `emptyText`).
-   * Useful to render a compact recap of only the filled-in fields.
    */
   excludeEmptyFields?: boolean;
+  /**
+   *  When `true`, only the first `collapsedVisibleCount` fields are rendered.
+   */
+  collapsed?: boolean;
+  /**
+   * Number of fields kept visible while `collapsed` (defaults to all).
+   */
+  collapsedVisibleCount?: number;
   /**
    * Text shown when a field has no submitted value (defaults to `"—"`).
    */
   emptyText?: string;
   /**
-   * Extra class names on the root element. *
+   * Extra class names on the root element.
    */
   className?: string;
   /**
@@ -98,6 +100,31 @@ export interface TreegeViewerProps {
    */
   renderRow?: (field: ViewerField, defaultRow: ReactNode) => ReactNode;
 }
+
+/**
+ * `flowResponse` is typed conditionally on `flow`:
+ * - **with** a `flow` → the renderer's `FormValues` (`name`- or `id`-keyed), resolved against the flow;
+ * - **without** a `flow` → a self-describing `FlowResponseEntry[]` (each carries its own
+ *   `name`/`type`/`value`/`label`), rendered as-is.
+ */
+export type TreegeViewerProps = TreegeViewerBaseProps &
+  (
+    | {
+        /**
+         * The flow the values were submitted against.
+         */
+        flow: Flow;
+        /** The submitted values as the renderer's `FormValues` (`name`- or `id`-keyed). */
+        flowResponse: FormValues;
+      }
+    | {
+        flow?: undefined;
+        /**
+         * Self-describing stored values rendered without a flow.
+         */
+        flowResponse: FlowResponseEntry[];
+      }
+  );
 
 /**
  * Default rendering of a single field's value, by display kind.
@@ -148,21 +175,21 @@ const DefaultValue = ({ field, emptyText }: { field: ViewerField; emptyText: str
  * change the whole row layout pass `renderRow`.
  *
  * @example
- * <TreegeViewer
- *   flow={flow}
- *   values={submitted}
- *   language="fr"
- *   excludedFields={["internalNote"]}
- *   renderField={{ file: ({ rawValue }) => <Thumbnails files={rawValue} /> }}
- * />
+ * // With a flow — `flowResponse` is the renderer's FormValues:
+ * <TreegeViewer flow={flow} flowResponse={submitted} language="fr" excludeEmptyFields />
+ *
+ * // Without a flow — `flowResponse` is a self-describing list:
+ * <TreegeViewer flowResponse={[{ name: "city", type: "text", value: "Paris", label: { en: "City" } }]} />
  */
 const TreegeViewer = ({
   flow,
-  values,
+  flowResponse,
   baseUrl,
   theme,
   excludedFields,
   excludeEmptyFields,
+  collapsed,
+  collapsedVisibleCount,
   className,
   renderField,
   renderRow,
@@ -176,9 +203,13 @@ const TreegeViewer = ({
   const resolvedBaseUrl = baseUrl ?? globalConfig?.baseUrl;
   const resolvedLanguage = language ?? globalConfig?.language ?? "en";
 
+  // With a flow, resolve against it; without, render the self-describing response as-is.
   const fields = useMemo(
-    () => getViewerFields(flow, values, { baseUrl: resolvedBaseUrl, language: resolvedLanguage }),
-    [flow, values, resolvedLanguage, resolvedBaseUrl],
+    () =>
+      flow
+        ? getViewerFields(flow, flowResponse as FormValues, { baseUrl: resolvedBaseUrl, language: resolvedLanguage })
+        : viewerFieldsFromResponse(flowResponse as FlowResponseEntry[], { baseUrl: resolvedBaseUrl, language: resolvedLanguage }),
+    [flow, flowResponse, resolvedLanguage, resolvedBaseUrl],
   );
 
   const visibleFields = useMemo(
@@ -194,23 +225,45 @@ const TreegeViewer = ({
     [fields, excludedFields, excludeEmptyFields],
   );
 
+  const renderFieldRow = (field: ViewerField) => {
+    const override = renderField?.[field.type];
+    const value = override ? override(field) : <DefaultValue field={field} emptyText={emptyText} />;
+
+    const row = (
+      <div className="tg:flex tg:flex-col tg:gap-1">
+        <dt className="tg:font-medium tg:text-muted-foreground tg:text-sm">{field.label}</dt>
+        <dd className="tg:m-0">{value}</dd>
+      </div>
+    );
+
+    return <div key={field.id}>{renderRow ? renderRow(field, row) : row}</div>;
+  };
+
+  // Fields past `collapsedVisibleCount` stay mounted but their wrapper animates its
+  // height (grid-rows 0fr → 1fr) so collapsing/expanding transitions smoothly.
+  const visibleCount = collapsedVisibleCount ?? visibleFields.length;
+  const headFields = visibleFields.slice(0, visibleCount);
+  const collapsibleFields = visibleFields.slice(visibleCount);
+  const isCollapsed = Boolean(collapsed) && collapsibleFields.length > 0;
+
   return (
     <ThemeProvider theme={resolvedTheme} storageKey="treege-renderer-theme">
       <RendererStyles />
       <dl className={cn("tg:flex tg:flex-col tg:gap-4", className)}>
-        {visibleFields.map((field) => {
-          const override = renderField?.[field.type];
-          const value = override ? override(field) : <DefaultValue field={field} emptyText={emptyText} />;
+        {headFields.map(renderFieldRow)}
 
-          const row = (
-            <div className="tg:flex tg:flex-col tg:gap-1">
-              <dt className="tg:font-medium tg:text-muted-foreground tg:text-sm">{field.label}</dt>
-              <dd className="tg:m-0">{value}</dd>
+        {collapsibleFields.length > 0 && (
+          <div
+            className={cn(
+              "tg:grid tg:transition-[grid-template-rows] tg:duration-300 tg:ease-in-out",
+              isCollapsed ? "tg:grid-rows-[0fr]" : "tg:grid-rows-[1fr]",
+            )}
+          >
+            <div className="tg:overflow-hidden">
+              <div className="tg:flex tg:flex-col tg:gap-4">{collapsibleFields.map(renderFieldRow)}</div>
             </div>
-          );
-
-          return <div key={field.id}>{renderRow ? renderRow(field, row) : row}</div>;
-        })}
+          </div>
+        )}
       </dl>
     </ThemeProvider>
   );

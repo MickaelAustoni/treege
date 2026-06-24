@@ -52,7 +52,7 @@ Treege is a modern React library for creating and rendering interactive decision
 - **Optional Dependencies**: Graceful degradation when optional packages like `react-native-document-picker` aren't installed
 - **Theme Support**: Dark/light mode out of the box
 - **Google API Integration**: Address autocomplete support
-- **Read-Only Viewer**: `TreegeViewer` renders a submitted flow as a label/value recap — same branch-visibility and formatting as the form, with a headless `getViewerFields` core for custom layouts
+- **Read-Only Viewer**: `TreegeViewer` renders a submitted flow as a label/value recap — same branch-visibility and formatting as the form, works with or without a flow (self-describing values), supports collapse, with a headless `getViewerFields` core for custom layouts
 
 ### Developer Experience
 - **Modular**: Import only what you need (editor, renderer, or both)
@@ -192,11 +192,10 @@ function App() {
 
 ## Read-Only Viewer (`TreegeViewer`)
 
-Once a form has been submitted, `TreegeViewer` renders the result as a read-only **label / value recap** — no inputs, no validation. It takes the same `flow` and the submitted `values` (the `onSubmit` payload) and replays them through the renderer's branch-visibility logic, so only the fields that were actually reachable for those values are shown. Option values resolve to their labels, dates/ranges and i18n labels are formatted exactly like the form, and `hidden`/`submit` fields are excluded.
+Once a form has been submitted, `TreegeViewer` renders the result as a read-only **label / value recap** — no inputs, no validation. With a `flow` it replays the submitted `flowResponse` through the renderer's branch-visibility logic, so only the fields that were actually reachable for those values are shown. Option values resolve to their labels, dates/ranges and i18n labels are formatted exactly like the form, and `hidden`/`submit` fields are excluded.
 
 ```tsx
-import { TreegeRenderer } from "treege/renderer";
-import { TreegeViewer } from "treege/renderer";
+import { TreegeRenderer, TreegeViewer } from "treege/renderer";
 import { useState } from "react";
 import type { Flow, FormValues } from "treege";
 
@@ -204,27 +203,56 @@ function App({ flow }: { flow: Flow }) {
   const [submitted, setSubmitted] = useState<FormValues | null>(null);
 
   if (submitted) {
-    return <TreegeViewer flow={flow} values={submitted} language="en" />;
+    return <TreegeViewer flow={flow} flowResponse={submitted} language="en" />;
   }
 
   return <TreegeRenderer flow={flow} onSubmit={setSubmitted} />;
 }
 ```
 
+### Without a flow
+
+When you only have stored, self-describing values (e.g. a persisted `WorkflowValue[]`) and no flow definition, omit `flow` and pass them as `flowResponse`. Each entry carries its own `{ name, type, value, label }`, so values are still formatted by type. `flowResponse` is **typed conditionally on `flow`**: with a flow it's `FormValues`, without a flow it's `FlowResponseEntry[]`.
+
+```tsx
+<TreegeViewer
+  flowResponse={[
+    { name: "city", type: "text", value: "Paris", label: { en: "City" } },
+    { name: "dates", type: "daterange", value: "2026-06-01,2026-07-15", label: { en: "Dates" } },
+  ]}
+/>
+```
+
 ### Props
 
-| Prop                 | Type                                                | Default | Description                                                                                                  |
-|----------------------|-----------------------------------------------------|---------|--------------------------------------------------------------------------------------------------------------|
-| `flow`               | `Flow`                                              | -       | The flow the values were submitted against                                                                   |
-| `values`             | `FormValues`                                        | -       | The submitted values (`name`- or `id`-keyed, e.g. the `onSubmit` payload)                                    |
-| `language`           | `string`                                            | `"en"`  | Language used to resolve translatable labels/options                                                         |
-| `baseUrl`            | `string`                                            | -       | Resolves relative file paths into absolute URLs (same role as on `TreegeRenderer`); `data:`/`blob:`/absolute URLs are left untouched |
-| `excludedFields`     | `string[]`                                          | -       | Field names (or ids) to hide from the view                                                                   |
-| `excludeEmptyFields` | `boolean`                                           | `false` | Hide fields that have no submitted value (instead of showing `emptyText`)                                    |
-| `emptyText`          | `string`                                            | `"—"`   | Text shown when a field has no submitted value                                                               |
-| `className`          | `string`                                            | -       | Extra class names on the root element                                                                        |
-| `renderField`        | `Partial<Record<InputType, (field) => ReactNode>>` | -       | Per-type rendering overrides for the value cell (typically `file`)                                          |
-| `renderRow`          | `(field, defaultRow) => ReactNode`                  | -       | Wrap or replace a whole field row (label + value)                                                            |
+| Prop                    | Type                                                             | Default                 | Description                                                                                       |
+|-------------------------|------------------------------------------------------------------|-------------------------|---------------------------------------------------------------------------------------------------|
+| `flow`                  | `Flow`                                                           | -                       | The flow the values were submitted against (omit for flow-less mode)                              |
+| `flowResponse`          | `FormValues` *(with `flow`)* / `FlowResponseEntry[]` *(without)* | -                       | The submitted values — type is conditional on `flow`                                              |
+| `language`              | `string`                                                         | provider, then `"en"`   | Language used to resolve translatable labels/options                                              |
+| `theme`                 | `"light" \| "dark"`                                              | provider, then `"dark"` | Light/dark theme (falls back to the `TreegeRendererProvider` config)                              |
+| `baseUrl`               | `string`                                                         | -                       | Resolves relative file paths into absolute URLs; `data:`/`blob:`/absolute URLs are left untouched |
+| `excludedFields`        | `string[]`                                                       | -                       | Field names (or ids) to hide from the view                                                        |
+| `excludeEmptyFields`    | `boolean`                                                        | `false`                 | Hide fields that have no submitted value (instead of showing `emptyText`)                         |
+| `collapsed`             | `boolean`                                                        | `false`                 | When `true`, only the first `collapsedVisibleCount` fields are rendered                           |
+| `collapsedVisibleCount` | `number`                                                         | -                       | Number of fields kept visible while `collapsed` (defaults to all)                                 |
+| `emptyText`             | `string`                                                         | `"—"`                   | Text shown when a field has no submitted value                                                    |
+| `className`             | `string`                                                         | -                       | Extra class names on the root element                                                             |
+| `renderField`           | `Partial<Record<InputType, (field) => ReactNode>>`               | -                       | Per-type rendering overrides for the value cell (typically `file`)                                |
+| `renderRow`             | `(field, defaultRow) => ReactNode`                               | -                       | Wrap or replace a whole field row (label + value)                                                 |
+
+### Collapse
+
+`collapsed` + `collapsedVisibleCount` are controlled — you render the toggle and own the state. While collapsed, only the first N fields show:
+
+```tsx
+const [collapsed, setCollapsed] = useState(true);
+
+<>
+  <button onClick={() => setCollapsed((c) => !c)}>{collapsed ? "Show all" : "Show less"}</button>
+  <TreegeViewer flow={flow} flowResponse={submitted} collapsed={collapsed} collapsedVisibleCount={3} />
+</>
+```
 
 ### Customizing rendering
 
@@ -233,16 +261,19 @@ Use `renderField` to override the value cell for a specific input type — most 
 ```tsx
 <TreegeViewer
   flow={flow}
-  values={submitted}
+  flowResponse={submitted}
   language="fr"
   excludedFields={["internalNote"]}
   renderField={{ file: ({ rawValue }) => <Thumbnails files={rawValue} /> }}
 />
 ```
 
-### Headless usage (`getViewerFields`)
+### Headless usage
 
-`TreegeViewer` is a thin layer over `getViewerFields`, which returns the ordered, visible, display-ready fields. Use it directly when you want a fully custom layout (a table, a PDF, columns…):
+`TreegeViewer` is a thin layer over two field builders that return the ordered, display-ready fields — use them directly for a fully custom layout (a table, a PDF, columns…):
+
+- `getViewerFields(flow, values, { language, baseUrl })` — flow-based resolution.
+- `viewerFieldsFromResponse(response, { language })` — flow-less, from self-describing entries.
 
 ```tsx
 import { getViewerFields } from "treege/renderer";

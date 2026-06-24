@@ -1,6 +1,6 @@
 import { Edge, Node } from "@xyflow/react";
 import { describe, expect, it } from "vitest";
-import { getViewerFields, isImageFile } from "@/renderer/features/TreegeViewer/utils/viewerFields";
+import { getViewerFields, isImageFile, viewerFieldsFromResponse } from "@/renderer/features/TreegeViewer/utils/viewerFields";
 import { SerializableFile } from "@/shared/types/file";
 import { Flow } from "@/shared/types/node";
 
@@ -193,6 +193,43 @@ describe("getViewerFields", () => {
   it("accepts node-id-keyed values too", () => {
     const fields = getViewerFields(flow, { "a-select": "broken", root: "a" });
     expect(fields.find((entry) => entry.name === "reason")?.display).toEqual({ kind: "text", text: "Broken" });
+  });
+});
+
+describe("viewerFieldsFromResponse", () => {
+  it("builds fields from self-describing entries (no flow)", () => {
+    const fields = viewerFieldsFromResponse(
+      [
+        { label: { en: "City" }, name: "city", type: "text", value: "Paris" },
+        { name: "active", type: "switch", value: true },
+        { label: { en: "Dates" }, name: "dates", type: "daterange", value: "2026-06-01,2026-07-15" },
+      ],
+      { language: "en" },
+    );
+
+    expect(fields.map((field) => [field.label, field.display])).toEqual([
+      ["City", { kind: "text", text: "Paris" }],
+      ["active", { checked: true, kind: "boolean" }],
+      ["Dates", { kind: "text", text: expect.stringContaining(" → ") }],
+    ]);
+  });
+
+  it("falls back to the name when no label, and tolerates a plain-string label", () => {
+    const fields = viewerFieldsFromResponse([
+      { name: "comment", type: "text", value: "x" },
+      { label: "Libellé", name: "other", type: "text", value: "y" },
+    ]);
+    expect(fields.map((field) => field.label)).toEqual(["comment", "Libellé"]);
+  });
+
+  it("skips hidden/submit and unnamed entries", () => {
+    const fields = viewerFieldsFromResponse([
+      { name: "secret", type: "hidden", value: "x" },
+      { name: "send", type: "submit", value: "y" },
+      { type: "text", value: "no-name" },
+      { name: "kept", type: "text", value: "z" },
+    ]);
+    expect(fields.map((field) => field.name)).toEqual(["kept"]);
   });
 });
 

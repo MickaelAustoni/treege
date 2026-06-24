@@ -8,6 +8,7 @@ import { getInputNodes, resolveNodeKey } from "@/renderer/utils/node";
 import { INPUT_TYPE } from "@/shared/constants/inputType";
 import { SerializableFile } from "@/shared/types/file";
 import { Flow, InputNodeData, InputOption, InputType } from "@/shared/types/node";
+import { Translatable } from "@/shared/types/translate";
 import { getTranslatedText } from "@/shared/utils/translations";
 
 /**
@@ -40,8 +41,20 @@ export interface ViewerField {
   rawValue: unknown;
   /** Normalized, render-ready representation of the value. */
   display: ViewerFieldDisplay;
-  /** The originating flow node (escape hatch for custom rendering). */
-  node: Node<InputNodeData>;
+  /** The originating flow node — present only in flow-based resolution (escape hatch for custom rendering). */
+  node?: Node<InputNodeData>;
+}
+
+/**
+ * A self-describing stored value, used to render a viewer **without** a `flow`
+ * (e.g. a persisted `WorkflowValue[]`). Each entry carries its own metadata so
+ * the value can be formatted by type and labelled without a flow definition.
+ */
+export interface FlowResponseEntry {
+  name?: string;
+  type?: string;
+  value?: unknown;
+  label?: Translatable | string;
 }
 
 export interface GetViewerFieldsOptions {
@@ -117,12 +130,16 @@ const toViewerFiles = (value: unknown, baseUrl?: string): SerializableFile[] =>
     data: resolveFileData(file.data, baseUrl),
   }));
 
-const computeDisplay = (node: Node<InputNodeData>, value: unknown, language: string, baseUrl?: string): ViewerFieldDisplay => {
+const computeDisplay = (
+  type: string | undefined,
+  value: unknown,
+  options: InputOption[] | undefined,
+  language: string,
+  baseUrl?: string,
+): ViewerFieldDisplay => {
   if (isEmptyValue(value)) {
     return { kind: "empty" };
   }
-
-  const { type, options } = node.data;
 
   switch (type) {
     case INPUT_TYPE.switch:
@@ -205,7 +222,7 @@ export const getViewerFields = (
       const rawValue = idValues[node.id];
 
       return {
-        display: computeDisplay(node, rawValue, language, baseUrl),
+        display: computeDisplay(node.data.type, rawValue, node.data.options, language, baseUrl),
         id: node.id,
         label: getTranslatedText(node.data.label, language) || node.data.name || node.id,
         name: resolveNodeKey(node),
@@ -214,4 +231,37 @@ export const getViewerFields = (
         type: (node.data.type ?? INPUT_TYPE.text) as InputType,
       };
     });
+};
+
+/** Resolve a response entry's label, tolerating a plain string or a `Translatable`. */
+const resolveResponseLabel = (label: FlowResponseEntry["label"], language: string): string =>
+  (typeof label === "string" ? label : getTranslatedText(label, language)) || "";
+
+/**
+ * Build a render-ready field list straight from a self-describing response —
+ * each entry supplies its own `name`/`type`/`value`/`label`, so no `flow` is
+ * needed. Used by {@link TreegeViewer} in its flow-less mode. Option values are
+ * shown as-is (there's no flow to resolve their labels), and `hidden`/`submit`
+ * entries are skipped.
+ *
+ * @param response - The self-describing stored values
+ * @param options - Resolution options (language, baseUrl)
+ * @returns The ordered, display-ready fields
+ */
+export const viewerFieldsFromResponse = (
+  response: readonly FlowResponseEntry[] | null | undefined,
+  options: GetViewerFieldsOptions = {},
+): ViewerField[] => {
+  const { language = "en", baseUrl } = options;
+
+  return (response ?? [])
+    .filter((entry): entry is FlowResponseEntry & { name: string } => Boolean(entry.name) && !NON_DISPLAYABLE_TYPES.has(entry.type ?? ""))
+    .map((entry) => ({
+      display: computeDisplay(entry.type, entry.value, undefined, language, baseUrl),
+      id: entry.name,
+      label: resolveResponseLabel(entry.label, language) || entry.name,
+      name: entry.name,
+      rawValue: entry.value,
+      type: (entry.type ?? INPUT_TYPE.text) as InputType,
+    }));
 };

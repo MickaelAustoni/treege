@@ -1,6 +1,7 @@
 import { MoonStar, Sun } from "lucide-react";
 import { useState } from "react";
-import { FormValues, TreegeRenderer, TreegeViewer } from "@/renderer";
+import { FlowResponseEntry, FormValues, TreegeRenderer, TreegeViewer } from "@/renderer";
+import { Button } from "@/shared/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/components/ui/select";
 import { Switch } from "@/shared/components/ui/switch";
 import { LANGUAGES, Language } from "@/shared/constants/languages";
@@ -55,6 +56,20 @@ const SAMPLE_VALUES: FormValues = {
   "question-16": ["08:00", "17:30"], // timerange
 };
 
+/**
+ * A self-describing response (no flow): each entry carries its own
+ * `name`/`type`/`value`/`label`, so it's still formatted by type. Used to
+ * demo the flow-less viewer + collapse.
+ */
+const SAMPLE_RESPONSE: FlowResponseEntry[] = [
+  { label: { en: "Reason", fr: "Motif" }, name: "reason", type: "select", value: "broken" },
+  { label: { en: "Dates", fr: "Dates" }, name: "dates", type: "daterange", value: "2026-06-01,2026-07-15" },
+  { label: { en: "Active", fr: "Actif" }, name: "active", type: "switch", value: true },
+  { label: { en: "Amount (€)", fr: "Montant (€)" }, name: "amount", type: "number", value: "1250" },
+  { label: { en: "City", fr: "Ville" }, name: "city", type: "address", value: "Paris, France" },
+  { label: { en: "Comment", fr: "Commentaire" }, name: "comment", type: "text", value: "All good" },
+];
+
 const Toolbar = ({
   theme,
   setTheme,
@@ -99,6 +114,7 @@ const ViewerExample = () => {
   const [theme, setTheme] = useState<"light" | "dark">("dark");
   const [language, setLanguage] = useState<Language>("en");
   const [values, setValues] = useState<FormValues>(SAMPLE_VALUES);
+  const [collapsed, setCollapsed] = useState(true);
 
   return (
     <div className={`tg:h-screen tg:w-screen tg:overflow-auto tg:bg-background ${theme}`}>
@@ -106,13 +122,13 @@ const ViewerExample = () => {
         <div>
           <h2 className="tg:text-lg tg:font-semibold">TreegeViewer — all input types</h2>
           <p className="tg:mt-1 tg:text-sm tg:text-muted-foreground">
-            Flat form (no steps). Fill it on the left, see the read-only view update on the right.
+            Fill the form — both viewers show the same response (`flow` + `flowResponse`); the right one is collapsed to 3 fields.
           </p>
         </div>
         <Toolbar theme={theme} setTheme={setTheme} language={language} setLanguage={setLanguage} />
       </div>
 
-      <div className="tg:grid tg:grid-cols-1 tg:gap-6 tg:p-6 tg:lg:grid-cols-2">
+      <div className="tg:grid tg:grid-cols-1 tg:gap-6 tg:p-6 tg:lg:grid-cols-4">
         <section>
           <h3 className="tg:mb-4 tg:font-semibold">Form</h3>
           <TreegeRenderer
@@ -127,9 +143,30 @@ const ViewerExample = () => {
         </section>
 
         <section>
-          <h3 className="tg:mb-4 tg:font-semibold">Viewer (read-only)</h3>
+          <h3 className="tg:mb-4 tg:font-semibold">Viewer</h3>
           <div className="tg:rounded-lg tg:border tg:p-4">
-            <TreegeViewer flow={flow} values={values} language={language} />
+            <TreegeViewer flow={flow} flowResponse={values} language={language} />
+          </div>
+        </section>
+
+        <section>
+          <div className="tg:mb-4 tg:flex tg:items-center tg:justify-between">
+            <h3 className="tg:font-semibold">Viewer — collapsed</h3>
+            <Button variant="outline" size="sm" onClick={() => setCollapsed((value) => !value)}>
+              {collapsed ? "Show all" : "Show less"}
+            </Button>
+          </div>
+          <div className="tg:rounded-lg tg:border tg:p-4">
+            {/* Same viewer + same data as the middle column — collapse works with a flow too. */}
+            <TreegeViewer flow={flow} flowResponse={values} language={language} collapsed={collapsed} collapsedVisibleCount={3} />
+          </div>
+        </section>
+
+        <section>
+          <h3 className="tg:mb-4 tg:font-semibold">Viewer — without a flow</h3>
+          <div className="tg:rounded-lg tg:border tg:p-4">
+            {/* Self-describing `flowResponse` (no `flow`) — each entry carries its own type/label. */}
+            <TreegeViewer flowResponse={SAMPLE_RESPONSE} language={language} />
           </div>
         </section>
       </div>
