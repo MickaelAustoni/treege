@@ -41,6 +41,7 @@ const TreegeRendererContent = ({
   baseUrl,
   components,
   contentContainerStyle,
+  extraPayload,
   flow,
   googleApiKey,
   headers,
@@ -84,6 +85,7 @@ const TreegeRendererContent = ({
   } = useTreegeRenderer({
     baseUrl,
     components,
+    extraPayload,
     flow,
     googleApiKey,
     headers,

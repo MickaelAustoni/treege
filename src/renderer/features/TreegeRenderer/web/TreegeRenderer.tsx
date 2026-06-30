@@ -21,6 +21,7 @@ const TreegeRenderer = ({
   baseUrl,
   components,
   className,
+  extraPayload,
   flow,
   formId,
   googleApiKey,
@@ -64,6 +65,7 @@ const TreegeRenderer = ({
   } = useTreegeRenderer({
     baseUrl,
     components,
+    extraPayload,
     flow,
     googleApiKey,
     headers,

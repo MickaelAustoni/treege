@@ -48,6 +48,19 @@ export type Meta = {
 };
 
 /**
+ * Extra data injected by the consuming app into every submission, merged at the
+ * top level of the payload — both the object passed to `onSubmit` and the body
+ * of the built-in HTTP submit request. Use it for fields that live in the host
+ * app rather than the form itself (e.g. the logged-in `userId`, a tenant id).
+ *
+ * Either a static object or a function of the current (name-keyed) form values,
+ * evaluated at submit time so the extra data can be derived from the answers or
+ * read fresh (e.g. a rotating auth token). The extra keys are spread last, so
+ * they intentionally override a same-named form field.
+ */
+export type ExtraPayload = Record<string, unknown> | ((values: FormValues) => Record<string, unknown>);
+
+/**
  * Union of all possible input value types
  */
 export type InputValue =
@@ -433,6 +446,18 @@ export interface TreegeRendererProps extends TreegeRendererConfig {
    * Additional class name for the renderer container
    */
   className?: string;
+  /**
+   * Extra data injected into every submission, merged at the top level of both
+   * the `onSubmit` payload and the built-in HTTP submit body. Use it for values
+   * owned by the host app rather than the form (e.g. the logged-in `userId`).
+   * See {@link ExtraPayload}.
+   *
+   * @example
+   * <TreegeRenderer flow={tree} extraPayload={{ userId }} />
+   * @example
+   * <TreegeRenderer flow={tree} extraPayload={() => ({ token: getToken() })} />
+   */
+  extraPayload?: ExtraPayload;
   /**
    * Flow to render. `null` / `undefined` renders nothing.
    */

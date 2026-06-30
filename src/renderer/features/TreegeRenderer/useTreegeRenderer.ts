@@ -4,6 +4,7 @@ import { useTreegeRendererConfig } from "@/renderer/context/TreegeRendererProvid
 import { useSubmitHandler } from "@/renderer/hooks/useSubmitHandler";
 import { useTranslate } from "@/renderer/hooks/useTranslate";
 import { FormValues, TreegeRendererProps } from "@/renderer/types/renderer";
+import { mergeExtraPayload } from "@/renderer/utils/extraPayload";
 import { getFlowRenderState } from "@/renderer/utils/flow";
 import {
   buildInitialFormValues,
@@ -60,6 +61,7 @@ const stableStringify = (value: unknown): string => {
 export const useTreegeRenderer = ({
   baseUrl,
   components,
+  extraPayload,
   flow,
   googleApiKey,
   headers,
@@ -75,6 +77,7 @@ export const useTreegeRenderer = ({
   TreegeRendererProps,
   | "baseUrl"
   | "components"
+  | "extraPayload"
   | "flow"
   | "googleApiKey"
   | "headers"
@@ -190,6 +193,7 @@ export const useTreegeRenderer = ({
     visibleInputNodes,
     config.headers,
     config.baseUrl,
+    extraPayload,
   );
 
   // ============================================
@@ -203,10 +207,12 @@ export const useTreegeRenderer = ({
   const exportedValues = useMemo(() => convertFormValuesToNamedFormat(formValues, visibleInputNodes), [formValues, visibleInputNodes]);
 
   /**
-   * Payload handed to `onSubmit`. When the submit button defines an
+   * Base payload handed to `onSubmit`. When the submit button defines a
    * `payloadTemplate`, the flat named values are reshaped into the template's
    * JSON structure; otherwise the flat named values are used as-is. An invalid
    * template (e.g. mid-edit) falls back to the flat values rather than throwing.
+   * The consumer `extraPayload` is merged on top at submit time (in
+   * `handleSubmit`), not here — so a function form is evaluated once, on submit.
    */
   const submitPayload = useMemo(() => {
     const template = submitButtonNode?.data?.submitConfig?.payloadTemplate;
@@ -353,19 +359,23 @@ export const useTreegeRenderer = ({
       return false;
     }
 
+    // Merge `extraPayload` now, at submit time — so a function form runs once
+    // (e.g. reads a fresh token) instead of on every render.
+    const payload = mergeExtraPayload(submitPayload, extraPayload, exportedValues) as FormValues;
+
     // If there's a submit button with configuration, use it
     if (hasSubmitConfig) {
       const result = await handleSubmitWithConfig((httpResponse) => {
         // Call onSubmit callback with form values and HTTP response as second parameter
         if (onSubmit) {
-          onSubmit(submitPayload, { httpResponse });
+          onSubmit(payload, { httpResponse });
         }
       });
 
       // If result is null, it means the submit config is incomplete (no URL)
       // Fall back to the default submit behavior
       if (result === null) {
-        onSubmit?.(submitPayload);
+        onSubmit?.(payload);
         return true;
       }
 
@@ -375,11 +385,11 @@ export const useTreegeRenderer = ({
       }
     } else if (onSubmit) {
       // Default behavior: call onSubmit directly
-      onSubmit(submitPayload);
+      onSubmit(payload);
     }
 
     return true;
-  }, [validateForm, hasSubmitConfig, handleSubmitWithConfig, onSubmit, submitPayload]);
+  }, [validateForm, hasSubmitConfig, handleSubmitWithConfig, onSubmit, submitPayload, extraPayload, exportedValues]);
 
   // ============================================
   // COMPUTED VALUES

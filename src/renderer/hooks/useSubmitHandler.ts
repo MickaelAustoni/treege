@@ -1,6 +1,6 @@
 import { Node } from "@xyflow/react";
 import { useCallback, useMemo, useState } from "react";
-import { FormValues } from "@/renderer/types/renderer";
+import { ExtraPayload, FormValues } from "@/renderer/types/renderer";
 import { redirect, SubmitResult, submitFormData } from "@/renderer/utils/submit";
 import { HttpHeaders, InputNodeData, TreegeNodeData } from "@/shared/types/node";
 import { isInputNode } from "@/shared/utils/nodeTypeGuards";
@@ -22,6 +22,7 @@ import { getTranslatedText } from "@/shared/utils/translations";
  * @param inputNodes - All input nodes for form data conversion
  * @param headers
  * @param baseUrl - Base URL prepended to a relative submit url
+ * @param extraPayload - Consumer-injected fields merged into the submit body
  * @returns Submit handler state and functions
  */
 export const useSubmitHandler = (
@@ -31,6 +32,7 @@ export const useSubmitHandler = (
   inputNodes: Node<InputNodeData>[],
   headers?: HttpHeaders,
   baseUrl?: string,
+  extraPayload?: ExtraPayload,
 ) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitMessage, setSubmitMessage] = useState<{ type: "success" | "error"; message: string } | null>(null);
@@ -73,7 +75,7 @@ export const useSubmitHandler = (
 
       try {
         // Perform the HTTP submission
-        const result = await submitFormData(config, formValues, inputNodes, headers, baseUrl);
+        const result = await submitFormData(config, formValues, inputNodes, headers, baseUrl, extraPayload);
 
         if (result.success) {
           // Show success message if configured
@@ -113,7 +115,7 @@ export const useSubmitHandler = (
         setIsSubmitting(false);
       }
     },
-    [submitButtonNode, formValues, language, inputNodes, headers, baseUrl],
+    [submitButtonNode, formValues, language, inputNodes, headers, baseUrl, extraPayload],
   );
 
   /**

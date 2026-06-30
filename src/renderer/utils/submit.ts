@@ -1,5 +1,6 @@
 import { Node } from "@xyflow/react";
-import { FormValues } from "@/renderer/types/renderer";
+import { ExtraPayload, FormValues } from "@/renderer/types/renderer";
+import { mergeExtraPayload } from "@/renderer/utils/extraPayload";
 import { convertFormValuesToNamedFormat } from "@/renderer/utils/form";
 import {
   makeHttpRequest,
@@ -48,6 +49,7 @@ export interface SubmitResult {
  * @param inputNodes - All input nodes (required when sendAllFormValues is true)
  * @param headers
  * @param baseUrl - Base URL prepended to a relative submit url
+ * @param extraPayload - Consumer-injected fields merged into the request body
  * @returns Promise with submission result
  */
 export const submitFormData = async (
@@ -56,6 +58,7 @@ export const submitFormData = async (
   inputNodes: Node<InputNodeData>[],
   headers?: HttpHeaders,
   baseUrl?: string,
+  extraPayload?: ExtraPayload,
 ): Promise<SubmitResult> => {
   // Validate configuration
   if (!config.url || config.url.trim() === "") {
@@ -78,13 +81,14 @@ export const submitFormData = async (
 
   // Prepare body. Precedence: the payload template (defines the exact payload
   // shape) wins, otherwise send all form values when requested.
+  const namedValues = convertFormValuesToNamedFormat(formValues, inputNodes);
   const templatedPayload = config.payloadTemplate ? resolveJsonTemplate(config.payloadTemplate, formValues, inputNodes) : undefined;
-  const body =
-    templatedPayload === undefined
-      ? config.sendAllFormValues
-        ? JSON.stringify(convertFormValuesToNamedFormat(formValues, inputNodes))
-        : undefined
-      : JSON.stringify(templatedPayload);
+  const basePayload = templatedPayload === undefined ? (config.sendAllFormValues ? namedValues : undefined) : templatedPayload;
+  // Merge consumer-injected fields on top. When the config would otherwise send
+  // no body, `mergeExtraPayload` still emits the extra alone so the injected
+  // data is never silently dropped.
+  const payload = mergeExtraPayload(basePayload, extraPayload, namedValues);
+  const body = payload === undefined ? undefined : JSON.stringify(payload);
 
   // Make the HTTP request using shared utility
   const result = await makeHttpRequest({
