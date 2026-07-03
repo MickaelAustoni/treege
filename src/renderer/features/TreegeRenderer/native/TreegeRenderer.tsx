@@ -244,7 +244,12 @@ const TreegeRenderer = (props: TreegeRendererNativeProps) => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    // Not `flex: 1` (whose 0 flex-basis collapses to zero height inside
+    // auto-sized parents like bottom sheets): auto basis sizes the ScrollView
+    // by its content, while grow/shrink still fill bounded parents.
+    flexBasis: "auto",
+    flexGrow: 1,
+    flexShrink: 1,
   },
   message: {
     borderRadius: 6,
