@@ -37,8 +37,9 @@ export const ThemeProvider = ({
       return controlledTheme;
     }
 
-    // Otherwise, use localStorage or default
-    if (typeof window !== "undefined") {
+    // Otherwise, use localStorage or default. Checked per API because React Native
+    // defines a `window` global without localStorage/matchMedia/document.
+    if (typeof localStorage !== "undefined") {
       return (localStorage.getItem(storageKey) as Theme) || defaultTheme;
     }
     return defaultTheme;
@@ -51,7 +52,9 @@ export const ThemeProvider = ({
   // The resolved theme is used to determine which color palette to expose
   const resolvedTheme =
     theme === "system"
-      ? typeof window !== "undefined" && window.matchMedia("(prefers-color-scheme: dark)").matches
+      ? typeof window !== "undefined" &&
+        typeof window.matchMedia === "function" &&
+        window.matchMedia("(prefers-color-scheme: dark)").matches
         ? "dark"
         : "light"
       : theme;
@@ -62,7 +65,7 @@ export const ThemeProvider = ({
       colors,
       setTheme: (newTheme: Theme) => {
         // Don't update localStorage if controlled
-        if (!controlledTheme && typeof window !== "undefined") {
+        if (!controlledTheme && typeof localStorage !== "undefined") {
           localStorage.setItem(storageKey, newTheme);
         }
         setInternalTheme(newTheme);
@@ -89,7 +92,8 @@ export const ThemeProvider = ({
    * `prefers-color-scheme` media query so the class follows OS changes live.
    */
   useEffect(() => {
-    if (typeof window === "undefined") {
+    // No-op outside the DOM (SSR, React Native)
+    if (typeof window === "undefined" || typeof window.document === "undefined") {
       return undefined;
     }
 

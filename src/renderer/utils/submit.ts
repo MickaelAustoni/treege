@@ -135,6 +135,11 @@ export const redirect = (url: string): void => {
     return;
   }
 
+  // No-op outside the DOM (React Native defines `window` without location/history)
+  if (typeof window === "undefined" || !window.location) {
+    return;
+  }
+
   // Check if it's an external URL
   const isExternal = url.startsWith("http://") || url.startsWith("https://");
 
