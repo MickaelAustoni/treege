@@ -1,4 +1,5 @@
 import DOMPurify from "dompurify";
+import { sanitize as sanitizePlainText } from "@/renderer/utils/sanitize.native";
 
 /**
  * Configuration for DOMPurify sanitization
@@ -69,6 +70,13 @@ export const sanitize = (input: string | undefined | null, options: SanitizeOpti
 
   // Convert to string if needed
   const stringInput = String(input);
+
+  // DOMPurify needs a browser DOM: without one (React Native, SSR) it exposes
+  // `isSupported: false` and no `sanitize` function, so fall back to the
+  // regex-based plain-text implementation shared with the native entry.
+  if (!DOMPurify.isSupported || typeof DOMPurify.sanitize !== "function") {
+    return sanitizePlainText(stringInput);
+  }
 
   // Default to plain text only mode for maximum security
   const { plainTextOnly = true, allowedTags, allowedAttributes } = options;
