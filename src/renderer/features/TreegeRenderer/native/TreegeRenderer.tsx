@@ -277,6 +277,8 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "700",
     marginBottom: 16,
+    paddingHorizontal: 16,
+    paddingTop: 16,
   },
 });
 

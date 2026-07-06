@@ -172,7 +172,7 @@ const TreegeRenderer = ({
       <PortalContainerProvider container={portalContainer}>
         <RendererStyles />
         <ThemeProvider theme={config.theme} storageKey="treege-renderer-theme">
-          {formTitle && <h2 className="tg:mb-4 tg:font-semibold tg:text-xl">{formTitle}</h2>}
+          {formTitle && <h2 className="tg:mx-auto tg:mb-4 tg:max-w-2xl tg:font-semibold tg:text-xl">{formTitle}</h2>}
           {isLoading ? (
             <LoadingSkeleton />
           ) : (
