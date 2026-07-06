@@ -32,6 +32,7 @@ const TreegeRenderer = ({
   onSubmit,
   showPoweredBy,
   theme,
+  title,
   validate,
   validationMode,
   initialValues = {},
@@ -102,6 +103,7 @@ const TreegeRenderer = ({
   const StepComponent = config.components.step ?? DefaultStep;
   const LoadingSkeleton = config.components.loadingSkeleton ?? DefaultLoadingSkeleton;
   const stepLabel = useMemo(() => t(currentStepGroupNode?.data?.label), [t, currentStepGroupNode]);
+  const formTitle = useMemo(() => t(title), [t, title]);
 
   /**
    * Web-specific form submission handler with focus logic.
@@ -170,6 +172,7 @@ const TreegeRenderer = ({
       <PortalContainerProvider container={portalContainer}>
         <RendererStyles />
         <ThemeProvider theme={config.theme} storageKey="treege-renderer-theme">
+          {formTitle && <h2 className="tg:mb-4 tg:font-semibold tg:text-xl">{formTitle}</h2>}
           {isLoading ? (
             <LoadingSkeleton />
           ) : (

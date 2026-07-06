@@ -13,6 +13,7 @@ import {
   UINodeData,
   UIType,
 } from "@/shared/types/node";
+import { Translatable } from "@/shared/types/translate";
 
 /**
  * Type mapping for input values based on input type
@@ -512,6 +513,17 @@ export interface TreegeRendererProps extends TreegeRendererConfig {
    * @param meta - Optional metadata about the submission (e.g., HTTP response data)
    */
   onSubmit?: (values: FormValues, meta?: Meta) => void;
+  /**
+   * Optional form title rendered above the form (web and native). Accepts a
+   * plain string or a {@link Translatable} object resolved with the current
+   * `language`.
+   *
+   * @example
+   * <TreegeRenderer flow={tree} title="Contact form" />
+   * @example
+   * <TreegeRenderer flow={tree} title={{ en: "Contact form", fr: "Formulaire de contact" }} />
+   */
+  title?: string | Translatable;
   /**
    * Custom validation function
    */

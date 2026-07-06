@@ -55,6 +55,7 @@ const TreegeRendererContent = ({
   showPoweredBy,
   style,
   theme,
+  title,
   validate,
   validationMode,
 }: TreegeRendererNativeProps) => {
@@ -123,6 +124,7 @@ const TreegeRendererContent = ({
   const StepComponent = config.components.step ?? DefaultStep;
   const LoadingSkeleton = config.components.loadingSkeleton ?? DefaultLoadingSkeleton;
   const stepLabel = useMemo(() => t(currentStepGroupNode?.data?.label), [t, currentStepGroupNode]);
+  const formTitle = useMemo(() => t(title), [t, title]);
 
   const handleContinue = useCallback(() => {
     if (isLastStep) {
@@ -153,6 +155,7 @@ const TreegeRendererContent = ({
       style={[styles.container, { backgroundColor: colors.background }, style]}
       contentContainerStyle={contentContainerStyle}
     >
+      {formTitle ? <Text style={[styles.title, { color: colors.text }]}>{formTitle}</Text> : null}
       {isLoading ? (
         <LoadingSkeleton />
       ) : (
@@ -269,6 +272,11 @@ const styles = StyleSheet.create({
     fontSize: 12,
     paddingVertical: 8,
     textAlign: "right",
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: "700",
+    marginBottom: 16,
   },
 });
 
