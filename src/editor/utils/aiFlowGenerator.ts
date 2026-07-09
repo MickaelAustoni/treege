@@ -65,11 +65,13 @@ GROUP NODE DATA STRUCTURE:
 {
   "id": "unique-id",
   "type": "group",
+  "hidden": true,
   "position": { "x": 0, "y": 0 },
   "data": {
     "label": { "en": "Group Label" }
   }
 }
+IMPORTANT: Group nodes are metadata only (they name the steps of the flow). They MUST always have "hidden": true and position { "x": 0, "y": 0 } — never give a group a real position or size. Child nodes reference their group via "parentId".
 
 EDGE STRUCTURE:
 {
