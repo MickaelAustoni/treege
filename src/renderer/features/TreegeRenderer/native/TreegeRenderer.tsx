@@ -1,4 +1,3 @@
-import { useCallback, useMemo } from "react";
 import { ScrollView, StyleSheet, Text, View, ViewStyle } from "react-native";
 import { TreegeRenderRuntimeProvider } from "@/renderer/context/TreegeRenderRuntimeProvider";
 import DefaultFormWrapper from "@/renderer/features/TreegeRenderer/native/components/DefaultFormWrapper";
@@ -62,24 +61,26 @@ const TreegeRendererContent = ({
   const { colors } = useTheme();
 
   const {
-    canContinueStep,
+    canContinue,
+    canGoBack,
     clearSubmitMessage,
     config,
     currentStep,
     currentStepGroupNode,
     currentStepIndex,
     formErrors,
+    formTitle,
     formValues,
-    goToNextStep,
-    goToPreviousStep,
+    handleBack,
+    handleContinue,
     handleSubmit,
     inputNodes,
     isFinalStep,
     isFirstStep,
-    isLastStep,
     isSubmitting,
     missingRequiredFields,
     setFieldValue,
+    stepLabel,
     steps,
     submitMessage,
     t,
@@ -93,19 +94,23 @@ const TreegeRendererContent = ({
     initialValues,
     isSubmitting: isSubmittingProp,
     language,
+    onBack,
     onChange,
     onSubmit,
     showPoweredBy,
     theme,
+    title,
     validate,
     validationMode,
   });
 
-  const { FormWrapper, SubmitButtonWrapper, renderNode } = useRenderNode({
+  const { FormWrapper, LoadingSkeleton, StepComponent, SubmitButtonWrapper, renderNode } = useRenderNode({
     config,
     DefaultFormWrapper,
     DefaultInputLabel,
     DefaultInputWrapper,
+    DefaultLoadingSkeleton,
+    DefaultStep,
     DefaultSubmitButton,
     DefaultSubmitButtonWrapper,
     defaultInputRenderers,
@@ -117,34 +122,6 @@ const TreegeRendererContent = ({
     missingRequiredFields,
     setFieldValue,
   });
-
-  const StepComponent = config.components.step ?? DefaultStep;
-  const LoadingSkeleton = config.components.loadingSkeleton ?? DefaultLoadingSkeleton;
-  const stepLabel = useMemo(() => t(currentStepGroupNode?.data?.label), [t, currentStepGroupNode]);
-  const formTitle = useMemo(() => t(title), [t, title]);
-
-  const handleContinue = useCallback(() => {
-    if (isFinalStep) {
-      void handleSubmit();
-      return;
-    }
-    goToNextStep();
-  }, [isFinalStep, handleSubmit, goToNextStep]);
-
-  /**
-   * Back handler. On intermediate steps it navigates back inside the flow; on
-   * the first step it delegates to the consumer's `onBack` (e.g. to step back
-   * in a parent modal). With no `onBack`, the first step has no Back button.
-   */
-  const handleBack = useCallback(() => {
-    if (isFirstStep) {
-      onBack?.();
-      return;
-    }
-    goToPreviousStep();
-  }, [isFirstStep, onBack, goToPreviousStep]);
-
-  const canGoBack = !isFirstStep || Boolean(onBack);
 
   return (
     <ScrollView
@@ -179,7 +156,7 @@ const TreegeRendererContent = ({
                   totalSteps={steps.length}
                   isFirstStep={isFirstStep}
                   isLastStep={isFinalStep}
-                  canContinue={canContinueStep && (isFinalStep || !isLastStep)}
+                  canContinue={canContinue}
                   canGoBack={canGoBack}
                   isSubmitting={isSubmitting}
                   onBack={handleBack}

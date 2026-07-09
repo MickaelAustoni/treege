@@ -27,6 +27,8 @@ type UseRenderNodeParams = {
   DefaultFormWrapper: AnyComponent;
   DefaultInputLabel: AnyComponent;
   DefaultInputWrapper: ComponentType<{ node: Node<InputNodeData>; children: ReactNode }>;
+  DefaultLoadingSkeleton: AnyComponent;
+  DefaultStep: AnyComponent;
   DefaultSubmitButton: AnyComponent;
   DefaultSubmitButtonWrapper?: AnyComponent;
   defaultInputRenderers: InputRenderers;
@@ -46,6 +48,8 @@ type UseRenderNodeParams = {
  * Returns:
  * - renderNode: Function to render individual nodes
  * - FormWrapper: Form wrapper component with fallback
+ * - LoadingSkeleton: Loading skeleton component with fallback
+ * - StepComponent: Step container component with fallback
  * - SubmitButton: Submit button component with fallback
  * - SubmitButtonWrapper: Submit button wrapper component with fallback (web only, undefined for native)
  */
@@ -53,6 +57,8 @@ export const useRenderNode = ({
   DefaultFormWrapper,
   DefaultInputLabel,
   DefaultInputWrapper,
+  DefaultLoadingSkeleton,
+  DefaultStep,
   DefaultSubmitButton,
   DefaultSubmitButtonWrapper,
   config,
@@ -76,6 +82,11 @@ export const useRenderNode = ({
     [config.components.submitButtonWrapper, DefaultSubmitButtonWrapper],
   );
   const InputLabel = useMemo(() => config.components.inputLabel || DefaultInputLabel, [config.components.inputLabel, DefaultInputLabel]);
+  const StepComponent = useMemo(() => config.components.step || DefaultStep, [config.components.step, DefaultStep]);
+  const LoadingSkeleton = useMemo(
+    () => config.components.loadingSkeleton || DefaultLoadingSkeleton,
+    [config.components.loadingSkeleton, DefaultLoadingSkeleton],
+  );
 
   const renderNode = useCallback(
     function renderNode(node: Node<TreegeNodeData>): ReactNode {
@@ -182,7 +193,9 @@ export const useRenderNode = ({
 
   return {
     FormWrapper,
+    LoadingSkeleton,
     renderNode,
+    StepComponent,
     SubmitButton,
     SubmitButtonWrapper,
   };

@@ -1,4 +1,4 @@
-import { FormEvent, useCallback, useMemo, useState } from "react";
+import { FormEvent, useCallback, useState } from "react";
 import { TreegeRenderRuntimeProvider } from "@/renderer/context/TreegeRenderRuntimeProvider";
 import { useTreegeRenderer } from "@/renderer/features/TreegeRenderer/useTreegeRenderer";
 import DefaultFormWrapper from "@/renderer/features/TreegeRenderer/web/components/DefaultFormWrapper";
@@ -40,7 +40,9 @@ const TreegeRenderer = ({
   isSubmitting: isSubmittingProp = false,
 }: TreegeRendererProps) => {
   const {
+    canContinue,
     canContinueStep,
+    canGoBack,
     clearSubmitMessage,
     config,
     currentStep,
@@ -48,9 +50,11 @@ const TreegeRenderer = ({
     currentStepIndex,
     firstErrorFieldId,
     formErrors,
+    formTitle,
     formValues,
     goToNextStep,
-    goToPreviousStep,
+    handleBack,
+    handleContinue,
     handleSubmit,
     hasSubmitInput,
     inputNodes,
@@ -60,6 +64,7 @@ const TreegeRenderer = ({
     isSubmitting,
     missingRequiredFields,
     setFieldValue,
+    stepLabel,
     steps,
     submitMessage,
     t,
@@ -73,21 +78,25 @@ const TreegeRenderer = ({
     initialValues,
     isSubmitting: isSubmittingProp,
     language,
+    onBack,
     onChange,
     onSubmit,
     showPoweredBy,
     theme,
+    title,
     validate,
     validationMode,
   });
 
   const [portalContainer, setPortalContainer] = useState<HTMLDivElement | null>(null);
 
-  const { FormWrapper, renderNode } = useRenderNode({
+  const { FormWrapper, LoadingSkeleton, renderNode, StepComponent } = useRenderNode({
     config,
     DefaultFormWrapper,
     DefaultInputLabel,
     DefaultInputWrapper,
+    DefaultLoadingSkeleton,
+    DefaultStep,
     DefaultSubmitButton,
     DefaultSubmitButtonWrapper,
     defaultInputRenderers,
@@ -99,11 +108,6 @@ const TreegeRenderer = ({
     missingRequiredFields,
     setFieldValue,
   });
-
-  const StepComponent = config.components.step ?? DefaultStep;
-  const LoadingSkeleton = config.components.loadingSkeleton ?? DefaultLoadingSkeleton;
-  const stepLabel = useMemo(() => t(currentStepGroupNode?.data?.label), [t, currentStepGroupNode]);
-  const formTitle = useMemo(() => t(title), [t, title]);
 
   /**
    * Web-specific form submission handler with focus logic.
@@ -142,34 +146,6 @@ const TreegeRenderer = ({
     [isFinalStep, isLastStep, canContinueStep, goToNextStep, handleSubmit, firstErrorFieldId],
   );
 
-  /**
-   * Continue handler. Inside the flow this just advances to the next step;
-   * on the final step it triggers the same submit pipeline as the form's
-   * `onSubmit` (validation + onSubmit callback / submitConfig HTTP call).
-   */
-  const handleContinue = useCallback(() => {
-    if (isFinalStep) {
-      void handleSubmit();
-      return;
-    }
-    goToNextStep();
-  }, [isFinalStep, handleSubmit, goToNextStep]);
-
-  /**
-   * Back handler. On intermediate steps it navigates back inside the flow; on
-   * the first step it delegates to the consumer's `onBack` (e.g. to step back
-   * in a parent modal). With no `onBack`, the first step has no Back button.
-   */
-  const handleBack = useCallback(() => {
-    if (isFirstStep) {
-      onBack?.();
-      return;
-    }
-    goToPreviousStep();
-  }, [isFirstStep, onBack, goToPreviousStep]);
-
-  const canGoBack = !isFirstStep || Boolean(onBack);
-
   return (
     <div ref={setPortalContainer} className={cn("treege treege-renderer", className)}>
       <PortalContainerProvider container={portalContainer}>
@@ -201,7 +177,7 @@ const TreegeRenderer = ({
                     totalSteps={steps.length}
                     isFirstStep={isFirstStep}
                     isLastStep={isFinalStep}
-                    canContinue={canContinueStep && (isFinalStep || !isLastStep)}
+                    canContinue={canContinue}
                     canGoBack={canGoBack}
                     hasSubmitInput={hasSubmitInput}
                     isSubmitting={isSubmitting}

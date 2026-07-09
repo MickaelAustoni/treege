@@ -73,10 +73,12 @@ export const useTreegeRenderer = ({
   googleApiKey,
   headers,
   language,
+  onBack,
   onChange,
   onSubmit,
   showPoweredBy,
   theme,
+  title,
   validate,
   validationMode,
   initialValues = {},
@@ -92,10 +94,12 @@ export const useTreegeRenderer = ({
   | "initialValues"
   | "isSubmitting"
   | "language"
+  | "onBack"
   | "onChange"
   | "onSubmit"
   | "showPoweredBy"
   | "theme"
+  | "title"
   | "validate"
   | "validationMode"
 >) => {
@@ -555,6 +559,55 @@ export const useTreegeRenderer = ({
   }, [formErrors]);
 
   // ============================================
+  // STEP ACTIONS (shared by web & native renderers)
+  // ============================================
+
+  /**
+   * Whether the step's action button can act: the step's visible required
+   * fields must be filled AND acting must lead somewhere — advancing when a
+   * next step exists, or submitting on the final step. On a boundary step
+   * (last visible step of an incomplete path) this stays false: there is no
+   * next step to go to yet, and submitting would send an incomplete flow.
+   */
+  const canContinue = canContinueStep && (isFinalStep || !isLastStep);
+
+  /**
+   * Continue handler for the step's action button. Inside the flow this just
+   * advances to the next step; on the final step it triggers the same submit
+   * pipeline as the form's `onSubmit` (validation + onSubmit callback /
+   * submitConfig HTTP call).
+   */
+  const handleContinue = useCallback(() => {
+    if (isFinalStep) {
+      void handleSubmit();
+      return;
+    }
+    goToNextStep();
+  }, [isFinalStep, handleSubmit, goToNextStep]);
+
+  /**
+   * Back handler. On intermediate steps it navigates back inside the flow; on
+   * the first step it delegates to the consumer's `onBack` (e.g. to step back
+   * in a parent modal). With no `onBack`, the first step has no Back button.
+   */
+  const handleBack = useCallback(() => {
+    if (isFirstStep) {
+      onBack?.();
+      return;
+    }
+    goToPreviousStep();
+  }, [isFirstStep, onBack, goToPreviousStep]);
+
+  /** Whether a Back action is available (intra-flow, or consumer `onBack` on the first step). */
+  const canGoBack = !isFirstStep || Boolean(onBack);
+
+  /** Translated label of the current step's group, for the step header. */
+  const stepLabel = useMemo(() => t(currentStepGroupNode?.data?.label), [t, currentStepGroupNode]);
+
+  /** Translated form title (`title` prop). */
+  const formTitle = useMemo(() => t(title), [t, title]);
+
+  // ============================================
   // SIDE EFFECTS
   // ============================================
 
@@ -760,7 +813,9 @@ export const useTreegeRenderer = ({
   // ============================================
 
   return {
+    canContinue,
     canContinueStep,
+    canGoBack,
     canSubmit,
     clearSubmitMessage,
     config,
@@ -769,9 +824,12 @@ export const useTreegeRenderer = ({
     currentStepIndex: safeStepIndex,
     firstErrorFieldId,
     formErrors,
+    formTitle,
     formValues,
     goToNextStep,
     goToPreviousStep,
+    handleBack,
+    handleContinue,
     handleSubmit,
     hasSubmitInput,
     inputNodes,
@@ -784,6 +842,7 @@ export const useTreegeRenderer = ({
     setFieldErrors: setFormErrors,
     setFieldValue,
     setMultipleFieldValues,
+    stepLabel,
     steps,
     submitMessage,
     t,
