@@ -51,14 +51,27 @@ const DefaultRadioInput = ({ field, extra }: InputRenderProps<"radio">) => {
               <FieldLabel
                 key={option.value + index}
                 htmlFor={optionId}
-                className={cn("tg:group/option tg:pointer-events-auto tg:relative", compactOptions && "tg:group-hover/option:pr-16")}
+                className={cn(
+                  // Hover feedback is scoped to unchecked options so the
+                  // checked card keeps its primary border.
+                  "tg:group/option tg:pointer-events-auto tg:relative tg:cursor-pointer tg:transition-colors tg:hover:has-data-[state=unchecked]:border-muted-foreground/40",
+                  compactOptions && "tg:group-hover/option:pr-16",
+                )}
               >
-                <Field orientation="horizontal" data-disabled={option.disabled || undefined}>
+                <Field
+                  orientation="horizontal"
+                  data-disabled={option.disabled || undefined}
+                  // Without a description the single title line centers against
+                  // the radio; `!` beats the field-content items-start variant.
+                  className={cn(!optionDescription && "tg:items-center!")}
+                >
                   {option.image && (
                     <img src={option.image} alt="" className="tg:h-10 tg:w-10 tg:shrink-0 tg:self-center tg:rounded tg:object-cover" />
                   )}
                   <FieldContent className={cn(compactOptions && "tg:min-w-0 tg:flex-1 tg:overflow-hidden")}>
-                    <FieldTitle className={cn(compactOptions && "tg:block tg:max-w-full tg:truncate")}>{optionLabel}</FieldTitle>
+                    <FieldTitle className={cn("tg:text-foreground", compactOptions && "tg:block tg:max-w-full tg:truncate")}>
+                      {optionLabel}
+                    </FieldTitle>
                     {optionDescription && (
                       <FieldDescription className={cn(compactOptions && "tg:block tg:max-w-full tg:truncate")}>
                         {optionDescription}
