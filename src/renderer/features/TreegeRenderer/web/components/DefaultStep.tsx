@@ -3,6 +3,7 @@ import DefaultSubmitButton from "@/renderer/features/TreegeRenderer/web/componen
 import DefaultSubmitButtonWrapper from "@/renderer/features/TreegeRenderer/web/components/DefaultSubmitButtonWrapper";
 import { useTranslate } from "@/renderer/hooks/useTranslate";
 import type { StepRenderProps } from "@/renderer/types/renderer";
+import { cn } from "@/shared/lib/utils";
 import { isInputNode } from "@/shared/utils/nodeTypeGuards";
 
 const DefaultStep = ({
@@ -10,6 +11,7 @@ const DefaultStep = ({
   label,
   children,
   canGoBack,
+  disableSectionBorder,
   isLastStep,
   canContinue,
   isSubmitting,
@@ -31,7 +33,7 @@ const DefaultStep = ({
   );
 
   return (
-    <section className="tg:rounded-lg tg:border tg:p-4">
+    <section className={cn("tg:rounded-lg tg:border tg:p-4", disableSectionBorder && "tg:border-0")}>
       {label && <h3 className="tg:mb-4 tg:font-semibold tg:text-lg">{label}</h3>}
 
       {children}

@@ -17,10 +17,11 @@ import { ThemeProvider, useTheme } from "@/shared/context/ThemeContext";
 /**
  * Props for the TreegeRenderer component (React Native)
  * Same as TreegeRendererProps but:
- * - Omits className (not used in React Native)
+ * - Omits className / style / disableSectionBorder / formId (web-only; the
+ *   native step has no section border)
  * - Adds style and contentContainerStyle (React Native specific)
  */
-export type TreegeRendererNativeProps = Omit<TreegeRendererProps, "className" | "formId"> & {
+export type TreegeRendererNativeProps = Omit<TreegeRendererProps, "className" | "disableSectionBorder" | "formId" | "style"> & {
   /**
    * Style for the ScrollView container
    */

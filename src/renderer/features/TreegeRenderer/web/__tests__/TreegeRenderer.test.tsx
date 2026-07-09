@@ -96,6 +96,37 @@ describe("TreegeRenderer (web) — Continue vs Submit", () => {
     await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(1));
   });
 
+  it("should remove the step section border with disableSectionBorder", () => {
+    const { container } = render(<TreegeRenderer flow={linearFlow} onSubmit={vi.fn()} disableSectionBorder />);
+
+    const section = container.querySelector("section");
+    expect(section).not.toBeNull();
+    const classes = (section as HTMLElement).className.split(" ");
+    // tailwind-merge drops the conflicting default `tg:border` in favor of
+    // `tg:border-0`; padding and layout classes are kept.
+    expect(classes).toContain("tg:border-0");
+    expect(classes).not.toContain("tg:border");
+    expect(classes).toContain("tg:p-4");
+  });
+
+  it("should keep the default step section border without disableSectionBorder", () => {
+    const { container } = render(<TreegeRenderer flow={linearFlow} onSubmit={vi.fn()} />);
+
+    const classes = (container.querySelector("section") as HTMLElement).className.split(" ");
+    expect(classes).toContain("tg:border");
+    expect(classes).toContain("tg:rounded-lg");
+    // "Powered by Treege" always carries a 16px horizontal padding to stay
+    // aligned with the step content.
+    expect(screen.getByText("Powered by Treege").className.split(" ")).toContain("tg:px-4");
+  });
+
+  it("should apply the style prop to the renderer's root container", () => {
+    const { container } = render(<TreegeRenderer flow={linearFlow} onSubmit={vi.fn()} style={{ maxWidth: "480px" }} />);
+
+    const root = container.querySelector(".treege-renderer") as HTMLElement;
+    expect(root.style.maxWidth).toBe("480px");
+  });
+
   it("should enable Continue once the branch is chosen, then show Submit on the revealed final step", () => {
     render(<TreegeRenderer flow={branchingFlow} onSubmit={vi.fn()} />);
 

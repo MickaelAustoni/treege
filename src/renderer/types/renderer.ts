@@ -1,5 +1,5 @@
 import { Node } from "@xyflow/react";
-import { ComponentType, FormEvent, ReactNode } from "react";
+import { ComponentType, CSSProperties, FormEvent, ReactNode } from "react";
 import { SerializableFile } from "@/renderer/utils/file";
 import { FlowStep } from "@/renderer/utils/step";
 import {
@@ -307,6 +307,11 @@ export type StepRenderProps = {
   onContinue: () => void;
   /** Translated label of the group, or empty string for orphan steps. */
   label?: string;
+  /**
+   * When true, the step container should be rendered without its default
+   * border (`disableSectionBorder` renderer prop). Web only.
+   */
+  disableSectionBorder?: boolean;
   /** The rendered child nodes belonging to this step. */
   children: ReactNode;
 };
@@ -447,6 +452,19 @@ export interface TreegeRendererProps extends TreegeRendererConfig {
    * Additional class name for the renderer container
    */
   className?: string;
+  /**
+   * Removes the default border of the `<section>` wrapping each step (padding
+   * and layout are kept, only the border disappears). Web only.
+   *
+   * @example
+   * <TreegeRenderer flow={tree} disableSectionBorder />
+   */
+  disableSectionBorder?: boolean;
+  /**
+   * Inline styles applied to the renderer's root container, alongside
+   * `className`. Web only.
+   */
+  style?: CSSProperties;
   /**
    * Extra data injected into every submission, merged at the top level of both
    * the `onSubmit` payload and the built-in HTTP submit body. Use it for values

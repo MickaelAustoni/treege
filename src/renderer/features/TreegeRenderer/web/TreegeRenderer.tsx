@@ -30,7 +30,9 @@ const TreegeRenderer = ({
   onBack,
   onChange,
   onSubmit,
+  disableSectionBorder,
   showPoweredBy,
+  style,
   theme,
   title,
   validate,
@@ -147,7 +149,7 @@ const TreegeRenderer = ({
   );
 
   return (
-    <div ref={setPortalContainer} className={cn("treege treege-renderer", className)}>
+    <div ref={setPortalContainer} className={cn("treege treege-renderer", className)} style={style}>
       <PortalContainerProvider container={portalContainer}>
         <RendererStyles />
         <ThemeProvider theme={config.theme} storageKey="treege-renderer-theme">
@@ -184,14 +186,17 @@ const TreegeRenderer = ({
                     onBack={handleBack}
                     onContinue={handleContinue}
                     label={stepLabel}
+                    disableSectionBorder={disableSectionBorder}
                     missingFields={missingRequiredFields}
                   >
                     {currentStep.nodes.map((node) => renderNode(node))}
                   </StepComponent>
                 )}
 
-                {/* Powered by Treege */}
-                {config.showPoweredBy && <p className="tg:py-2 tg:text-right tg:text-muted-foreground tg:text-xs">Powered by Treege</p>}
+                {/* Powered by Treege — px-4 keeps it aligned with the step content */}
+                {config.showPoweredBy && (
+                  <p className="tg:px-4 tg:py-2 tg:text-right tg:text-muted-foreground tg:text-xs">Powered by Treege</p>
+                )}
               </FormWrapper>
 
               {/* Submit message (success/error) */}
