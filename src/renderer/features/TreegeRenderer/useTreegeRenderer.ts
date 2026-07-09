@@ -80,6 +80,7 @@ export const useTreegeRenderer = ({
   validate,
   validationMode,
   initialValues = {},
+  isSubmitting: isSubmittingProp = false,
 }: Pick<
   TreegeRendererProps,
   | "baseUrl"
@@ -89,6 +90,7 @@ export const useTreegeRenderer = ({
   | "googleApiKey"
   | "headers"
   | "initialValues"
+  | "isSubmitting"
   | "language"
   | "onChange"
   | "onSubmit"
@@ -218,15 +220,14 @@ export const useTreegeRenderer = ({
   // ============================================
 
   // Submit handler for submit button with HTTP configuration
-  const { clearSubmitMessage, handleSubmitWithConfig, hasSubmitConfig, isSubmitting, submitButtonNode, submitMessage } = useSubmitHandler(
-    visibleNodes,
-    formValues,
-    config.language,
-    visibleInputNodes,
-    config.headers,
-    config.baseUrl,
-    extraPayload,
-  );
+  const {
+    clearSubmitMessage,
+    handleSubmitWithConfig,
+    hasSubmitConfig,
+    isSubmitting: isSubmittingInternal,
+    submitButtonNode,
+    submitMessage,
+  } = useSubmitHandler(visibleNodes, formValues, config.language, visibleInputNodes, config.headers, config.baseUrl, extraPayload);
 
   // ============================================
   // REFS FOR CALLBACKS
@@ -497,6 +498,29 @@ export const useTreegeRenderer = ({
   const hasSubmitInput = useMemo(() => visibleNodes.some((node) => isInputNode(node) && node.data.type === "submit"), [visibleNodes]);
 
   /**
+   * Whether the flow can be submitted: the active path is fully traversed (or
+   * an explicit submit input is visible) and the flow isn't empty.
+   */
+  const canSubmit = (hasSubmitInput || endOfPathReached) && nodes.length > 0;
+
+  /**
+   * `isLastStep` only means "last *currently visible* step": on a branching
+   * boundary step the following steps are revealed once the user picks a
+   * branch, so the flow may well continue past it. The step is truly final —
+   * and the action button may read "Submit" and actually submit — only when
+   * the path is complete. Otherwise the UI should show a (possibly disabled)
+   * Continue action instead.
+   */
+  const isFinalStep = isLastStep && canSubmit;
+
+  /**
+   * Consumer-driven submitting state (`isSubmitting` prop, e.g. an async
+   * `onSubmit`) OR-ed with the renderer's own HTTP submit state so the UI
+   * shows a single busy indicator for both.
+   */
+  const isSubmitting = isSubmittingProp || isSubmittingInternal;
+
+  /**
    * Whether the user can advance past the current step:
    * every required input that is *currently visible inside the step* must be filled.
    * Conditional edges that reveal new required fields inside the same step
@@ -737,7 +761,7 @@ export const useTreegeRenderer = ({
 
   return {
     canContinueStep,
-    canSubmit: (hasSubmitInput || endOfPathReached) && nodes.length > 0,
+    canSubmit,
     clearSubmitMessage,
     config,
     currentStep,
@@ -751,6 +775,7 @@ export const useTreegeRenderer = ({
     handleSubmit,
     hasSubmitInput,
     inputNodes,
+    isFinalStep,
     isFirstStep,
     isLastStep,
     isSubmitting,

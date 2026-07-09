@@ -41,7 +41,6 @@ const TreegeRenderer = ({
 }: TreegeRendererProps) => {
   const {
     canContinueStep,
-    canSubmit,
     clearSubmitMessage,
     config,
     currentStep,
@@ -55,9 +54,10 @@ const TreegeRenderer = ({
     handleSubmit,
     hasSubmitInput,
     inputNodes,
+    isFinalStep,
     isFirstStep,
     isLastStep,
-    isSubmitting: isSubmittingInternal,
+    isSubmitting,
     missingRequiredFields,
     setFieldValue,
     steps,
@@ -71,6 +71,7 @@ const TreegeRenderer = ({
     googleApiKey,
     headers,
     initialValues,
+    isSubmitting: isSubmittingProp,
     language,
     onChange,
     onSubmit,
@@ -81,7 +82,6 @@ const TreegeRenderer = ({
   });
 
   const [portalContainer, setPortalContainer] = useState<HTMLDivElement | null>(null);
-  const isSubmitting = isSubmittingProp || isSubmittingInternal;
 
   const { FormWrapper, renderNode } = useRenderNode({
     config,
@@ -110,7 +110,7 @@ const TreegeRenderer = ({
    *
    * A native form submit can be triggered by a deported submit button (via the
    * `formId` prop) or by pressing Enter inside a field. In a multi-step flow we
-   * must NOT submit until the last step: earlier steps advance instead — gated
+   * must NOT submit until the final step: earlier steps advance instead — gated
    * by `canContinueStep` so an incomplete step can't be skipped, mirroring the
    * built-in Continue button.
    */
@@ -118,15 +118,18 @@ const TreegeRenderer = ({
     async (e: FormEvent<HTMLFormElement>) => {
       e.preventDefault();
 
-      // Not on the last step yet: advance instead of submitting.
-      if (!isLastStep) {
-        if (canContinueStep) {
+      // Not on the final step yet: advance instead of submitting. On a
+      // boundary step (last visible step of an incomplete path) Enter must do
+      // nothing — there is no next step to go to yet, and submitting would
+      // send an incomplete flow.
+      if (!isFinalStep) {
+        if (!isLastStep && canContinueStep) {
           goToNextStep();
         }
         return;
       }
 
-      // Last step: run the shared submit logic.
+      // Final step: run the shared submit logic.
       const isValid = await handleSubmit();
 
       // If validation failed, focus the first input field with an error
@@ -136,21 +139,21 @@ const TreegeRenderer = ({
         input?.focus();
       }
     },
-    [isLastStep, canContinueStep, goToNextStep, handleSubmit, firstErrorFieldId],
+    [isFinalStep, isLastStep, canContinueStep, goToNextStep, handleSubmit, firstErrorFieldId],
   );
 
   /**
    * Continue handler. Inside the flow this just advances to the next step;
-   * on the last step it triggers the same submit pipeline as the form's
+   * on the final step it triggers the same submit pipeline as the form's
    * `onSubmit` (validation + onSubmit callback / submitConfig HTTP call).
    */
   const handleContinue = useCallback(() => {
-    if (isLastStep) {
+    if (isFinalStep) {
       void handleSubmit();
       return;
     }
     goToNextStep();
-  }, [isLastStep, handleSubmit, goToNextStep]);
+  }, [isFinalStep, handleSubmit, goToNextStep]);
 
   /**
    * Back handler. On intermediate steps it navigates back inside the flow; on
@@ -197,8 +200,8 @@ const TreegeRenderer = ({
                     stepIndex={currentStepIndex}
                     totalSteps={steps.length}
                     isFirstStep={isFirstStep}
-                    isLastStep={isLastStep}
-                    canContinue={canContinueStep && (!isLastStep || canSubmit)}
+                    isLastStep={isFinalStep}
+                    canContinue={canContinueStep && (isFinalStep || !isLastStep)}
                     canGoBack={canGoBack}
                     hasSubmitInput={hasSubmitInput}
                     isSubmitting={isSubmitting}

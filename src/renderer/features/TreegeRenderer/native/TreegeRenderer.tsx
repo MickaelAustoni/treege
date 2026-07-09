@@ -63,7 +63,6 @@ const TreegeRendererContent = ({
 
   const {
     canContinueStep,
-    canSubmit,
     clearSubmitMessage,
     config,
     currentStep,
@@ -75,9 +74,10 @@ const TreegeRendererContent = ({
     goToPreviousStep,
     handleSubmit,
     inputNodes,
+    isFinalStep,
     isFirstStep,
     isLastStep,
-    isSubmitting: isSubmittingInternal,
+    isSubmitting,
     missingRequiredFields,
     setFieldValue,
     steps,
@@ -91,6 +91,7 @@ const TreegeRendererContent = ({
     googleApiKey,
     headers,
     initialValues,
+    isSubmitting: isSubmittingProp,
     language,
     onChange,
     onSubmit,
@@ -99,10 +100,6 @@ const TreegeRendererContent = ({
     validate,
     validationMode,
   });
-
-  // Consumer-driven submitting state (e.g. async onSubmit) is OR-ed with the
-  // renderer's own internal state so the button shows a loader for both.
-  const isSubmitting = isSubmittingProp || isSubmittingInternal;
 
   const { FormWrapper, SubmitButtonWrapper, renderNode } = useRenderNode({
     config,
@@ -127,12 +124,12 @@ const TreegeRendererContent = ({
   const formTitle = useMemo(() => t(title), [t, title]);
 
   const handleContinue = useCallback(() => {
-    if (isLastStep) {
+    if (isFinalStep) {
       void handleSubmit();
       return;
     }
     goToNextStep();
-  }, [isLastStep, handleSubmit, goToNextStep]);
+  }, [isFinalStep, handleSubmit, goToNextStep]);
 
   /**
    * Back handler. On intermediate steps it navigates back inside the flow; on
@@ -181,8 +178,8 @@ const TreegeRendererContent = ({
                   stepIndex={currentStepIndex}
                   totalSteps={steps.length}
                   isFirstStep={isFirstStep}
-                  isLastStep={isLastStep}
-                  canContinue={canContinueStep && (!isLastStep || canSubmit)}
+                  isLastStep={isFinalStep}
+                  canContinue={canContinueStep && (isFinalStep || !isLastStep)}
                   canGoBack={canGoBack}
                   isSubmitting={isSubmitting}
                   onBack={handleBack}
