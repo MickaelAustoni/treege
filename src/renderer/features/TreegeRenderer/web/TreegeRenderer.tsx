@@ -193,9 +193,12 @@ const TreegeRenderer = ({
                   </StepComponent>
                 )}
 
-                {/* Powered by Treege — px-4 keeps it aligned with the step content */}
+                {/* Powered by Treege — px-4 keeps it aligned with the step content,
+                    which sits flush left when the section padding is disabled */}
                 {config.showPoweredBy && (
-                  <p className="tg:px-4 tg:py-2 tg:text-right tg:text-muted-foreground tg:text-xs">Powered by Treege</p>
+                  <p className={cn("tg:px-4 tg:py-2 tg:text-right tg:text-muted-foreground tg:text-xs", disableSectionBorder && "tg:px-0")}>
+                    Powered by Treege
+                  </p>
                 )}
               </FormWrapper>
 

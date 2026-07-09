@@ -96,17 +96,18 @@ describe("TreegeRenderer (web) — Continue vs Submit", () => {
     await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(1));
   });
 
-  it("should remove the step section border with disableSectionBorder", () => {
+  it("should remove the step section border and padding with disableSectionBorder", () => {
     const { container } = render(<TreegeRenderer flow={linearFlow} onSubmit={vi.fn()} disableSectionBorder />);
 
     const section = container.querySelector("section");
     expect(section).not.toBeNull();
     const classes = (section as HTMLElement).className.split(" ");
-    // tailwind-merge drops the conflicting default `tg:border` in favor of
-    // `tg:border-0`; padding and layout classes are kept.
+    // tailwind-merge drops the conflicting defaults `tg:border` and `tg:p-4`
+    // in favor of `tg:border-0` and `tg:p-0`; layout classes are kept.
     expect(classes).toContain("tg:border-0");
     expect(classes).not.toContain("tg:border");
-    expect(classes).toContain("tg:p-4");
+    expect(classes).toContain("tg:p-0");
+    expect(classes).not.toContain("tg:p-4");
   });
 
   it("should keep the default step section border without disableSectionBorder", () => {

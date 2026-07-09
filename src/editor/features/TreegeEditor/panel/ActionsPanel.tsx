@@ -14,6 +14,7 @@ import { useFlowContent } from "@/editor/hooks/useFlowContent";
 import useTranslate from "@/editor/hooks/useTranslate";
 import { ExtraMenuItem } from "@/editor/types/editor";
 import { cleanFlowData } from "@/editor/utils/cleanEmptyData";
+import { normalizeFlowNodes } from "@/editor/utils/normalizeFlow";
 import { stripSensitiveHeadersFromFlow } from "@/editor/utils/sensitiveHeaders";
 import { Button } from "@/shared/components/ui/button";
 import {
@@ -92,7 +93,7 @@ const ActionsPanel = ({ onExportJson, onSave, extraMenuItems, onAuthorize, heade
         const json = JSON.parse(e.target?.result as string);
 
         if (json && Array.isArray(json.nodes) && Array.isArray(json.edges)) {
-          setNodes(json.nodes);
+          setNodes(normalizeFlowNodes(json.nodes));
           setEdges(json.edges);
           toast.success(t("editor.actionsPanel.importSuccess"), {
             description: t("editor.actionsPanel.importSuccessDesc"),
@@ -190,7 +191,7 @@ const ActionsPanel = ({ onExportJson, onSave, extraMenuItems, onAuthorize, heade
   };
 
   const handleAIGenerate = (data: { edges: Edge[]; nodes: Node[] }) => {
-    setNodes(data.nodes);
+    setNodes(normalizeFlowNodes(data.nodes));
     setEdges(data.edges);
   };
 

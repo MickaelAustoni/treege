@@ -309,7 +309,7 @@ export type StepRenderProps = {
   label?: string;
   /**
    * When true, the step container should be rendered without its default
-   * border (`disableSectionBorder` renderer prop). Web only.
+   * border and padding (`disableSectionBorder` renderer prop). Web only.
    */
   disableSectionBorder?: boolean;
   /** The rendered child nodes belonging to this step. */
@@ -453,8 +453,8 @@ export interface TreegeRendererProps extends TreegeRendererConfig {
    */
   className?: string;
   /**
-   * Removes the default border of the `<section>` wrapping each step (padding
-   * and layout are kept, only the border disappears). Web only.
+   * Removes the default border and padding of the `<section>` wrapping each
+   * step. Web only.
    *
    * @example
    * <TreegeRenderer flow={tree} disableSectionBorder />

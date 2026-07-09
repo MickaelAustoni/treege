@@ -33,7 +33,7 @@ const DefaultStep = ({
   );
 
   return (
-    <section className={cn("tg:rounded-lg tg:border tg:p-4", disableSectionBorder && "tg:border-0")}>
+    <section className={cn("tg:rounded-lg tg:border tg:p-4", disableSectionBorder && "tg:border-0 tg:p-0")}>
       {label && <h3 className="tg:mb-4 tg:font-semibold tg:text-lg">{label}</h3>}
 
       {children}

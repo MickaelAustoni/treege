@@ -1,5 +1,5 @@
 import { Background, BackgroundVariant, Controls, MiniMap, ReactFlow, ReactFlowProvider } from "@xyflow/react";
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import Logo from "@/editor/components/branding/Logo";
 import EditorStyles from "@/editor/components/styles/EditorStyles";
 import { EDGE_TYPES } from "@/editor/constants/edgeTypes";
@@ -17,6 +17,7 @@ import NodeActionsSheet from "@/editor/features/TreegeEditor/sheets/NodeActionsS
 import useFlowConnections from "@/editor/hooks/useFlowConnections";
 import useUndoRedo from "@/editor/hooks/useUndoRedo";
 import { TreegeEditorProps } from "@/editor/types/editor";
+import { normalizeFlowNodes } from "@/editor/utils/normalizeFlow";
 import { Toaster } from "@/shared/components/ui/sonner";
 import { PortalContainerProvider } from "@/shared/context/PortalContainerContext";
 import { ThemeProvider } from "@/shared/context/ThemeContext";
@@ -40,6 +41,7 @@ const Flow = ({
   const { onConnect, onConnectEnd, onEdgesDelete, isValidConnection } = useFlowConnections();
   const { onBeforeDelete, takeSnapshot } = useUndoRedo({ enableShortcuts: true });
   const isMobile = useMediaQuery("mobile");
+  const initialNodes = useMemo(() => normalizeFlowNodes(flow?.nodes || []), [flow]);
 
   return (
     <PortalContainerProvider container={portalContainer}>
@@ -55,7 +57,7 @@ const Flow = ({
         nodeTypes={NODE_TYPES}
         edgeTypes={EDGE_TYPES}
         defaultEdges={flow?.edges || []}
-        defaultNodes={flow?.nodes || []}
+        defaultNodes={initialNodes}
         defaultEdgeOptions={{ zIndex: 0 }}
         onConnect={onConnect}
         onConnectEnd={onConnectEnd}
