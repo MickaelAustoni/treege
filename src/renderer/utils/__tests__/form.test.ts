@@ -8,6 +8,7 @@ import {
   checkFormFieldHasValue,
   convertFormValuesToNamedFormat,
   isFieldEmpty,
+  resolveEmptyInputValue,
   resolveNodeDefaultValue,
 } from "@/renderer/utils/form";
 import { InputNodeData } from "@/shared/types/node";
@@ -1132,6 +1133,52 @@ describe("Form Utils", () => {
         // No update needed since target already has the correct value
         expect(result).toEqual({});
       });
+    });
+  });
+
+  describe("resolveEmptyInputValue", () => {
+    const inputNode = (data: Partial<InputNodeData>): Node<InputNodeData> => ({
+      data: data as InputNodeData,
+      id: "node-1",
+      position: { x: 0, y: 0 },
+      type: "input",
+    });
+
+    it("should return false for a switch", () => {
+      expect(resolveEmptyInputValue(inputNode({ type: "switch" }))).toBe(false);
+    });
+
+    it("should return false for a single checkbox and [] for a checkbox group", () => {
+      expect(resolveEmptyInputValue(inputNode({ type: "checkbox" }))).toBe(false);
+      expect(resolveEmptyInputValue(inputNode({ options: [{ label: { en: "A" }, value: "a" }], type: "checkbox" }))).toEqual([]);
+      expect(
+        resolveEmptyInputValue(inputNode({ optionsSource: { url: "https://api.test" }, type: "checkbox" } as Partial<InputNodeData>)),
+      ).toEqual([]);
+    });
+
+    it("should return '' for single select/http and [] when multiple", () => {
+      expect(resolveEmptyInputValue(inputNode({ type: "select" }))).toBe("");
+      expect(resolveEmptyInputValue(inputNode({ multiple: true, type: "select" }))).toEqual([]);
+      expect(resolveEmptyInputValue(inputNode({ type: "http" }))).toBe("");
+      expect(resolveEmptyInputValue(inputNode({ multiple: true, type: "http" }))).toEqual([]);
+    });
+
+    it("should return null for number, file, daterange and timerange", () => {
+      expect(resolveEmptyInputValue(inputNode({ type: "number" }))).toBeNull();
+      expect(resolveEmptyInputValue(inputNode({ type: "file" }))).toBeNull();
+      expect(resolveEmptyInputValue(inputNode({ type: "daterange" }))).toBeNull();
+      expect(resolveEmptyInputValue(inputNode({ type: "timerange" }))).toBeNull();
+    });
+
+    it("should return undefined for submit", () => {
+      expect(resolveEmptyInputValue(inputNode({ type: "submit" }))).toBeUndefined();
+    });
+
+    it("should return '' for free-form types and untyped nodes", () => {
+      expect(resolveEmptyInputValue(inputNode({ type: "text" }))).toBe("");
+      expect(resolveEmptyInputValue(inputNode({ type: "radio" }))).toBe("");
+      expect(resolveEmptyInputValue(inputNode({ type: "date" }))).toBe("");
+      expect(resolveEmptyInputValue(inputNode({}))).toBe("");
     });
   });
 });

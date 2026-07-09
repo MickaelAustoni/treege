@@ -9,6 +9,7 @@ import {
   InputValue,
   TreegeRendererComponents,
 } from "@/renderer/types/renderer";
+import { resolveEmptyInputValue } from "@/renderer/utils/form";
 import { resolveInputPlaceholder, resolveNodeKey } from "@/renderer/utils/node";
 import { sanitize } from "@/renderer/utils/sanitize";
 import { getMissingDependencies } from "@/renderer/utils/templateDependencies";
@@ -98,14 +99,14 @@ export const useRenderNode = ({
             return null;
           }
 
+          const setValue = (newValue: InputValue) => setFieldValue(fieldId, newValue);
           const inputData = node.data;
           const inputType = inputData.type || "text";
           const CustomRenderer = config.components.inputs?.[inputType];
           const DefaultRenderer = defaultInputRenderers[inputType as keyof typeof defaultInputRenderers];
           const Renderer = (CustomRenderer || DefaultRenderer) as InputRenderer | undefined;
           const fieldId = node.id;
-          const setValue = (newValue: InputValue) => setFieldValue(fieldId, newValue);
-          const value = formValues[fieldId];
+          const value = formValues[fieldId] === undefined ? resolveEmptyInputValue(node) : formValues[fieldId];
           const error = formErrors[fieldId];
           const label = getTranslatedText(inputData.label, config.language);
           const placeholder = resolveInputPlaceholder(inputData, config.language);

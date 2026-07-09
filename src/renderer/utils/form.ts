@@ -1,6 +1,7 @@
 import { Node } from "@xyflow/react";
-import { FormValues } from "@/renderer/types/renderer";
+import { FormValues, InputValue } from "@/renderer/types/renderer";
 import { resolveNodeKey } from "@/renderer/utils/node";
+import { INPUT_TYPE } from "@/shared/constants/inputType";
 import { InputNodeData } from "@/shared/types/node";
 
 /**
@@ -17,6 +18,45 @@ export const isFieldEmpty = (value: unknown): boolean => {
     return true;
   }
   return Array.isArray(value) && value.length === 0;
+};
+
+/**
+ * Type-correct empty value for an input node, per `InputValueTypeMap`. Used at
+ * the render boundary (`useRenderNode`) when the field has no entry in
+ * `formValues` yet — an untouched field would otherwise surface as `undefined`,
+ * which both violates the declared `InputFieldProps.value` type and makes
+ * controlled DOM/Radix inputs mount as uncontrolled, then flip to controlled on
+ * the first edit (React warns).
+ *
+ * The store itself is left untouched: an untouched field stays absent from
+ * `formValues` and from the exported/submitted values.
+ */
+export const resolveEmptyInputValue = (node: Node<InputNodeData>): InputValue => {
+  const { multiple, options, optionsSource, type } = node.data;
+
+  switch (type) {
+    case INPUT_TYPE.switch:
+      return false;
+    case INPUT_TYPE.checkbox:
+      // Mirrors DefaultCheckboxInput's mode switch: with options (static or
+      // sourced) it's a multi-select group (string[]), otherwise a single
+      // boolean checkbox.
+      return options?.length || optionsSource ? [] : false;
+    case INPUT_TYPE.select:
+    case INPUT_TYPE.http:
+      return multiple ? [] : "";
+    case INPUT_TYPE.number:
+    case INPUT_TYPE.file:
+    case INPUT_TYPE.daterange:
+    case INPUT_TYPE.timerange:
+      return null;
+    case INPUT_TYPE.submit:
+      return undefined;
+    default:
+      // text, textarea, password, radio, autocomplete, date, time, address,
+      // hidden — and untyped nodes, which render as text.
+      return "";
+  }
 };
 
 /**
