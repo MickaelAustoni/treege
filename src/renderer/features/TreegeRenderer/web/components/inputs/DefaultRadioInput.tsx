@@ -23,7 +23,7 @@ const DefaultRadioInput = ({ field, extra }: InputRenderProps<"radio">) => {
   const hiddenCount = options.length - visibleOptions.length;
 
   return (
-    <FormItem className="tg:mb-4">
+    <FormItem className="tg:mb-6">
       <InputLabel className="tg:mb-1" id={labelId} label={label} required={node.data.required} />
       <DependencyHintMessage missing={missing} />
       {isLoading && (

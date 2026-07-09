@@ -450,7 +450,7 @@ const DefaultHttpInput = ({ field, extra }: InputRenderProps<"http">) => {
       const buttonContent = selectedOption?.label || placeholder || t("renderer.defaultHttpInput.search");
 
       return (
-        <FormItem className="tg:mb-4">
+        <FormItem className="tg:mb-6">
           <InputLabel htmlFor={id} label={label} required={node.data.required} />
           <DependencyHint missing={missing}>
             <div className="tg:relative">
@@ -594,7 +594,7 @@ const DefaultHttpInput = ({ field, extra }: InputRenderProps<"http">) => {
     );
 
     return (
-      <FormItem className="tg:mb-4">
+      <FormItem className="tg:mb-6">
         <InputLabel htmlFor={id} label={label} required={node.data.required} />
         <DependencyHint missing={missing}>
           {fetchHint ? (
@@ -620,7 +620,7 @@ const DefaultHttpInput = ({ field, extra }: InputRenderProps<"http">) => {
 
   // If no responseMapping, render the value as text (hidden or display-only)
   return (
-    <FormItem className="tg:mb-4">
+    <FormItem className="tg:mb-6">
       <InputLabel htmlFor={id} label={label} required={node.data.required} />
       <Input
         type="text"

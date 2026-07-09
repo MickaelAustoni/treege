@@ -7,7 +7,7 @@ const DefaultTextAreaInput = ({ field, extra }: InputRenderProps<"textarea">) =>
   const { InputLabel, node, setValue, error, label, helperText } = extra;
 
   return (
-    <FormItem className="tg:mb-4">
+    <FormItem className="tg:mb-6">
       <InputLabel htmlFor={id} label={label} required={node.data.required} />
       <Textarea
         id={id}

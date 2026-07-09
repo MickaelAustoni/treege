@@ -136,7 +136,7 @@ const DefaultAddressInput = ({ field, extra }: InputRenderProps<"address">) => {
   return (
     <>
       {googleApiKey && <script async src={`https://maps.googleapis.com/maps/api/js?key=${googleApiKey}&libraries=places`} />}
-      <FormItem className="tg:mb-4">
+      <FormItem className="tg:mb-6">
         <InputLabel htmlFor={id} label={label} required={node.data.required} />
         <div className="tg:relative">
           <Input

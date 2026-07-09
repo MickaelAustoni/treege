@@ -29,7 +29,7 @@ const DefaultCheckboxInput = ({ field, extra }: InputRenderProps<"checkbox">) =>
     };
 
     return (
-      <FormItem className="tg:mb-4">
+      <FormItem className="tg:mb-6">
         <InputLabel className="tg:mb-1" id={labelId} label={label} required={node.data.required} />
         <DependencyHintMessage missing={missing} />
         {isLoading && (
@@ -92,7 +92,7 @@ const DefaultCheckboxInput = ({ field, extra }: InputRenderProps<"checkbox">) =>
 
   // Single checkbox (no options)
   return (
-    <FormItem className="tg:mb-4">
+    <FormItem className="tg:mb-6">
       <div className="tg:flex tg:items-center tg:gap-3">
         <Checkbox
           id={id}

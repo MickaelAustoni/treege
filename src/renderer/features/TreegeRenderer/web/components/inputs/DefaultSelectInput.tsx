@@ -16,7 +16,7 @@ const DefaultSelectInput = ({ field, extra }: InputRenderProps<"select">) => {
   const normalizedValue = value ? String(value) : "";
 
   return (
-    <FormItem className="tg:mb-4">
+    <FormItem className="tg:mb-6">
       <InputLabel htmlFor={id} label={label} required={node.data.required} />
       <DependencyHint missing={missing}>
         <div className="tg:relative">

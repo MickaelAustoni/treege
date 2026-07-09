@@ -45,7 +45,7 @@ const DefaultFileInput = ({ field, extra }: InputRenderProps<"file">) => {
   };
 
   return (
-    <FormItem className="tg:mb-4">
+    <FormItem className="tg:mb-6">
       <InputLabel htmlFor={id} label={label} required={node.data.required} />
 
       {files.length > 0 && (

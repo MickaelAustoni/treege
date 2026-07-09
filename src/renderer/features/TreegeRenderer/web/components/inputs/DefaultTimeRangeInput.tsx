@@ -20,7 +20,7 @@ const DefaultTimeRangeInput = ({ field, extra }: InputRenderProps<"timerange">) 
   };
 
   return (
-    <FormItem className="tg:mb-4">
+    <FormItem className="tg:mb-6">
       <InputLabel htmlFor={`${id}-start`} label={label} required={node.data.required} />
       <div className="tg:flex tg:gap-2">
         <Input

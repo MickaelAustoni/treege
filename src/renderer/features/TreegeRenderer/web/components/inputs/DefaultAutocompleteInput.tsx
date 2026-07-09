@@ -22,7 +22,7 @@ const DefaultAutocompleteInput = ({ field, extra }: InputRenderProps<"autocomple
   const selectedOption = options.find((option) => option.value === value);
 
   return (
-    <FormItem className="tg:mb-4">
+    <FormItem className="tg:mb-6">
       <InputLabel htmlFor={triggerId} label={label} required={node.data.required} />
       <DependencyHint missing={missing}>
         <div className="tg:relative">
