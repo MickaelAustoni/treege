@@ -23,7 +23,7 @@ export interface AIConfig {
    * - Gemini: "gemini-2.5-flash" (default), "gemini-2.5-pro-preview-03-25"
    * - OpenAI: "gpt-4o-mini" (default), "gpt-4o", "gpt-3.5-turbo"
    * - DeepSeek: "deepseek-chat" (default)
-   * - Claude: "claude-3-5-haiku-20241022" (default), "claude-3-5-sonnet-20241022"
+   * - Claude: "claude-opus-4-8" (default), "claude-sonnet-5", "claude-haiku-4-5"
    */
   model?: string;
   /**

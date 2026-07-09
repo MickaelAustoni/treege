@@ -1,4 +1,6 @@
+import { Node } from "@xyflow/react";
 import { AIGenerationRequest, AIGenerationResponse } from "@/editor/types/ai";
+import { NODE_TYPE } from "@/shared/constants/node";
 
 /**
  * System prompt that explains the Treege structure to the AI
@@ -19,7 +21,7 @@ IMPORTANT RULES:
 NODE TYPES:
 - "input": Form input fields (text, number, select, checkbox, etc.)
 - "ui": UI elements (title, divider)
-- "group": Container for organizing nodes
+- "group": Metadata-only container that names a STEP of the flow. At runtime, each group of nodes is rendered as one step of a multi-step form. Groups are never rendered on the canvas: they MUST have "hidden": true and position { "x": 0, "y": 0 }. Nodes belong to a group via their "parentId" field.
 
 INPUT NODE TYPES (data.type):
 - "text", "number", "textarea", "password"
@@ -32,6 +34,7 @@ INPUT NODE DATA STRUCTURE:
   "id": "unique-id",
   "type": "input",
   "position": { "x": 0, "y": 0 },
+  "parentId": "group-id", // optional — id of the group (step) this node belongs to
   "data": {
     "label": { "en": "Field Label" },
     "name": "fieldName",
@@ -55,6 +58,7 @@ UI NODE DATA STRUCTURE:
   "id": "unique-id",
   "type": "ui",
   "position": { "x": 0, "y": 0 },
+  "parentId": "group-id", // optional — id of the group (step) this node belongs to
   "data": {
     "label": { "en": "UI Element Label" },
     "type": "title" // or "divider"
@@ -71,7 +75,12 @@ GROUP NODE DATA STRUCTURE:
     "label": { "en": "Group Label" }
   }
 }
-IMPORTANT: Group nodes are metadata only (they name the steps of the flow). They MUST always have "hidden": true and position { "x": 0, "y": 0 } — never give a group a real position or size. Child nodes reference their group via "parentId".
+GROUP RULES (all mandatory):
+- Groups MUST always have "hidden": true and position { "x": 0, "y": 0 } — never give a group a real position or size.
+- Group nodes MUST appear BEFORE their child nodes in the "nodes" array.
+- A group's "data.label" names the step shown to the end user — always provide one.
+- Use groups when the form has distinct steps (e.g. "Contact details" then "Payment"); a short single-step form needs no groups at all.
+- Edges connect input/ui nodes, never group nodes.
 
 EDGE STRUCTURE:
 {
@@ -346,6 +355,77 @@ Response:
   ]
 }
 
+User: "Create a two-step order form: first the customer info (name, email), then the order (product selector, quantity)"
+Response:
+{
+  "nodes": [
+    {
+      "id": "g-customer",
+      "type": "group",
+      "hidden": true,
+      "position": { "x": 0, "y": 0 },
+      "data": { "label": { "en": "Customer" } }
+    },
+    {
+      "id": "g-order",
+      "type": "group",
+      "hidden": true,
+      "position": { "x": 0, "y": 0 },
+      "data": { "label": { "en": "Order" } }
+    },
+    {
+      "id": "name-1",
+      "type": "input",
+      "position": { "x": 0, "y": 0 },
+      "parentId": "g-customer",
+      "data": { "label": { "en": "Name" }, "name": "name", "type": "text", "required": true }
+    },
+    {
+      "id": "email-1",
+      "type": "input",
+      "position": { "x": 0, "y": 250 },
+      "parentId": "g-customer",
+      "data": { "label": { "en": "Email" }, "name": "email", "type": "text", "required": true }
+    },
+    {
+      "id": "product-1",
+      "type": "input",
+      "position": { "x": 0, "y": 500 },
+      "parentId": "g-order",
+      "data": {
+        "label": { "en": "Product" },
+        "name": "product",
+        "type": "select",
+        "required": true,
+        "options": [
+          { "value": "basic", "label": { "en": "Basic" } },
+          { "value": "pro", "label": { "en": "Pro" } }
+        ]
+      }
+    },
+    {
+      "id": "quantity-1",
+      "type": "input",
+      "position": { "x": 0, "y": 750 },
+      "parentId": "g-order",
+      "data": { "label": { "en": "Quantity" }, "name": "quantity", "type": "number", "required": true }
+    },
+    {
+      "id": "submit-1",
+      "type": "input",
+      "position": { "x": 0, "y": 1000 },
+      "parentId": "g-order",
+      "data": { "label": { "en": "Submit" }, "type": "submit" }
+    }
+  ],
+  "edges": [
+    { "id": "e1", "source": "name-1", "target": "email-1" },
+    { "id": "e2", "source": "email-1", "target": "product-1" },
+    { "id": "e3", "source": "product-1", "target": "quantity-1" },
+    { "id": "e4", "source": "quantity-1", "target": "submit-1" }
+  ]
+}
+
 Remember:
 - Always respond with ONLY valid JSON
 - No markdown code blocks
@@ -354,13 +434,14 @@ Remember:
 - For submit buttons, ALWAYS use type "input" with data.type "submit"
 - For conditional edges, ALWAYS specify the value as a string and use proper operators (>=, <, ===, etc.)
 - Never leave condition values empty - always provide the comparison value
+- Group nodes MUST be hidden, at position (0, 0), and listed before their children
 `;
 
 /**
  * Default models for each provider
  */
 const DEFAULT_MODELS = {
-  claude: "claude-3-5-haiku-20241022",
+  claude: "claude-opus-4-8",
   deepseek: "deepseek-chat",
   gemini: "gemini-2.5-flash",
   openai: "gpt-4o-mini",
@@ -372,6 +453,43 @@ const DEFAULT_MODELS = {
  * which is ideal for structured JSON generation
  */
 const DEFAULT_TEMPERATURE = 0.3;
+
+/**
+ * Enforce the editor's structural invariants on an AI-generated flow, so a
+ * model that drifts from the prompt can never inject a malformed flow into
+ * the canvas:
+ * - the response must carry `nodes` and `edges` arrays;
+ * - group nodes are metadata only: always `hidden` and anchored at (0, 0)
+ *   (a visible or offset group breaks pointer events and the auto-layout —
+ *   see `getLayoutedElements`);
+ * - a `parentId` pointing to a node that isn't a group is dropped;
+ * - groups are hoisted before other nodes, since xyflow requires parents to
+ *   precede their children in the nodes array.
+ */
+export const sanitizeGeneratedFlow = (response: AIGenerationResponse): AIGenerationResponse => {
+  if (!(Array.isArray(response?.nodes) && Array.isArray(response?.edges))) {
+    throw new Error("Invalid AI response: expected { nodes: [...], edges: [...] }");
+  }
+
+  const groupIds = new Set(response.nodes.filter((node) => node.type === NODE_TYPE.group).map((node) => node.id));
+
+  const sanitizeNode = (node: Node): Node => {
+    if (node.type === NODE_TYPE.group) {
+      return { ...node, hidden: true, position: { x: 0, y: 0 } };
+    }
+    if (node.parentId && !groupIds.has(node.parentId)) {
+      const { parentId, ...rest } = node;
+      return rest;
+    }
+    return node;
+  };
+
+  const sanitized = response.nodes.map(sanitizeNode);
+  const groups = sanitized.filter((node) => node.type === NODE_TYPE.group);
+  const others = sanitized.filter((node) => node.type !== NODE_TYPE.group);
+
+  return { ...response, nodes: [...groups, ...others] };
+};
 
 /**
  * Clean and parse JSON response from AI
@@ -531,11 +649,13 @@ async function generateWithClaude(request: AIGenerationRequest): Promise<AIGener
 
   const response = await fetch("https://api.anthropic.com/v1/messages", {
     body: JSON.stringify({
-      max_tokens: 4096,
+      max_tokens: 16000,
       messages: [{ content: request.prompt, role: "user" }],
       model,
       system: SYSTEM_PROMPT,
-      temperature,
+      // Current Claude models (Opus 4.7+) reject sampling parameters; only
+      // send `temperature` when targeting an older model that accepts it.
+      ...(model.startsWith("claude-3") || model.includes("-4-5") || model.includes("-4-6") ? { temperature } : {}),
     }),
     headers: {
       "anthropic-version": "2023-06-01",
@@ -561,19 +681,25 @@ async function generateWithClaude(request: AIGenerationRequest): Promise<AIGener
 }
 
 /**
- * Main function to generate flow using AI
+ * Main function to generate flow using AI.
+ * Whatever the provider returns is passed through `sanitizeGeneratedFlow`, so
+ * the caller always receives a flow that respects the editor's invariants.
  */
-export function generateFlowWithAI(request: AIGenerationRequest): Promise<AIGenerationResponse> {
-  switch (request.config.provider) {
-    case "gemini":
-      return generateWithGemini(request);
-    case "openai":
-      return generateWithOpenAI(request);
-    case "deepseek":
-      return generateWithDeepSeek(request);
-    case "claude":
-      return generateWithClaude(request);
-    default:
-      throw new Error(`Unsupported AI provider: ${request.config.provider}`);
-  }
+export async function generateFlowWithAI(request: AIGenerationRequest): Promise<AIGenerationResponse> {
+  const generate = () => {
+    switch (request.config.provider) {
+      case "gemini":
+        return generateWithGemini(request);
+      case "openai":
+        return generateWithOpenAI(request);
+      case "deepseek":
+        return generateWithDeepSeek(request);
+      case "claude":
+        return generateWithClaude(request);
+      default:
+        throw new Error(`Unsupported AI provider: ${request.config.provider}`);
+    }
+  };
+
+  return sanitizeGeneratedFlow(await generate());
 }
