@@ -16,7 +16,7 @@ import {
 import { mergeHttpHeaders } from "@/renderer/utils/http";
 import { resolveJsonTemplate } from "@/renderer/utils/jsonTemplate";
 import { getInputNodes } from "@/renderer/utils/node";
-import { computeSteps } from "@/renderer/utils/step";
+import { computeSteps, getAutoAdvanceNodeId } from "@/renderer/utils/step";
 import { GroupNodeData, TreegeNodeData } from "@/shared/types/node";
 import { isGroupNode, isInputNode } from "@/shared/utils/nodeTypeGuards";
 
@@ -26,6 +26,13 @@ import { isGroupNode, isInputNode } from "@/shared/utils/nodeTypeGuards";
  * actually changes (e.g. an async-loaded record) without resetting it when the
  * caller merely passes a fresh object literal of identical content each render.
  */
+/**
+ * Delay before a single-choice step auto-advances after a selection — long
+ * enough for the selected state to visibly render, short enough to feel
+ * instantaneous.
+ */
+const AUTO_ADVANCE_DELAY_MS = 180;
+
 const stableStringify = (value: unknown): string => {
   if (value === null || typeof value !== "object") {
     return JSON.stringify(value) ?? "null";
@@ -180,6 +187,31 @@ export const useTreegeRenderer = ({
   const currentStepGroupNode = currentStep?.groupId ? groupNodeMap.get(currentStep.groupId) : undefined;
   const isFirstStep = safeStepIndex === 0;
   const isLastStep = steps.length === 0 || safeStepIndex >= steps.length - 1;
+  const autoAdvanceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Step index seen by the cancellation effect below on its previous run, so
+  // it only cancels on an actual step change.
+  const autoAdvancePrevStepIndexRef = useRef(safeStepIndex);
+
+  /**
+   * Id of the current step's single single-choice input (radio, non-multiple
+   * select, autocomplete) when the step qualifies for auto-advance — selecting
+   * an option then moves to the next step automatically. Undefined on the last
+   * step: a selection must never silently trigger submit.
+   */
+  const autoAdvanceNodeId = useMemo(() => (isLastStep ? undefined : getAutoAdvanceNodeId(currentStep)), [isLastStep, currentStep]);
+
+  /**
+   * Latest auto-advance decision inputs, mirrored by an effect below. Read by
+   * `setFieldValue` (so it stays dependency-free) and re-read by the pending
+   * timer when it fires, so the advance is re-validated against fresh state.
+   */
+  const autoAdvanceRef = useRef<{
+    autoAdvanceNodeId: string | undefined;
+    canContinueStep: boolean;
+    goToNextStep: () => void;
+    isLastStep: boolean;
+  } | null>(null);
 
   // ============================================
   // SUBMIT HANDLER
@@ -230,7 +262,14 @@ export const useTreegeRenderer = ({
   // ============================================
 
   /**
-   * Set field value and clear error for that field
+   * Set field value and clear error for that field.
+   *
+   * Also drives step auto-advance: when the edited field is the current
+   * step's single single-choice input, schedule a move to the next step.
+   * Scheduling only from here (direct user edits) is what guarantees the
+   * auto-advance guardrails — mounting, back navigation and programmatic
+   * seeding (initial values, branch re-seed, reference sync) never call
+   * `setFieldValue`, so they can never trap the user by advancing on arrival.
    */
   const setFieldValue = useCallback((fieldName: string, value: unknown) => {
     setFormValues((prev) => ({
@@ -244,6 +283,34 @@ export const useTreegeRenderer = ({
       delete newErrors[fieldName];
       return newErrors;
     });
+
+    const autoAdvance = autoAdvanceRef.current;
+
+    if (!autoAdvance || fieldName !== autoAdvance.autoAdvanceNodeId) {
+      return;
+    }
+
+    // Re-selection replaces any pending advance; clearing the field cancels it.
+    if (autoAdvanceTimerRef.current !== null) {
+      clearTimeout(autoAdvanceTimerRef.current);
+      autoAdvanceTimerRef.current = null;
+    }
+
+    if (isFieldEmpty(value)) {
+      return;
+    }
+
+    autoAdvanceTimerRef.current = setTimeout(() => {
+      autoAdvanceTimerRef.current = null;
+      const latest = autoAdvanceRef.current;
+
+      // Re-validate against fresh state: the selection may have revealed a new
+      // field inside the step or collapsed the flow so this step became the
+      // last one — both must abort the advance.
+      if (latest && latest.autoAdvanceNodeId === fieldName && latest.canContinueStep && !latest.isLastStep) {
+        latest.goToNextStep();
+      }
+    }, AUTO_ADVANCE_DELAY_MS);
   }, []);
 
   /**
@@ -483,6 +550,46 @@ export const useTreegeRenderer = ({
       setCurrentStepIndex(steps.length - 1);
     }
   }, [steps.length, currentStepIndex]);
+
+  /**
+   * Mirror the auto-advance decision inputs into a ref (see `autoAdvanceRef`)
+   * so `setFieldValue` and the pending timer always read fresh state.
+   */
+  useEffect(() => {
+    autoAdvanceRef.current = { autoAdvanceNodeId, canContinueStep, goToNextStep, isLastStep };
+  }, [autoAdvanceNodeId, canContinueStep, goToNextStep, isLastStep]);
+
+  /**
+   * Cancel a pending auto-advance whenever the step changes through another
+   * path (Continue/Back clicked before the timer fired), so a stale timer can
+   * never skip an extra step. The index comparison lives in the effect body —
+   * not in a cleanup keyed on `safeStepIndex` — so the dependency is genuinely
+   * read (Biome useExhaustiveDependencies).
+   */
+  useEffect(() => {
+    if (autoAdvancePrevStepIndexRef.current === safeStepIndex) {
+      return;
+    }
+    autoAdvancePrevStepIndexRef.current = safeStepIndex;
+
+    if (autoAdvanceTimerRef.current !== null) {
+      clearTimeout(autoAdvanceTimerRef.current);
+      autoAdvanceTimerRef.current = null;
+    }
+  }, [safeStepIndex]);
+
+  /**
+   * Clear any pending auto-advance timer on unmount.
+   */
+  useEffect(
+    () => () => {
+      if (autoAdvanceTimerRef.current !== null) {
+        clearTimeout(autoAdvanceTimerRef.current);
+        autoAdvanceTimerRef.current = null;
+      }
+    },
+    [],
+  );
 
   /**
    * Mirror the latest `onChange` callback into a ref so the value-change
