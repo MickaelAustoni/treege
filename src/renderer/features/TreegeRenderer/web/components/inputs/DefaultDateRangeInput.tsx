@@ -1,8 +1,11 @@
+import { format } from "date-fns";
 import { ChevronDownIcon } from "lucide-react";
 import { useState } from "react";
 import { DateRange } from "react-day-picker";
+import { useTreegeRenderRuntime } from "@/renderer/context/TreegeRenderRuntimeProvider";
 import { useTranslate } from "@/renderer/hooks/useTranslate";
 import { InputRenderProps } from "@/renderer/types/renderer";
+import { getDateFnsLocale } from "@/renderer/utils/dateLocale";
 import { Button } from "@/shared/components/ui/button";
 import { Calendar } from "@/shared/components/ui/calendar";
 import { FormDescription, FormError, FormItem } from "@/shared/components/ui/form";
@@ -12,7 +15,9 @@ const DefaultDateRangeInput = ({ field, extra }: InputRenderProps<"daterange">) 
   const [open, setOpen] = useState(false);
   const { id, value } = field;
   const { InputLabel, node, setValue, error, label, helperText } = extra;
+  const { language } = useTreegeRenderRuntime();
   const t = useTranslate();
+  const locale = getDateFnsLocale(language);
   const dateRange = Array.isArray(value) ? value : [];
   const startDate = dateRange[0] ? new Date(dateRange[0]) : undefined;
   const endDate = dateRange[1] ? new Date(dateRange[1]) : undefined;
@@ -33,10 +38,10 @@ const DefaultDateRangeInput = ({ field, extra }: InputRenderProps<"daterange">) 
 
   const formatDateRange = () => {
     if (startDate && endDate) {
-      return `${startDate.toLocaleDateString()} - ${endDate.toLocaleDateString()}`;
+      return `${format(startDate, "P", { locale })} - ${format(endDate, "P", { locale })}`;
     }
     if (startDate) {
-      return startDate.toLocaleDateString();
+      return format(startDate, "P", { locale });
     }
     return t("renderer.defaultInputs.selectDateRange");
   };
@@ -65,6 +70,7 @@ const DefaultDateRangeInput = ({ field, extra }: InputRenderProps<"daterange">) 
           <Calendar
             mode="range"
             min={1}
+            locale={locale}
             selected={{ from: startDate, to: endDate }}
             captionLayout="dropdown"
             disabled={isDateDisabled}
