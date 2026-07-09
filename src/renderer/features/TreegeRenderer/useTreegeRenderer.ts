@@ -202,10 +202,14 @@ export const useTreegeRenderer = ({
   /**
    * Id of the current step's single single-choice input (radio, non-multiple
    * select, autocomplete) when the step qualifies for auto-advance — selecting
-   * an option then moves to the next step automatically. Undefined on the last
-   * step: a selection must never silently trigger submit.
+   * an option then moves to the next step automatically. Deliberately computed
+   * WITHOUT a last-step guard: on a branching boundary step the next steps only
+   * appear once the user picks an option, so at selection time the step still
+   * looks like the last one. Scheduling always happens on this candidate; the
+   * pending timer re-checks `isLastStep` against fresh (post-selection) state,
+   * so a selection on a genuinely final step never advances nor submits.
    */
-  const autoAdvanceNodeId = useMemo(() => (isLastStep ? undefined : getAutoAdvanceNodeId(currentStep)), [isLastStep, currentStep]);
+  const autoAdvanceNodeId = useMemo(() => getAutoAdvanceNodeId(currentStep), [currentStep]);
 
   /**
    * Latest auto-advance decision inputs, mirrored by an effect below. Read by

@@ -21,6 +21,13 @@ const inputNode = (id: string, data: Partial<InputNodeData>, parentId: string): 
 
 const edge = (source: string, target: string): Edge => ({ id: `${source}->${target}`, source, target });
 
+const conditionalEdge = (source: string, target: string, field: string, value: string): Edge => ({
+  data: { conditions: [{ field, operator: "===", value }] },
+  id: `${source}->${target}`,
+  source,
+  target,
+});
+
 /**
  * Three steps (one group each), every step holding a single radio input —
  * each step qualifies for auto-advance except the last one.
@@ -35,6 +42,25 @@ const singleChoiceFlow: Flow = {
     inputNode("radio-1", { name: "choice1", type: "radio" }, "group-1"),
     inputNode("radio-2", { name: "choice2", type: "radio" }, "group-2"),
     inputNode("radio-3", { name: "choice3", type: "radio" }, "group-3"),
+  ],
+};
+
+/**
+ * Branching boundary step: the first step's radio decides which branch (and
+ * thus which later steps) become visible. Before a selection, step 1 is the
+ * only visible step — it must still auto-advance once the selection reveals
+ * the chosen branch.
+ */
+const branchingFlow: Flow = {
+  edges: [conditionalEdge("radio-1", "text-a", "radio-1", "a"), conditionalEdge("radio-1", "text-b", "radio-1", "b")],
+  id: "flow-3",
+  nodes: [
+    groupNode("group-1", "Step 1"),
+    groupNode("group-a", "Branch A"),
+    groupNode("group-b", "Branch B"),
+    inputNode("radio-1", { name: "choice1", type: "radio" }, "group-1"),
+    inputNode("text-a", { name: "detailsA", type: "text" }, "group-a"),
+    inputNode("text-b", { name: "detailsB", type: "text" }, "group-b"),
   ],
 };
 
@@ -83,6 +109,23 @@ describe("useTreegeRenderer auto-advance", () => {
       vi.advanceTimersByTime(1);
     });
     expect(result.current.currentStepIndex).toBe(1);
+  });
+
+  it("should auto-advance a branching boundary step once the selection reveals the next steps", () => {
+    const { result } = renderHook(() => useTreegeRenderer({ flow: branchingFlow }));
+
+    // Before any selection, the boundary step is the only visible step.
+    expect(result.current.isLastStep).toBe(true);
+
+    act(() => {
+      result.current.setFieldValue("radio-1", "a");
+    });
+    act(() => {
+      vi.advanceTimersByTime(180);
+    });
+
+    expect(result.current.currentStepIndex).toBe(1);
+    expect(result.current.stepLabel).toBe("Branch A");
   });
 
   it("should never auto-advance on the last step", () => {
