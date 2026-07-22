@@ -103,6 +103,7 @@ describe("Step Utils", () => {
   });
 
   describe("computeInitialStepIndex", () => {
+    // `values` are keyed by node.id (the renderer's internal store), not by field name.
     const s1 = step([inputNode("n1", { name: "a", type: "text" })]);
     const s2 = step([inputNode("n2", { name: "b", type: "text" })]);
     const s3 = step([inputNode("n3", { name: "c", type: "text" })]);
@@ -112,31 +113,39 @@ describe("Step Utils", () => {
     });
 
     it("should open on the first step not entirely pre-filled", () => {
-      expect(computeInitialStepIndex([s1, s2, s3], { a: "x", b: "y" })).toBe(2);
+      expect(computeInitialStepIndex([s1, s2, s3], { n1: "x", n2: "y" })).toBe(2);
     });
 
     it("should open on the last step when every step is filled", () => {
-      expect(computeInitialStepIndex([s1, s2, s3], { a: "x", b: "y", c: "z" })).toBe(2);
+      expect(computeInitialStepIndex([s1, s2, s3], { n1: "x", n2: "y", n3: "z" })).toBe(2);
     });
 
     it("should stop on a step with any empty field, even when earlier fields are filled", () => {
       const twoFieldStep = step([inputNode("n2a", { name: "b", type: "text" }), inputNode("n2b", { name: "b2", type: "text" })]);
 
-      expect(computeInitialStepIndex([s1, twoFieldStep, s3], { a: "x", b: "y" })).toBe(1);
+      expect(computeInitialStepIndex([s1, twoFieldStep, s3], { n1: "x", n2a: "y" })).toBe(1);
     });
 
     it("should ignore hidden/submit inputs when deciding a step is filled", () => {
       const stepWithHidden = step([inputNode("n1", { name: "a", type: "text" }), inputNode("h1", { name: "h", type: "hidden" })]);
 
-      expect(computeInitialStepIndex([stepWithHidden, s2], { a: "x" })).toBe(1);
+      expect(computeInitialStepIndex([stepWithHidden, s2], { n1: "x" })).toBe(1);
     });
 
     it("should never skip a field-less (UI-only) step", () => {
-      expect(computeInitialStepIndex([step([uiNode("u1")]), s2], { b: "y" })).toBe(0);
+      expect(computeInitialStepIndex([step([uiNode("u1")]), s2], { n2: "y" })).toBe(0);
     });
 
     it("should return 0 when there are no steps", () => {
-      expect(computeInitialStepIndex([], { a: "x" })).toBe(0);
+      expect(computeInitialStepIndex([], { n1: "x" })).toBe(0);
+    });
+
+    it("should accept initialValues keyed by field name (not only node id)", () => {
+      // The AI assistant seeds by name ("Type d'évènement"), while nodes are identified by id.
+      const reasonStep = step([inputNode("root", { name: "Type d'évènement", type: "radio" })]);
+      const detailStep = step([inputNode("arret-dates", { name: "dates", type: "daterange" })]);
+
+      expect(computeInitialStepIndex([reasonStep, detailStep], { "Type d'évènement": "weather" })).toBe(1);
     });
   });
 });

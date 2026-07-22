@@ -159,8 +159,6 @@ export const useTreegeRenderer = ({
   // only when its content genuinely changes (see the re-seed effect below).
   const initialValuesSignature = useMemo(() => stableStringify(initialValues), [initialValues]);
   const appliedInitialSignatureRef = useRef(initialValuesSignature);
-  // Set when a genuine re-seed asks the step index to re-open on the first unfilled step (applied below).
-  const pendingStepReseedRef = useRef(false);
 
   const { endOfPathReached, visibleNodes, visibleRootNodes } = useMemo(
     () => getFlowRenderState(nodes, edges, formValues),
@@ -191,7 +189,8 @@ export const useTreegeRenderer = ({
 
   // Open on the first step still left to fill given the pre-filled values: a multi-step `initialValues`
   // seed (e.g. the AI assistant filling whole steps) opens where work remains, not always on step 0.
-  const [currentStepIndex, setCurrentStepIndex] = useState(() => computeInitialStepIndex(steps, formValues));
+  // Based on `initialValues` (not `formValues`) so node defaults never make a pristine form skip a step.
+  const [currentStepIndex, setCurrentStepIndex] = useState(() => computeInitialStepIndex(steps, initialValues));
   const safeStepIndex = steps.length === 0 ? 0 : Math.min(currentStepIndex, steps.length - 1);
   const currentStep = steps[safeStepIndex];
   const currentStepGroupNode = currentStep?.groupId ? groupNodeMap.get(currentStep.groupId) : undefined;
@@ -808,29 +807,19 @@ export const useTreegeRenderer = ({
       return;
     }
     appliedInitialSignatureRef.current = initialValuesSignature;
-    setFormValues(buildInitialFormValues(initialValues, inputNodes));
+    const seededValues = buildInitialFormValues(initialValues, inputNodes);
+    setFormValues(seededValues);
     // Drop any stale validation errors from the previous record.
     setFormErrors({});
     // Treat the fresh seed as authoritative: the next reconcile pass must not
     // purge/re-seed against the previous record's visible set.
     prevVisibleInputIdsRef.current = null;
-    // Re-open on the first unfilled step for the new seed (handled once `steps` reflect it, below).
-    pendingStepReseedRef.current = true;
-  }, [initialValuesSignature, initialValues, inputNodes]);
-
-  /**
-   * Jump to the first unfilled step after a genuine `initialValues` re-seed (see above). Deferred to
-   * its own effect so it runs once `steps`/`formValues` have recomputed against the fresh seed — the
-   * re-seed effect only knows the previous render's steps. The mount case is handled by the lazy
-   * `currentStepIndex` initializer, so this never fires on first render.
-   */
-  useEffect(() => {
-    if (!pendingStepReseedRef.current) {
-      return;
-    }
-    pendingStepReseedRef.current = false;
-    setCurrentStepIndex(computeInitialStepIndex(steps, formValues));
-  }, [steps, formValues]);
+    // Re-open on the first step the new seed leaves unfilled. Recompute the steps directly from the
+    // seeded values — the memoized `steps` still reflects the previous record on this render, so reading
+    // it here would pick the wrong step whenever the new record reveals a different branch.
+    const { visibleNodes: seededVisibleNodes } = getFlowRenderState(nodes, edges, seededValues);
+    setCurrentStepIndex(computeInitialStepIndex(computeSteps(seededVisibleNodes), initialValues));
+  }, [initialValuesSignature, initialValues, inputNodes, nodes, edges]);
 
   // ============================================
   // RETURN VALUES

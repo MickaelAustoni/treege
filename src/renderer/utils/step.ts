@@ -3,7 +3,7 @@ import { FormValues } from "@/renderer/types/renderer";
 import { isFieldEmpty } from "@/renderer/utils/form";
 import { getInputNodes, resolveNodeKey } from "@/renderer/utils/node";
 import { INPUT_TYPE } from "@/shared/constants/inputType";
-import { TreegeNodeData } from "@/shared/types/node";
+import { InputNodeData, TreegeNodeData } from "@/shared/types/node";
 import { isGroupNode, isInputNode } from "@/shared/utils/nodeTypeGuards";
 
 /**
@@ -43,28 +43,38 @@ export const computeSteps = (visibleNodes: Node<TreegeNodeData>[]): FlowStep[] =
     }, []);
 
 /**
- * The step the renderer should open on given the initial form values: the first step not already
- * ENTIRELY filled by those values. When `initialValues` pre-fill whole steps (e.g. an AI assistant
+ * The step the renderer should open on given the consumer-provided `initialValues`: the first step not
+ * already ENTIRELY pre-filled by them. When `initialValues` pre-fill whole steps (e.g. an AI assistant
  * seeding several steps at once), the fully-filled leading steps are skipped so the form opens where
  * work remains (steps 1-2 fully pre-filled → open step 3). Falls back to the last step when every step
  * is filled, and to 0 when there are no steps.
  *
- * A step counts as filled only when it HAS fillable fields and every one of them is non-empty — so with
- * no pre-fill the form opens on step 0 as before, and a purely informational (field-less) step is never
- * silently skipped. Hidden/submit inputs carry no user answer and are ignored.
+ * A step counts as filled only when it HAS fillable fields and every one of them is non-empty in
+ * `initialValues` — so with no pre-fill the form opens on step 0 as before, and a field-less
+ * (informational) step is never silently skipped. Hidden/submit inputs carry no user answer and are ignored.
+ *
+ * IMPORTANT: this reads the RAW `initialValues` the consumer passed — NOT the renderer's internal
+ * `formValues`, which also carries node `defaultValue`s. Basing it on defaults would make a pristine form
+ * (no pre-fill) skip a step whose fields merely have defaults. `initialValues` may be keyed by `node.id`
+ * or by the resolved field name (both accepted, like buildInitialFormValues), so each field is looked up by both.
  */
-export const computeInitialStepIndex = (steps: FlowStep[], values: FormValues): number => {
+export const computeInitialStepIndex = (steps: FlowStep[], initialValues: FormValues): number => {
   if (steps.length === 0) {
     return 0;
   }
 
-  const isStepFullyFilled = (step: FlowStep): boolean => {
-    const fields = getInputNodes(step.nodes).filter((node) => node.data.type !== INPUT_TYPE.hidden && node.data.type !== INPUT_TYPE.submit);
-
-    return fields.length > 0 && fields.every((node) => !isFieldEmpty(values[resolveNodeKey(node)]));
+  const isFieldPrefilled = (node: Node<InputNodeData>): boolean => {
+    const raw = initialValues[node.id] ?? initialValues[resolveNodeKey(node)];
+    return !isFieldEmpty(raw);
   };
 
-  const firstUnfilled = steps.findIndex((step) => !isStepFullyFilled(step));
+  const isStepFullyPrefilled = (step: FlowStep): boolean => {
+    const fields = getInputNodes(step.nodes).filter((node) => node.data.type !== INPUT_TYPE.hidden && node.data.type !== INPUT_TYPE.submit);
+
+    return fields.length > 0 && fields.every(isFieldPrefilled);
+  };
+
+  const firstUnfilled = steps.findIndex((step) => !isStepFullyPrefilled(step));
 
   return firstUnfilled === -1 ? steps.length - 1 : firstUnfilled;
 };

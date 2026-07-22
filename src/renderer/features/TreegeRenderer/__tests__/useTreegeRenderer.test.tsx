@@ -149,14 +149,18 @@ describe("useTreegeRenderer auto-advance", () => {
     expect(result.current.currentStepIndex).toBe(2);
   });
 
-  it("should not auto-advance on mount when initial values pre-fill the field", () => {
+  it("should open past a pre-filled step without auto-advancing further", () => {
     const { result } = renderHook(() => useTreegeRenderer({ flow: singleChoiceFlow, initialValues: { choice1: "a" } }));
 
+    // Step 1's only field is pre-filled → the form opens on step 2 (the first unfilled step)…
+    expect(result.current.currentStepIndex).toBe(1);
+
+    // …and the auto-advance timer must not push further: step 2's field is still empty.
     act(() => {
       vi.advanceTimersByTime(1000);
     });
 
-    expect(result.current.currentStepIndex).toBe(0);
+    expect(result.current.currentStepIndex).toBe(1);
   });
 
   it("should not auto-advance when navigating back to an already answered step", () => {
