@@ -1,4 +1,7 @@
 import { Node } from "@xyflow/react";
+import { FormValues } from "@/renderer/types/renderer";
+import { isFieldEmpty } from "@/renderer/utils/form";
+import { getInputNodes, resolveNodeKey } from "@/renderer/utils/node";
 import { INPUT_TYPE } from "@/shared/constants/inputType";
 import { TreegeNodeData } from "@/shared/types/node";
 import { isGroupNode, isInputNode } from "@/shared/utils/nodeTypeGuards";
@@ -38,6 +41,33 @@ export const computeSteps = (visibleNodes: Node<TreegeNodeData>[]): FlowStep[] =
         ? [...steps.slice(0, -1), { ...last, nodes: [...last.nodes, node] }]
         : [...steps, { groupId, nodes: [node] }];
     }, []);
+
+/**
+ * The step the renderer should open on given the initial form values: the first step not already
+ * ENTIRELY filled by those values. When `initialValues` pre-fill whole steps (e.g. an AI assistant
+ * seeding several steps at once), the fully-filled leading steps are skipped so the form opens where
+ * work remains (steps 1-2 fully pre-filled → open step 3). Falls back to the last step when every step
+ * is filled, and to 0 when there are no steps.
+ *
+ * A step counts as filled only when it HAS fillable fields and every one of them is non-empty — so with
+ * no pre-fill the form opens on step 0 as before, and a purely informational (field-less) step is never
+ * silently skipped. Hidden/submit inputs carry no user answer and are ignored.
+ */
+export const computeInitialStepIndex = (steps: FlowStep[], values: FormValues): number => {
+  if (steps.length === 0) {
+    return 0;
+  }
+
+  const isStepFullyFilled = (step: FlowStep): boolean => {
+    const fields = getInputNodes(step.nodes).filter((node) => node.data.type !== INPUT_TYPE.hidden && node.data.type !== INPUT_TYPE.submit);
+
+    return fields.length > 0 && fields.every((node) => !isFieldEmpty(values[resolveNodeKey(node)]));
+  };
+
+  const firstUnfilled = steps.findIndex((step) => !isStepFullyFilled(step));
+
+  return firstUnfilled === -1 ? steps.length - 1 : firstUnfilled;
+};
 
 /**
  * Single-choice input types eligible for step auto-advance: picking an option

@@ -1,6 +1,6 @@
 import { Node } from "@xyflow/react";
 import { describe, expect, it } from "vitest";
-import { computeSteps, FlowStep, getAutoAdvanceNodeId } from "@/renderer/utils/step";
+import { computeInitialStepIndex, computeSteps, FlowStep, getAutoAdvanceNodeId } from "@/renderer/utils/step";
 import { InputNodeData, TreegeNodeData, UINodeData } from "@/shared/types/node";
 
 const inputNode = (id: string, data: Partial<InputNodeData>, parentId?: string): Node<TreegeNodeData> => ({
@@ -99,6 +99,44 @@ describe("Step Utils", () => {
 
     it("should return undefined without a step", () => {
       expect(getAutoAdvanceNodeId(undefined)).toBeUndefined();
+    });
+  });
+
+  describe("computeInitialStepIndex", () => {
+    const s1 = step([inputNode("n1", { name: "a", type: "text" })]);
+    const s2 = step([inputNode("n2", { name: "b", type: "text" })]);
+    const s3 = step([inputNode("n3", { name: "c", type: "text" })]);
+
+    it("should open on step 0 when nothing is pre-filled", () => {
+      expect(computeInitialStepIndex([s1, s2, s3], {})).toBe(0);
+    });
+
+    it("should open on the first step not entirely pre-filled", () => {
+      expect(computeInitialStepIndex([s1, s2, s3], { a: "x", b: "y" })).toBe(2);
+    });
+
+    it("should open on the last step when every step is filled", () => {
+      expect(computeInitialStepIndex([s1, s2, s3], { a: "x", b: "y", c: "z" })).toBe(2);
+    });
+
+    it("should stop on a step with any empty field, even when earlier fields are filled", () => {
+      const twoFieldStep = step([inputNode("n2a", { name: "b", type: "text" }), inputNode("n2b", { name: "b2", type: "text" })]);
+
+      expect(computeInitialStepIndex([s1, twoFieldStep, s3], { a: "x", b: "y" })).toBe(1);
+    });
+
+    it("should ignore hidden/submit inputs when deciding a step is filled", () => {
+      const stepWithHidden = step([inputNode("n1", { name: "a", type: "text" }), inputNode("h1", { name: "h", type: "hidden" })]);
+
+      expect(computeInitialStepIndex([stepWithHidden, s2], { a: "x" })).toBe(1);
+    });
+
+    it("should never skip a field-less (UI-only) step", () => {
+      expect(computeInitialStepIndex([step([uiNode("u1")]), s2], { b: "y" })).toBe(0);
+    });
+
+    it("should return 0 when there are no steps", () => {
+      expect(computeInitialStepIndex([], { a: "x" })).toBe(0);
     });
   });
 });
