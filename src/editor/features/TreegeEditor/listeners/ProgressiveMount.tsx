@@ -30,6 +30,41 @@ export const needsProgressiveMount = (flow: Flow | null | undefined): boolean =>
 const toBatches = <T,>(items: T[], size: number): T[][] =>
   Array.from({ length: Math.ceil(items.length / size) }, (_, index) => items.slice(index * size, (index + 1) * size));
 
+type FlowBatchActions = {
+  addNodes: (nodes: Flow["nodes"]) => void;
+  addEdges: (edges: Flow["edges"]) => void;
+};
+
+/**
+ * Feed a flow to the canvas one frame-sized batch at a time (nodes first, then
+ * edges) so a large flow loaded after mount — a JSON import — never blocks the
+ * UI in a single giant commit. The imperative twin of `<ProgressiveMount>`.
+ * Returns a cancel function.
+ */
+export const addFlowInBatches = ({ addNodes, addEdges }: FlowBatchActions, flow: Flow, onDone?: () => void): (() => void) => {
+  const steps = [
+    ...toBatches(flow.nodes, NODES_PER_STEP).map((batch) => () => addNodes(batch)),
+    ...toBatches(flow.edges, EDGES_PER_STEP).map((batch) => () => addEdges(batch)),
+  ];
+  const state = { frame: 0 };
+
+  const run = (remaining: Array<() => void>) => {
+    const step = remaining.at(0);
+
+    if (!step) {
+      onDone?.();
+      return;
+    }
+
+    step();
+    state.frame = requestAnimationFrame(() => run(remaining.slice(1)));
+  };
+
+  state.frame = requestAnimationFrame(() => run(steps));
+
+  return () => cancelAnimationFrame(state.frame);
+};
+
 /** Identity of the current node placement — changes whenever a node moves. */
 const getPlacementSignature = (nodes: Node[]): string =>
   nodes.map((node) => `${node.id}:${Math.round(node.position.x)},${Math.round(node.position.y)}`).join("|");

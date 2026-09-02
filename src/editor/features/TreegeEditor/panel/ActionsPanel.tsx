@@ -9,6 +9,7 @@ import { useTreegeEditorRuntime } from "@/editor/context/TreegeEditorRuntimeProv
 import AuthorizeDialog from "@/editor/features/TreegeEditor/dialogs/AuthorizeDialog";
 import HeadersDialog from "@/editor/features/TreegeEditor/dialogs/HeadersDialog";
 import OpenApiDialog from "@/editor/features/TreegeEditor/dialogs/OpenApiDialog";
+import { addFlowInBatches, PROGRESSIVE_MOUNT_NODE_COUNT } from "@/editor/features/TreegeEditor/listeners/ProgressiveMount";
 import { AIGeneratorDialog } from "@/editor/features/TreegeEditor/panel/AIGeneratorDialog";
 import { useFlowContent } from "@/editor/hooks/useFlowContent";
 import useTranslate from "@/editor/hooks/useTranslate";
@@ -33,6 +34,9 @@ import {
 import { LANGUAGES } from "@/shared/constants/languages";
 import { Flow, HttpHeaders } from "@/shared/types/node";
 
+/** Stable toast id so the loading toast morphs into the success one. */
+const IMPORT_TOAST_ID = "treege-flow-import";
+
 export interface ActionsPanelProps {
   onExportJson?: (data: Flow) => void;
   onSave?: (data: Flow) => void;
@@ -51,13 +55,14 @@ const ActionsPanel = ({ onExportJson, onSave, extraMenuItems, onAuthorize, heade
   const [authorizeAcknowledged, setAuthorizeAcknowledged] = useState(false);
   const { flowId, setFlowId, aiConfig, language, setLanguage } = useTreegeEditorRuntime();
   const { document: openApiDocument } = useOpenApi();
-  const { setNodes, setEdges, addNodes, screenToFlowPosition } = useReactFlow();
+  const { setNodes, setEdges, addNodes, addEdges, screenToFlowPosition } = useReactFlow();
   const hasHeaders = Object.keys(headers ?? {}).length > 0;
   const id = flowId || uniqueId;
   const nodes = useNodes();
   const edges = useEdges();
   const { hasInputNodes, isEmpty } = useFlowContent();
   const inputFileRef = useRef<HTMLInputElement>(null);
+  const cancelImportRef = useRef<(() => void) | null>(null);
   const showAuthorizeDot = Boolean(openApiDocument) && !authorizeAcknowledged;
   const t = useTranslate();
 
@@ -92,11 +97,25 @@ const ActionsPanel = ({ onExportJson, onSave, extraMenuItems, onAuthorize, heade
         const json = JSON.parse(e.target?.result as string);
 
         if (json && Array.isArray(json.nodes) && Array.isArray(json.edges)) {
-          setNodes(json.nodes);
-          setEdges(json.edges);
-          toast.success(t("editor.actionsPanel.importSuccess"), {
-            description: t("editor.actionsPanel.importSuccessDesc"),
-          });
+          const notifyImported = () =>
+            toast.success(t("editor.actionsPanel.importSuccess"), {
+              description: t("editor.actionsPanel.importSuccessDesc"),
+              id: IMPORT_TOAST_ID,
+            });
+
+          if (json.nodes.length > PROGRESSIVE_MOUNT_NODE_COUNT) {
+            // Large flows: feed the canvas in frame-sized batches (same pacing
+            // as the initial ProgressiveMount) so the UI keeps painting — the
+            // loading toast stays animated while the tree grows.
+            setNodes([]);
+            setEdges([]);
+            toast.loading(t("editor.actionsPanel.importLoading"), { id: IMPORT_TOAST_ID });
+            cancelImportRef.current = addFlowInBatches({ addEdges, addNodes }, json as Flow, notifyImported);
+          } else {
+            setNodes(json.nodes);
+            setEdges(json.edges);
+            notifyImported();
+          }
         } else {
           toast.error(t("editor.actionsPanel.invalidJson"), {
             description: t("editor.actionsPanel.invalidJsonDesc"),
@@ -193,6 +212,11 @@ const ActionsPanel = ({ onExportJson, onSave, extraMenuItems, onAuthorize, heade
     setNodes(data.nodes);
     setEdges(data.edges);
   };
+
+  /**
+   * A batched import still running when the editor closes must stop feeding the store.
+   */
+  useEffect(() => () => cancelImportRef.current?.(), []);
 
   /**
    * Re-show the Authorize notification dot every time a different OpenAPI

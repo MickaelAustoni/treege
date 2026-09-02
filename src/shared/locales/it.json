@@ -24,6 +24,7 @@
       "exportJson": "Esporta JSON",
       "globalHeaders": "Global headers",
       "importJson": "Importa JSON",
+      "importLoading": "Importazione del flusso…",
       "importSuccess": "Importazione riuscita!",
       "importSuccessDesc": "Il flusso è stato importato con successo.",
       "invalidJson": "File JSON non valido.",

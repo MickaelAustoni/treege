@@ -24,6 +24,7 @@
       "exportJson": "تصدير JSON",
       "globalHeaders": "Global headers",
       "importJson": "استيراد JSON",
+      "importLoading": "جارٍ استيراد المخطّط…",
       "importSuccess": "تم الاستيراد بنجاح!",
       "importSuccessDesc": "تم استيراد التدفق بنجاح.",
       "invalidJson": "ملف JSON غير صالح.",
