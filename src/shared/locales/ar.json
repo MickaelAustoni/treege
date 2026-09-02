@@ -24,7 +24,6 @@
       "exportJson": "تصدير JSON",
       "globalHeaders": "Global headers",
       "importJson": "استيراد JSON",
-      "importLoading": "جارٍ استيراد المخطّط…",
       "importSuccess": "تم الاستيراد بنجاح!",
       "importSuccessDesc": "تم استيراد التدفق بنجاح.",
       "invalidJson": "ملف JSON غير صالح.",
@@ -318,6 +317,9 @@
       "urlRequired": "URL is required.",
       "valueField": "Value",
       "valueFieldPlaceholder": "Path to value (e.g., id)"
+    },
+    "progressiveMount": {
+      "loading": "جارٍ تحميل المخطّط…"
     },
     "selectInputType": {
       "type": "النوع"

@@ -24,7 +24,6 @@
       "exportJson": "Esporta JSON",
       "globalHeaders": "Global headers",
       "importJson": "Importa JSON",
-      "importLoading": "Importazione del flusso…",
       "importSuccess": "Importazione riuscita!",
       "importSuccessDesc": "Il flusso è stato importato con successo.",
       "invalidJson": "File JSON non valido.",
@@ -318,6 +317,9 @@
       "urlRequired": "URL is required.",
       "valueField": "Value",
       "valueFieldPlaceholder": "Path to value (e.g., id)"
+    },
+    "progressiveMount": {
+      "loading": "Caricamento del flusso…"
     },
     "selectInputType": {
       "type": "Tipo"

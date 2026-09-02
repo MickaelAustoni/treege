@@ -9,7 +9,7 @@ import { useTreegeEditorRuntime } from "@/editor/context/TreegeEditorRuntimeProv
 import AuthorizeDialog from "@/editor/features/TreegeEditor/dialogs/AuthorizeDialog";
 import HeadersDialog from "@/editor/features/TreegeEditor/dialogs/HeadersDialog";
 import OpenApiDialog from "@/editor/features/TreegeEditor/dialogs/OpenApiDialog";
-import { addFlowInBatches, PROGRESSIVE_MOUNT_NODE_COUNT } from "@/editor/features/TreegeEditor/listeners/ProgressiveMount";
+import ProgressiveMount, { needsProgressiveMount } from "@/editor/features/TreegeEditor/listeners/ProgressiveMount";
 import { AIGeneratorDialog } from "@/editor/features/TreegeEditor/panel/AIGeneratorDialog";
 import { useFlowContent } from "@/editor/hooks/useFlowContent";
 import useTranslate from "@/editor/hooks/useTranslate";
@@ -32,10 +32,8 @@ import {
   DropdownMenuTrigger,
 } from "@/shared/components/ui/dropdown-menu";
 import { LANGUAGES } from "@/shared/constants/languages";
+import { useMediaQuery } from "@/shared/hooks/useMediaQuery";
 import { Flow, HttpHeaders } from "@/shared/types/node";
-
-/** Stable toast id so the loading toast morphs into the success one. */
-const IMPORT_TOAST_ID = "treege-flow-import";
 
 export interface ActionsPanelProps {
   onExportJson?: (data: Flow) => void;
@@ -53,16 +51,17 @@ const ActionsPanel = ({ onExportJson, onSave, extraMenuItems, onAuthorize, heade
   const [authorizeDialogOpen, setAuthorizeDialogOpen] = useState(false);
   const [headersDialogOpen, setHeadersDialogOpen] = useState(false);
   const [authorizeAcknowledged, setAuthorizeAcknowledged] = useState(false);
+  const [importedFlow, setImportedFlow] = useState<{ flow: Flow; key: number } | null>(null);
   const { flowId, setFlowId, aiConfig, language, setLanguage } = useTreegeEditorRuntime();
   const { document: openApiDocument } = useOpenApi();
-  const { setNodes, setEdges, addNodes, addEdges, screenToFlowPosition } = useReactFlow();
+  const { setNodes, setEdges, addNodes, screenToFlowPosition } = useReactFlow();
   const hasHeaders = Object.keys(headers ?? {}).length > 0;
   const id = flowId || uniqueId;
   const nodes = useNodes();
   const edges = useEdges();
   const { hasInputNodes, isEmpty } = useFlowContent();
   const inputFileRef = useRef<HTMLInputElement>(null);
-  const cancelImportRef = useRef<(() => void) | null>(null);
+  const isMobile = useMediaQuery("mobile");
   const showAuthorizeDot = Boolean(openApiDocument) && !authorizeAcknowledged;
   const t = useTranslate();
 
@@ -83,6 +82,14 @@ const ActionsPanel = ({ onExportJson, onSave, extraMenuItems, onAuthorize, heade
     ]);
   };
 
+  const notifyImportSuccess = () =>
+    toast.success(t("editor.actionsPanel.importSuccess"), { description: t("editor.actionsPanel.importSuccessDesc") });
+
+  const handleImportSettled = () => {
+    notifyImportSuccess();
+    setImportedFlow(null);
+  };
+
   const handleImport = ({ target }: ChangeEvent<HTMLInputElement>) => {
     const file = target.files?.[0];
 
@@ -97,24 +104,14 @@ const ActionsPanel = ({ onExportJson, onSave, extraMenuItems, onAuthorize, heade
         const json = JSON.parse(e.target?.result as string);
 
         if (json && Array.isArray(json.nodes) && Array.isArray(json.edges)) {
-          const notifyImported = () =>
-            toast.success(t("editor.actionsPanel.importSuccess"), {
-              description: t("editor.actionsPanel.importSuccessDesc"),
-              id: IMPORT_TOAST_ID,
-            });
-
-          if (json.nodes.length > PROGRESSIVE_MOUNT_NODE_COUNT) {
-            // Large flows: feed the canvas in frame-sized batches (same pacing
-            // as the initial ProgressiveMount) so the UI keeps painting — the
-            // loading toast stays animated while the tree grows.
+          if (needsProgressiveMount(json as Flow)) {
             setNodes([]);
             setEdges([]);
-            toast.loading(t("editor.actionsPanel.importLoading"), { id: IMPORT_TOAST_ID });
-            cancelImportRef.current = addFlowInBatches({ addEdges, addNodes }, json as Flow, notifyImported);
+            setImportedFlow({ flow: json as Flow, key: Date.now() });
           } else {
             setNodes(json.nodes);
             setEdges(json.edges);
-            notifyImported();
+            notifyImportSuccess();
           }
         } else {
           toast.error(t("editor.actionsPanel.invalidJson"), {
@@ -214,9 +211,7 @@ const ActionsPanel = ({ onExportJson, onSave, extraMenuItems, onAuthorize, heade
   };
 
   /**
-   * A batched import still running when the editor closes must stop feeding the store.
    */
-  useEffect(() => () => cancelImportRef.current?.(), []);
 
   /**
    * Re-show the Authorize notification dot every time a different OpenAPI
@@ -251,116 +246,126 @@ const ActionsPanel = ({ onExportJson, onSave, extraMenuItems, onAuthorize, heade
   }, [handleSave]);
 
   return (
-    <Panel position="top-right" className="tg:flex tg:gap-2">
-      <AIGeneratorDialog aiConfig={aiConfig} onGenerate={handleAIGenerate} />
+    <>
+      {importedFlow && (
+        <ProgressiveMount
+          key={importedFlow.key}
+          flow={importedFlow.flow}
+          fitViewOptions={{ maxZoom: isMobile ? 0.6 : 1 }}
+          onSettled={handleImportSettled}
+        />
+      )}
+      <Panel position="top-right" className="tg:flex tg:gap-2">
+        <AIGeneratorDialog aiConfig={aiConfig} onGenerate={handleAIGenerate} />
 
-      <Button variant="outline" size="sm" onClick={handleAddNode}>
-        <Plus /> <span className="tg:hidden tg:md:inline">{t("editor.actionsPanel.addNode")}</span>
-      </Button>
-
-      {onSave && (
-        <Button variant="outline" size="sm" onClick={handleSave}>
-          <Save /> <span className="tg:hidden tg:md:inline">{t("common.save")}</span>
+        <Button variant="outline" size="sm" onClick={handleAddNode}>
+          <Plus /> <span className="tg:hidden tg:md:inline">{t("editor.actionsPanel.addNode")}</span>
         </Button>
-      )}
 
-      <DropdownMenu onOpenChange={(open) => !open && setAuthorizeAcknowledged(true)}>
-        <DropdownMenuTrigger asChild>
-          <Button variant="outline" size="sm" className="tg:relative">
-            <EllipsisVertical />
-            {showAuthorizeDot && (
-              <span
-                aria-hidden
-                className="tg:absolute tg:-top-0.5 tg:-right-0.5 tg:size-2 tg:rounded-full tg:bg-destructive tg:ring-2 tg:ring-background"
-              />
-            )}
+        {onSave && (
+          <Button variant="outline" size="sm" onClick={handleSave}>
+            <Save /> <span className="tg:hidden tg:md:inline">{t("common.save")}</span>
           </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="start">
-          <DropdownMenuGroup>
-            <DropdownMenuItem onClick={() => inputFileRef?.current?.click()}>
-              <Download /> {t("editor.actionsPanel.importJson")}
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={handleExport} disabled={!hasInputNodes}>
-              <ArrowRightFromLine /> {t("editor.actionsPanel.exportJson")}
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setOpenApiDialogOpen(true)}>
-              <FileJson /> {t("editor.actionsPanel.openApi")}
-              {openApiDocument && <span aria-hidden className="tg:ml-auto tg:size-2 tg:rounded-full tg:bg-emerald-500" />}
-            </DropdownMenuItem>
-            {onHeadersChange && (
-              <DropdownMenuItem onClick={() => setHeadersDialogOpen(true)}>
-                <KeyRound /> {t("editor.actionsPanel.globalHeaders")}
-                {hasHeaders && <span aria-hidden className="tg:ml-auto tg:size-2 tg:rounded-full tg:bg-emerald-500" />}
-              </DropdownMenuItem>
-            )}
-            {openApiDocument && (
-              <DropdownMenuItem onClick={() => setAuthorizeDialogOpen(true)}>
-                <Lock /> {t("editor.actionsPanel.authorize")}
-                {showAuthorizeDot && <span aria-hidden className="tg:ml-auto tg:size-2 tg:rounded-full tg:bg-destructive" />}
-              </DropdownMenuItem>
-            )}
-          </DropdownMenuGroup>
+        )}
 
-          <DropdownMenuSeparator />
+        <DropdownMenu onOpenChange={(open) => !open && setAuthorizeAcknowledged(true)}>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" size="sm" className="tg:relative">
+              <EllipsisVertical />
+              {showAuthorizeDot && (
+                <span
+                  aria-hidden
+                  className="tg:absolute tg:-top-0.5 tg:-right-0.5 tg:size-2 tg:rounded-full tg:bg-destructive tg:ring-2 tg:ring-background"
+                />
+              )}
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start">
+            <DropdownMenuGroup>
+              <DropdownMenuItem onClick={() => inputFileRef?.current?.click()}>
+                <Download /> {t("editor.actionsPanel.importJson")}
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={handleExport} disabled={!hasInputNodes}>
+                <ArrowRightFromLine /> {t("editor.actionsPanel.exportJson")}
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setOpenApiDialogOpen(true)}>
+                <FileJson /> {t("editor.actionsPanel.openApi")}
+                {openApiDocument && <span aria-hidden className="tg:ml-auto tg:size-2 tg:rounded-full tg:bg-emerald-500" />}
+              </DropdownMenuItem>
+              {onHeadersChange && (
+                <DropdownMenuItem onClick={() => setHeadersDialogOpen(true)}>
+                  <KeyRound /> {t("editor.actionsPanel.globalHeaders")}
+                  {hasHeaders && <span aria-hidden className="tg:ml-auto tg:size-2 tg:rounded-full tg:bg-emerald-500" />}
+                </DropdownMenuItem>
+              )}
+              {openApiDocument && (
+                <DropdownMenuItem onClick={() => setAuthorizeDialogOpen(true)}>
+                  <Lock /> {t("editor.actionsPanel.authorize")}
+                  {showAuthorizeDot && <span aria-hidden className="tg:ml-auto tg:size-2 tg:rounded-full tg:bg-destructive" />}
+                </DropdownMenuItem>
+              )}
+            </DropdownMenuGroup>
 
-          <DropdownMenuGroup>
-            <DropdownMenuSub>
-              <DropdownMenuSubTrigger>
-                <Languages /> {t("editor.actionsPanel.language")}
-              </DropdownMenuSubTrigger>
-              <DropdownMenuSubContent>
-                <DropdownMenuRadioGroup value={language} onValueChange={setLanguage}>
-                  {Object.values(LANGUAGES).map((lng) => (
-                    <DropdownMenuRadioItem key={lng} value={lng} className="tg:uppercase">
-                      {lng}
-                    </DropdownMenuRadioItem>
+            <DropdownMenuSeparator />
+
+            <DropdownMenuGroup>
+              <DropdownMenuSub>
+                <DropdownMenuSubTrigger>
+                  <Languages /> {t("editor.actionsPanel.language")}
+                </DropdownMenuSubTrigger>
+                <DropdownMenuSubContent>
+                  <DropdownMenuRadioGroup value={language} onValueChange={setLanguage}>
+                    {Object.values(LANGUAGES).map((lng) => (
+                      <DropdownMenuRadioItem key={lng} value={lng} className="tg:uppercase">
+                        {lng}
+                      </DropdownMenuRadioItem>
+                    ))}
+                  </DropdownMenuRadioGroup>
+                </DropdownMenuSubContent>
+              </DropdownMenuSub>
+            </DropdownMenuGroup>
+
+            {extraMenuItems && extraMenuItems.length > 0 && (
+              <>
+                <DropdownMenuSeparator />
+                <DropdownMenuGroup>
+                  {extraMenuItems.map((item, index) => (
+                    <DropdownMenuItem
+                      key={index}
+                      onClick={item.onClick}
+                      className={item.destructive ? "tg:text-destructive tg:focus:text-destructive" : undefined}
+                    >
+                      {item.icon}
+                      {item.label}
+                    </DropdownMenuItem>
                   ))}
-                </DropdownMenuRadioGroup>
-              </DropdownMenuSubContent>
-            </DropdownMenuSub>
-          </DropdownMenuGroup>
+                </DropdownMenuGroup>
+              </>
+            )}
 
-          {extraMenuItems && extraMenuItems.length > 0 && (
-            <>
-              <DropdownMenuSeparator />
-              <DropdownMenuGroup>
-                {extraMenuItems.map((item, index) => (
-                  <DropdownMenuItem
-                    key={index}
-                    onClick={item.onClick}
-                    className={item.destructive ? "tg:text-destructive tg:focus:text-destructive" : undefined}
-                  >
-                    {item.icon}
-                    {item.label}
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuGroup>
-            </>
-          )}
+            <DropdownMenuSeparator />
 
-          <DropdownMenuSeparator />
+            <DropdownMenuGroup>
+              <DropdownMenuItem onClick={handleClear} disabled={isEmpty} className="tg:text-destructive tg:focus:text-destructive">
+                <Trash2 className="tg:text-destructive" /> {t("editor.actionsPanel.clear")}
+              </DropdownMenuItem>
+            </DropdownMenuGroup>
 
-          <DropdownMenuGroup>
-            <DropdownMenuItem onClick={handleClear} disabled={isEmpty} className="tg:text-destructive tg:focus:text-destructive">
-              <Trash2 className="tg:text-destructive" /> {t("editor.actionsPanel.clear")}
-            </DropdownMenuItem>
-          </DropdownMenuGroup>
+            <DropdownMenuSeparator />
 
-          <DropdownMenuSeparator />
+            <DropdownMenuLabel className="tg:font-normal tg:text-muted-foreground tg:text-xs">v{__APP_VERSION__}</DropdownMenuLabel>
+          </DropdownMenuContent>
+        </DropdownMenu>
 
-          <DropdownMenuLabel className="tg:font-normal tg:text-muted-foreground tg:text-xs">v{__APP_VERSION__}</DropdownMenuLabel>
-        </DropdownMenuContent>
-      </DropdownMenu>
+        <input type="file" accept="application/json,.json" className="tg:hidden" ref={inputFileRef} onChange={handleImport} />
 
-      <input type="file" accept="application/json,.json" className="tg:hidden" ref={inputFileRef} onChange={handleImport} />
-
-      <OpenApiDialog open={openApiDialogOpen} onOpenChange={setOpenApiDialogOpen} />
-      <AuthorizeDialog open={authorizeDialogOpen} onOpenChange={setAuthorizeDialogOpen} onAuthorize={onAuthorize} />
-      {onHeadersChange && (
-        <HeadersDialog open={headersDialogOpen} onOpenChange={setHeadersDialogOpen} headers={headers ?? {}} onChange={onHeadersChange} />
-      )}
-    </Panel>
+        <OpenApiDialog open={openApiDialogOpen} onOpenChange={setOpenApiDialogOpen} />
+        <AuthorizeDialog open={authorizeDialogOpen} onOpenChange={setAuthorizeDialogOpen} onAuthorize={onAuthorize} />
+        {onHeadersChange && (
+          <HeadersDialog open={headersDialogOpen} onOpenChange={setHeadersDialogOpen} headers={headers ?? {}} onChange={onHeadersChange} />
+        )}
+      </Panel>
+    </>
   );
 };
 export default ActionsPanel;

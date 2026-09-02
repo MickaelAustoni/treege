@@ -24,7 +24,6 @@
       "exportJson": "Exporter JSON",
       "globalHeaders": "Headers globaux",
       "importJson": "Importer JSON",
-      "importLoading": "Import du workflow…",
       "importSuccess": "Importation réussie !",
       "importSuccessDesc": "Le flux a été importé avec succès.",
       "invalidJson": "Fichier JSON invalide.",
@@ -318,6 +317,9 @@
       "urlRequired": "L'URL est requise.",
       "valueField": "Valeur",
       "valueFieldPlaceholder": "Chemin vers la valeur (ex. id)"
+    },
+    "progressiveMount": {
+      "loading": "Chargement du workflow…"
     },
     "selectInputType": {
       "type": "Type"

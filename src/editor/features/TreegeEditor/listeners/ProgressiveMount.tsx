@@ -1,5 +1,8 @@
 import { FitViewOptions, Node, useReactFlow } from "@xyflow/react";
+import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
+import useTranslate from "@/editor/hooks/useTranslate";
 import type { Flow } from "@/shared/types/node";
 
 /**
@@ -30,41 +33,6 @@ export const needsProgressiveMount = (flow: Flow | null | undefined): boolean =>
 const toBatches = <T,>(items: T[], size: number): T[][] =>
   Array.from({ length: Math.ceil(items.length / size) }, (_, index) => items.slice(index * size, (index + 1) * size));
 
-type FlowBatchActions = {
-  addNodes: (nodes: Flow["nodes"]) => void;
-  addEdges: (edges: Flow["edges"]) => void;
-};
-
-/**
- * Feed a flow to the canvas one frame-sized batch at a time (nodes first, then
- * edges) so a large flow loaded after mount — a JSON import — never blocks the
- * UI in a single giant commit. The imperative twin of `<ProgressiveMount>`.
- * Returns a cancel function.
- */
-export const addFlowInBatches = ({ addNodes, addEdges }: FlowBatchActions, flow: Flow, onDone?: () => void): (() => void) => {
-  const steps = [
-    ...toBatches(flow.nodes, NODES_PER_STEP).map((batch) => () => addNodes(batch)),
-    ...toBatches(flow.edges, EDGES_PER_STEP).map((batch) => () => addEdges(batch)),
-  ];
-  const state = { frame: 0 };
-
-  const run = (remaining: Array<() => void>) => {
-    const step = remaining.at(0);
-
-    if (!step) {
-      onDone?.();
-      return;
-    }
-
-    step();
-    state.frame = requestAnimationFrame(() => run(remaining.slice(1)));
-  };
-
-  state.frame = requestAnimationFrame(() => run(steps));
-
-  return () => cancelAnimationFrame(state.frame);
-};
-
 /** Identity of the current node placement — changes whenever a node moves. */
 const getPlacementSignature = (nodes: Node[]): string =>
   nodes.map((node) => `${node.id}:${Math.round(node.position.x)},${Math.round(node.position.y)}`).join("|");
@@ -80,11 +48,14 @@ const isFullyMeasured = (nodes: Node[]): boolean => nodes.every((node) => node.m
  * - `done`: nothing left to schedule.
  */
 type Phase =
-  | { kind: "mount"; steps: Array<() => void> }
+  | { kind: "mount"; steps: Array<() => void>; total: number }
   | { kind: "settle"; lastSignature: string; samples: number; stableSamples: number }
   | { kind: "done" };
 
 const INITIAL_SETTLE: Phase = { kind: "settle", lastSignature: "", samples: 0, stableSamples: 0 };
+
+/** Stable toast id: the loading toast is dismissed once the layout settles. */
+const MOUNT_TOAST_ID = "treege-progressive-mount";
 
 type ProgressiveMountProps = {
   /** The flow to mount. Only read once, on mount — like React Flow's `defaultNodes`. */
@@ -108,20 +79,36 @@ type ProgressiveMountProps = {
  * transitions to the next state, so unmounting (a closed dialog) cancels the
  * whole process through the effect cleanup alone.
  *
- * Renders nothing — mount it inside `<ReactFlow>` alongside the canvas, like
+ * While the flow mounts and settles, a full-canvas overlay hides the
+ * half-built tree behind a centered spinner with mount progress — the
+ * finished, laid-out and fitted tree is revealed in one go. Mount it inside
  * `AutoLayout`.
  */
 const ProgressiveMount = ({ flow, fitViewOptions, onSettled }: ProgressiveMountProps) => {
-  const { addNodes, addEdges, fitView, getNodes } = useReactFlow();
-
   // `flow` is read once here on purpose (mount semantics, like `defaultNodes`).
-  const [phase, setPhase] = useState<Phase>(() => ({
-    kind: "mount",
-    steps: [
+  const [phase, setPhase] = useState<Phase>(() => {
+    const steps = [
       ...toBatches(flow.nodes, NODES_PER_STEP).map((batch) => () => addNodes(batch)),
       ...toBatches(flow.edges, EDGES_PER_STEP).map((batch) => () => addEdges(batch)),
-    ],
-  }));
+    ];
+
+    return { kind: "mount", steps, total: steps.length };
+  });
+
+  const { addNodes, addEdges, fitView, getNodes } = useReactFlow();
+  const t = useTranslate();
+
+  /**
+   * Same feedback as a large JSON import: a loading toast while the tree is
+   * being fed to the canvas, dismissed once the layout settles (or on unmount).
+   */
+  useEffect(() => {
+    toast.loading(t("editor.progressiveMount.loading"), { duration: Number.POSITIVE_INFINITY, id: MOUNT_TOAST_ID });
+
+    return () => {
+      toast.dismiss(MOUNT_TOAST_ID);
+    };
+  }, [t]);
 
   // One timer per phase; the React Flow instance methods are stable and
   // `fitViewOptions` is a mount-only input, hence the `phase`-only deps.
@@ -131,7 +118,7 @@ const ProgressiveMount = ({ flow, fitViewOptions, onSettled }: ProgressiveMountP
       const step = phase.steps.at(0);
       const frame = requestAnimationFrame(() => {
         step?.();
-        setPhase(step ? { kind: "mount", steps: phase.steps.slice(1) } : INITIAL_SETTLE);
+        setPhase(step ? { kind: "mount", steps: phase.steps.slice(1), total: phase.total } : INITIAL_SETTLE);
       });
 
       return () => cancelAnimationFrame(frame);
@@ -150,6 +137,7 @@ const ProgressiveMount = ({ flow, fitViewOptions, onSettled }: ProgressiveMountP
           void fitView(fitViewOptions);
         }
         if (settled) {
+          toast.dismiss(MOUNT_TOAST_ID);
           onSettled?.();
         }
         setPhase(settled ? { kind: "done" } : { kind: "settle", lastSignature: signature, samples, stableSamples });
@@ -161,7 +149,20 @@ const ProgressiveMount = ({ flow, fitViewOptions, onSettled }: ProgressiveMountP
     return undefined;
   }, [phase]);
 
-  return null;
+  if (phase.kind === "done") {
+    return null;
+  }
+
+  const progress = phase.kind === "mount" ? Math.round(((phase.total - phase.steps.length) / phase.total) * 100) : 100;
+
+  return (
+    <div className="tg:absolute tg:inset-0 tg:z-10 tg:flex tg:items-center tg:justify-center tg:bg-background">
+      <div className="tg:flex tg:items-center tg:gap-3">
+        <Loader2 className="tg:size-5 tg:animate-spin" />
+        <span className="tg:text-muted-foreground tg:text-sm">{`${t("editor.progressiveMount.loading")} ${progress}%`}</span>
+      </div>
+    </div>
+  );
 };
 
 export default ProgressiveMount;

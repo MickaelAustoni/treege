@@ -1,17 +1,9 @@
-Si# Changelog
+# Changelog
 
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
-
-### ⚡ Performance (editor, large flows)
-
-- `useAvailableParentFields` enumerated every root path of a node (exponential on flows whose branches converge) and re-rendered every conditional edge on any store change; it now walks ancestors once (`collectAncestorIds`, memoized per edges array) and subscribes only to the ancestors' ids/data.
-- Per-node/per-edge store subscriptions (`NodeGroupBadge`, `ConditionalEdge` sibling values, `NodeStackOrderButtons`, multi-selection) read memoized indexes (`getEdgeIndex`, `getSelectedNodeCount`) instead of scanning all nodes/edges; static translations are flattened once per language; `AutoLayout` coalesces measurement batches and skips no-op relayouts.
-- Large flows (> 150 nodes) are mounted progressively (`ProgressiveMount`): nodes are added in frame-sized batches, then edges, so the tree appears within a second and the editor stays responsive while it fills in, instead of a single blocking commit that paints nothing for tens of seconds.
-- Node previews no longer fire their API calls (`optionsSource`, `http` `fetchOnMount`) when a flow opens: requests are deferred (`deferRemoteFetch` runtime flag) until the node is hovered or selected.
-- A 625-node / 774-edge flow now paints its first nodes after ~1 s and is complete in ~25 s (dev build; was one 5-minute freeze), with no blocking task above ~2 s.
 
 ## [3.0.0] - 2025
 
@@ -76,6 +68,21 @@ Version 3.0 represents a complete architectural overhaul of Treege, transforming
 - **Two UI Types**: Title and Divider for better content organization
 - **Radix UI Integration**: Accessible, production-ready UI components
 - **Responsive Design**: Mobile-first approach with responsive layouts
+
+#### Default Values & Remote Fetching
+
+- **HTTP-derived default values** — `defaultValue: { type: "http", httpSource: {...} }` on input nodes: the field is filled from an API response and reactively re-derived whenever the form fields referenced as `{{variables}}` in the request change. `responsePath` narrows the response, `template` renders it (dangling separators trimmed), `transformFunction`/`objectMapping` apply otherwise. A field the user edited stays detached from its source until emptied; `initialValues` are never overwritten; superseded requests are aborted and identical ones deduped by signature.
+- Editor form for http defaults with a triggers-first UX: toggle chips of ancestor fields kept in sync with the request's `{{variables}}` (single source of truth), intent-driven labels, advanced options (method, headers, query params, body) collapsed, sensitive headers stripped on save. Translated in all 7 locales.
+- Opening a large flow (> 150 nodes) shows a full-canvas loader with mount progress (plus a loading toast) while the tree is progressively built and laid out; the finished, fitted tree is revealed once stable. Large JSON imports go through the same loader.
+- Renderer exports: `useTreegeRenderRuntime`, `TreegeRenderRuntimeContextValue`, and the `httpDefault` utilities.
+
+### ⚡ Performance (editor, large flows)
+
+- `useAvailableParentFields` enumerated every root path of a node (exponential on flows whose branches converge) and re-rendered every conditional edge on any store change; it now walks ancestors once (`collectAncestorIds`, memoized per edges array) and subscribes only to the ancestors' ids/data.
+- Per-node/per-edge store subscriptions (`NodeGroupBadge`, `ConditionalEdge` sibling values, `NodeStackOrderButtons`, multi-selection) read memoized indexes (`getEdgeIndex`, `getSelectedNodeCount`) instead of scanning all nodes/edges; static translations are flattened once per language; `AutoLayout` coalesces measurement batches and skips no-op relayouts.
+- Large flows (> 150 nodes) are mounted progressively (`ProgressiveMount`): nodes are added in frame-sized batches, then edges, so the tree appears within a second and the editor stays responsive while it fills in, instead of a single blocking commit that paints nothing for tens of seconds.
+- Node previews no longer fire their API calls (`optionsSource`, `http` `fetchOnMount`) while a flow opens: requests are deferred (`deferRemoteFetch` runtime flag) until the flow is mounted and laid out — or earlier for a node the user selects.
+- A 625-node / 774-edge flow now paints its first nodes after ~1 s and is complete in ~25 s (dev build; was one 5-minute freeze), with no blocking task above ~2 s.
 
 ### 🔄 Breaking Changes
 
