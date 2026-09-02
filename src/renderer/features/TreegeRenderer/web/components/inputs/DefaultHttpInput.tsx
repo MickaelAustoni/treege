@@ -70,7 +70,7 @@ const DefaultHttpInput = ({ field, extra }: InputRenderProps<"http">) => {
   const [comboboxOpen, setComboboxOpen] = useState(false);
   const { id, name, value, placeholder } = field;
   const { InputLabel, node, setValue, error, label, helperText, missingDependencies: missing } = extra;
-  const { formValues, inputNodes, headers, baseUrl } = useTreegeRenderRuntime();
+  const { formValues, inputNodes, headers, baseUrl, deferRemoteFetch } = useTreegeRenderRuntime();
   const { httpConfig } = node.data;
   const hasFetchedOnMount = useRef(false);
   const isConfigInitialized = useRef(false);
@@ -81,6 +81,8 @@ const DefaultHttpInput = ({ field, extra }: InputRenderProps<"http">) => {
   const inputNodesRef = useRef(inputNodes);
   const headersRef = useRef(headers);
   const baseUrlRef = useRef(baseUrl);
+  const deferRemoteFetchRef = useRef(deferRemoteFetch);
+  deferRemoteFetchRef.current = deferRemoteFetch;
   const setValueRef = useRef(setValue);
   const fetchDataRef = useRef<((search?: string) => Promise<void>) | null>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
@@ -305,6 +307,12 @@ const DefaultHttpInput = ({ field, extra }: InputRenderProps<"http">) => {
    * to prevent the watcher effect below from re-fetching for the same values.
    */
   useEffect(() => {
+    // Editor previews defer the mount fetch until the node is hovered/selected;
+    // the effect re-runs (see deps) once the flag is lifted.
+    if (deferRemoteFetchRef.current) {
+      return;
+    }
+
     // Mark that we've processed the initial mount
     if (hasFetchedOnMount.current) {
       return;
@@ -331,7 +339,7 @@ const DefaultHttpInput = ({ field, extra }: InputRenderProps<"http">) => {
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Only run once on mount
+  }, [deferRemoteFetch]); // Once on mount — or once the editor preview stops deferring remote fetches
 
   /**
    * Watch template variable values and refetch (debounced 500ms) when they
@@ -402,6 +410,9 @@ const DefaultHttpInput = ({ field, extra }: InputRenderProps<"http">) => {
     // The mount effect owns the initial fetch; only react to later changes.
     if (!isConfigInitialized.current) {
       isConfigInitialized.current = true;
+      return;
+    }
+    if (deferRemoteFetchRef.current) {
       return;
     }
 

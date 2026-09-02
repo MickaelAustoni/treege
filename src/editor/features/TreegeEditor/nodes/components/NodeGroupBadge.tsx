@@ -1,6 +1,6 @@
-import { useNodes } from "@xyflow/react";
+import { useStore } from "@xyflow/react";
 import { Boxes, ChevronDown } from "lucide-react";
-import { MouseEvent, useMemo, useState } from "react";
+import { MouseEvent, useState } from "react";
 import SelectNodeGroup from "@/editor/features/TreegeEditor/inputs/SelectNodeGroup";
 import useTranslate from "@/editor/hooks/useTranslate";
 import { getGroupColor } from "@/editor/utils/groupColor";
@@ -17,9 +17,12 @@ interface NodeGroupBadgeProps {
 const NodeGroupBadge = ({ nodeId, groupId }: NodeGroupBadgeProps) => {
   const [open, setOpen] = useState(false);
   const t = useTranslate();
-  const nodes = useNodes<TreegeNode>();
-  const currentNode = useMemo(() => nodes.find((n) => n.id === nodeId), [nodes, nodeId]);
-  const groupNode = useMemo(() => (groupId ? nodes.find((n) => n.id === groupId) : undefined), [nodes, groupId]);
+  // Subscribe to the two nodes this badge reads, not the whole list — every node
+  // renders one badge, so a `useNodes()` here re-renders the entire canvas on any change.
+  const currentNode = useStore((state) => state.nodeLookup.get(nodeId)?.internals.userNode as TreegeNode | undefined);
+  const groupNode = useStore((state) =>
+    groupId ? (state.nodeLookup.get(groupId)?.internals.userNode as TreegeNode | undefined) : undefined,
+  );
   const label = isGroupNode(groupNode) ? t(groupNode.data?.label) : "";
   const backgroundColor = getGroupColor(groupId);
 

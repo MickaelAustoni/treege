@@ -1,13 +1,14 @@
-import { useEdges, useNodes } from "@xyflow/react";
+import { useStore } from "@xyflow/react";
 import { useMemo } from "react";
+import { useShallow } from "zustand/react/shallow";
 import { useTreegeEditorRuntime } from "@/editor/context/TreegeEditorRuntimeProvider";
-import { InputNodeData, TreegeNode } from "@/shared/types/node";
-import { isInputNode } from "@/shared/utils/nodeTypeGuards";
+import { collectAncestorIds } from "@/editor/utils/edge";
+import { InputNodeData } from "@/shared/types/node";
 import { getTranslatedText } from "@/shared/utils/translations";
 
 /**
  * Returns every Input ancestor reachable from the given node, traversing
- * incoming edges depth-first. Cycle-safe (visited set). The result is the
+ * incoming edges depth-first (see `collectAncestorIds`). The result is the
  * pool of fields that a downstream node — typically a conditional edge —
  * may reference: each entry exposes the ancestor's `nodeId`, resolved
  * display `label`, raw `name`, input `type`, and static `options` (when
@@ -16,50 +17,41 @@ import { getTranslatedText } from "@/shared/utils/translations";
  *
  * Non-Input ancestors (UI nodes, flow nodes, groups) are excluded because
  * they cannot supply a runtime value to evaluate a condition against.
+ *
+ * Subscribes to the store through shallow selectors on the ancestor ids and
+ * their `data` references only: a flow holds one instance of this hook per
+ * conditional edge, so re-rendering them all on every node measurement or
+ * drag would make large flows unusable.
  */
 const useAvailableParentFields = (currentNodeId?: string) => {
-  const nodes = useNodes() as TreegeNode[];
-  const edges = useEdges();
   const { language } = useTreegeEditorRuntime();
 
-  return useMemo(() => {
-    if (!currentNodeId) {
-      return [];
-    }
+  const ancestorIds = useStore(
+    useShallow((state) =>
+      currentNodeId ? collectAncestorIds(state.edges, currentNodeId).filter((id) => state.nodeLookup.get(id)?.type === "input") : [],
+    ),
+  );
+  const ancestorData = useStore(
+    useShallow((state) => ancestorIds.map((id) => state.nodeLookup.get(id)?.data as InputNodeData | undefined)),
+  );
 
-    const findAncestors = (nodeId: string, visited = new Set<string>()): string[] => {
-      if (visited.has(nodeId)) {
-        return [];
-      }
+  return useMemo(
+    () =>
+      ancestorIds.flatMap((nodeId, index) => {
+        const data = ancestorData[index];
 
-      const newVisited = new Set(visited).add(nodeId);
-      const incomingEdges = edges.filter((edge) => edge.target === nodeId);
+        if (!data) {
+          return [];
+        }
 
-      return incomingEdges.flatMap((edge) => [edge.source, ...findAncestors(edge.source, newVisited)]);
-    };
-
-    const ancestorIds = findAncestors(currentNodeId);
-
-    return nodes
-      .filter((node) => {
-        const isAncestor = ancestorIds.includes(node.id);
-        return isAncestor && isInputNode(node);
-      })
-      .map((node) => {
-        const data = node.data as InputNodeData;
         // Resolve the label in the editor's current language (falls back to
         // English, then any available translation) instead of always `en`.
         const label = getTranslatedText(data.label, language);
 
-        return {
-          label: label || data.name || node.id,
-          name: data.name,
-          nodeId: node.id,
-          options: data.options,
-          type: data.type || "text",
-        };
-      });
-  }, [currentNodeId, nodes, edges, language]);
+        return [{ label: label || data.name || nodeId, name: data.name, nodeId, options: data.options, type: data.type || "text" }];
+      }),
+    [ancestorIds, ancestorData, language],
+  );
 };
 
 export default useAvailableParentFields;

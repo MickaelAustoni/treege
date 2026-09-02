@@ -693,6 +693,43 @@ Use the HTTP input type to fetch and map data from APIs:
 }
 ```
 
+### Default Values
+
+An input can be pre-filled through `data.defaultValue`:
+
+| `type`      | Behaviour                                                                                                    |
+|-------------|--------------------------------------------------------------------------------------------------------------|
+| `static`    | `staticValue` is applied when the field is empty                                                             |
+| `reference` | mirrors `referenceField` (a node id) and follows its changes; `transformFunction` / `objectMapping` optional |
+| `http`      | derived from an API resource described by `httpSource` — fetched again whenever a referenced field changes   |
+
+```json
+{
+  "id": "delivery-address",
+  "type": "input",
+  "position": { "x": 0, "y": 0 },
+  "data": {
+    "name": "address",
+    "type": "address",
+    "label": { "en": "Delivery address" },
+    "defaultValue": {
+      "type": "http",
+      "httpSource": {
+        "url": "/v2/worksites/{{worksite}}",
+        "responsePath": "address",
+        "template": "{{streetNumber}} {{route}}, {{zipcode}} {{city}}"
+      }
+    }
+  }
+}
+```
+
+- `url`, `queryParams` and `body` accept `{{fieldId}}` templates; the request waits until every referenced field is filled (the same "missing dependencies" hint as HTTP inputs is shown).
+- `responsePath` narrows the response (`data.user.email`, `results[0]`); when unset the whole response is used.
+- `template` renders text from the extracted object's fields (`{{value}}` for a scalar). Without a template the extracted value is used as-is, after `transformFunction` / `objectMapping`.
+- Relative urls resolve against `baseUrl`; global `headers` apply, field-level headers win.
+- Like `reference` defaults, a value the user edited by hand — or provided through `initialValues` — is never overwritten.
+
 ### Global Configuration
 
 Configure the renderer globally using the TreegeRendererProvider:

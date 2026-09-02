@@ -106,11 +106,24 @@ const flattenTranslations = (obj: TranslationDict, prefix = ""): Record<string, 
     {} as Record<string, string>,
   );
 
+const flattenedByLanguage = new Map<string, Record<string, string>>();
+
 /**
  * Get static translations for a specific language
- * Falls back to English if language not found
+ * Falls back to English if language not found.
+ * Flattened once per language: every component calling `useTranslate` would
+ * otherwise re-flatten the whole dictionary on mount.
  */
 export const getStaticTranslations = (language: string): Record<string, string> => {
+  const cached = flattenedByLanguage.get(language);
+
+  if (cached) {
+    return cached;
+  }
+
   const locale = locales[language] || locales.en;
-  return flattenTranslations(locale);
+  const flattened = flattenTranslations(locale);
+  flattenedByLanguage.set(language, flattened);
+
+  return flattened;
 };

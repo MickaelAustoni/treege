@@ -60,18 +60,20 @@ const buildNode = (): Node<InputNodeData> => ({
   type: "input",
 });
 
-const renderHttpInput = (node: Node<InputNodeData>) => {
+const httpInputTree = (node: Node<InputNodeData>, deferRemoteFetch = false) => {
   const field: InputFieldProps<"http"> = { id: node.id, name: "users", value: "" };
   const extra: InputExtraProps<"http"> = { InputLabel: DefaultInputLabel, missingDependencies: [], node, setValue: vi.fn() };
 
-  return render(
+  return (
     <StrictMode>
-      <TreegeRenderRuntimeProvider value={{ formValues: {}, inputNodes: [node], language: "en" }}>
+      <TreegeRenderRuntimeProvider value={{ deferRemoteFetch, formValues: {}, inputNodes: [node], language: "en" }}>
         <DefaultHttpInput field={field} extra={extra} />
       </TreegeRenderRuntimeProvider>
-    </StrictMode>,
+    </StrictMode>
   );
 };
+
+const renderHttpInput = (node: Node<InputNodeData>) => render(httpInputTree(node));
 
 describe("DefaultHttpInput (web)", () => {
   beforeEach(() => {
@@ -136,5 +138,23 @@ describe("DefaultHttpInput (web)", () => {
     });
 
     expect(vi.mocked(fetch).mock.calls.some(([url]) => String(url).includes("/people"))).toBe(true);
+  });
+
+  // Editor previews: a flow with hundreds of `fetchOnMount` inputs must not
+  // fire hundreds of requests when it opens. The fetch waits for the runtime
+  // `deferRemoteFetch` flag to be lifted (node hovered/selected).
+  it("holds the mount fetch while deferRemoteFetch is set and fires once it is lifted", async () => {
+    const node = buildNode();
+    const { rerender } = render(httpInputTree(node, true));
+
+    await new Promise((resolve) => setTimeout(resolve, 50));
+    expect(fetch).not.toHaveBeenCalled();
+
+    rerender(httpInputTree(node, false));
+
+    await waitFor(() => {
+      expect(fetch).toHaveBeenCalled();
+      expect((screen.getByRole("combobox") as HTMLButtonElement).disabled).toBe(false);
+    });
   });
 });

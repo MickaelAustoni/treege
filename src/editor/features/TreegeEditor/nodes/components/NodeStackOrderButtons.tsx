@@ -5,6 +5,7 @@ import { useShallow } from "zustand/react/shallow";
 import useFlowConnections from "@/editor/hooks/useFlowConnections";
 import { useStackPosition } from "@/editor/hooks/useStackPosition";
 import useTranslate from "@/editor/hooks/useTranslate";
+import { getEdgeIndex } from "@/editor/utils/edge";
 import { Button } from "@/shared/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/shared/components/ui/tooltip";
 import { cn } from "@/shared/lib/utils";
@@ -24,9 +25,10 @@ const NodeStackOrderButtons = ({ nodeId, selected }: NodeStackOrderButtonsProps)
   // downstream and breaks the gate.
   const { isDecision, isSuccessorDecision } = useStore(
     useShallow((state) => {
-      const outgoing = state.edges.filter((edge) => edge.source === nodeId);
+      const { outgoing: outgoingByNode } = getEdgeIndex(state.edges);
+      const outgoing = outgoingByNode.get(nodeId) ?? [];
       const successorId = outgoing.length === 1 ? outgoing[0].target : null;
-      const successorOutgoing = successorId ? state.edges.filter((edge) => edge.source === successorId).length : 0;
+      const successorOutgoing = successorId ? (outgoingByNode.get(successorId)?.length ?? 0) : 0;
       return {
         isDecision: outgoing.length > 1,
         isSuccessorDecision: successorOutgoing > 1,

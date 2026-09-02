@@ -3,6 +3,7 @@ import { ChevronsUpDown, Plus, X } from "lucide-react";
 import { useState } from "react";
 import { useTreegeEditorRuntime } from "@/editor/context/TreegeEditorRuntimeProvider";
 import HttpConfigForm from "@/editor/features/TreegeEditor/forms/HttpConfigForm";
+import HttpDefaultValueForm from "@/editor/features/TreegeEditor/forms/HttpDefaultValueForm";
 import OptionsSourceForm from "@/editor/features/TreegeEditor/forms/OptionsSourceForm";
 import SubmitConfigForm from "@/editor/features/TreegeEditor/forms/SubmitConfigForm";
 import ComboboxPattern from "@/editor/features/TreegeEditor/inputs/ComboboxPattern";
@@ -24,7 +25,7 @@ import { Separator } from "@/shared/components/ui/separator";
 import { Switch } from "@/shared/components/ui/switch";
 import { LANGUAGES } from "@/shared/constants/languages";
 import { Language } from "@/shared/types/languages";
-import { InputNodeData } from "@/shared/types/node";
+import { HttpDefaultSource, InputNodeData } from "@/shared/types/node";
 import { isOptionsInputData } from "@/shared/utils/inputTypeGuards";
 
 const isSupportedLanguage = (value: string): value is Language => (Object.values(LANGUAGES) as string[]).includes(value);
@@ -499,8 +500,10 @@ const InputNodeForm = () => {
                       <Label htmlFor={defaultValueField.name}>{t("editor.inputNodeForm.defaultValueType")}</Label>
                       <Select
                         value={defaultValueField.state.value?.type || "none"}
-                        onValueChange={(value: "none" | "static" | "reference") => {
-                          defaultValueField.handleChange(value === "none" ? null : { type: value });
+                        onValueChange={(value: "none" | "static" | "reference" | "http") => {
+                          defaultValueField.handleChange(
+                            value === "none" ? null : { type: value, ...(value === "http" && { httpSource: { method: "GET" } }) },
+                          );
                         }}
                       >
                         <SelectTrigger id={defaultValueField.name}>
@@ -510,6 +513,7 @@ const InputNodeForm = () => {
                           <SelectItem value="none">{t("editor.inputNodeForm.defaultValueTypeNone")}</SelectItem>
                           <SelectItem value="static">{t("editor.inputNodeForm.defaultValueTypeStatic")}</SelectItem>
                           <SelectItem value="reference">{t("editor.inputNodeForm.defaultValueTypeReference")}</SelectItem>
+                          <SelectItem value="http">{t("editor.inputNodeForm.defaultValueTypeHttp")}</SelectItem>
                         </SelectContent>
                       </Select>
                     </FormItem>
@@ -586,41 +590,54 @@ const InputNodeForm = () => {
                       </Field>
                     )}
 
-                    {defaultValueField.state.value?.type === "reference" && (
+                    {(defaultValueField.state.value?.type === "reference" || defaultValueField.state.value?.type === "http") && (
                       <>
-                        <Field name="defaultValue.referenceField">
-                          {(field) => (
-                            <FormItem>
-                              <Label htmlFor={field.name}>{t("editor.inputNodeForm.referenceField")}</Label>
-                              <Select
-                                value={field.state.value || ""}
-                                onValueChange={(value) => {
-                                  field.handleChange(value);
-                                }}
-                              >
-                                <SelectTrigger id={field.name}>
-                                  <SelectValue placeholder={t("editor.inputNodeForm.selectReferenceField")} />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  {availableParentFields.length === 0 ? (
-                                    <SelectItem value="none" disabled>
-                                      {t("editor.inputNodeForm.noParentFieldsAvailable")}
-                                    </SelectItem>
-                                  ) : (
-                                    availableParentFields.map((availField) => (
-                                      <SelectItem key={availField.nodeId} value={availField.nodeId}>
-                                        {availField.label} ({availField.type})
+                        {defaultValueField.state.value?.type === "http" && (
+                          <Field name="defaultValue.httpSource">
+                            {(field) => (
+                              <HttpDefaultValueForm
+                                value={field.state.value as HttpDefaultSource | undefined}
+                                onChange={(next) => field.handleChange(next as never)}
+                              />
+                            )}
+                          </Field>
+                        )}
+
+                        {defaultValueField.state.value?.type === "reference" && (
+                          <Field name="defaultValue.referenceField">
+                            {(field) => (
+                              <FormItem>
+                                <Label htmlFor={field.name}>{t("editor.inputNodeForm.referenceField")}</Label>
+                                <Select
+                                  value={field.state.value || ""}
+                                  onValueChange={(value) => {
+                                    field.handleChange(value);
+                                  }}
+                                >
+                                  <SelectTrigger id={field.name}>
+                                    <SelectValue placeholder={t("editor.inputNodeForm.selectReferenceField")} />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    {availableParentFields.length === 0 ? (
+                                      <SelectItem value="none" disabled>
+                                        {t("editor.inputNodeForm.noParentFieldsAvailable")}
                                       </SelectItem>
-                                    ))
-                                  )}
-                                </SelectContent>
-                              </Select>
-                              {availableParentFields.length === 0 && (
-                                <FormDescription>{t("editor.inputNodeForm.addInputFieldsBeforeReference")}</FormDescription>
-                              )}
-                            </FormItem>
-                          )}
-                        </Field>
+                                    ) : (
+                                      availableParentFields.map((availField) => (
+                                        <SelectItem key={availField.nodeId} value={availField.nodeId}>
+                                          {availField.label} ({availField.type})
+                                        </SelectItem>
+                                      ))
+                                    )}
+                                  </SelectContent>
+                                </Select>
+                                {availableParentFields.length === 0 && (
+                                  <FormDescription>{t("editor.inputNodeForm.addInputFieldsBeforeReference")}</FormDescription>
+                                )}
+                              </FormItem>
+                            )}
+                          </Field>
+                        )}
 
                         <Field name="defaultValue.transformFunction">
                           {(field) => (

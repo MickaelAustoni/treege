@@ -1,9 +1,17 @@
-# Changelog
+Si# Changelog
 
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+### ⚡ Performance (editor, large flows)
+
+- `useAvailableParentFields` enumerated every root path of a node (exponential on flows whose branches converge) and re-rendered every conditional edge on any store change; it now walks ancestors once (`collectAncestorIds`, memoized per edges array) and subscribes only to the ancestors' ids/data.
+- Per-node/per-edge store subscriptions (`NodeGroupBadge`, `ConditionalEdge` sibling values, `NodeStackOrderButtons`, multi-selection) read memoized indexes (`getEdgeIndex`, `getSelectedNodeCount`) instead of scanning all nodes/edges; static translations are flattened once per language; `AutoLayout` coalesces measurement batches and skips no-op relayouts.
+- Large flows (> 150 nodes) are mounted progressively (`ProgressiveMount`): nodes are added in frame-sized batches, then edges, so the tree appears within a second and the editor stays responsive while it fills in, instead of a single blocking commit that paints nothing for tens of seconds.
+- Node previews no longer fire their API calls (`optionsSource`, `http` `fetchOnMount`) when a flow opens: requests are deferred (`deferRemoteFetch` runtime flag) until the node is hovered or selected.
+- A 625-node / 774-edge flow now paints its first nodes after ~1 s and is complete in ~25 s (dev build; was one 5-minute freeze), with no blocking task above ~2 s.
 
 ## [3.0.0] - 2025
 

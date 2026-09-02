@@ -1,4 +1,4 @@
-import { createContext, PropsWithChildren, useContext, useMemo, useState } from "react";
+import { createContext, PropsWithChildren, useCallback, useContext, useMemo, useState } from "react";
 import { AIConfig } from "@/editor/types/ai";
 import { HttpHeaders } from "@/shared/types/node";
 
@@ -54,6 +54,16 @@ export interface TreegeEditorRuntimeContextValue {
    */
   closeDeleteNodeConfirmation: () => void;
   /**
+   * True once the flow is mounted and laid out: node previews may issue their
+   * remote requests without waiting for a hover/selection (see `NodeInputPreview`).
+   */
+  previewsWarm: boolean;
+  /**
+   * Mark the flow as mounted and laid out (called by `ProgressiveMount` when it
+   * settles, or by the editor shortly after mounting a small flow).
+   */
+  warmUpPreviews: () => void;
+  /**
    * Pending node type change that requires user confirmation (when the target type only supports a single outgoing edge).
    */
   pendingNodeTypeChange: PendingNodeTypeChange | null;
@@ -84,6 +94,8 @@ export interface TreegeEditorRuntimeProviderProps extends PropsWithChildren {
     | "pendingNodeTypeChange"
     | "openNodeTypeChangeConfirmation"
     | "closeNodeTypeChangeConfirmation"
+    | "previewsWarm"
+    | "warmUpPreviews"
   >;
 }
 
@@ -94,6 +106,8 @@ export const TreegeEditorRuntimeProvider = ({ children, value }: TreegeEditorRun
   const [isNodeSheetOpen, setIsNodeSheetOpen] = useState(false);
   const [pendingDeleteNodeId, setPendingDeleteNodeId] = useState<string | null>(null);
   const [pendingNodeTypeChange, setPendingNodeTypeChange] = useState<PendingNodeTypeChange | null>(null);
+  const [previewsWarm, setPreviewsWarm] = useState(false);
+  const warmUpPreviews = useCallback(() => setPreviewsWarm(true), []);
 
   const valueMemo = useMemo(
     () => ({
@@ -112,10 +126,12 @@ export const TreegeEditorRuntimeProvider = ({ children, value }: TreegeEditorRun
       openNodeTypeChangeConfirmation: (payload: PendingNodeTypeChange) => setPendingNodeTypeChange(payload),
       pendingDeleteNodeId,
       pendingNodeTypeChange,
+      previewsWarm,
       setFlowId,
       setIsNodeSheetOpen,
+      warmUpPreviews,
     }),
-    [flowId, value, isNodeSheetOpen, pendingDeleteNodeId, pendingNodeTypeChange],
+    [flowId, value, isNodeSheetOpen, pendingDeleteNodeId, pendingNodeTypeChange, previewsWarm, warmUpPreviews],
   );
 
   return <TreegeEditorRuntimeContext.Provider value={valueMemo}>{children}</TreegeEditorRuntimeContext.Provider>;
@@ -135,9 +151,11 @@ export const useTreegeEditorRuntime = () => {
       openNodeTypeChangeConfirmation: () => {},
       pendingDeleteNodeId: null,
       pendingNodeTypeChange: null,
+      previewsWarm: false,
       setFlowId: () => {},
       setIsNodeSheetOpen: () => {},
       setLanguage: () => {},
+      warmUpPreviews: () => {},
     }
   );
 };

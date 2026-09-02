@@ -57,6 +57,84 @@ export const buildConvergence = (
   return { edges, node };
 };
 
+export interface EdgeIndex {
+  /** Source node ids of every edge targeting a node, in edge order */
+  incoming: Map<string, string[]>;
+  /** Edges leaving a node, in edge order */
+  outgoing: Map<string, Edge[]>;
+  /** Memoized `collectAncestorIds` results for this edges array */
+  ancestors: Map<string, string[]>;
+}
+
+const indexByEdges = new WeakMap<Edge[], EdgeIndex>();
+
+/**
+ * Adjacency index of an edges array, memoized by array reference — React Flow
+ * keeps that reference stable between unrelated updates (drag, selection,
+ * measurement), so per-node/per-edge store selectors get O(1) lookups instead
+ * of scanning every edge on every store change.
+ */
+export const getEdgeIndex = (edges: Edge[]): EdgeIndex => {
+  const cached = indexByEdges.get(edges);
+  if (cached) {
+    return cached;
+  }
+
+  const index: EdgeIndex = { ancestors: new Map(), incoming: new Map(), outgoing: new Map() };
+  edges.forEach((edge) => {
+    const sources = index.incoming.get(edge.target);
+    if (sources) {
+      sources.push(edge.source);
+    } else {
+      index.incoming.set(edge.target, [edge.source]);
+    }
+    const leaving = index.outgoing.get(edge.source);
+    if (leaving) {
+      leaving.push(edge);
+    } else {
+      index.outgoing.set(edge.source, [edge]);
+    }
+  });
+  indexByEdges.set(edges, index);
+
+  return index;
+};
+
+/**
+ * Every node from which `nodeId` is reachable, following incoming edges
+ * depth-first: direct sources come before their own ancestors, siblings in edge
+ * order. Each ancestor is listed once — a global visited set makes the walk
+ * linear in the graph size even when branches converge (a DAG with a shared
+ * tail can hold an exponential number of distinct root paths).
+ */
+export const collectAncestorIds = (edges: Edge[], nodeId: string): string[] => {
+  const index = getEdgeIndex(edges);
+  const cached = index.ancestors.get(nodeId);
+  if (cached) {
+    return cached;
+  }
+
+  const { incoming } = index;
+  const visited = new Set<string>([nodeId]);
+  const ancestors: string[] = [];
+
+  const visit = (current: string) => {
+    (incoming.get(current) ?? []).forEach((source) => {
+      if (visited.has(source)) {
+        return;
+      }
+      visited.add(source);
+      ancestors.push(source);
+      visit(source);
+    });
+  };
+
+  visit(nodeId);
+  index.ancestors.set(nodeId, ancestors);
+
+  return ancestors;
+};
+
 /**
  * Whether adding an edge `source` → `target` would introduce a cycle, i.e.
  * `target` can already reach `source` by following outgoing edges. BFS from
@@ -135,4 +213,21 @@ export const normalizeConditionalEdges = (edges: Edge[], affectedParents: Set<st
     const cleaned = rest && Object.keys(rest).length > 0 ? rest : undefined;
     return { ...edge, data: cleaned, type: "default" };
   });
+};
+
+const selectedCountByNodes = new WeakMap<Node[], number>();
+
+/**
+ * Number of selected nodes, memoized by nodes array reference so every node's
+ * "multi-selection" selector is an O(1) lookup instead of a scan of all nodes.
+ */
+export const getSelectedNodeCount = (nodes: Node[]): number => {
+  const cached = selectedCountByNodes.get(nodes);
+  if (cached !== undefined) {
+    return cached;
+  }
+  const count = nodes.filter((node) => node.selected).length;
+  selectedCountByNodes.set(nodes, count);
+
+  return count;
 };

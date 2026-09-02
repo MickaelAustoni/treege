@@ -12,6 +12,7 @@ import NodeStackOrderButtons from "@/editor/features/TreegeEditor/nodes/componen
 import NodeTypeBadge from "@/editor/features/TreegeEditor/nodes/components/NodeTypeBadge";
 import NodeWrapper from "@/editor/features/TreegeEditor/nodes/layout/NodeWrapper";
 import { useStackPosition } from "@/editor/hooks/useStackPosition";
+import { getSelectedNodeCount } from "@/editor/utils/edge";
 import { cn } from "@/shared/lib/utils";
 import { InputNodeData, UINodeData } from "@/shared/types/node";
 
@@ -21,7 +22,7 @@ const TreegeNode = (props: TreegeNodeProps) => {
   const { id, isConnectable, parentId, selected, type } = props;
   const { position: stackPosition, isStackHead, isStackTail } = useStackPosition(id);
   const isConnecting = useConnection((connection) => connection.inProgress);
-  const isMultiSelection = useStore((state) => state.nodes.filter((node) => node.selected).length > 1);
+  const isMultiSelection = useStore((state) => getSelectedNodeCount(state.nodes) > 1);
   const inputData = props.type === "input" ? props.data : undefined;
   const uiData = props.type === "ui" ? props.data : undefined;
   const subType = inputData?.type ?? uiData?.type;
@@ -74,7 +75,7 @@ const TreegeNode = (props: TreegeNodeProps) => {
       />
 
       {/* Input preview (runtime rendering + inline option edit). Returns null when data is not editable. */}
-      <NodeInputPreview nodeId={id} data={inputData} />
+      <NodeInputPreview nodeId={id} data={inputData} allowRemoteFetch={Boolean(selected)} />
 
       {/* Bottom controls — always rendered so React Flow can resolve outgoing edges; inert when disabled. */}
       <BottomHandleDropdown

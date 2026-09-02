@@ -65,6 +65,30 @@ export type HttpHeaders = Record<string, string>;
  */
 export type QueryParams = Record<string, string>;
 
+/**
+ * Remote source of a `defaultValue` of type `"http"` — see `InputNodeData.defaultValue`.
+ */
+export type HttpDefaultSource = {
+  /** API URL (supports template variables like {{fieldId}}; relative urls resolve against `baseUrl`) */
+  url?: string;
+  /** HTTP method (default GET) */
+  method?: "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
+  /** Custom headers (merged with global headers; field-level wins) */
+  headers?: HttpHeaders;
+  /** Query parameters appended to the URL (supports template variables like {{fieldId}}) */
+  queryParams?: QueryParams;
+  /** Request body (for POST/PUT/PATCH; supports template variables) */
+  body?: string;
+  /** Path of the value inside the response (e.g. "address" or "data.user.email"); the whole response when unset */
+  responsePath?: string;
+  /**
+   * Text rendered from the extracted value's own fields, e.g.
+   * `"{{streetNumber}} {{route}}, {{zipcode}} {{city}}"` (`{{value}}` for a scalar).
+   * When unset the extracted value is used as-is, after `transformFunction`.
+   */
+  template?: string;
+};
+
 export type HttpConfig = {
   /**
    * The HTTP method to use
@@ -267,7 +291,13 @@ export type InputNodeData = BaseNodeData & {
    * The default value config for the input field
    */
   defaultValue?: null | {
-    type?: "static" | "reference";
+    /**
+     * - `static`: a fixed value applied when the field is empty
+     * - `reference`: mirrors another field (`referenceField`), following its changes
+     * - `http`: derived from an HTTP resource (`httpSource`), fetched again whenever a
+     *   `{{fieldId}}` referenced by the request changes
+     */
+    type?: "static" | "reference" | "http";
     staticValue?: string | string[] | boolean | SerializableFile | SerializableFile[];
     referenceField?: string;
     transformFunction?: null | "toString" | "toNumber" | "toBoolean" | "toArray" | "toObject";
@@ -275,6 +305,8 @@ export type InputNodeData = BaseNodeData & {
       sourceKey: string;
       targetKey: string;
     }>;
+    /** The request feeding the field when `type` is `"http"` */
+    httpSource?: HttpDefaultSource;
   };
   /**
    * HTTP configuration for the input field (used with type="http")

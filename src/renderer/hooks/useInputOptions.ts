@@ -64,7 +64,7 @@ export const useInputOptions = (node: Node<InputNodeData>): UseInputOptionsResul
     isLoading: false,
   });
 
-  const { baseUrl, formValues, headers: globalHeaders } = useTreegeRenderRuntime();
+  const { baseUrl, deferRemoteFetch, formValues, headers: globalHeaders } = useTreegeRenderRuntime();
   const source = node.data.optionsSource;
   const staticOptions = node.data.options;
 
@@ -107,7 +107,8 @@ export const useInputOptions = (node: Node<InputNodeData>): UseInputOptionsResul
    * request on cleanup so a quick succession of changes doesn't race.
    */
   useEffect(() => {
-    if (!resolvedSourceJson) {
+    // Editor previews defer remote fetches until the node is hovered/selected.
+    if (!resolvedSourceJson || deferRemoteFetch) {
       setState({ error: null, fetched: null, isLoading: false });
       return;
     }
@@ -141,7 +142,7 @@ export const useInputOptions = (node: Node<InputNodeData>): UseInputOptionsResul
     })();
 
     return () => controller.abort();
-  }, [resolvedSourceJson]);
+  }, [resolvedSourceJson, deferRemoteFetch]);
 
   // Normalize only API-fetched labels (not manually-typed static options),
   // and only when the node hasn't opted out. Defaults to on when unset.

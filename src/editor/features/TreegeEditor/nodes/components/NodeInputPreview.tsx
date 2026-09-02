@@ -25,6 +25,14 @@ import { getTranslatedText } from "@/shared/utils/translations";
 interface NodeInputPreviewProps {
   nodeId: string;
   /**
+   * Once true, the preview is allowed to issue its remote requests (options
+   * source, `fetchOnMount`) regardless of the warm-up state. Driven by
+   * hover/selection; requests are otherwise held back until the whole flow is
+   * mounted and laid out (`previewsWarm`), so opening a large flow never fires
+   * one API call per preview.
+   */
+  allowRemoteFetch?: boolean;
+  /**
    * Input node data. Optional so the parent can pass it unconditionally —
    * the component returns `null` when undefined or when the runtime renderer
    * for this input type isn't available.
@@ -67,18 +75,19 @@ const shortenUrl = (url: string): string => {
   return stripped || url;
 };
 
-const NodeInputPreview = ({ nodeId, data }: NodeInputPreviewProps) => {
+const NodeInputPreview = ({ nodeId, data, allowRemoteFetch = false }: NodeInputPreviewProps) => {
   const [open, setOpen] = useState(false);
   const [labelDraft, setLabelDraft] = useState("");
   const [valueDraft, setValueDraft] = useState("");
   const [imageDraft, setImageDraft] = useState("");
   const [descriptionDraft, setDescriptionDraft] = useState("");
   const [editingIndex, setEditingIndex] = useState<number | null>(null); // null = creating; number = editing the option at that index.
-  const { language, headers } = useTreegeEditorRuntime();
+  const { language, headers, previewsWarm } = useTreegeEditorRuntime();
   const { baseUrl } = useOpenApi();
   const { updateNodeData } = useFlowActions();
   const t = useTranslate();
   const inputType = data?.type;
+  const remoteFetchAllowed = allowRemoteFetch || previewsWarm;
 
   if (!inputType) {
     return null;
@@ -185,6 +194,7 @@ const NodeInputPreview = ({ nodeId, data }: NodeInputPreviewProps) => {
     const SubTypeIcon = getInputTypeIcon(inputType);
     const staticValue = data.defaultValue?.type === "static" ? data.defaultValue.staticValue : undefined;
     const referenceField = data.defaultValue?.type === "reference" ? data.defaultValue.referenceField : undefined;
+    const httpSourceUrl = data.defaultValue?.type === "http" ? data.defaultValue.httpSource?.url : undefined;
     const fileName = (value: unknown): string =>
       value && typeof value === "object" && "name" in value ? String(value.name) : String(value);
     const displayValue = Array.isArray(staticValue)
@@ -193,7 +203,7 @@ const NodeInputPreview = ({ nodeId, data }: NodeInputPreviewProps) => {
         ? String(staticValue)
         : typeof staticValue === "object" && staticValue !== null
           ? fileName(staticValue)
-          : (staticValue ?? (referenceField ? `→ ${referenceField}` : ""));
+          : (staticValue ?? (referenceField ? `→ ${referenceField}` : httpSourceUrl ? `⇐ ${httpSourceUrl}` : ""));
 
     return (
       <div className="tg:pointer-events-none tg:flex tg:select-none tg:flex-col tg:gap-1 tg:text-sm">
@@ -215,7 +225,7 @@ const NodeInputPreview = ({ nodeId, data }: NodeInputPreviewProps) => {
   if (inputType === "submit") {
     return (
       <div className="tg:pointer-events-none tg:flex tg:select-none tg:justify-center">
-        <TreegeRenderRuntimeProvider value={{ baseUrl, headers, language, optionsDisplayLimit: 10 }}>
+        <TreegeRenderRuntimeProvider value={{ baseUrl, deferRemoteFetch: !remoteFetchAllowed, headers, language, optionsDisplayLimit: 10 }}>
           <DefaultSubmitButton label={getTranslatedText(data.label, language) || undefined} />
         </TreegeRenderRuntimeProvider>
       </div>
@@ -301,7 +311,7 @@ const NodeInputPreview = ({ nodeId, data }: NodeInputPreviewProps) => {
           so the editor's `NodeLabelInput` is the single source of truth visually
           and avoids rendering the same text twice.
         */}
-        <TreegeRenderRuntimeProvider value={{ baseUrl, headers, language, optionsDisplayLimit: 10 }}>
+        <TreegeRenderRuntimeProvider value={{ baseUrl, deferRemoteFetch: !remoteFetchAllowed, headers, language, optionsDisplayLimit: 10 }}>
           <Renderer
             key={inputType}
             field={{

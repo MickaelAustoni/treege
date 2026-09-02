@@ -1,11 +1,13 @@
 import { useForm } from "@tanstack/react-form";
-import { BaseEdge, Edge, EdgeLabelRenderer, EdgeProps, getBezierPath, useEdges, useReactFlow } from "@xyflow/react";
+import { BaseEdge, Edge, EdgeLabelRenderer, EdgeProps, getBezierPath, useReactFlow, useStore } from "@xyflow/react";
 import { Plus, Trash2, Waypoints, X } from "lucide-react";
 import { MouseEvent, memo, useMemo, useState } from "react";
+import { useShallow } from "zustand/react/shallow";
 import { useTreegeEditorRuntime } from "@/editor/context/TreegeEditorRuntimeProvider";
 import useAvailableParentFields from "@/editor/hooks/useAvailableParentFields";
 import { useIsStackedEdge } from "@/editor/hooks/useIsStackedEdge";
 import useTranslate from "@/editor/hooks/useTranslate";
+import { getEdgeIndex } from "@/editor/utils/edge";
 import { Button } from "@/shared/components/ui/button";
 import { Checkbox } from "@/shared/components/ui/checkbox";
 import { FormDescription, FormItem } from "@/shared/components/ui/form";
@@ -81,7 +83,16 @@ const ConditionalEdge = ({
   const availableParentFields = useAvailableParentFields(target);
   const directParent = availableParentFields.find((field) => field.nodeId === source) ?? availableParentFields[0];
   const t = useTranslate();
-  const allEdges = useEdges();
+  // Data of the sibling edges (same `source`, different id) — `data` references
+  // only change when a sibling is edited, so this edge stays out of the
+  // re-render storm caused by node drags/measurements.
+  const siblingData = useStore(
+    useShallow((state) =>
+      (getEdgeIndex(state.edges).outgoing.get(source) ?? [])
+        .filter((edge) => edge.id !== id)
+        .map((edge) => edge.data as ConditionalEdgeData | undefined),
+    ),
+  );
 
   /**
    * Values already used by sibling edges (same `source`, different edge id)
@@ -93,11 +104,7 @@ const ConditionalEdge = ({
     if (!directParent) {
       return present;
     }
-    allEdges.forEach((edge) => {
-      if (edge.id === id || edge.source !== source) {
-        return;
-      }
-      const conditionalData = edge.data as ConditionalEdgeData | undefined;
+    siblingData.forEach((conditionalData) => {
       conditionalData?.conditions?.forEach((condition) => {
         if (condition.field === directParent.nodeId && condition.value) {
           present.add(condition.value);
@@ -105,7 +112,7 @@ const ConditionalEdge = ({
       });
     });
     return present;
-  }, [allEdges, id, source, directParent]);
+  }, [siblingData, directParent]);
 
   const isConfigured =
     Boolean(data?.configured) || Boolean(data?.isFallback) || Boolean(data?.label) || (data?.conditions?.some(isConditionDefined) ?? false);

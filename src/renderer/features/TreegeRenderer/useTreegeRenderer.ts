@@ -1,6 +1,7 @@
 import { Node } from "@xyflow/react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTreegeRendererConfig } from "@/renderer/context/TreegeRendererProvider";
+import { useHttpDefaultValues } from "@/renderer/hooks/useHttpDefaultValues";
 import { useSubmitHandler } from "@/renderer/hooks/useSubmitHandler";
 import { useTranslate } from "@/renderer/hooks/useTranslate";
 import { FormValues, TreegeRendererProps } from "@/renderer/types/renderer";
@@ -711,6 +712,9 @@ export const useTreegeRenderer = ({
       validateForm(validateRef.current);
     }
   }, [config.validationMode, validateForm]);
+
+  // Fields deriving their value from an HTTP resource (`defaultValue.type === "http"`).
+  useHttpDefaultValues({ baseUrl: config.baseUrl, formValues, headers: config.headers, inputNodes: visibleInputNodes, setFieldValue });
 
   /**
    * One-way reference-field binding: when an input is configured to mirror

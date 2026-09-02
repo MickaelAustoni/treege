@@ -58,12 +58,20 @@ export const stripSensitiveHeadersFromFlow = (flow: Flow): { flow: Flow; strippe
       (block) => block.removed > 0,
     );
 
-    if (strippedBlocks.length === 0) {
+    // An http default value nests its request under `defaultValue.httpSource`.
+    const defaultValue = isRecord(node.data.defaultValue) ? node.data.defaultValue : undefined;
+    const httpSource = stripConfigHeaders(defaultValue?.httpSource);
+
+    if (strippedBlocks.length === 0 && httpSource.removed === 0) {
       return { node, removed: 0 };
     }
 
-    const data = { ...node.data, ...Object.fromEntries(strippedBlocks.map((block) => [block.key, block.config])) };
-    const removed = strippedBlocks.reduce((sum, block) => sum + block.removed, 0);
+    const data = {
+      ...node.data,
+      ...Object.fromEntries(strippedBlocks.map((block) => [block.key, block.config])),
+      ...(httpSource.removed > 0 && { defaultValue: { ...defaultValue, httpSource: httpSource.config } }),
+    };
+    const removed = strippedBlocks.reduce((sum, block) => sum + block.removed, 0) + httpSource.removed;
 
     return { node: { ...node, data }, removed };
   });

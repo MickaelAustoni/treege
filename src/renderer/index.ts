@@ -1,4 +1,6 @@
 export { TreegeRendererProvider, useTreegeRendererConfig } from "@/renderer/context/TreegeRendererProvider";
+export type { TreegeRenderRuntimeContextValue } from "@/renderer/context/TreegeRenderRuntimeProvider";
+export { useTreegeRenderRuntime } from "@/renderer/context/TreegeRenderRuntimeProvider";
 export type { TreegeViewerProviderProps } from "@/renderer/context/TreegeViewerProvider";
 export { default as TreegeViewerProvider } from "@/renderer/context/TreegeViewerProvider";
 export type { UseTreegeRendererReturn } from "@/renderer/features/TreegeRenderer/useTreegeRenderer";
@@ -20,6 +22,7 @@ export * from "@/renderer/utils/conditions";
 export * from "@/renderer/utils/file";
 export * from "@/renderer/utils/flow";
 export * from "@/renderer/utils/form";
+export * from "@/renderer/utils/httpDefault";
 export * from "@/renderer/utils/sanitize";
 export { ThemeProvider, useTheme } from "@/shared/context/ThemeContext";
 export { getTranslatedText } from "@/shared/utils/translations";

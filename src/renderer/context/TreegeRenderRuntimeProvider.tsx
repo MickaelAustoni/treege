@@ -62,6 +62,13 @@ export interface TreegeRenderRuntimeContextValue {
    * `onChange` to push edits up to the form's state.
    */
   setFieldValue: (fieldName: string, value: unknown) => void;
+  /**
+   * When true, inputs hold back their automatic remote requests (`optionsSource`
+   * fetches, `http` inputs' `fetchOnMount`). Set by the editor's node previews
+   * so opening a flow with hundreds of previews doesn't fire hundreds of API
+   * calls; each preview lifts the flag on hover/selection. Unset at runtime.
+   */
+  deferRemoteFetch?: boolean;
 }
 
 /**
@@ -72,6 +79,7 @@ export interface TreegeRenderRuntimeContextValue {
  */
 const DEFAULT_CONTEXT_VALUE: TreegeRenderRuntimeContextValue = {
   baseUrl: undefined,
+  deferRemoteFetch: false,
   flow: null,
   formErrors: {},
   formValues: {},

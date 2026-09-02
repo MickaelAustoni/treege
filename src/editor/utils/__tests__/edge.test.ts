@@ -1,6 +1,6 @@
 import { Edge, Node } from "@xyflow/react";
 import { describe, expect, it } from "vitest";
-import { buildConvergence, edgeExists, normalizeConditionalEdges, wouldCreateCycle } from "@/editor/utils/edge";
+import { buildConvergence, collectAncestorIds, edgeExists, normalizeConditionalEdges, wouldCreateCycle } from "@/editor/utils/edge";
 
 const e = (source: string, target: string): Edge => ({ id: `${source}-${target}`, source, target });
 
@@ -101,5 +101,38 @@ describe("buildConvergence", () => {
 
     const noParents = buildConvergence(leaf("B", 0, 0), leaf("C", 100, 0), options);
     expect(noParents.node.parentId).toBeUndefined();
+  });
+});
+
+describe("collectAncestorIds", () => {
+  const edge = (source: string, target: string): Edge => ({ id: `${source}->${target}`, source, target });
+
+  it("lists direct sources before their own ancestors, each once", () => {
+    const edges = [edge("root", "a"), edge("root", "b"), edge("a", "leaf"), edge("b", "leaf")];
+
+    expect(collectAncestorIds(edges, "leaf")).toEqual(["a", "root", "b"]);
+    expect(collectAncestorIds(edges, "root")).toEqual([]);
+  });
+
+  it("stays linear on a DAG whose branches converge (no path enumeration)", () => {
+    // Chain of diamonds: 2^40 root paths, but only 120 ancestors.
+    const edges: Edge[] = [];
+    for (let i = 0; i < 40; i += 1) {
+      edges.push(
+        edge(`join-${i}`, `left-${i}`),
+        edge(`join-${i}`, `right-${i}`),
+        edge(`left-${i}`, `join-${i + 1}`),
+        edge(`right-${i}`, `join-${i + 1}`),
+      );
+    }
+
+    const ancestors = collectAncestorIds(edges, "join-40");
+
+    expect(ancestors).toHaveLength(120);
+    expect(new Set(ancestors).size).toBe(120);
+  });
+
+  it("is cycle-safe", () => {
+    expect(collectAncestorIds([edge("a", "b"), edge("b", "a")], "a")).toEqual(["b"]);
   });
 });

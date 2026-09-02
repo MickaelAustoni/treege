@@ -26,21 +26,19 @@ const extractRefs = (...templates: (string | undefined)[]): string[] => {
 };
 
 /**
- * The node ids an input's dynamic request depends on — every `{{nodeId}}`
- * referenced in its `httpConfig` or `optionsSource` url, query-param values, or
- * body. These are the fields that must be filled before the input can fetch its
- * options. Headers are excluded: they carry auth/global values, not user-filled
- * form fields.
+ * The node ids an input's dynamic requests depend on — every `{{nodeId}}`
+ * referenced in the url, query-param values, or body of its `httpConfig` /
+ * `optionsSource`, and of its http default value (`defaultValue.httpSource`).
+ * These are the fields that must be filled before the input can fetch its
+ * options or derive its value. Headers are excluded: they carry auth/global
+ * values, not user-filled form fields.
  */
 export const getTemplateDependencyIds = (node: Node<InputNodeData>): string[] => {
-  const config = node.data.httpConfig ?? node.data.optionsSource;
+  const { httpConfig, optionsSource, defaultValue } = node.data;
+  const httpSource = defaultValue?.type === "http" ? defaultValue.httpSource : undefined;
+  const configs = [httpConfig ?? optionsSource, httpSource].filter((config) => config !== undefined);
 
-  if (!config) {
-    return [];
-  }
-
-  const queryValues = Object.values(config.queryParams ?? {});
-  return extractRefs(config.url, config.body, ...queryValues);
+  return extractRefs(...configs.flatMap((config) => [config.url, config.body, ...Object.values(config.queryParams ?? {})]));
 };
 
 /**
