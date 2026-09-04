@@ -1,8 +1,8 @@
-import { useReactFlow } from "@xyflow/react";
+import { useStoreApi } from "@xyflow/react";
 import { ChevronDown } from "lucide-react";
 import { MouseEvent } from "react";
+import { useFlowActions } from "@/editor/context/FlowActionsProvider";
 import { useTreegeEditorRuntime } from "@/editor/context/TreegeEditorRuntimeProvider";
-import useFlowActions from "@/editor/hooks/useFlowActions";
 import useTranslate from "@/editor/hooks/useTranslate";
 import { getInputTypeIcon } from "@/editor/utils/inputTypeIcon";
 import { Badge } from "@/shared/components/ui/badge";
@@ -31,16 +31,16 @@ const UI_TYPES = Object.values(UI_TYPE) as string[];
 
 const NodeTypeBadge = ({ nodeId, nodeType, subType }: NodeTypeBadgeProps) => {
   const { updateNodeType } = useFlowActions();
-  const { getEdges } = useReactFlow();
   const { openNodeTypeChangeConfirmation } = useTreegeEditorRuntime();
   const t = useTranslate();
   const stopPropagation = (event: MouseEvent) => event.stopPropagation();
+  const store = useStoreApi();
   const currentValue = subType || nodeType;
   const label = currentValue;
   const Icon = getInputTypeIcon(currentValue);
 
   const handleTypeChange = (type: string, nextSubType?: string) => {
-    const outgoingCount = getEdges().filter((edge) => edge.source === nodeId).length;
+    const outgoingCount = store.getState().edges.filter((edge) => edge.source === nodeId).length;
     const needsConfirmation = type === NODE_TYPE.ui && outgoingCount > 1;
 
     if (needsConfirmation) {

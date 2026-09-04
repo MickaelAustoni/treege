@@ -1,16 +1,9 @@
 import { FitViewOptions, Node, useReactFlow } from "@xyflow/react";
 import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { toast } from "sonner";
+import { LARGE_FLOW_NODE_COUNT } from "@/editor/constants/largeFlow";
 import useTranslate from "@/editor/hooks/useTranslate";
 import type { Flow } from "@/shared/types/node";
-
-/**
- * From this many nodes on, the initial flow is mounted progressively instead
- * of in one synchronous React commit (which paints nothing until every card
- * is rendered — tens of seconds on flows with hundreds of nodes).
- */
-export const PROGRESSIVE_MOUNT_NODE_COUNT = 150;
 
 /** Nodes added per frame. Small enough for each commit to stay well under a frame budget. */
 const NODES_PER_STEP = 40;
@@ -27,7 +20,12 @@ const SETTLE_STABLE_SAMPLES = 4;
 /** Stop following the layout after this many samples (10 s) whatever happens. */
 const SETTLE_MAX_SAMPLES = 40;
 
-export const needsProgressiveMount = (flow: Flow | null | undefined): boolean => (flow?.nodes.length ?? 0) > PROGRESSIVE_MOUNT_NODE_COUNT;
+/**
+ * Whether the initial flow must be mounted progressively instead of in one
+ * synchronous React commit (which paints nothing until every card is
+ * rendered — tens of seconds on flows with hundreds of nodes).
+ */
+export const needsProgressiveMount = (flow: Flow | null | undefined): boolean => (flow?.nodes.length ?? 0) > LARGE_FLOW_NODE_COUNT;
 
 /** Split a list into consecutive batches of `size`. */
 const toBatches = <T,>(items: T[], size: number): T[][] =>
@@ -53,9 +51,6 @@ type Phase =
   | { kind: "done" };
 
 const INITIAL_SETTLE: Phase = { kind: "settle", lastSignature: "", samples: 0, stableSamples: 0 };
-
-/** Stable toast id: the loading toast is dismissed once the layout settles. */
-const MOUNT_TOAST_ID = "treege-progressive-mount";
 
 type ProgressiveMountProps = {
   /** The flow to mount. Only read once, on mount — like React Flow's `defaultNodes`. */
@@ -98,18 +93,6 @@ const ProgressiveMount = ({ flow, fitViewOptions, onSettled }: ProgressiveMountP
   const { addNodes, addEdges, fitView, getNodes } = useReactFlow();
   const t = useTranslate();
 
-  /**
-   * Same feedback as a large JSON import: a loading toast while the tree is
-   * being fed to the canvas, dismissed once the layout settles (or on unmount).
-   */
-  useEffect(() => {
-    toast.loading(t("editor.progressiveMount.loading"), { duration: Number.POSITIVE_INFINITY, id: MOUNT_TOAST_ID });
-
-    return () => {
-      toast.dismiss(MOUNT_TOAST_ID);
-    };
-  }, [t]);
-
   // One timer per phase; the React Flow instance methods are stable and
   // `fitViewOptions` is a mount-only input, hence the `phase`-only deps.
   // biome-ignore lint/correctness/useExhaustiveDependencies: see above.
@@ -137,7 +120,6 @@ const ProgressiveMount = ({ flow, fitViewOptions, onSettled }: ProgressiveMountP
           void fitView(fitViewOptions);
         }
         if (settled) {
-          toast.dismiss(MOUNT_TOAST_ID);
           onSettled?.();
         }
         setPhase(settled ? { kind: "done" } : { kind: "settle", lastSignature: signature, samples, stableSamples });

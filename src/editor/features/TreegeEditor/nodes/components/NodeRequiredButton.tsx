@@ -1,6 +1,6 @@
 import { Asterisk } from "lucide-react";
 import { MouseEvent } from "react";
-import useFlowActions from "@/editor/hooks/useFlowActions";
+import { useFlowActions } from "@/editor/context/FlowActionsProvider";
 import useTranslate from "@/editor/hooks/useTranslate";
 import { Button } from "@/shared/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/shared/components/ui/tooltip";

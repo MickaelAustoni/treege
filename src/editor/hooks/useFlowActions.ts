@@ -1,15 +1,16 @@
 import { useReactFlow } from "@xyflow/react";
 import { nanoid } from "nanoid";
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import useUndoRedo from "@/editor/hooks/useUndoRedo";
 import { cleanConfigForSubType } from "@/editor/utils/cleanNodeConfig";
 import { normalizeConditionalEdges } from "@/editor/utils/edge";
 
 /**
- * Custom hook providing various actions to manipulate nodes and edges
- * within a React Flow instance.
+ * Builds the actions that manipulate nodes and edges within a React Flow
+ * instance. Instantiated once per editor by `FlowActionsProvider`; components
+ * read the shared instance through `useFlowActions`.
  */
-const useFlowActions = () => {
+export const useCreateFlowActions = () => {
   const { setNodes, setEdges, getNodes } = useReactFlow();
   const { takeSnapshot } = useUndoRedo();
 
@@ -204,17 +205,30 @@ const useFlowActions = () => {
     [setNodes, setEdges, takeSnapshot],
   );
 
-  return {
-    clearSelection,
-    deleteNode,
-    deleteNodes,
-    deleteSelectedNode,
-    selectNode,
-    updateNodeData,
-    updateNodeType,
-    updateSelectedNodeData,
-    updateSelectedNodeType,
-  };
+  return useMemo(
+    () => ({
+      clearSelection,
+      deleteNode,
+      deleteNodes,
+      deleteSelectedNode,
+      selectNode,
+      updateNodeData,
+      updateNodeType,
+      updateSelectedNodeData,
+      updateSelectedNodeType,
+    }),
+    [
+      clearSelection,
+      deleteNode,
+      deleteNodes,
+      deleteSelectedNode,
+      selectNode,
+      updateNodeData,
+      updateNodeType,
+      updateSelectedNodeData,
+      updateSelectedNodeType,
+    ],
+  );
 };
 
-export default useFlowActions;
+export type FlowActions = ReturnType<typeof useCreateFlowActions>;

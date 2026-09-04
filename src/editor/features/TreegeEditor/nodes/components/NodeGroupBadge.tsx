@@ -1,7 +1,8 @@
 import { useStore } from "@xyflow/react";
 import { Boxes, ChevronDown } from "lucide-react";
-import { MouseEvent, useState } from "react";
+import { MouseEvent } from "react";
 import SelectNodeGroup from "@/editor/features/TreegeEditor/inputs/SelectNodeGroup";
+import { useTransientState } from "@/editor/hooks/useTransientState";
 import useTranslate from "@/editor/hooks/useTranslate";
 import { getGroupColor } from "@/editor/utils/groupColor";
 import { Badge } from "@/shared/components/ui/badge";
@@ -14,12 +15,22 @@ interface NodeGroupBadgeProps {
   groupId?: string;
 }
 
-const NodeGroupBadge = ({ nodeId, groupId }: NodeGroupBadgeProps) => {
-  const [open, setOpen] = useState(false);
-  const t = useTranslate();
-  // Subscribe to the two nodes this badge reads, not the whole list — every node
-  // renders one badge, so a `useNodes()` here re-renders the entire canvas on any change.
+/**
+ * Group picker of one node. Mounted only while the badge popover is open, so
+ * the subscription to the node itself is not paid by every card on the canvas.
+ */
+const NodeGroupPicker = ({ nodeId, onChange }: { nodeId: string; onChange: () => void }) => {
   const currentNode = useStore((state) => state.nodeLookup.get(nodeId)?.internals.userNode as TreegeNode | undefined);
+
+  return currentNode ? <SelectNodeGroup targetNodes={[currentNode]} onChange={onChange} /> : null;
+};
+
+const NodeGroupBadge = ({ nodeId, groupId }: NodeGroupBadgeProps) => {
+  // Transient: survives the remount of a card scrolling out of and back into the viewport of a large flow.
+  const [open, setOpen] = useTransientState(`node-group-badge:${nodeId}:open`, false);
+  const t = useTranslate();
+  // Subscribe to the group node this badge reads, not the whole list — every node
+  // renders one badge, so a `useNodes()` here re-renders the entire canvas on any change.
   const groupNode = useStore((state) =>
     groupId ? (state.nodeLookup.get(groupId)?.internals.userNode as TreegeNode | undefined) : undefined,
   );
@@ -53,7 +64,7 @@ const NodeGroupBadge = ({ nodeId, groupId }: NodeGroupBadgeProps) => {
         )}
       </PopoverTrigger>
       <PopoverContent align="start" className="tg:w-80" onClick={stopPropagation}>
-        {currentNode && <SelectNodeGroup targetNodes={[currentNode]} onChange={() => setOpen(false)} />}
+        <NodeGroupPicker nodeId={nodeId} onChange={() => setOpen(false)} />
       </PopoverContent>
     </Popover>
   );

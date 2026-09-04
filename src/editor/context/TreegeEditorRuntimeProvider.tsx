@@ -1,5 +1,6 @@
 import { createContext, PropsWithChildren, useCallback, useContext, useMemo, useState } from "react";
 import { AIConfig } from "@/editor/types/ai";
+import { createOptionsCache, OptionsCache } from "@/renderer/utils/optionsCache";
 import { HttpHeaders } from "@/shared/types/node";
 
 export interface TreegeEditorRuntimeContextValue {
@@ -64,6 +65,19 @@ export interface TreegeEditorRuntimeContextValue {
    */
   warmUpPreviews: () => void;
   /**
+   * Options fetched by the node previews, shared by every preview of this
+   * editor (see `useInputOptions`'s `optionsCache`). Large flows only render
+   * the cards inside the viewport, so a preview is remounted each time its
+   * card scrolls back into view — without this cache it would call its
+   * options API again every time. Replaced by a fresh cache whenever the
+   * editor's `headers` change.
+   */
+  previewOptionsCache: OptionsCache;
+  /**
+   * Per-component UI state that must survive a remount (see `useTransientState`).
+   */
+  transientState: Map<string, unknown>;
+  /**
    * Pending node type change that requires user confirmation (when the target type only supports a single outgoing edge).
    */
   pendingNodeTypeChange: PendingNodeTypeChange | null;
@@ -96,8 +110,14 @@ export interface TreegeEditorRuntimeProviderProps extends PropsWithChildren {
     | "closeNodeTypeChangeConfirmation"
     | "previewsWarm"
     | "warmUpPreviews"
+    | "previewOptionsCache"
+    | "transientState"
   >;
 }
+
+/** Stores handed out when no provider is mounted (kept stable across calls). */
+const FALLBACK_PREVIEW_OPTIONS_CACHE = createOptionsCache();
+const FALLBACK_TRANSIENT_STATE = new Map<string, unknown>();
 
 export const TreegeEditorRuntimeContext = createContext<TreegeEditorRuntimeContextValue | null>(null);
 
@@ -107,7 +127,14 @@ export const TreegeEditorRuntimeProvider = ({ children, value }: TreegeEditorRun
   const [pendingDeleteNodeId, setPendingDeleteNodeId] = useState<string | null>(null);
   const [pendingNodeTypeChange, setPendingNodeTypeChange] = useState<PendingNodeTypeChange | null>(null);
   const [previewsWarm, setPreviewsWarm] = useState(false);
+  const [transientState] = useState(() => new Map<string, unknown>());
   const warmUpPreviews = useCallback(() => setPreviewsWarm(true), []);
+  // A new cache whenever the headers change: previews must not serve options
+  // fetched under other credentials. Keyed by content, since consumers often
+  // pass a fresh `headers` object on every render.
+  const headersKey = JSON.stringify(value?.headers ?? null);
+  // biome-ignore lint/correctness/useExhaustiveDependencies: headersKey is the reset key of the cache, see above.
+  const previewOptionsCache = useMemo(() => createOptionsCache(), [headersKey]);
 
   const valueMemo = useMemo(
     () => ({
@@ -126,12 +153,24 @@ export const TreegeEditorRuntimeProvider = ({ children, value }: TreegeEditorRun
       openNodeTypeChangeConfirmation: (payload: PendingNodeTypeChange) => setPendingNodeTypeChange(payload),
       pendingDeleteNodeId,
       pendingNodeTypeChange,
+      previewOptionsCache,
       previewsWarm,
       setFlowId,
       setIsNodeSheetOpen,
+      transientState,
       warmUpPreviews,
     }),
-    [flowId, value, isNodeSheetOpen, pendingDeleteNodeId, pendingNodeTypeChange, previewsWarm, warmUpPreviews],
+    [
+      flowId,
+      value,
+      isNodeSheetOpen,
+      pendingDeleteNodeId,
+      pendingNodeTypeChange,
+      previewsWarm,
+      warmUpPreviews,
+      previewOptionsCache,
+      transientState,
+    ],
   );
 
   return <TreegeEditorRuntimeContext.Provider value={valueMemo}>{children}</TreegeEditorRuntimeContext.Provider>;
@@ -151,10 +190,12 @@ export const useTreegeEditorRuntime = () => {
       openNodeTypeChangeConfirmation: () => {},
       pendingDeleteNodeId: null,
       pendingNodeTypeChange: null,
+      previewOptionsCache: FALLBACK_PREVIEW_OPTIONS_CACHE,
       previewsWarm: false,
       setFlowId: () => {},
       setIsNodeSheetOpen: () => {},
       setLanguage: () => {},
+      transientState: FALLBACK_TRANSIENT_STATE,
       warmUpPreviews: () => {},
     }
   );

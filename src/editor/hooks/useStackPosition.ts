@@ -1,5 +1,4 @@
 import { useStore } from "@xyflow/react";
-import { useShallow } from "zustand/react/shallow";
 import { getPositions, StackPosition } from "@/editor/utils/stackPositionIndex";
 
 export type StackPositionInfo = {
@@ -12,19 +11,18 @@ export type StackPositionInfo = {
 
 /**
  * Returns the stack position of `nodeId` plus convenience booleans derived from
- * it. Uses a shallow equality selector so consumers only re-render when one of
- * the booleans actually flips, not on every edge mutation.
+ * it. The store selector returns the position string itself (a primitive), so
+ * consumers only re-render when the position actually changes — and the store
+ * compares a string, not an object, on every update.
  */
-export const useStackPosition = (nodeId: string): StackPositionInfo =>
-  useStore(
-    useShallow((state) => {
-      const position = getPositions(state.edges).get(nodeId) ?? "single";
-      return {
-        isStackHead: position === "first" || position === "single",
-        isStackMiddle: position === "middle",
-        isStackSingle: position === "single",
-        isStackTail: position === "last" || position === "single",
-        position,
-      };
-    }),
-  );
+export const useStackPosition = (nodeId: string): StackPositionInfo => {
+  const position = useStore((state) => getPositions(state.edges).get(nodeId) ?? "single");
+
+  return {
+    isStackHead: position === "first" || position === "single",
+    isStackMiddle: position === "middle",
+    isStackSingle: position === "single",
+    isStackTail: position === "last" || position === "single",
+    position,
+  };
+};

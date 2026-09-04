@@ -1,5 +1,6 @@
-import { Handle, Node, NodeProps, Position, useConnection, useStore } from "@xyflow/react";
+import { Handle, Node, NodeProps, Position } from "@xyflow/react";
 import { memo } from "react";
+import { useCanvasInteraction } from "@/editor/context/CanvasInteractionProvider";
 import BottomHandleDropdown from "@/editor/features/TreegeEditor/nodes/components/BottomHandleDropdown";
 import NodeGroupBadge from "@/editor/features/TreegeEditor/nodes/components/NodeGroupBadge";
 import NodeImage from "@/editor/features/TreegeEditor/nodes/components/NodeImage";
@@ -12,7 +13,6 @@ import NodeStackOrderButtons from "@/editor/features/TreegeEditor/nodes/componen
 import NodeTypeBadge from "@/editor/features/TreegeEditor/nodes/components/NodeTypeBadge";
 import NodeWrapper from "@/editor/features/TreegeEditor/nodes/layout/NodeWrapper";
 import { useStackPosition } from "@/editor/hooks/useStackPosition";
-import { getSelectedNodeCount } from "@/editor/utils/edge";
 import { cn } from "@/shared/lib/utils";
 import { InputNodeData, UINodeData } from "@/shared/types/node";
 
@@ -21,8 +21,7 @@ export type TreegeNodeProps = NodeProps<Node<InputNodeData, "input">> | NodeProp
 const TreegeNode = (props: TreegeNodeProps) => {
   const { id, isConnectable, parentId, selected, type } = props;
   const { position: stackPosition, isStackHead, isStackTail } = useStackPosition(id);
-  const isConnecting = useConnection((connection) => connection.inProgress);
-  const isMultiSelection = useStore((state) => getSelectedNodeCount(state.nodes) > 1);
+  const { isConnecting, isMultiSelection } = useCanvasInteraction();
   const inputData = props.type === "input" ? props.data : undefined;
   const uiData = props.type === "ui" ? props.data : undefined;
   const subType = inputData?.type ?? uiData?.type;
@@ -87,7 +86,7 @@ const TreegeNode = (props: TreegeNodeProps) => {
       />
 
       {/* Stack-order arrows — floats to the right of stacked nodes on hover, always visible when selected. */}
-      <NodeStackOrderButtons nodeId={id} selected={selected} />
+      <NodeStackOrderButtons nodeId={id} selected={selected} stackPosition={stackPosition} />
     </NodeWrapper>
   );
 };

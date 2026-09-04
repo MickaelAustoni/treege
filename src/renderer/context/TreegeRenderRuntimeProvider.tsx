@@ -1,6 +1,7 @@
 import { Node } from "@xyflow/react";
 import { createContext, PropsWithChildren, useContext, useMemo } from "react";
 import { FormValues } from "@/renderer/types/renderer";
+import { OptionsCache } from "@/renderer/utils/optionsCache";
 import { Flow, HttpHeaders, InputNodeData } from "@/shared/types/node";
 
 export interface TreegeRenderRuntimeContextValue {
@@ -69,6 +70,15 @@ export interface TreegeRenderRuntimeContextValue {
    * calls; each preview lifts the flag on hover/selection. Unset at runtime.
    */
   deferRemoteFetch?: boolean;
+  /**
+   * Memo of the options fetched from `optionsSource`s, shared by every input
+   * under this provider (see `createOptionsCache`): a remounted input reuses
+   * the options of an identical request instead of fetching again, and inputs
+   * mounting together share one request. Set by the editor's node previews,
+   * whose cards are remounted as they scroll in and out of the viewport.
+   * Unset at runtime — every mount fetches.
+   */
+  optionsCache?: OptionsCache;
 }
 
 /**
@@ -87,6 +97,7 @@ const DEFAULT_CONTEXT_VALUE: TreegeRenderRuntimeContextValue = {
   headers: undefined,
   inputNodes: [],
   language: "",
+  optionsCache: undefined,
   optionsDisplayLimit: undefined,
   setFieldValue: () => {},
 };

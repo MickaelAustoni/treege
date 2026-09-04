@@ -64,6 +64,8 @@ export interface EdgeIndex {
   outgoing: Map<string, Edge[]>;
   /** Memoized `collectAncestorIds` results for this edges array */
   ancestors: Map<string, string[]>;
+  /** Memoized `isAncestor` lookups (the `ancestors` entries as Sets) for this edges array */
+  ancestorSets: Map<string, Set<string>>;
 }
 
 const indexByEdges = new WeakMap<Edge[], EdgeIndex>();
@@ -80,7 +82,7 @@ export const getEdgeIndex = (edges: Edge[]): EdgeIndex => {
     return cached;
   }
 
-  const index: EdgeIndex = { ancestors: new Map(), incoming: new Map(), outgoing: new Map() };
+  const index: EdgeIndex = { ancestorSets: new Map(), ancestors: new Map(), incoming: new Map(), outgoing: new Map() };
   edges.forEach((edge) => {
     const sources = index.incoming.get(edge.target);
     if (sources) {
@@ -133,6 +135,24 @@ export const collectAncestorIds = (edges: Edge[], nodeId: string): string[] => {
   index.ancestors.set(nodeId, ancestors);
 
   return ancestors;
+};
+
+/**
+ * Whether `candidateId` is an ancestor of `nodeId` (same walk as
+ * `collectAncestorIds`). The ancestor set is memoized on the edges index, so
+ * repeated checks — one per conditional edge on every store update — cost a
+ * Map and a Set lookup.
+ */
+export const isAncestor = (edges: Edge[], nodeId: string, candidateId: string): boolean => {
+  const index = getEdgeIndex(edges);
+  const memoizedAncestorSet = index.ancestorSets.get(nodeId);
+  const ancestorSet = memoizedAncestorSet ?? new Set(collectAncestorIds(edges, nodeId));
+
+  if (!memoizedAncestorSet) {
+    index.ancestorSets.set(nodeId, ancestorSet);
+  }
+
+  return ancestorSet.has(candidateId);
 };
 
 /**

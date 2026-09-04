@@ -1,8 +1,8 @@
 import { Panel } from "@xyflow/react";
 import { Trash2, X } from "lucide-react";
 import { useMemo } from "react";
+import { useFlowActions } from "@/editor/context/FlowActionsProvider";
 import SelectNodeGroup from "@/editor/features/TreegeEditor/inputs/SelectNodeGroup";
-import useFlowActions from "@/editor/hooks/useFlowActions";
 import useNodesSelection from "@/editor/hooks/useNodesSelection";
 import useTranslate from "@/editor/hooks/useTranslate";
 import { Button } from "@/shared/components/ui/button";

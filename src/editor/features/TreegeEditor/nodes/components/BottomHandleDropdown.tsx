@@ -1,8 +1,8 @@
 import { Handle, Position, useUpdateNodeInternals } from "@xyflow/react";
 import { BetweenHorizontalEnd, GitBranch, Plus } from "lucide-react";
 import { MouseEvent, useEffect, useState } from "react";
+import { useFlowConnections } from "@/editor/context/FlowActionsProvider";
 import NodeTypePickerMenuContent from "@/editor/features/TreegeEditor/nodes/components/NodeTypePickerMenuContent";
-import useFlowConnections from "@/editor/hooks/useFlowConnections";
 import useTranslate from "@/editor/hooks/useTranslate";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/shared/components/ui/dropdown-menu";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/shared/components/ui/tooltip";

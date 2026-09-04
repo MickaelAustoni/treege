@@ -1,6 +1,6 @@
 import { ChangeEvent, KeyboardEvent, useEffect, useRef } from "react";
+import { useFlowActions } from "@/editor/context/FlowActionsProvider";
 import { useTreegeEditorRuntime } from "@/editor/context/TreegeEditorRuntimeProvider";
-import useFlowActions from "@/editor/hooks/useFlowActions";
 import useTranslate from "@/editor/hooks/useTranslate";
 import { cn } from "@/shared/lib/utils";
 import { Translatable } from "@/shared/types/translate";

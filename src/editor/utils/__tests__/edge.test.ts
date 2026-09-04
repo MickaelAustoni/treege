@@ -1,6 +1,13 @@
 import { Edge, Node } from "@xyflow/react";
 import { describe, expect, it } from "vitest";
-import { buildConvergence, collectAncestorIds, edgeExists, normalizeConditionalEdges, wouldCreateCycle } from "@/editor/utils/edge";
+import {
+  buildConvergence,
+  collectAncestorIds,
+  edgeExists,
+  isAncestor,
+  normalizeConditionalEdges,
+  wouldCreateCycle,
+} from "@/editor/utils/edge";
 
 const e = (source: string, target: string): Edge => ({ id: `${source}-${target}`, source, target });
 
@@ -134,5 +141,35 @@ describe("collectAncestorIds", () => {
 
   it("is cycle-safe", () => {
     expect(collectAncestorIds([edge("a", "b"), edge("b", "a")], "a")).toEqual(["b"]);
+  });
+});
+
+describe("isAncestor", () => {
+  const edge = (source: string, target: string): Edge => ({ id: `${source}->${target}`, source, target });
+
+  it("matches collectAncestorIds membership, including transitive and converging ancestors", () => {
+    const edges = [edge("root", "a"), edge("root", "b"), edge("a", "leaf"), edge("b", "leaf"), edge("leaf", "tail")];
+
+    expect(isAncestor(edges, "leaf", "a")).toBe(true);
+    expect(isAncestor(edges, "leaf", "root")).toBe(true);
+    expect(isAncestor(edges, "tail", "root")).toBe(true);
+    expect(isAncestor(edges, "leaf", "leaf")).toBe(false);
+    expect(isAncestor(edges, "leaf", "tail")).toBe(false);
+    expect(isAncestor(edges, "a", "b")).toBe(false);
+    expect(isAncestor(edges, "root", "a")).toBe(false);
+    expect(isAncestor(edges, "leaf", "unknown")).toBe(false);
+    expect(isAncestor([], "leaf", "a")).toBe(false);
+  });
+
+  it("is memoized per edges array and recomputed for a new one", () => {
+    const edges = [edge("root", "a"), edge("a", "leaf")];
+    expect(isAncestor(edges, "leaf", "root")).toBe(true);
+    expect(isAncestor(edges, "leaf", "root")).toBe(true);
+
+    const rewired = [edge("root", "a"), edge("other", "leaf")];
+    expect(isAncestor(rewired, "leaf", "root")).toBe(false);
+    expect(isAncestor(rewired, "leaf", "other")).toBe(true);
+    // The original array keeps its own memoized answer.
+    expect(isAncestor(edges, "leaf", "root")).toBe(true);
   });
 });

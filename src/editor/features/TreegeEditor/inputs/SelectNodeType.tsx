@@ -1,7 +1,7 @@
 import { useReactFlow } from "@xyflow/react";
 import { useId } from "react";
+import { useFlowActions } from "@/editor/context/FlowActionsProvider";
 import { useTreegeEditorRuntime } from "@/editor/context/TreegeEditorRuntimeProvider";
-import useFlowActions from "@/editor/hooks/useFlowActions";
 import useNodesSelection from "@/editor/hooks/useNodesSelection";
 import useTranslate from "@/editor/hooks/useTranslate";
 import { getInputTypeIcon } from "@/editor/utils/inputTypeIcon";

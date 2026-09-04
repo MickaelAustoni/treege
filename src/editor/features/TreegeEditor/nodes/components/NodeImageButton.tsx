@@ -1,7 +1,7 @@
 import { Image, Link2, Upload, X } from "lucide-react";
 import { ChangeEvent, MouseEvent, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-import useFlowActions from "@/editor/hooks/useFlowActions";
+import { useFlowActions } from "@/editor/context/FlowActionsProvider";
 import useTranslate from "@/editor/hooks/useTranslate";
 import { imageFileToOptimizedDataUrl } from "@/editor/utils/image";
 import { Button } from "@/shared/components/ui/button";

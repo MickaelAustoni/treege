@@ -1,7 +1,7 @@
 import { useReactFlow } from "@xyflow/react";
 import { useEffect, useMemo, useState } from "react";
+import { useFlowActions } from "@/editor/context/FlowActionsProvider";
 import { useTreegeEditorRuntime } from "@/editor/context/TreegeEditorRuntimeProvider";
-import useFlowActions from "@/editor/hooks/useFlowActions";
 import useTranslate from "@/editor/hooks/useTranslate";
 import { Button } from "@/shared/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/shared/components/ui/dialog";

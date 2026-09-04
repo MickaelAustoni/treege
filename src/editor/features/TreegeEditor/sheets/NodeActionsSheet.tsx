@@ -1,12 +1,12 @@
 import { Trash2 } from "lucide-react";
 import type { KeyboardEvent } from "react";
+import { useFlowActions } from "@/editor/context/FlowActionsProvider";
 import { useTreegeEditorRuntime } from "@/editor/context/TreegeEditorRuntimeProvider";
 import GroupNodeForm from "@/editor/features/TreegeEditor/forms/GroupNodeForm";
 import InputNodeForm from "@/editor/features/TreegeEditor/forms/InputNodeForm";
 import UINodeForm from "@/editor/features/TreegeEditor/forms/UINodeForm";
 import SelectNodeGroup from "@/editor/features/TreegeEditor/inputs/SelectNodeGroup";
 import SelectNodeType from "@/editor/features/TreegeEditor/inputs/SelectNodeType";
-import useFlowActions from "@/editor/hooks/useFlowActions";
 import useNodesSelection from "@/editor/hooks/useNodesSelection";
 import useTranslate from "@/editor/hooks/useTranslate";
 import { Button } from "@/shared/components/ui/button";

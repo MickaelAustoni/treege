@@ -35,6 +35,14 @@ type HttpMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
  * merged: template variables substituted, global + field-level headers
  * merged (field wins), default method applied. Ready to be sent as-is.
  */
+interface FetchState {
+  fetched: InputOption[] | null;
+  isLoading: boolean;
+  error: string | null;
+}
+
+const IDLE_STATE: FetchState = { error: null, fetched: null, isLoading: false };
+
 interface ResolvedOptionsSource {
   url: string;
   method: HttpMethod;
@@ -58,13 +66,7 @@ interface ResolvedOptionsSource {
  * an unrelated form field) produce the same JSON and don't re-trigger.
  */
 export const useInputOptions = (node: Node<InputNodeData>): UseInputOptionsResult => {
-  const [state, setState] = useState<{ fetched: InputOption[] | null; isLoading: boolean; error: string | null }>({
-    error: null,
-    fetched: null,
-    isLoading: false,
-  });
-
-  const { baseUrl, deferRemoteFetch, formValues, headers: globalHeaders } = useTreegeRenderRuntime();
+  const { baseUrl, deferRemoteFetch, formValues, headers: globalHeaders, optionsCache } = useTreegeRenderRuntime();
   const source = node.data.optionsSource;
   const staticOptions = node.data.options;
 
@@ -102,47 +104,71 @@ export const useInputOptions = (node: Node<InputNodeData>): UseInputOptionsResul
     return JSON.stringify(resolved);
   }, [baseUrl, source, formValues, globalHeaders]);
 
+  // Seeded from the cache so a remounted input renders its options on its
+  // first frame — at its final height, which keeps node measurements stable.
+  const [state, setState] = useState<FetchState>(() => ({
+    error: null,
+    fetched: resolvedSourceJson ? (optionsCache?.get(resolvedSourceJson) ?? null) : null,
+    isLoading: false,
+  }));
+
   /**
-   * Fetch options whenever the plan's content changes. Aborts any in-flight
-   * request on cleanup so a quick succession of changes doesn't race.
+   * Fetch options whenever the plan's content changes. Without a cache the
+   * request belongs to this input and is aborted on cleanup, so a quick
+   * succession of changes doesn't race. With a cache the request is shared
+   * (see `OptionsCache`) and runs to completion so its result is memoized even
+   * when this input unmounts mid-flight; only this input's state is dropped.
    */
   useEffect(() => {
     // Editor previews defer remote fetches until the node is hovered/selected.
     if (!resolvedSourceJson || deferRemoteFetch) {
-      setState({ error: null, fetched: null, isLoading: false });
+      setState(IDLE_STATE);
       return;
     }
 
-    const resolved = JSON.parse(resolvedSourceJson);
+    const cached = optionsCache?.get(resolvedSourceJson);
+    if (cached) {
+      // Already seeded from the cache on mount: keep the same state object, React then skips the render.
+      setState((previous) => (previous.fetched === cached ? previous : { error: null, fetched: cached, isLoading: false }));
+      return;
+    }
+
+    const resolved: ResolvedOptionsSource = JSON.parse(resolvedSourceJson);
     const controller = new AbortController();
 
-    setState((prev) => ({ ...prev, error: null, isLoading: true }));
-
-    (async () => {
-      const result = await makeHttpRequest({
+    const request = (): Promise<InputOption[]> =>
+      makeHttpRequest({
         body: resolved.body,
         headers: resolved.headers,
         method: resolved.method,
         queryParams: resolved.queryParams,
-        signal: controller.signal,
+        signal: optionsCache ? undefined : controller.signal,
         url: resolved.url,
+      }).then((result) => {
+        if (!result.success) {
+          throw new Error(result.error ?? "Fetch failed");
+        }
+        return extractOptionsFromResponse(result.data, resolved.responsePath, resolved.mapping);
       });
 
-      if (controller.signal.aborted) {
-        return;
-      }
+    setState((previous) => ({ ...previous, error: null, isLoading: true }));
 
-      if (!result.success) {
-        setState({ error: result.error ?? "Fetch failed", fetched: null, isLoading: false });
-        return;
-      }
-
-      const fetched = extractOptionsFromResponse(result.data, resolved.responsePath, resolved.mapping);
-      setState({ error: null, fetched, isLoading: false });
-    })();
+    const options = optionsCache ? optionsCache.resolve(resolvedSourceJson, request) : request();
+    options.then(
+      (fetched) => {
+        if (!controller.signal.aborted) {
+          setState({ error: null, fetched, isLoading: false });
+        }
+      },
+      (error: unknown) => {
+        if (!controller.signal.aborted) {
+          setState({ error: error instanceof Error ? error.message : "Fetch failed", fetched: null, isLoading: false });
+        }
+      },
+    );
 
     return () => controller.abort();
-  }, [resolvedSourceJson, deferRemoteFetch]);
+  }, [resolvedSourceJson, deferRemoteFetch, optionsCache]);
 
   // Normalize only API-fetched labels (not manually-typed static options),
   // and only when the node hasn't opted out. Defaults to on when unset.

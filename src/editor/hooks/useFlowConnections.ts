@@ -1,6 +1,6 @@
 import { addEdge, Node, OnConnect, OnConnectEnd, OnEdgesDelete, useReactFlow } from "@xyflow/react";
 import { nanoid } from "nanoid";
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import { DEFAULT_NODE } from "@/editor/constants/defaultNode";
 import { HORIZONTAL_NODE_OFFSET, VERTICAL_NODE_SPACING } from "@/editor/constants/nodeSpacing";
 import useUndoRedo from "@/editor/hooks/useUndoRedo";
@@ -21,7 +21,12 @@ export type NodeInit = {
  * Custom hook to manage flow connections, including connecting nodes,
  * handling connection ends, and deleting edges with conditional logic.
  */
-const useFlowConnections = () => {
+/**
+ * Builds the connection handlers and the node-creating actions. Instantiated
+ * once per editor by `FlowActionsProvider`; components read the shared
+ * instance through `useFlowConnections`.
+ */
+export const useCreateFlowConnections = () => {
   const { setNodes, setEdges, screenToFlowPosition, getNode, getNodes, getEdges } = useReactFlow();
   const { takeSnapshot } = useUndoRedo();
 
@@ -619,17 +624,30 @@ const useFlowConnections = () => {
     [getNode, getEdges],
   );
 
-  return {
-    isValidConnection,
-    moveStackNodeDown,
-    moveStackNodeUp,
-    onAddFromHandle,
-    onConnect,
-    onConnectEnd,
-    onCreateBranch,
-    onEdgesDelete,
-    onInsertAfter,
-  };
+  return useMemo(
+    () => ({
+      isValidConnection,
+      moveStackNodeDown,
+      moveStackNodeUp,
+      onAddFromHandle,
+      onConnect,
+      onConnectEnd,
+      onCreateBranch,
+      onEdgesDelete,
+      onInsertAfter,
+    }),
+    [
+      isValidConnection,
+      moveStackNodeDown,
+      moveStackNodeUp,
+      onAddFromHandle,
+      onConnect,
+      onConnectEnd,
+      onCreateBranch,
+      onEdgesDelete,
+      onInsertAfter,
+    ],
+  );
 };
 
-export default useFlowConnections;
+export type FlowConnections = ReturnType<typeof useCreateFlowConnections>;

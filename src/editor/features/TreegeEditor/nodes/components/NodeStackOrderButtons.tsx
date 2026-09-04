@@ -1,41 +1,57 @@
-import { useStore } from "@xyflow/react";
+import { Edge, useStore } from "@xyflow/react";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { MouseEvent } from "react";
-import { useShallow } from "zustand/react/shallow";
-import useFlowConnections from "@/editor/hooks/useFlowConnections";
-import { useStackPosition } from "@/editor/hooks/useStackPosition";
+import { useFlowConnections } from "@/editor/context/FlowActionsProvider";
 import useTranslate from "@/editor/hooks/useTranslate";
 import { getEdgeIndex } from "@/editor/utils/edge";
+import { StackPosition } from "@/editor/utils/stackPositionIndex";
 import { Button } from "@/shared/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/shared/components/ui/tooltip";
 import { cn } from "@/shared/lib/utils";
 
+/**
+ * Which decision nodes gate the swap of a stacked node: a decision node's
+ * outgoing edges carry conditions referencing its own id, so relocating it
+ * (or moving a node past it) would break that gate.
+ */
+type DecisionGate = "none" | "node-is-decision" | "successor-is-decision" | "both";
+
+const resolveDecisionGate = (edges: Edge[], nodeId: string): DecisionGate => {
+  const { outgoing: outgoingByNode } = getEdgeIndex(edges);
+  const outgoing = outgoingByNode.get(nodeId) ?? [];
+  const successorId = outgoing.length === 1 ? outgoing[0].target : null;
+  const successorOutgoingCount = successorId ? (outgoingByNode.get(successorId)?.length ?? 0) : 0;
+  const isDecision = outgoing.length > 1;
+  const isSuccessorDecision = successorOutgoingCount > 1;
+
+  if (isDecision && isSuccessorDecision) {
+    return "both";
+  }
+  if (isDecision) {
+    return "node-is-decision";
+  }
+  if (isSuccessorDecision) {
+    return "successor-is-decision";
+  }
+  return "none";
+};
+
 interface NodeStackOrderButtonsProps {
   nodeId: string;
   selected?: boolean;
+  /** Position of the node in its stack, as resolved by the node card. */
+  stackPosition: StackPosition;
 }
 
-const NodeStackOrderButtons = ({ nodeId, selected }: NodeStackOrderButtonsProps) => {
-  const { position, isStackSingle } = useStackPosition(nodeId);
+const NodeStackOrderButtons = ({ nodeId, selected, stackPosition: position }: NodeStackOrderButtonsProps) => {
+  const isStackSingle = position === "single";
   const { moveStackNodeUp, moveStackNodeDown } = useFlowConnections();
   const t = useTranslate();
-
-  // Gate the swap against decision nodes — a decision node's outgoing edges
-  // carry conditions referencing its own id, so relocating it pushes that id
-  // downstream and breaks the gate.
-  const { isDecision, isSuccessorDecision } = useStore(
-    useShallow((state) => {
-      const { outgoing: outgoingByNode } = getEdgeIndex(state.edges);
-      const outgoing = outgoingByNode.get(nodeId) ?? [];
-      const successorId = outgoing.length === 1 ? outgoing[0].target : null;
-      const successorOutgoing = successorId ? (outgoingByNode.get(successorId)?.length ?? 0) : 0;
-      return {
-        isDecision: outgoing.length > 1,
-        isSuccessorDecision: successorOutgoing > 1,
-      };
-    }),
-  );
-
+  // The selector returns a string (a primitive), so the store compares it by
+  // value on every update and this component only re-renders when the gate changes.
+  const decisionGate = useStore((state) => resolveDecisionGate(state.edges, nodeId));
+  const isDecision = decisionGate === "node-is-decision" || decisionGate === "both";
+  const isSuccessorDecision = decisionGate === "successor-is-decision" || decisionGate === "both";
   const canMoveUp = !isStackSingle && (position === "middle" || position === "last") && !isDecision;
   const canMoveDown = !isStackSingle && (position === "first" || position === "middle") && !isSuccessorDecision;
 

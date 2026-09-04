@@ -1,10 +1,11 @@
 import { Node } from "@xyflow/react";
 import { Globe, Pencil, Plus, Trash2 } from "lucide-react";
-import { FormEvent, KeyboardEvent, MouseEvent, ReactNode, useState } from "react";
+import { FormEvent, KeyboardEvent, MouseEvent, ReactNode } from "react";
+import { useFlowActions } from "@/editor/context/FlowActionsProvider";
 import { useOpenApi } from "@/editor/context/OpenApiContext";
 import { useTreegeEditorRuntime } from "@/editor/context/TreegeEditorRuntimeProvider";
 import OptionImageField from "@/editor/features/TreegeEditor/inputs/OptionImageField";
-import useFlowActions from "@/editor/hooks/useFlowActions";
+import { useTransientState } from "@/editor/hooks/useTransientState";
 import useTranslate from "@/editor/hooks/useTranslate";
 import { getInputTypeIcon } from "@/editor/utils/inputTypeIcon";
 import { TreegeRenderRuntimeProvider } from "@/renderer/context/TreegeRenderRuntimeProvider";
@@ -75,14 +76,33 @@ const shortenUrl = (url: string): string => {
   return stripped || url;
 };
 
+/** The option editor popover: closed, creating an option, or editing the option at `editingIndex`. */
+interface OptionEditorState {
+  open: boolean;
+  labelDraft: string;
+  valueDraft: string;
+  imageDraft: string;
+  descriptionDraft: string;
+  /** `null` = creating; a number = editing the option at that index. */
+  editingIndex: number | null;
+}
+
+const CLOSED_OPTION_EDITOR: OptionEditorState = {
+  descriptionDraft: "",
+  editingIndex: null,
+  imageDraft: "",
+  labelDraft: "",
+  open: false,
+  valueDraft: "",
+};
+
 const NodeInputPreview = ({ nodeId, data, allowRemoteFetch = false }: NodeInputPreviewProps) => {
-  const [open, setOpen] = useState(false);
-  const [labelDraft, setLabelDraft] = useState("");
-  const [valueDraft, setValueDraft] = useState("");
-  const [imageDraft, setImageDraft] = useState("");
-  const [descriptionDraft, setDescriptionDraft] = useState("");
-  const [editingIndex, setEditingIndex] = useState<number | null>(null); // null = creating; number = editing the option at that index.
-  const { language, headers, previewsWarm } = useTreegeEditorRuntime();
+  // Transient: a large flow unmounts this card while it is out of the viewport,
+  // and the user expects to find the popover and its drafts as they left them.
+  const [optionEditor, setOptionEditor] = useTransientState(`node-input-preview:${nodeId}:option-editor`, CLOSED_OPTION_EDITOR);
+  const { open, labelDraft, valueDraft, imageDraft, descriptionDraft, editingIndex } = optionEditor;
+  const updateDraft = (patch: Partial<OptionEditorState>) => setOptionEditor({ ...optionEditor, ...patch });
+  const { language, headers, previewsWarm, previewOptionsCache } = useTreegeEditorRuntime();
   const { baseUrl } = useOpenApi();
   const { updateNodeData } = useFlowActions();
   const t = useTranslate();
@@ -123,13 +143,6 @@ const NodeInputPreview = ({ nodeId, data, allowRemoteFetch = false }: NodeInputP
     type: "input",
   };
 
-  const resetDraft = () => {
-    setLabelDraft("");
-    setValueDraft("");
-    setImageDraft("");
-    setDescriptionDraft("");
-  };
-
   const handleSubmit = (event?: FormEvent<HTMLFormElement>) => {
     event?.preventDefault();
     const label = labelDraft.trim();
@@ -149,17 +162,11 @@ const NodeInputPreview = ({ nodeId, data, allowRemoteFetch = false }: NodeInputP
     const nextOptions = editingIndex === null ? [...options, newOption] : options.map((opt, i) => (i === editingIndex ? newOption : opt));
 
     updateNodeData(nodeId, { options: nextOptions });
-    resetDraft();
-    setEditingIndex(null);
-    setOpen(false);
+    setOptionEditor(CLOSED_OPTION_EDITOR);
   };
 
   const handleOpenChange = (nextOpen: boolean) => {
-    setOpen(nextOpen);
-    if (!nextOpen) {
-      resetDraft();
-      setEditingIndex(null);
-    }
+    setOptionEditor(nextOpen ? { ...optionEditor, open: true } : CLOSED_OPTION_EDITOR);
   };
 
   const openEditPopover = (index: number) => {
@@ -167,12 +174,14 @@ const NodeInputPreview = ({ nodeId, data, allowRemoteFetch = false }: NodeInputP
     if (!option) {
       return;
     }
-    setLabelDraft(t(option.label) || "");
-    setValueDraft(option.value || "");
-    setImageDraft(option.image ?? "");
-    setDescriptionDraft(t(option.description) || "");
-    setEditingIndex(index);
-    setOpen(true);
+    setOptionEditor({
+      descriptionDraft: t(option.description) || "",
+      editingIndex: index,
+      imageDraft: option.image ?? "",
+      labelDraft: t(option.label) || "",
+      open: true,
+      valueDraft: option.value || "",
+    });
   };
 
   const deleteOption = (index: number) => {
@@ -225,7 +234,16 @@ const NodeInputPreview = ({ nodeId, data, allowRemoteFetch = false }: NodeInputP
   if (inputType === "submit") {
     return (
       <div className="tg:pointer-events-none tg:flex tg:select-none tg:justify-center">
-        <TreegeRenderRuntimeProvider value={{ baseUrl, deferRemoteFetch: !remoteFetchAllowed, headers, language, optionsDisplayLimit: 10 }}>
+        <TreegeRenderRuntimeProvider
+          value={{
+            baseUrl,
+            deferRemoteFetch: !remoteFetchAllowed,
+            headers,
+            language,
+            optionsCache: previewOptionsCache,
+            optionsDisplayLimit: 10,
+          }}
+        >
           <DefaultSubmitButton label={getTranslatedText(data.label, language) || undefined} />
         </TreegeRenderRuntimeProvider>
       </div>
@@ -311,7 +329,16 @@ const NodeInputPreview = ({ nodeId, data, allowRemoteFetch = false }: NodeInputP
           so the editor's `NodeLabelInput` is the single source of truth visually
           and avoids rendering the same text twice.
         */}
-        <TreegeRenderRuntimeProvider value={{ baseUrl, deferRemoteFetch: !remoteFetchAllowed, headers, language, optionsDisplayLimit: 10 }}>
+        <TreegeRenderRuntimeProvider
+          value={{
+            baseUrl,
+            deferRemoteFetch: !remoteFetchAllowed,
+            headers,
+            language,
+            optionsCache: previewOptionsCache,
+            optionsDisplayLimit: 10,
+          }}
+        >
           <Renderer
             key={inputType}
             field={{
@@ -411,20 +438,20 @@ const NodeInputPreview = ({ nodeId, data, allowRemoteFetch = false }: NodeInputP
             <PopoverContent align="start" className="tg:w-80 tg:p-3" onClick={stopPropagation}>
               <form onSubmit={handleSubmit} className="tg:flex tg:flex-col tg:gap-2">
                 <div className="tg:flex tg:items-start tg:gap-2">
-                  {supportsImage && <OptionImageField value={imageDraft} onChange={setImageDraft} />}
+                  {supportsImage && <OptionImageField value={imageDraft} onChange={(image) => updateDraft({ imageDraft: image })} />}
                   <Input
                     id={`${nodeId}-option-label`}
                     autoFocus
                     placeholder={t("editor.inputNodeForm.optionLabel")}
                     value={labelDraft}
-                    onChange={(event) => setLabelDraft(event.target.value)}
+                    onChange={(event) => updateDraft({ labelDraft: event.target.value })}
                     onKeyDown={handleKeyDown}
                   />
                   <Input
                     id={`${nodeId}-option-value`}
                     placeholder={t("editor.inputNodeForm.optionValue")}
                     value={valueDraft}
-                    onChange={(event) => setValueDraft(event.target.value)}
+                    onChange={(event) => updateDraft({ valueDraft: event.target.value })}
                     onKeyDown={handleKeyDown}
                   />
                 </div>
@@ -433,7 +460,7 @@ const NodeInputPreview = ({ nodeId, data, allowRemoteFetch = false }: NodeInputP
                     id={`${nodeId}-option-description`}
                     placeholder={t("editor.inputNodeForm.optionDescription")}
                     value={descriptionDraft}
-                    onChange={(event) => setDescriptionDraft(event.target.value)}
+                    onChange={(event) => updateDraft({ descriptionDraft: event.target.value })}
                     onKeyDown={handleKeyDown}
                   />
                 )}
