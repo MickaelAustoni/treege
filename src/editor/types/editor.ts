@@ -82,6 +82,15 @@ export interface TreegeEditorProps {
    */
   className?: string;
   /**
+   * Whether the canvas renders only the nodes and edges inside the viewport
+   * (React Flow's `onlyRenderVisibleElements`). Leave undefined to let the
+   * editor decide: culling turns on once the flow exceeds 150 nodes and then
+   * stays on for the editor's lifetime. Pass `true` to always cull (e.g. heavy
+   * custom cards on a modest machine) or `false` to keep every node mounted
+   * (e.g. to screenshot or export the whole canvas).
+   */
+  onlyRenderVisibleElements?: boolean;
+  /**
    * Extra menu items to append to the "more" dropdown of the actions panel.
    */
   extraMenuItems?: ExtraMenuItem[];

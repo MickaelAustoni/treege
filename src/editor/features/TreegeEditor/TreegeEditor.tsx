@@ -40,6 +40,7 @@ const Flow = ({
   onAuthorize,
   headers,
   onHeadersChange,
+  onlyRenderVisibleElements,
 }: TreegeEditorProps) => {
   // The mode is latched for the editor's lifetime: on from the start for a
   // progressively mounted flow, switched on once a flow grows past the
@@ -68,7 +69,9 @@ const Flow = ({
 
   // The mode never switches back: switching modes remounts every offscreen
   // card, so a flow hovering around the threshold must not toggle.
-  const rendersVisibleElementsOnly = progressive || hasGrownLarge;
+  const rendersVisibleElementsOnlyAutomatically = progressive || hasGrownLarge;
+  // An explicit prop overrides the automatic mode in both directions.
+  const rendersVisibleElementsOnly = onlyRenderVisibleElements ?? rendersVisibleElementsOnlyAutomatically;
 
   /**
    * Once the flow is on screen, previews may fetch without waiting for a
@@ -152,6 +155,7 @@ const TreegeEditor = ({
   onAuthorize,
   headers,
   onHeadersChange,
+  onlyRenderVisibleElements,
   language: controlledLanguage,
   theme = "dark",
   defaultLanguage = "en",
@@ -189,6 +193,7 @@ const TreegeEditor = ({
                   onAuthorize={onAuthorize}
                   headers={headers}
                   onHeadersChange={onHeadersChange}
+                  onlyRenderVisibleElements={onlyRenderVisibleElements}
                 />
               </FlowActionsProvider>
             </ReactFlowProvider>
