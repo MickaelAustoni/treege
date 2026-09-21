@@ -441,11 +441,16 @@
     },
     "defaultInputs": {
       "addMoreFiles": "Ajouter plus de fichiers",
+      "confirm": "Confirmer",
+      "done": "Terminé",
       "endDate": "Date de fin",
       "endTime": "Heure de fin",
       "filePickerError": "Échec de la sélection du fichier",
       "filePickerUnavailable": "Sélection de fichier indisponible. Veuillez installer react-native-document-picker.",
+      "hour": "Heure",
+      "minute": "Minute",
       "newAnswer": "Nouvelle réponse...",
+      "next": "Suivant",
       "removeFile": "Supprimer le fichier",
       "replaceFile": "Remplacer le fichier",
       "required": "*",
@@ -462,6 +467,7 @@
       "loadingOptions": "Chargement des options..."
     },
     "defaultSelectInput": {
+      "placeholder": "Sélectionner...",
       "selectOption": "Sélectionner une option"
     },
     "defaultSubmitButton": {

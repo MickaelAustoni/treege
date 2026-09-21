@@ -2,6 +2,7 @@ import { Node } from "@xyflow/react";
 import { ComponentType, CSSProperties, FormEvent, ReactNode } from "react";
 import { SerializableFile } from "@/renderer/utils/file";
 import { FlowStep } from "@/renderer/utils/step";
+import type { ThemeColors } from "@/shared/constants/colors";
 import {
   Flow,
   GroupNodeData,
@@ -413,6 +414,16 @@ export type TreegeRendererConfig = {
    * @default "dark"
    */
   theme?: "dark" | "light";
+  /**
+   * Overrides of the theme palette, merged over the colors of the resolved
+   * `theme`. React Native only: the native inputs are painted from this palette,
+   * so a host app can hand over its own design tokens (primary, borders, text…)
+   * without replacing the inputs. The web renderer is styled by CSS and ignores it.
+   *
+   * @example
+   * colors={{ primary: "#0B3D2E", border: "#DCE3DD" }}
+   */
+  colors?: Partial<ThemeColors>;
   /**
    * Validation mode
    * @default "onSubmit"

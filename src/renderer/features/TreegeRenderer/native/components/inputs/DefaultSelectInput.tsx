@@ -30,7 +30,7 @@ const DefaultSelectInput = ({ field, extra }: InputRenderProps<"select">) => {
 
   const getDisplayText = () => {
     if (selectedValues.length === 0) {
-      return placeholder || "Select...";
+      return placeholder || t("renderer.defaultSelectInput.placeholder");
     }
 
     if (isMultiple) {
@@ -39,7 +39,7 @@ const DefaultSelectInput = ({ field, extra }: InputRenderProps<"select">) => {
     }
 
     const selectedOption = options.find((opt) => opt.value === selectedValues[0]);
-    return selectedOption ? t(selectedOption.label) || selectedOption.value : placeholder || "Select...";
+    return selectedOption ? t(selectedOption.label) || selectedOption.value : placeholder || t("renderer.defaultSelectInput.placeholder");
   };
 
   return (
@@ -109,7 +109,7 @@ const DefaultSelectInput = ({ field, extra }: InputRenderProps<"select">) => {
 
             {isMultiple && (
               <TouchableOpacity style={[styles.doneButton, { backgroundColor: colors.primary }]} onPress={() => setIsOpen(false)}>
-                <Text style={styles.doneButtonText}>Done</Text>
+                <Text style={styles.doneButtonText}>{t("renderer.defaultInputs.done")}</Text>
               </TouchableOpacity>
             )}
           </View>

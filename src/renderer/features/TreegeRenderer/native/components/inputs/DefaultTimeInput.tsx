@@ -71,7 +71,7 @@ const DefaultTimeInput = ({ field, extra }: InputRenderProps<"time">) => {
 
             <View style={styles.pickerContainer}>
               <View style={styles.pickerColumn}>
-                <Text style={[styles.pickerLabel, { color: colors.textMuted }]}>Hour</Text>
+                <Text style={[styles.pickerLabel, { color: colors.textMuted }]}>{t("renderer.defaultInputs.hour")}</Text>
                 <ScrollView
                   ref={hoursScrollRef}
                   style={styles.picker}
@@ -102,7 +102,7 @@ const DefaultTimeInput = ({ field, extra }: InputRenderProps<"time">) => {
               <Text style={[styles.pickerSeparator, { color: colors.text }]}>:</Text>
 
               <View style={styles.pickerColumn}>
-                <Text style={[styles.pickerLabel, { color: colors.textMuted }]}>Minute</Text>
+                <Text style={[styles.pickerLabel, { color: colors.textMuted }]}>{t("renderer.defaultInputs.minute")}</Text>
                 <ScrollView
                   ref={minutesScrollRef}
                   style={styles.picker}
@@ -136,7 +136,7 @@ const DefaultTimeInput = ({ field, extra }: InputRenderProps<"time">) => {
               onPress={handleConfirm}
               activeOpacity={0.7}
             >
-              <Text style={[styles.confirmButtonText, { color: colors.background }]}>Confirm</Text>
+              <Text style={[styles.confirmButtonText, { color: colors.background }]}>{t("renderer.defaultInputs.confirm")}</Text>
             </TouchableOpacity>
           </TouchableOpacity>
         </TouchableOpacity>

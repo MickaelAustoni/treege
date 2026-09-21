@@ -99,7 +99,7 @@ const DefaultTimeRangeInput = ({ field, extra }: InputRenderProps<"timerange">) 
 
             <View style={styles.pickerContainer}>
               <View style={styles.pickerColumn}>
-                <Text style={[styles.pickerLabel, { color: colors.textMuted }]}>Hour</Text>
+                <Text style={[styles.pickerLabel, { color: colors.textMuted }]}>{t("renderer.defaultInputs.hour")}</Text>
                 <ScrollView style={styles.picker} contentContainerStyle={styles.pickerContent} showsVerticalScrollIndicator={false}>
                   {hoursList.map((hour) => (
                     <TouchableOpacity
@@ -125,7 +125,7 @@ const DefaultTimeRangeInput = ({ field, extra }: InputRenderProps<"timerange">) 
               <Text style={[styles.pickerSeparator, { color: colors.text }]}>:</Text>
 
               <View style={styles.pickerColumn}>
-                <Text style={[styles.pickerLabel, { color: colors.textMuted }]}>Minute</Text>
+                <Text style={[styles.pickerLabel, { color: colors.textMuted }]}>{t("renderer.defaultInputs.minute")}</Text>
                 <ScrollView style={styles.picker} contentContainerStyle={styles.pickerContent} showsVerticalScrollIndicator={false}>
                   {minutesList.map((minute) => (
                     <TouchableOpacity
@@ -154,7 +154,9 @@ const DefaultTimeRangeInput = ({ field, extra }: InputRenderProps<"timerange">) 
               onPress={handleConfirm}
               activeOpacity={0.7}
             >
-              <Text style={[styles.confirmButtonText, { color: colors.background }]}>{selectingStart ? "Next" : "Confirm"}</Text>
+              <Text style={[styles.confirmButtonText, { color: colors.background }]}>
+                {selectingStart ? t("renderer.defaultInputs.next") : t("renderer.defaultInputs.confirm")}
+              </Text>
             </TouchableOpacity>
           </TouchableOpacity>
         </TouchableOpacity>

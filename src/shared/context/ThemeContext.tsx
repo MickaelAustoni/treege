@@ -8,6 +8,8 @@ interface ThemeProviderProps {
   defaultTheme?: Theme;
   storageKey?: string;
   theme?: "dark" | "light";
+  /** Overrides merged over the palette of the resolved theme (used by the React Native renderer) */
+  colors?: Partial<ThemeColors>;
 }
 
 interface ThemeProviderState {
@@ -26,6 +28,7 @@ const ThemeContext = createContext<ThemeProviderState>(initialState);
 
 export const ThemeProvider = ({
   children,
+  colors: colorOverrides,
   defaultTheme = "system",
   storageKey = "treege-theme",
   theme: controlledTheme,
@@ -58,7 +61,7 @@ export const ThemeProvider = ({
         ? "dark"
         : "light"
       : theme;
-  const colors = COLORS[resolvedTheme];
+  const colors = useMemo(() => ({ ...COLORS[resolvedTheme], ...colorOverrides }), [resolvedTheme, colorOverrides]);
 
   const value = useMemo(
     () => ({

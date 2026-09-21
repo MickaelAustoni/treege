@@ -9,6 +9,8 @@ interface ThemeProviderProps {
   defaultTheme?: Theme;
   storageKey?: string;
   theme?: "dark" | "light";
+  /** Overrides merged over the palette of the resolved theme (used by the React Native renderer) */
+  colors?: Partial<ThemeColors>;
 }
 
 interface ThemeProviderState {
@@ -30,7 +32,13 @@ const ThemeContext = createContext<ThemeProviderState>(initialState);
  * Unlike the web version, this doesn't manipulate DOM classes
  * Provides theme colors directly through the context
  */
-export const ThemeProvider = ({ children, defaultTheme = "system", theme: controlledTheme, ...props }: ThemeProviderProps) => {
+export const ThemeProvider = ({
+  children,
+  colors: colorOverrides,
+  defaultTheme = "system",
+  theme: controlledTheme,
+  ...props
+}: ThemeProviderProps) => {
   const deviceColorScheme = useColorScheme();
   const [internalTheme, setInternalTheme] = useState<Theme>(() => {
     // If controlled, use controlled theme
@@ -45,7 +53,7 @@ export const ThemeProvider = ({ children, defaultTheme = "system", theme: contro
 
   // Resolve "system" to actual device preference and get colors
   const resolvedTheme = theme === "system" ? (deviceColorScheme ?? "light") : theme;
-  const colors = COLORS[resolvedTheme];
+  const colors = useMemo(() => ({ ...COLORS[resolvedTheme], ...colorOverrides }), [resolvedTheme, colorOverrides]);
 
   const value = useMemo(
     () => ({

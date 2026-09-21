@@ -1,4 +1,6 @@
+import { useMemo } from "react";
 import { ScrollView, StyleSheet, Text, View, ViewStyle } from "react-native";
+import { useTreegeRendererConfig } from "@/renderer/context/TreegeRendererProvider";
 import { TreegeRenderRuntimeProvider } from "@/renderer/context/TreegeRenderRuntimeProvider";
 import DefaultFormWrapper from "@/renderer/features/TreegeRenderer/native/components/DefaultFormWrapper";
 import DefaultInputLabel from "@/renderer/features/TreegeRenderer/native/components/DefaultInputLabel";
@@ -213,8 +215,12 @@ const TreegeRendererContent = ({
 };
 
 const TreegeRenderer = (props: TreegeRendererNativeProps) => {
+  const globalConfig = useTreegeRendererConfig();
+  // Props take precedence over the provider, color by color
+  const colors = useMemo(() => ({ ...globalConfig?.colors, ...props.colors }), [globalConfig?.colors, props.colors]);
+
   return (
-    <ThemeProvider theme={props.theme} storageKey="treege-renderer-theme">
+    <ThemeProvider theme={props.theme ?? globalConfig?.theme} colors={colors} storageKey="treege-renderer-theme">
       <TreegeRendererContent {...props} />
     </ThemeProvider>
   );

@@ -1,7 +1,9 @@
 import { useCallback, useMemo, useState } from "react";
 import { FlatList, Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { useTreegeRenderRuntime } from "@/renderer/context/TreegeRenderRuntimeProvider";
 import { useTranslate } from "@/renderer/hooks/useTranslate";
 import { InputRenderProps } from "@/renderer/types/renderer";
+import { getCalendarLabels } from "@/renderer/utils/dateLocale";
 import { useTheme } from "@/shared/context/ThemeContext";
 
 const DefaultDateInput = ({ field, extra }: InputRenderProps<"date">) => {
@@ -9,6 +11,8 @@ const DefaultDateInput = ({ field, extra }: InputRenderProps<"date">) => {
   const { value, placeholder } = field;
   const { InputLabel, node, setValue, error, label, helperText } = extra;
   const { colors } = useTheme();
+  const { language } = useTreegeRenderRuntime();
+  const { monthNames, weekDays, weekStartsOn } = useMemo(() => getCalendarLabels(language), [language]);
   const t = useTranslate();
   const dateValue = value ? new Date(value) : undefined;
 
@@ -24,23 +28,9 @@ const DefaultDateInput = ({ field, extra }: InputRenderProps<"date">) => {
   const [currentYear, setCurrentYear] = useState(year);
   const [currentMonth, setCurrentMonth] = useState(month);
 
-  const monthNames = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
-  ];
-
   const days = useMemo(() => {
-    const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+    // Leading days of the previous month, counted from the locale's first day of the week
+    const firstDay = (new Date(currentYear, currentMonth, 1).getDay() - weekStartsOn + 7) % 7;
     const daysCount = new Date(currentYear, currentMonth + 1, 0).getDate();
     const previousMonthDays = new Date(currentYear, currentMonth, 0).getDate();
 
@@ -72,7 +62,7 @@ const DefaultDateInput = ({ field, extra }: InputRenderProps<"date">) => {
     }
 
     return calendarDays;
-  }, [currentYear, currentMonth]);
+  }, [currentYear, currentMonth, weekStartsOn]);
 
   const handleSelectDate = useCallback(
     (date: Date) => {
@@ -107,7 +97,7 @@ const DefaultDateInput = ({ field, extra }: InputRenderProps<"date">) => {
     if (!dateValue) {
       return placeholder || t("renderer.defaultInputs.selectDate");
     }
-    return dateValue.toLocaleDateString();
+    return dateValue.toLocaleDateString(language);
   };
 
   const isDateDisabled = (date: Date) => {
@@ -166,7 +156,7 @@ const DefaultDateInput = ({ field, extra }: InputRenderProps<"date">) => {
             </View>
 
             <View style={styles.weekDays}>
-              {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
+              {weekDays.map((day) => (
                 <Text key={day} style={[styles.weekDay, { color: colors.textMuted }]}>
                   {day}
                 </Text>
