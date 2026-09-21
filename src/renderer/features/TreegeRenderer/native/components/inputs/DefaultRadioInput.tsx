@@ -1,4 +1,5 @@
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { useInputOptions } from "@/renderer/hooks/useInputOptions";
 import { useTranslate } from "@/renderer/hooks/useTranslate";
 import { InputRenderProps } from "@/renderer/types/renderer";
 import { useTheme } from "@/shared/context/ThemeContext";
@@ -7,8 +8,8 @@ const DefaultRadioInput = ({ field, extra }: InputRenderProps<"radio">) => {
   const { value } = field;
   const { InputLabel, node, setValue, error, label, helperText } = extra;
   const { colors } = useTheme();
+  const { options, error: optionsError } = useInputOptions(node);
   const t = useTranslate();
-  const options = node.data.options || [];
   const selectedValue = value || "";
   const isCard = node.data.variant !== "default";
 
@@ -87,7 +88,8 @@ const DefaultRadioInput = ({ field, extra }: InputRenderProps<"radio">) => {
       })}
 
       {error && <Text style={[styles.error, { color: colors.error }]}>{error}</Text>}
-      {helperText && !error && <Text style={[styles.helperText, { color: colors.textMuted }]}>{helperText}</Text>}
+      {optionsError && !error && <Text style={[styles.error, { color: colors.error }]}>{optionsError}</Text>}
+      {helperText && !error && !optionsError && <Text style={[styles.helperText, { color: colors.textMuted }]}>{helperText}</Text>}
     </View>
   );
 };

@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import OptionItemContent from "@/renderer/features/TreegeRenderer/native/components/OptionItemContent";
+import { useInputOptions } from "@/renderer/hooks/useInputOptions";
 import { useTranslate } from "@/renderer/hooks/useTranslate";
 import { InputRenderProps } from "@/renderer/types/renderer";
 import { useTheme } from "@/shared/context/ThemeContext";
@@ -10,8 +11,8 @@ const DefaultSelectInput = ({ field, extra }: InputRenderProps<"select">) => {
   const { value, placeholder } = field;
   const { InputLabel, node, setValue, error, label, helperText } = extra;
   const { colors } = useTheme();
+  const { options, isLoading, error: optionsError } = useInputOptions(node);
   const t = useTranslate();
-  const options = node.data.options || [];
   const isMultiple = node.data.multiple;
   const selectedValues = Array.isArray(value) ? value : value ? [value] : [];
 
@@ -48,6 +49,7 @@ const DefaultSelectInput = ({ field, extra }: InputRenderProps<"select">) => {
       <TouchableOpacity
         style={[styles.trigger, { backgroundColor: colors.input, borderColor: colors.border }, error && { borderColor: colors.error }]}
         onPress={() => setIsOpen(true)}
+        disabled={isLoading}
         activeOpacity={0.7}
       >
         <Text style={[styles.triggerText, { color: colors.text }, selectedValues.length === 0 && { color: colors.textMuted }]}>
@@ -62,7 +64,11 @@ const DefaultSelectInput = ({ field, extra }: InputRenderProps<"select">) => {
             <Text style={[styles.clearIcon, { color: colors.textMuted }]}>✕</Text>
           </TouchableOpacity>
         )}
-        <Text style={[styles.arrow, { color: colors.textMuted }]}>▼</Text>
+        {isLoading ? (
+          <ActivityIndicator size="small" color={colors.textMuted} />
+        ) : (
+          <Text style={[styles.arrow, { color: colors.textMuted }]}>▼</Text>
+        )}
       </TouchableOpacity>
 
       <Modal visible={isOpen} transparent animationType="fade" onRequestClose={() => setIsOpen(false)}>
@@ -111,7 +117,8 @@ const DefaultSelectInput = ({ field, extra }: InputRenderProps<"select">) => {
       </Modal>
 
       {error && <Text style={[styles.error, { color: colors.error }]}>{error}</Text>}
-      {helperText && !error && <Text style={[styles.helperText, { color: colors.textMuted }]}>{helperText}</Text>}
+      {optionsError && !error && <Text style={[styles.error, { color: colors.error }]}>{optionsError}</Text>}
+      {helperText && !error && !optionsError && <Text style={[styles.helperText, { color: colors.textMuted }]}>{helperText}</Text>}
     </View>
   );
 };

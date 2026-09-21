@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { FlatList, Modal, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import OptionItemContent from "@/renderer/features/TreegeRenderer/native/components/OptionItemContent";
+import { useInputOptions } from "@/renderer/hooks/useInputOptions";
 import { useTranslate } from "@/renderer/hooks/useTranslate";
 import { InputRenderProps } from "@/renderer/types/renderer";
 import { useTheme } from "@/shared/context/ThemeContext";
@@ -10,9 +11,9 @@ const DefaultAutocompleteInput = ({ field, extra }: InputRenderProps<"autocomple
   const [searchQuery, setSearchQuery] = useState("");
   const { value, placeholder } = field;
   const { InputLabel, node, setValue, error, label, helperText } = extra;
-  const t = useTranslate();
   const { colors } = useTheme();
-  const options = node.data.options || [];
+  const { options, error: optionsError } = useInputOptions(node);
+  const t = useTranslate();
   const selectedOption = options.find((opt) => opt.value === value);
 
   const filteredOptions = useMemo(() => {
@@ -126,7 +127,8 @@ const DefaultAutocompleteInput = ({ field, extra }: InputRenderProps<"autocomple
       </Modal>
 
       {error && <Text style={[styles.error, { color: colors.error }]}>{error}</Text>}
-      {helperText && !error && <Text style={[styles.helperText, { color: colors.textMuted }]}>{helperText}</Text>}
+      {optionsError && !error && <Text style={[styles.error, { color: colors.error }]}>{optionsError}</Text>}
+      {helperText && !error && !optionsError && <Text style={[styles.helperText, { color: colors.textMuted }]}>{helperText}</Text>}
     </View>
   );
 };

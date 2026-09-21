@@ -1,4 +1,5 @@
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { useInputOptions } from "@/renderer/hooks/useInputOptions";
 import { useTranslate } from "@/renderer/hooks/useTranslate";
 import { InputRenderProps } from "@/renderer/types/renderer";
 import { useTheme } from "@/shared/context/ThemeContext";
@@ -8,8 +9,8 @@ const DefaultCheckboxInput = ({ field, extra }: InputRenderProps<"checkbox">) =>
   const { value } = field;
   const { InputLabel, node, setValue, error, label, helperText } = extra;
   const { colors } = useTheme();
-  const options = node.data.options || [];
-  const hasOptions = options.length > 0;
+  const { options, error: optionsError } = useInputOptions(node);
+  const hasOptions = options.length > 0 || !!node.data.optionsSource;
   const selectedValues = Array.isArray(value) ? value : [];
   const isSingleChecked = typeof value === "boolean" ? value : false;
 
@@ -93,7 +94,8 @@ const DefaultCheckboxInput = ({ field, extra }: InputRenderProps<"checkbox">) =>
       )}
 
       {error && <Text style={[styles.error, { color: colors.error }]}>{error}</Text>}
-      {helperText && !error && <Text style={[styles.helperText, { color: colors.textMuted }]}>{helperText}</Text>}
+      {optionsError && !error && <Text style={[styles.error, { color: colors.error }]}>{optionsError}</Text>}
+      {helperText && !error && !optionsError && <Text style={[styles.helperText, { color: colors.textMuted }]}>{helperText}</Text>}
     </View>
   );
 };
