@@ -1,5 +1,5 @@
-import { useMemo } from "react";
-import { ScrollView, StyleSheet, Text, View, ViewStyle } from "react-native";
+import { ComponentType, useMemo } from "react";
+import { ScrollView, ScrollViewProps, StyleSheet, Text, View, ViewStyle } from "react-native";
 import { useTreegeRendererConfig } from "@/renderer/context/TreegeRendererProvider";
 import { TreegeRenderRuntimeProvider } from "@/renderer/context/TreegeRenderRuntimeProvider";
 import DefaultFormWrapper from "@/renderer/features/TreegeRenderer/native/components/DefaultFormWrapper";
@@ -33,6 +33,12 @@ export type TreegeRendererNativeProps = Omit<TreegeRendererProps, "className" | 
    * Use this to center content vertically with flexGrow: 1 and justifyContent: 'center'
    */
   contentContainerStyle?: ViewStyle;
+  /**
+   * Scroll container to render the form in place of the default ScrollView, e.g. a keyboard-aware one
+   * (`KeyboardAwareScrollView` of react-native-keyboard-controller) that follows the caret while typing.
+   * It receives the ScrollView props; the default keyboard insets are then left to it.
+   */
+  ScrollComponent?: ComponentType<ScrollViewProps>;
 };
 
 /**
@@ -40,6 +46,7 @@ export type TreegeRendererNativeProps = Omit<TreegeRendererProps, "className" | 
  * Must be inside ThemeProvider to access useTheme
  */
 const TreegeRendererContent = ({
+  ScrollComponent,
   baseUrl,
   components,
   contentContainerStyle,
@@ -126,9 +133,15 @@ const TreegeRendererContent = ({
     setFieldValue,
   });
 
+  // A scroll container of the app's own handles the keyboard itself: the default one asks iOS to keep the focused
+  // field above the keyboard, and taps on the form's buttons go through while it is up
+  const ScrollContainer = ScrollComponent ?? ScrollView;
+
   return (
-    <ScrollView
+    <ScrollContainer
       nestedScrollEnabled
+      keyboardShouldPersistTaps="handled"
+      automaticallyAdjustKeyboardInsets={!ScrollComponent}
       style={[styles.container, { backgroundColor: colors.background }, style]}
       contentContainerStyle={contentContainerStyle}
     >
@@ -210,7 +223,7 @@ const TreegeRendererContent = ({
           )}
         </TreegeRenderRuntimeProvider>
       )}
-    </ScrollView>
+    </ScrollContainer>
   );
 };
 

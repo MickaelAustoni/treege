@@ -387,6 +387,16 @@ You can customize the appearance using the `style` and `contentContainerStyle` p
 />
 ```
 
+### Keyboard
+
+On iOS, the default `ScrollView` keeps the focused field above the keyboard (`automaticallyAdjustKeyboardInsets`). To follow the caret while a long answer is typed, or to keep a margin above the keyboard, pass a keyboard-aware scroll container of your own:
+
+```tsx
+import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
+
+<TreegeRenderer flow={flow} onSubmit={handleSubmit} ScrollComponent={KeyboardAwareScrollView} />
+```
+
 ### Custom Components
 
 Override default components with your own React Native components.
@@ -480,6 +490,7 @@ The React Native renderer shares the same API as the web renderer, with some pla
 | `title`                 | `string \| Translatable`                        | -            | Form title rendered above the form. Plain string or `{ en, fr, ... }` object resolved with `language`                                                      |
 | `style`                 | `ViewStyle`                                     | -            | ScrollView style (RN only)                                                                                                                                 |
 | `contentContainerStyle` | `ViewStyle`                                     | -            | Content container style (RN)                                                                                                                               |
+| `ScrollComponent`       | `ComponentType<ScrollViewProps>`                | `ScrollView` | Scroll container of the form (RN only), e.g. a keyboard-aware one. The default `ScrollView` keeps the focused field above the keyboard on iOS              |
 
 ## Node Types
 
