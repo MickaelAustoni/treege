@@ -42,7 +42,6 @@ Treege is a modern React library for creating and rendering interactive decision
 - **Cross-Platform**: Full support for both React Web and React Native with dedicated implementations
 - **HTTP Integration**: Built-in API integration with response mapping and search functionality
 - **Advanced Validation**: Required fields, pattern matching, custom validation functions
-- **Security**: Built-in input sanitization to prevent XSS attacks
 - **Enhanced Error Messages**: Clear, user-friendly error messages for HTTP inputs and validation
 - **Conditional Logic**: Dynamic field visibility based on user input and conditional edges
 - **Multi-Step Forms**: Group nodes are automatically turned into navigable steps with Back/Continue controls, an `onBack` bridge to outer flows, and external-button submission via `formId`
@@ -52,7 +51,7 @@ Treege is a modern React library for creating and rendering interactive decision
 - **Host Data Injection**: Attach app-owned fields (e.g. a user id) to every submission with `extraPayload` — merged into both the `onSubmit` payload and the HTTP submit body
 - **Loading State**: Built-in `isLoading` prop renders a customizable skeleton while the flow is being fetched, plus `isSubmitting` to drive the button's loading state from async submits
 - **Fully Customizable**: Override any component (form, inputs, inputLabel, ui, step, submitButton, submitButtonWrapper, loadingSkeleton)
-- **Optional Dependencies**: Graceful degradation when optional packages like `react-native-document-picker` aren't installed
+- **Optional Dependencies**: Graceful degradation when optional packages like `@react-native-documents/picker` aren't installed
 - **Theme Support**: Dark/light mode out of the box
 - **Google API Integration**: Address autocomplete support
 - **Read-Only Viewer**: `TreegeViewer` renders a submitted flow as a label/value recap — same branch-visibility and formatting as the form, works with or without a flow (self-describing values), supports collapse, with a headless `getViewerFields` core for custom layouts
@@ -323,7 +322,7 @@ npm install treege
 npm install react-native
 
 # Optional: Install for file input support
-npm install react-native-document-picker
+npm install @react-native-documents/picker
 ```
 
 ### Basic Usage
@@ -454,7 +453,7 @@ The React Native renderer includes default implementations for all input types:
 - `checkbox`, `switch`, `hidden`
 
 **With Optional Dependencies** (gracefully degrades if not installed):
-- `file` - Requires [react-native-document-picker](https://github.com/rnmods/react-native-document-picker) (optional)
+- `file` - Requires [@react-native-documents/picker](https://github.com/react-native-documents/document-picker) (optional)
 
 **Requires Custom Implementation** (placeholder provided):
 - `select`, `radio`, `autocomplete`

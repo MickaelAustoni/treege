@@ -3,6 +3,7 @@ import { ActivityIndicator, FlatList, Modal, StyleSheet, Text, TextInput, Toucha
 import { useTreegeRenderRuntime } from "@/renderer/context/TreegeRenderRuntimeProvider";
 import DependencyHint from "@/renderer/features/TreegeRenderer/native/components/DependencyHint";
 import OptionItemContent from "@/renderer/features/TreegeRenderer/native/components/OptionItemContent";
+import { FIELD_BOX } from "@/renderer/features/TreegeRenderer/native/constants/field";
 import { useTranslate } from "@/renderer/hooks/useTranslate";
 import { InputRenderProps } from "@/renderer/types/renderer";
 import { convertFormValuesToNamedFormat } from "@/renderer/utils/form";
@@ -15,7 +16,6 @@ import {
   tryParseJson,
 } from "@/renderer/utils/http";
 import { resolveTemplateToJson } from "@/renderer/utils/jsonTemplate";
-import { sanitizeHttpResponse } from "@/renderer/utils/sanitize.native";
 import { useTheme } from "@/shared/context/ThemeContext";
 import { normalizeLabel } from "@/shared/utils/normalizeLabel";
 
@@ -195,13 +195,10 @@ const DefaultHttpInput = ({ field, extra }: InputRenderProps<"http">) => {
           return;
         }
 
-        // Sanitize the response data
-        const sanitizedData = sanitizeHttpResponse(parsed.value) as HttpResponse;
+        const responseData = parsed.value as HttpResponse;
 
         // Extract data using responsePath
-        const extractedData = currentHttpConfig.responsePath
-          ? getValueByPath(sanitizedData, currentHttpConfig.responsePath)
-          : sanitizedData;
+        const extractedData = currentHttpConfig.responsePath ? getValueByPath(responseData, currentHttpConfig.responsePath) : responseData;
 
         // If responseMapping is configured, map the data to options
         if (currentHttpConfig.responseMapping && Array.isArray(extractedData)) {
@@ -688,11 +685,10 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   input: {
+    ...FIELD_BOX,
     borderRadius: 6,
     borderWidth: 1,
     fontSize: 14,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
   },
   loadingContainer: {
     alignItems: "center",
@@ -755,13 +751,12 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
   },
   trigger: {
+    ...FIELD_BOX,
     alignItems: "center",
     borderRadius: 6,
     borderWidth: 1,
     flexDirection: "row",
     justifyContent: "space-between",
-    paddingHorizontal: 12,
-    paddingVertical: 10,
   },
   triggerLoader: {
     marginRight: 8,

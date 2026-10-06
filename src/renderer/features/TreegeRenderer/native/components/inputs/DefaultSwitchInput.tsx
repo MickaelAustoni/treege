@@ -2,6 +2,12 @@ import { StyleSheet, Switch, Text, View } from "react-native";
 import { InputRenderProps } from "@/renderer/types/renderer";
 import { useTheme } from "@/shared/context/ThemeContext";
 
+/**
+ * The thumb is white in both themes and in both states, as the platforms' own switches draw it: it stands out
+ * from the green track when on and from the grey one when off.
+ */
+const SWITCH_THUMB_COLOR = "#FFFFFF";
+
 const DefaultSwitchInput = ({ field, extra }: InputRenderProps<"switch">) => {
   const { value } = field;
   const { InputLabel, node, setValue, error, label, helperText } = extra;
@@ -15,9 +21,9 @@ const DefaultSwitchInput = ({ field, extra }: InputRenderProps<"switch">) => {
           <InputLabel label={label} required={node.data.required} />
         </View>
         <Switch
-          trackColor={{ false: colors.border, true: `${colors.primary}80` }}
-          thumbColor={isEnabled ? colors.primary : colors.card}
-          ios_backgroundColor={colors.border}
+          trackColor={{ false: colors.borderFocus, true: colors.success }}
+          thumbColor={SWITCH_THUMB_COLOR}
+          ios_backgroundColor={colors.borderFocus}
           onValueChange={setValue}
           value={isEnabled}
         />

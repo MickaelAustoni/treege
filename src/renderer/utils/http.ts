@@ -1,5 +1,4 @@
 import { FormValues } from "@/renderer/types/renderer";
-import { sanitize } from "@/renderer/utils/sanitize";
 import { HttpHeaders, InputOption, OptionsSourceMapping, QueryParams } from "@/shared/types/node";
 
 /**
@@ -286,32 +285,29 @@ export const replaceTemplateVariables = (
       return json ? "null" : "";
     }
 
-    // Sanitize string values to prevent injection attacks (plainTextOnly: true by default)
-    const sanitizedValue = typeof value === "string" ? sanitize(value) : value;
-
     // URL encoding mode
     if (encode) {
-      return encodeURIComponent(String(sanitizedValue));
+      return encodeURIComponent(String(value));
     }
 
     // JSON smart mode
     if (json) {
       // String: wrap in quotes and escape
-      if (typeof sanitizedValue === "string") {
-        return `"${sanitizedValue.replace(/\\/g, "\\\\").replace(/"/g, '\\"')}"`;
+      if (typeof value === "string") {
+        return `"${value.replace(/\\/g, "\\\\").replace(/"/g, '\\"')}"`;
       }
       // Number or boolean: direct conversion
-      if (typeof sanitizedValue === "number" || typeof sanitizedValue === "boolean") {
-        return String(sanitizedValue);
+      if (typeof value === "number" || typeof value === "boolean") {
+        return String(value);
       }
       // Array or object: JSON.stringify
-      if (typeof sanitizedValue === "object") {
-        return JSON.stringify(sanitizedValue);
+      if (typeof value === "object") {
+        return JSON.stringify(value);
       }
     }
 
     // Default: simple string conversion
-    return String(sanitizedValue);
+    return String(value);
   });
 };
 

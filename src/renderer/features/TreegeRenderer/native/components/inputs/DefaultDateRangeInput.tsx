@@ -1,6 +1,7 @@
 import { useCallback, useMemo, useState } from "react";
 import { FlatList, Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useTreegeRenderRuntime } from "@/renderer/context/TreegeRenderRuntimeProvider";
+import { FIELD_BOX } from "@/renderer/features/TreegeRenderer/native/constants/field";
 import { useTranslate } from "@/renderer/hooks/useTranslate";
 import { InputRenderProps } from "@/renderer/types/renderer";
 import { getCalendarLabels } from "@/renderer/utils/dateLocale";
@@ -347,13 +348,12 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
   trigger: {
+    ...FIELD_BOX,
     alignItems: "center",
     borderRadius: 6,
     borderWidth: 1,
     flexDirection: "row",
     justifyContent: "space-between",
-    paddingHorizontal: 12,
-    paddingVertical: 10,
   },
   triggerText: {
     flex: 1,

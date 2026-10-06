@@ -1,4 +1,5 @@
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { CONTROL_SIZE, RADIO_DOT_SIZE } from "@/renderer/features/TreegeRenderer/native/constants/control";
 import { useInputOptions } from "@/renderer/hooks/useInputOptions";
 import { useTranslate } from "@/renderer/hooks/useTranslate";
 import { InputRenderProps } from "@/renderer/types/renderer";
@@ -49,7 +50,8 @@ const DefaultRadioInput = ({ field, extra }: InputRenderProps<"radio">) => {
                 style={[
                   styles.radio,
                   styles.cardRadio,
-                  { backgroundColor: colors.input, borderColor: colors.border },
+                  // The stronger border: the plain one is too faint to outline an empty circle, on a dark background most of all
+                  { backgroundColor: colors.input, borderColor: colors.borderFocus },
                   isSelected && { borderColor: colors.primary },
                 ]}
               >
@@ -70,7 +72,7 @@ const DefaultRadioInput = ({ field, extra }: InputRenderProps<"radio">) => {
             <View
               style={[
                 styles.radio,
-                { backgroundColor: colors.input, borderColor: colors.border },
+                { backgroundColor: colors.input, borderColor: colors.borderFocus },
                 isSelected && { borderColor: colors.primary },
               ]}
             >
@@ -158,17 +160,17 @@ const styles = StyleSheet.create({
   },
   radio: {
     alignItems: "center",
-    borderRadius: 10,
+    borderRadius: CONTROL_SIZE / 2,
     borderWidth: 2,
-    height: 20,
+    height: CONTROL_SIZE,
     justifyContent: "center",
     marginRight: 12,
-    width: 20,
+    width: CONTROL_SIZE,
   },
   radioInner: {
-    borderRadius: 5,
-    height: 10,
-    width: 10,
+    borderRadius: RADIO_DOT_SIZE / 2,
+    height: RADIO_DOT_SIZE,
+    width: RADIO_DOT_SIZE,
   },
 });
 

@@ -23,6 +23,5 @@ export * from "@/renderer/utils/file";
 export * from "@/renderer/utils/flow";
 export * from "@/renderer/utils/form";
 export * from "@/renderer/utils/httpDefault";
-export * from "@/renderer/utils/sanitize";
 export { ThemeProvider, useTheme } from "@/shared/context/ThemeContext";
 export { getTranslatedText } from "@/shared/utils/translations";

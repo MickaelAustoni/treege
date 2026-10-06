@@ -1,4 +1,5 @@
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { CONTROL_SIZE } from "@/renderer/features/TreegeRenderer/native/constants/control";
 import { useInputOptions } from "@/renderer/hooks/useInputOptions";
 import { useTranslate } from "@/renderer/hooks/useTranslate";
 import { InputRenderProps } from "@/renderer/types/renderer";
@@ -53,11 +54,12 @@ const DefaultCheckboxInput = ({ field, extra }: InputRenderProps<"checkbox">) =>
               <View
                 style={[
                   styles.checkbox,
-                  { backgroundColor: colors.input, borderColor: colors.border },
+                  // The stronger border: the plain one is too faint to outline an empty box, on a dark background most of all
+                  { backgroundColor: colors.input, borderColor: colors.borderFocus },
                   isChecked(option.value) && { backgroundColor: colors.primary, borderColor: colors.primary },
                 ]}
               >
-                {isChecked(option.value) && <Text style={styles.checkmark}>✓</Text>}
+                {isChecked(option.value) && <Text style={[styles.checkmark, { color: colors.primaryForeground }]}>✓</Text>}
               </View>
               {option.image ? <Image source={{ uri: option.image }} style={styles.image} /> : null}
               <View style={styles.optionTextContainer}>
@@ -83,11 +85,11 @@ const DefaultCheckboxInput = ({ field, extra }: InputRenderProps<"checkbox">) =>
           <View
             style={[
               styles.checkbox,
-              { backgroundColor: colors.input, borderColor: colors.border },
+              { backgroundColor: colors.input, borderColor: colors.borderFocus },
               isSingleChecked && { backgroundColor: colors.primary, borderColor: colors.primary },
             ]}
           >
-            {isSingleChecked && <Text style={styles.checkmark}>✓</Text>}
+            {isSingleChecked && <Text style={[styles.checkmark, { color: colors.primaryForeground }]}>✓</Text>}
           </View>
           {label && <Text style={[styles.optionLabel, { color: colors.textSecondary }]}>{label}</Text>}
         </TouchableOpacity>
@@ -103,16 +105,15 @@ const DefaultCheckboxInput = ({ field, extra }: InputRenderProps<"checkbox">) =>
 const styles = StyleSheet.create({
   checkbox: {
     alignItems: "center",
-    borderRadius: 4,
+    borderRadius: 6,
     borderWidth: 2,
-    height: 20,
+    height: CONTROL_SIZE,
     justifyContent: "center",
     marginRight: 12,
-    width: 20,
+    width: CONTROL_SIZE,
   },
   checkmark: {
-    color: "#FFFFFF",
-    fontSize: 14,
+    fontSize: 16,
     fontWeight: "700",
   },
   container: {
@@ -133,7 +134,7 @@ const styles = StyleSheet.create({
     width: 32,
   },
   option: {
-    alignItems: "flex-start",
+    alignItems: "center",
     flexDirection: "row",
     marginBottom: 8,
   },

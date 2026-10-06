@@ -7,7 +7,7 @@ import { getStaticTranslations, getTranslatableValue, getTranslatedText } from "
  * Input types that fall back to the "newAnswer" static translation
  * when no placeholder is defined for the current language.
  */
-const TEXTFIELD_INPUT_TYPES: ReadonlySet<InputType> = new Set(["text", "number", "password", "textarea", "time"]);
+const TEXTFIELD_INPUT_TYPES: ReadonlySet<InputType> = new Set(["text", "number", "password", "textarea"]);
 
 /**
  * Filter nodes to get only input nodes

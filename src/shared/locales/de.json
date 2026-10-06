@@ -446,7 +446,7 @@
       "endDate": "Enddatum",
       "endTime": "Endzeit",
       "filePickerError": "Fehler beim Auswählen der Datei",
-      "filePickerUnavailable": "Dateiauswahl nicht verfügbar. Bitte installieren Sie react-native-document-picker.",
+      "filePickerUnavailable": "Dateiauswahl nicht verfügbar. Bitte installieren Sie @react-native-documents/picker.",
       "hour": "Stunde",
       "minute": "Minute",
       "newAnswer": "Neue Antwort...",

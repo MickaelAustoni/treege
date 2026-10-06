@@ -1,5 +1,6 @@
 import { useCallback, useRef, useState } from "react";
 import { Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { FIELD_BOX } from "@/renderer/features/TreegeRenderer/native/constants/field";
 import { useTranslate } from "@/renderer/hooks/useTranslate";
 import { InputRenderProps } from "@/renderer/types/renderer";
 import { useTheme } from "@/shared/context/ThemeContext";
@@ -234,13 +235,12 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
   trigger: {
+    ...FIELD_BOX,
     alignItems: "center",
     borderRadius: 6,
     borderWidth: 1,
     flexDirection: "row",
     justifyContent: "space-between",
-    paddingHorizontal: 12,
-    paddingVertical: 10,
   },
   triggerText: {
     flex: 1,

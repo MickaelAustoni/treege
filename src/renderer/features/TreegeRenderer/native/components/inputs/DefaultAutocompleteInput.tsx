@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { FlatList, Modal, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import OptionItemContent from "@/renderer/features/TreegeRenderer/native/components/OptionItemContent";
+import { FIELD_BOX } from "@/renderer/features/TreegeRenderer/native/constants/field";
 import { useInputOptions } from "@/renderer/hooks/useInputOptions";
 import { useTranslate } from "@/renderer/hooks/useTranslate";
 import { InputRenderProps } from "@/renderer/types/renderer";
@@ -220,13 +221,12 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
   },
   trigger: {
+    ...FIELD_BOX,
     alignItems: "center",
     borderRadius: 6,
     borderWidth: 1,
     flexDirection: "row",
     justifyContent: "space-between",
-    paddingHorizontal: 12,
-    paddingVertical: 10,
   },
   triggerText: {
     flex: 1,

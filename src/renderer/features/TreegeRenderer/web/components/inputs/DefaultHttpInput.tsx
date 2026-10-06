@@ -15,7 +15,6 @@ import {
   tryParseJson,
 } from "@/renderer/utils/http";
 import { resolveTemplateToJson } from "@/renderer/utils/jsonTemplate";
-import { sanitizeHttpResponse } from "@/renderer/utils/sanitize";
 import { Button } from "@/shared/components/ui/button";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/shared/components/ui/command";
 import { FormDescription, FormError, FormItem } from "@/shared/components/ui/form";
@@ -211,13 +210,10 @@ const DefaultHttpInput = ({ field, extra }: InputRenderProps<"http">) => {
           return;
         }
 
-        // Sanitize the response data to prevent XSS attacks (plainTextOnly: true by default)
-        const sanitizedData = sanitizeHttpResponse(parsed.value) as HttpResponse;
+        const responseData = parsed.value as HttpResponse;
 
         // Extract data using responsePath
-        const extractedData = currentHttpConfig.responsePath
-          ? getValueByPath(sanitizedData, currentHttpConfig.responsePath)
-          : sanitizedData;
+        const extractedData = currentHttpConfig.responsePath ? getValueByPath(responseData, currentHttpConfig.responsePath) : responseData;
 
         // If responseMapping is configured, map the data to options
         if (currentHttpConfig.responseMapping && Array.isArray(extractedData)) {

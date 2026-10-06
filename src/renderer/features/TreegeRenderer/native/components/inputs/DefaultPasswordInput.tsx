@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { FIELD_BOX } from "@/renderer/features/TreegeRenderer/native/constants/field";
 import { InputRenderProps } from "@/renderer/types/renderer";
 import { useTheme } from "@/shared/context/ThemeContext";
 
@@ -49,12 +50,11 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   input: {
+    ...FIELD_BOX,
     borderRadius: 6,
     borderWidth: 1,
     flex: 1,
     fontSize: 14,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
   },
   inputWrapper: {
     alignItems: "center",

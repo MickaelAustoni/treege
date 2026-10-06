@@ -1,8 +1,7 @@
 import { StatusBar } from "expo-status-bar";
 import { Alert, StyleSheet, View } from "react-native";
 import { TreegeRenderer } from "treege/renderer-native";
-import flow from "~/example/json/treege.json";
-import { Flow } from "@/shared/types/node";
+import { allFieldsFlow } from "./allFieldsFlow";
 
 export default function App() {
   const handleSubmit = (values: any) => {
@@ -12,7 +11,7 @@ export default function App() {
   return (
     <View style={styles.container}>
       <TreegeRenderer
-        flow={flow  as Flow}
+        flow={allFieldsFlow}
         onSubmit={handleSubmit}
         contentContainerStyle={styles.scrollContent}
         theme="dark"
@@ -27,9 +26,10 @@ const styles = StyleSheet.create({
     backgroundColor: "#F9FAFB",
     flex: 1,
   },
+  // The form is taller than the screen: it scrolls from under the status bar down to the home indicator
   scrollContent: {
-    flex: 1,
-    justifyContent: "center",
+    paddingBottom: 48,
     paddingHorizontal: 16,
+    paddingTop: 64,
   },
 });

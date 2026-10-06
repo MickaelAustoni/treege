@@ -22,17 +22,15 @@ Then:
 
 ## Features Tested
 
-This example tests all vanilla React Native components:
+This example renders every field type of the renderer on a single scrollable screen. The flow lives in
+`allFieldsFlow.ts`: no group and no conditional edge, so nothing is hidden behind a step or an answer.
 
-- ✅ Text Input
-- ✅ Number Input
-- ✅ Password Input (with show/hide toggle)
-- ✅ Textarea
-- ✅ Switch
-- ✅ Select (with modal picker)
-- ✅ Radio buttons
-- ✅ Checkbox (single and multiple)
-- ✅ Hidden Input
+- **Text fields**: text, number, password (with show/hide toggle), textarea
+- **Choices**: select (single and multiple), autocomplete, radio (card and default variants), checkbox (group and single), switch
+- **Date & time**: date, date range (past dates disabled), time, time range
+- **Advanced**: address, file, HTTP (select fetched on mount, and search-as-you-type)
+- **UI elements**: title, divider
+- **Not displayed**: hidden (its value shows up in the submitted values) and submit (gives its label to the submit button)
 
 ## Development
 

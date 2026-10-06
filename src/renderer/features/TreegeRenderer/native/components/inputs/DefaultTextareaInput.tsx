@@ -49,7 +49,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     minHeight: 100,
     paddingHorizontal: 12,
-    paddingVertical: 8,
+    paddingVertical: 12,
   },
 });
 

@@ -48,7 +48,7 @@ const DefaultFileInput = ({ field, extra }: InputRenderProps<"file">) => {
         setValue(newFiles[0] || null);
       }
     } catch (err) {
-      if ((err as { code?: string }).code !== "DOCUMENT_PICKER_CANCELED") {
+      if ((err as { code?: string }).code !== "OPERATION_CANCELED") {
         Alert.alert("Error", t("renderer.defaultInputs.filePickerError"));
       }
     }
@@ -63,7 +63,7 @@ const DefaultFileInput = ({ field, extra }: InputRenderProps<"file">) => {
   );
 
   /**
-   * Lazy-load `react-native-document-picker` once on mount. The package is an
+   * Lazy-load `@react-native-documents/picker` once on mount. The package is an
    * optional peer dependency: we resolve it dynamically so consumers who don't
    * use file inputs aren't forced to install it. If the import fails, fall
    * back to the "unavailable" UI rendered below.
@@ -72,7 +72,7 @@ const DefaultFileInput = ({ field, extra }: InputRenderProps<"file">) => {
     const loadDocumentPicker = async () => {
       try {
         // @ts-expect-error - Optional peer dependency, may not be installed
-        const { pick: pickFunction } = await import("react-native-document-picker");
+        const { pick: pickFunction } = await import("@react-native-documents/picker");
         setPick(() => pickFunction);
       } catch {
         setPick(null);

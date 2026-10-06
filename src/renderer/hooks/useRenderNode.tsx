@@ -11,7 +11,6 @@ import {
 } from "@/renderer/types/renderer";
 import { resolveEmptyInputValue } from "@/renderer/utils/form";
 import { resolveInputPlaceholder, resolveNodeKey } from "@/renderer/utils/node";
-import { sanitize } from "@/renderer/utils/sanitize";
 import { getMissingDependencies } from "@/renderer/utils/templateDependencies";
 import { NODE_TYPE } from "@/shared/constants/node";
 import { InputNodeData, TreegeNodeData, UINodeData } from "@/shared/types/node";
@@ -112,9 +111,6 @@ export const useRenderNode = ({
           const placeholder = resolveInputPlaceholder(inputData, config.language);
           const helperText = getTranslatedText(inputData.helperText, config.language);
           const name = resolveNodeKey(node);
-          const safeLabel = sanitize(label);
-          const safePlaceholder = sanitize(placeholder);
-          const safeHelperText = sanitize(helperText);
 
           if (!Renderer) {
             console.warn("No renderer found for input type:", inputType);
@@ -125,16 +121,16 @@ export const useRenderNode = ({
             "aria-invalid": error ? true : undefined,
             id: node.id,
             name,
-            placeholder: safePlaceholder,
+            placeholder,
             required: inputData.required,
             value,
           };
           const extra: InputExtraProps = {
             error,
-            helperText: safeHelperText,
+            helperText,
             InputLabel,
             isSubmitting,
-            label: safeLabel,
+            label,
             missingDependencies: getMissingDependencies(node, formValues, inputNodes, config.language),
             missingRequiredFields,
             node,
