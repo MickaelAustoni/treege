@@ -95,6 +95,22 @@ jobs:
           prerelease: ${{ steps.version.outputs.tag == 'beta' }}
           generate_release_notes: true
 
+      # npm processes publishes asynchronously: the version can take a few
+      # minutes to become installable after `npm publish` returns.
+      - name: Wait for version to be available on NPM
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          for ATTEMPT in $(seq 1 60); do
+            if [ "$(npm view "treege@$VERSION" version 2>/dev/null)" = "$VERSION" ]; then
+              echo "treege@$VERSION is available on NPM"
+              exit 0
+            fi
+            echo "treege@$VERSION not available yet (attempt $ATTEMPT/60), retrying in 10s..."
+            sleep 10
+          done
+          echo "treege@$VERSION still not available on NPM after 10 minutes" >&2
+          exit 1
+
       - name: Notify treege-website to bump dependency
         run: |
           curl -sS -f -X POST \
